@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Game;
+use Illuminate\Http\Request;
+
+class GameController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return Game::all();
+
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(game $game)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(game $game)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, game $game)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(game $game)
+    {
+        //
+    }
+
+
+    /**
+     * Display the specified resource.
+     */
+    public function get(Request $request)
+    {
+        //
+        $r=(object)NULL;
+        // check Valid Provider (model) calles
+        // $model = 'App\Models\\'.$provider;
+        // if ($provider == 'Web3RecordLine') $response = $model::orderBy("id", "desc")->where('web3record_id',$web3record_id)->where('line',$line)->where('line_nr', $line_nr)->get();
+        $r = Game::where('title', $request->title)->first();
+        //return json($r->price);
+        if ($r != NULL) return $r;
+        return 0;
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     */
+    public function setgame(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:80',
+        ]);
+        $create = Game::updateOrInsert(
+            ['title' =>  $request->title],
+            ['nvalue' => $request->nvalue,
+            'description' => $request->description,
+            'json' => $request->json
+            ]);
+       // sleep(1);
+    }
+
+
+}
