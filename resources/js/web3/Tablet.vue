@@ -1,6 +1,6 @@
 <script setup>
     import {computed,ref} from 'vue';
-    import TheButton from "@/CustomComponents/TheButton.vue";
+    import TheButton from "@/customComponents/TheButton.vue";
 
     import {Interface} from 'ethers';
 

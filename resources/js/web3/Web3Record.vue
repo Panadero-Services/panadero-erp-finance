@@ -1,5 +1,5 @@
 <script setup>
-    import Panel from "@/CustomComponents/Panel.vue";
+    import Panel from "@/customComponents/Panel.vue";
     import { WalletIcon, XMarkIcon, EyeIcon, StopIcon } from '@heroicons/vue/24/outline'
 
     import { ref, computed, reactive } from 'vue';

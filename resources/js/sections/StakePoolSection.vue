@@ -16,7 +16,7 @@ import {computed, onMounted, ref} from 'vue';
 //import { storeToRefs } from "pinia";
 //import { Listbox, ListboxButton, ListboxLabel, ListboxOption, ListboxOptions } from '@headlessui/vue'
 //import { CheckIcon, ChevronUpDownIcon } from '@heroicons/vue/20/solid'
-//import EditContractParameterModal from "@/CustomComponents/EditContractParameterModal.vue";
+//import EditContractParameterModal from "@/customComponents/EditContractParameterModal.vue";
 
 //const wallet = useWalletStore()
 //const token = useTokenStore();

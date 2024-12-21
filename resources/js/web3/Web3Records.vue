@@ -1,11 +1,11 @@
 <script setup>
 
 	import {computed, onMounted, ref } from 'vue'
-	import Panel from "@/CustomComponents/Panel.vue";
-	import Child from "@/CustomComponents/Child.vue";
+	import Panel from "@/customComponents/Panel.vue";
+	import Child from "@/customComponents/Child.vue";
 
-	import AddWeb3Record from "@/CustomComponents/AddWeb3Record.vue";
-	import AssignmentList from "@/CustomComponents/AssignmentList.vue";
+	import AddWeb3Record from "@/customComponents/AddWeb3Record.vue";
+	import AssignmentList from "@/customComponents/AssignmentList.vue";
 
   	import Web3Record from "@/web3/Web3Record.vue";
 
