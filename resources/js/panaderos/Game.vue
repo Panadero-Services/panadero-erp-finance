@@ -2,16 +2,16 @@
 import { Head, Link } from '@inertiajs/vue3';
 import {computed, onMounted, onActivated, onServerPrefetch, ref} from 'vue'
 
-//import SPACESHIP from '@/Panaderos/assets/ss1.png';
-import SPACESHIP from '@/Panaderos/assets/ss1.png';
-import BULLET from '@/Panaderos/assets/bullet_red2.png'
-import ENEMY1 from '@/Panaderos/assets/enemy1.png'
-import ENEMY2 from '@/Panaderos/assets/enemy2.png'
-import ENEMY3 from '@/Panaderos/assets/enemy3.png'
-import ENEMY4 from '@/Panaderos/assets/enemy4.png'
-import ATOM from '@/Panaderos/assets/self1.png'
-import DIAMOND1 from '@/Panaderos/assets/diamond.png'
-import DIAMOND2 from '@/Panaderos/assets/diamond.png'
+//import SPACESHIP from '@/panaderos/assets/ss1.png';
+import SPACESHIP from '@/panaderos/assets/ss1.png';
+import BULLET from '@/panaderos/assets/bullet_red2.png'
+import ENEMY1 from '@/panaderos/assets/enemy1.png'
+import ENEMY2 from '@/panaderos/assets/enemy2.png'
+import ENEMY3 from '@/panaderos/assets/enemy3.png'
+import ENEMY4 from '@/panaderos/assets/enemy4.png'
+import ATOM from '@/panaderos/assets/self1.png'
+import DIAMOND1 from '@/panaderos/assets/diamond.png'
+import DIAMOND2 from '@/panaderos/assets/diamond.png'
 
 import { useGameStore } from '@/stores/game';
 let gameS = useGameStore();
@@ -266,8 +266,8 @@ const THRUST = 1;
 const MAX_VELOCITY=15;
 const degToRad = Math.PI / 180;
 
-//const SPACESHIP = '@/Panaderos/assets/ss1.png'
-//const BULLET = '@/Panaderos/assets/bullet_red2.png'
+//const SPACESHIP = '@/panaderos/assets/ss1.png'
+//const BULLET = '@/panaderos/assets/bullet_red2.png'
 //const BULLET_SIZE = { width: 3, height: 3 };
 const BULLET_SIZE = { width: gameScale*3, height: gameScale*3 };
 
