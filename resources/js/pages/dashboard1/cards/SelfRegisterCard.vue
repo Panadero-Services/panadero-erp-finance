@@ -1,6 +1,6 @@
 <script setup>
 import {ref} from 'vue';
-import ApplicationLogo from '@/Components/logoSelf.vue';
+import ApplicationLogo from '@/components/logoSelf.vue';
 
 defineProps({
 	set : Object

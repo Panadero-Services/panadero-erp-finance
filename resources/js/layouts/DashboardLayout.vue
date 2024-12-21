@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import Banner from '@/components/Banner.vue';
 
-import ApplicationMark from '@/Components/ApplicationMark.vue';
+import ApplicationMark from '@/components/ApplicationMark.vue';
 
 const props = defineProps({
     title: String,

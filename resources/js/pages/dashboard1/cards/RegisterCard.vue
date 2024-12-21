@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/logoSelf.vue';
+import ApplicationLogo from '@/components/logoSelf.vue';
 
 defineProps({
 	url : String,

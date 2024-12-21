@@ -1,7 +1,7 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import Welcome from '@/components/Welcome.vue';
 
 // usePage
@@ -19,7 +19,7 @@ const _db = useDbStore();
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/Components/Banner.vue';
+import Banner from '@/components/Banner.vue';
 
 const props =defineProps({
     canLogin: Boolean,

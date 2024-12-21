@@ -11,7 +11,7 @@ const _usePage = usePage();
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/Components/Banner.vue';
+import Banner from '@/components/Banner.vue';
 // custom sections
 import Pagination from "@/layouts/Pagination.vue"
 import BotsSection from "@/sections/BotsSection.vue"

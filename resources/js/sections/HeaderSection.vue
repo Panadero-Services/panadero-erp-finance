@@ -1,9 +1,9 @@
 <script setup>
 import {computed, ref, onMounted} from 'vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import NavLink from '@/Components/NavLink.vue';
+import NavLink from '@/components/NavLink.vue';
 
-import ApplicationMark from '@/Components/ApplicationMark.vue';
+import ApplicationMark from '@/components/ApplicationMark.vue';
 //import ApplicationMark from '@/layouts/logos/self1.png';
 import self1 from "@/layouts/logos/self1.png";
 import self2 from "@/layouts/logos/self2.png";

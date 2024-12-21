@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
@@ -18,7 +18,7 @@ const _db = useDbStore();
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/Components/Banner.vue';
+import Banner from '@/components/Banner.vue';
 import Welcome from '@/components/Welcome.vue';
 
 // cards
@@ -43,7 +43,7 @@ import DashboardFooter from "@/pages/dashboard1/DashboardFooter.vue";
 
 import Stars from '@/panaderos/Stars.vue';
 import Game from '@/panaderos/Game.vue';
-import ApplicationLogo from '@/Components/logoSelf.vue';
+import ApplicationLogo from '@/components/logoSelf.vue';
 
 const selfVersion ="0.2.1";
 

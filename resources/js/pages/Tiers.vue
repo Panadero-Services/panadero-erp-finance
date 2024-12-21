@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
@@ -17,7 +17,7 @@ const _db = useDbStore();
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/Components/Banner.vue';
+import Banner from '@/components/Banner.vue';
 
 import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/20/solid'

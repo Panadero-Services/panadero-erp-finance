@@ -20,7 +20,7 @@ import PostCard from '@/layouts/cards/PostCard.vue';
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/Components/Banner.vue';
+import Banner from '@/components/Banner.vue';
 import Pagination from "@/layouts/Pagination.vue"
 
 const props = defineProps(['posts']);

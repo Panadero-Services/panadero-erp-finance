@@ -1,5 +1,5 @@
 <script setup>
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import ApplicationLogo from '@/components/ApplicationLogo.vue';
 import self1 from "@/layouts/logos/self1.png";
 import self2 from "@/layouts/logos/self2.png";
 </script>

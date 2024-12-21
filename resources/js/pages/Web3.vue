@@ -1,12 +1,12 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 
-import DashboardLayout from '@/Layouts/DashboardLayout.vue';
+import DashboardLayout from '@/layouts/DashboardLayout.vue';
 
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/Components/Banner.vue';
+import Banner from '@/components/Banner.vue';
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
