@@ -24,7 +24,6 @@ const props = defineProps({
 // globals
 const _title="ResourcePlanning";
 
-
 const _counter=ref(0);
 
 var _resourceData = [
@@ -191,8 +190,6 @@ let _dark_weekend="#000000";
 <style>
 
 
-
-
 :root {
     --background-color: #ffffff;
     --text-color: #000000;
@@ -222,7 +219,7 @@ let _dark_weekend="#000000";
 
 .gantt_task_scale{
     background-color: v-bind(_task_scale);
-    font-size: 11px;
+    font-size: 10px;
     border-bottom: 1px solid #cecece;
 }
 

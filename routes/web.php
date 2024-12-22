@@ -41,55 +41,59 @@ Route::get('tiers', function () {
 })
 ->name('tiers');
 
-
+/*
 Route::middleware([EnsureTokenIsValid::class])->group(function () {
     Route::get('planning', function () {
         return Inertia::render('Planning', [
         ]);
     })->name('planning');
 });
-
-Route::get('grid', function () {
-    return Inertia::render('Grid', [
-    ]);
-})->name('grid');
-
-Route::get('mood', function () {
-    return Inertia::render('Mood', [
-    ]);
-})->name('mood');
-
-Route::get('web3', function () {
-    return Inertia::render('Web3', [
-    ]);
-})->name('web3');
-
-
-
-Route::get('resources', function () {
-    return Inertia::render('Resources', [
-    ]);
-})->name('resources');
-
-Route::get('posts',[PostController::class,'index'])->name('posts');
-
-Route::get('bento', function () {
-    return Inertia::render('Bento', [
-        'page'=> Page::with('sections')->where('title','bento')->first(),
-    ]);
-})->name('bento');
-
-Route::get('bots', function () {
-    return Inertia::render('Bots', [
-    ]);
-})->name('bots');
-
+*/
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+
+    Route::get('grid', function () {
+        return Inertia::render('Grid', [
+        ]);
+    })->name('grid');
+
+    Route::get('mood', function () {
+        return Inertia::render('Mood', [
+        ]);
+    })->name('mood');
+
+    Route::get('web3', function () {
+        return Inertia::render('Web3', [
+        ]);
+    })->name('web3');
+
+    Route::get('planning', function () {
+        return Inertia::render('Planning', [
+        ]);
+    })->name('planning');
+
+    Route::get('resources', function () {
+        return Inertia::render('Resources', [
+        ]);
+    })->name('resources');
+
+    Route::get('posts',[PostController::class,'index'])->name('posts');
+
+    Route::get('bento', function () {
+        return Inertia::render('Bento', [
+            'page'=> Page::with('sections')->where('title','bento')->first(),
+        ]);
+    })->name('bento');
+
+    Route::get('bots', function () {
+        return Inertia::render('Bots', [
+        ]);
+    })->name('bots');
+
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard',[
         'canLogin' => Route::has('login'),
@@ -98,6 +102,7 @@ Route::middleware([
         'phpVersion' => PHP_VERSION,
     ]);
     })->name('dashboard');
+
 });
 
 //Route::get('posts',[PostController::class,'index'])->name('posts');

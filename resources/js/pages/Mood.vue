@@ -223,21 +223,21 @@ const _subHeader=ref(true);
   .dhx-demo_grid-user {
     display: flex;
   }
-    .custom {
-        --dhx-font-color-primary: #222;
-        --dhx-background-primary: #fff;
-        --dhx-s-grid-header-background: #f5f8fa;
-        --dhx-border-color: #4A555E;
-        --dhx-border: var(--dhx-border-width) solid var(--dhx-border-color);
-    }
+  .custom {
+      --dhx-font-color-primary: #222;
+      --dhx-background-primary: #fff;
+      --dhx-s-grid-header-background: #f5f8fa;
+      --dhx-border-color: #4A555E;
+      --dhx-border: var(--dhx-border-width) solid var(--dhx-border-color);
+  }
 
-    .custom-black {
-        --dhx-font-color-primary: #bbb;
-        --dhx-background-primary: #212;
-        --dhx-s-grid-header-background: #b86c02;
-        --dhx-border-color: #4A555E;
-        --dhx-border: var(--dhx-border-width) solid var(--dhx-border-color);
-    }
+  .custom-black {
+      --dhx-font-color-primary: #bbb;
+      --dhx-background-primary: #212;
+      --dhx-s-grid-header-background: #b86c02;
+      --dhx-border-color: #4A555E;
+      --dhx-border: var(--dhx-border-width) solid var(--dhx-border-color);
+  }
 
   .dhx-demo_grid-user-photo {
     border-radius: 50%;
