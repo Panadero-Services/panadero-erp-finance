@@ -1,17 +1,31 @@
 {
-  "name": "@dhx/trial-kanban",
-  "registry": "https://npm.dhtmlx.com",
-  "version": "1.6.1",
-  "type": "module",
-  "main": "dist/kanban.es.js",
-  "module": "dist/kanban.es.js",
-  "types": "dist/kanban.es.d.ts",
-  "license": "SEE LICENSE IN license.txt",
-  "publishConfig": {
-    "registry": "https://npm.dhtmlx.com"
+  "name": "dhtmlx-gantt",
+  "version": "9.0.4",
+  "description": "An open source JavaScript Gantt chart that helps you illustrate a project schedule in a nice-looking chart.",
+  "main": "codebase/dhtmlxgantt.es.js",
+  "types": "codebase/dhtmlxgantt.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DHTMLX/gantt.git"
   },
-  "files": [
-    "dist",
-    "license.txt"
-  ]
+  "keywords": [
+    "gantt",
+    "chart",
+    "gantt chart",
+    "calendar",
+    "scheduler",
+    "dhtmlx",
+    "dhtmlxgantt",
+    "timeline",
+    "browser"
+  ],
+  "author": "DHTMLX",
+  "license": "SEE LICENSE IN license.txt",
+  "bugs": {
+    "url": "https://github.com/DHTMLX/gantt/issues"
+  },
+  "homepage": "https://github.com/DHTMLX/gantt#readme",
+  "scripts": {
+    "start": "cd backend && npm install && npm start"
+  }
 }

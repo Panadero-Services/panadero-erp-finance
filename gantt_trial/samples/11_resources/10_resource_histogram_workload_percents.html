@@ -3,12 +3,12 @@
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 		<title>Assign workload in percents</title>
-		<script src="../../codebase/dhtmlxgantt.js?v=9.0.1"></script>
-		<script src="./common/resource_filter.js?v=9.0.1"></script>
-		<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css?v=9.0.1">
-		<link rel="stylesheet" href="../common/controls_styles.css?v=9.0.1">
+		<script src="../../codebase/dhtmlxgantt.js?v=9.0.4"></script>
+		<script src="./common/resource_filter.js?v=9.0.4"></script>
+		<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css?v=9.0.4">
+		<link rel="stylesheet" href="../common/controls_styles.css?v=9.0.4">
 
-		<script src="../common/resource_project_assignments_percents.js?v=9.0.1"></script>
+		<script src="../common/resource_project_assignments_percents.js?v=9.0.4"></script>
 		<style>
 			html, body {
 				padding: 0px;
@@ -435,7 +435,7 @@
 		function toggleGroups(input) {
 			gantt.$groupMode = !gantt.$groupMode;
 			if (gantt.$groupMode) {
-				input.value = "show gantt view";
+				input.value = "Show Gantt view";
 
 				var groups = gantt.$resourcesStore.getItems().map(function(item) {
 					var group = gantt.copy(item);
@@ -453,7 +453,7 @@
 					default_group_label: "Not Assigned"
 				});
 			} else {
-				input.value = "show resource view";
+				input.value = "Show Resource view";
 				gantt.groupBy(false);
 			}
 		}

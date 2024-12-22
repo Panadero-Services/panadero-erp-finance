@@ -3,10 +3,10 @@
 	<head>
 		<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 		<title>Resource histogram</title>
-		<script src="../../codebase/dhtmlxgantt.js?v=9.0.1"></script>
-		<script src="./common/resource_filter.js?v=9.0.1"></script>
-		<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css?v=9.0.1">
-		<link rel="stylesheet" href="../common/controls_styles.css?v=9.0.1">
+		<script src="../../codebase/dhtmlxgantt.js?v=9.0.4"></script>
+		<script src="./common/resource_filter.js?v=9.0.4"></script>
+		<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css?v=9.0.4">
+		<link rel="stylesheet" href="../common/controls_styles.css?v=9.0.4">
 
 		<style>
 			html, body {
@@ -17,8 +17,7 @@
 
 			#gantt_here {
 				width:100%;
-				height: 800px;
-				height:calc(100vh - 52px);
+				height: 100vh;
 			}
 
 			.gantt_grid_scale .gantt_grid_head_cell,
@@ -86,10 +85,6 @@
 
 	</head>
 	<body>
-	<div class="gantt_control" >
-		<input type='button' id='default' onclick="toggleGroups(this)" value="Show Resource view">
-	</div>
-
 	<div id="gantt_here"></div>
 	<script>
 		gantt.plugins({

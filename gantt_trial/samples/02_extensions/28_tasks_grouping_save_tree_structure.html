@@ -3,9 +3,9 @@
 <head>
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8">
 	<title>Save tree structure when grouping tasks</title>
-	<script src="../../codebase/dhtmlxgantt.js?v=9.0.1"></script>
-	<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css?v=9.0.1">
-	<link rel="stylesheet" href="../common/controls_styles.css?v=9.0.1">
+	<script src="../../codebase/dhtmlxgantt.js?v=9.0.4"></script>
+	<link rel="stylesheet" href="../../codebase/dhtmlxgantt.css?v=9.0.4">
+	<link rel="stylesheet" href="../common/controls_styles.css?v=9.0.4">
 
 	<style>
 		html,
@@ -198,7 +198,7 @@
 
 		gantt.config.columns = [
 			{ name: "text", tree: true, width: 200, resize: true },
-			{ name: "start_date", align: "center", width: 90, resize: true },
+			{ name: "start_date", align: "center", width: 100, resize: true },
 			{
 				name: "owners", width: 70, label: "Owner", align: "center", resize: true, template: function (task) {
 					var result = "";
@@ -222,7 +222,7 @@
 			},
 
 			{
-				name: "material", align: "center", width: 60, label: "Material", template: function (task) {
+				name: "material", align: "center", width: 95, label: "Material", template: function (task) {
 					if (task.type == gantt.config.types.project) {
 						return "";
 					}
@@ -251,11 +251,11 @@
 				}, resize: true
 			},
 			{
-				name: "priority", label: "Priority", width: 55, align: "center", resize: true, template: function (task) {
+				name: "priority", label: "Priority", width: 65, align: "center", resize: true, template: function (task) {
 					return byId(gantt.serverList('priority'), task.priority);
 				}
 			},
-			{ name: "duration", label: "Dur.", width: 30, align: "center", resize: true },
+			{ name: "duration", label: "Dur.", width: 40, align: "center", resize: true },
 			{ name: "add", width: 44 }
 		];
 
