@@ -238,6 +238,7 @@ let _dark_weekend="#000000";
 }
 
 .gantt_grid_data{
+   margin: 2px;
     font-size: 11px;
     border-bottom: 1px solid #cecece;
 }
