@@ -41,46 +41,19 @@ Route::get('tiers', function () {
 })
 ->name('tiers');
 
-/*
-Route::middleware([EnsureTokenIsValid::class])->group(function () {
-    Route::get('planning', function () {
-        return Inertia::render('Planning', [
-        ]);
-    })->name('planning');
-});
-*/
-
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
 
-    Route::get('grid', function () {
-        return Inertia::render('Grid', [
-        ]);
-    })->name('grid');
-
-    Route::get('mood', function () {
-        return Inertia::render('Mood', [
-        ]);
-    })->name('mood');
-
-    Route::get('web3', function () {
-        return Inertia::render('Web3', [
-        ]);
-    })->name('web3');
-
-    Route::get('planning', function () {
-        return Inertia::render('Planning', [
-        ]);
-    })->name('planning');
-
-    Route::get('resources', function () {
-        return Inertia::render('Resources', [
-        ]);
-    })->name('resources');
-
+    Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
+    Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
+    Route::get('mood', function () { return Inertia::render('Mood', []);})->name('mood');
+    Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
+    Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
+    Route::get('planning', function () { return Inertia::render('Planning', []);})->name('planning');
+    Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
     Route::get('posts',[PostController::class,'index'])->name('posts');
 
     Route::get('bento', function () {

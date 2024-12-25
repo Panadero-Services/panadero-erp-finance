@@ -2,6 +2,17 @@
 import ApiTokenManager from '@/pages/API/Partials/ApiTokenManager.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 
+
+// stores
+import { useSettingsStore } from '@/stores/settings';
+//import { useContractStore } from '@/stores/contracts';
+import { useDbStore } from '@/stores/db';
+const _set = useSettingsStore();
+//const _contract = useContractStore();
+const _db = useDbStore();
+
+
+
 defineProps({
     tokens: Array,
     availablePermissions: Array,
@@ -10,7 +21,7 @@ defineProps({
 </script>
 
 <template>
-    <AppLayout title="API Tokens">
+    <AppLayout title="API Tokens" :set="_set">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 API Tokens

@@ -5,6 +5,17 @@ import SectionBorder from '@/components/SectionBorder.vue';
 import TeamMemberManager from '@/pages/Teams/Partials/TeamMemberManager.vue';
 import UpdateTeamNameForm from '@/pages/Teams/Partials/UpdateTeamNameForm.vue';
 
+
+// stores
+import { useSettingsStore } from '@/stores/settings';
+//import { useContractStore } from '@/stores/contracts';
+import { useDbStore } from '@/stores/db';
+const _set = useSettingsStore();
+//const _contract = useContractStore();
+const _db = useDbStore();
+
+
+
 defineProps({
     team: Object,
     availableRoles: Array,
@@ -13,7 +24,7 @@ defineProps({
 </script>
 
 <template>
-    <AppLayout title="Team Settings">
+    <AppLayout title="Team Settings" :set="_set">
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 Team Settings

@@ -18,9 +18,8 @@ const _db = useDbStore();
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
-import FooterSection from "@/sections/FooterSection.vue"
 
-import PanaderoGrid from "@/panaderos/panadero-grid/PanaderoGrid.vue";
+import PanaderoTable from "@/panaderos/panadero-grid/PanaderoTable.vue";
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
@@ -72,12 +71,11 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
         </template>
 
         <template #default>
-            <div id="whatever" class="h-screen max-w-9xl bg-black">
-                <PanaderoGrid ref="myChild" :contract="_contract" :set="_set" :pulse="pulse"/>
-            </div>
-        </template>
 
-        <template #footer>
+            <div id="whatever" class="h-screen max-w-9xl bg-black">
+                <PanaderoTable ref="myChild" :contract="_contract" :set="_set" :pulse="pulse"/>
+            </div>
+
         </template>
   
     </AppLayout>

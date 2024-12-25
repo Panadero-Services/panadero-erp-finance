@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
+import {moduleName, moduleGit} from 'panadero-self';
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -20,7 +21,13 @@ import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
 
-import PanaderoGrid from "@/panaderos/panadero-grid/PanaderoGrid.vue";
+
+// cards
+import SelfIntro from "@/pages/dashboard1/cards/SelfIntro.vue";
+import WelcomeCard from "@/pages/config/cards/WelcomeCard.vue";
+
+
+//import PanaderoTable from "@/panaderos/panadero-grid/PanaderoTable.vue";
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
@@ -72,12 +79,16 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
         </template>
 
         <template #default>
-            <div id="whatever" class="h-screen max-w-9xl bg-black">
-                <PanaderoGrid ref="myChild" :contract="_contract" :set="_set" :pulse="pulse"/>
+            <div class="mx-auto max-w-xl lg:max-w-9xl">
+                <!--    <ApplicationLogo class="block w-80 h-80" /> -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-2 gap-4">
+                    <welcome-card :set="_set" table="project"/>
+                </div>
             </div>
         </template>
 
         <template #footer>
+            <FooterSection  :set="_set" :contract="_contract"/>
         </template>
   
     </AppLayout>

@@ -24,7 +24,9 @@ const menu = [
     { name: 'Resources', url: route('resources'), route: 'resources', when:() => usePage().props.auth.user },
     { name: 'Web3', url: route('web3'), route: 'web3', when:() => usePage().props.auth.user },
     { name: 'Grid', url: route('grid'), route: 'grid', when:() => usePage().props.auth.user },
-    { name: 'Mood', url: route('mood'), route: 'mood', when:() => usePage().props.auth.user }
+    { name: 'Mood', url: route('mood'), route: 'mood', when:() => usePage().props.auth.user },
+    { name: 'Table', url: route('table'), route: 'table', when:() => usePage().props.auth.user },
+    { name: 'Config', url: route('config'), route: 'config', when:() => usePage().props.auth.user }
 
     // READY DEV.. WAITING FOR DEPLOYMENT
     //{ name: 'cms.editor', url: route('cms'), route: 'cms', when:() => usePage().props.auth.user }, 

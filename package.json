@@ -35,6 +35,7 @@
         "panadero-bridge": "github:lieuwebakker/panadero-bridge",
         "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
         "panadero-grid": "github:Panadero-Services/panadero-grid",
+        "panadero-mood": "github:Panadero-Services/panadero-mood",
         "panadero-minigames": "github:lieuwebakker/panadero-minigames",
         "panadero-resourceplanning": "github:lieuwebakker/panadero-resourceplanning",
         "panadero-self": "github:lieuwebakker/panadero-self",
