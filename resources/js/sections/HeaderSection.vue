@@ -125,7 +125,7 @@ onMounted(async ()=> {
 <template>
    <div class="bg-slate-100 dark:bg-black h-12 md:h-16 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-3" >
       <div class=" uppercase col-span-2"> 
-         <div class="flex items-center space-x-2 md:spac-x-4 p-3">
+            <div class="flex items-center space-x-2 md:spac-x-4 p-3">
 
             <Link href="/">
                <span><img class="m-0.5 hover:rotate-45" :class="_icon" :src="self2"/></span>
@@ -137,7 +137,7 @@ onMounted(async ()=> {
                          {{item.name}}
                      </NavLink>
              </template>
-         </div>
+            </div>
         </div>
 
         <!-- SELF Section -->

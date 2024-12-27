@@ -145,7 +145,6 @@ defineExpose({
 </template>
 
 <!-- custom styles -->
-
 <style>
   .dhx-demo_grid-user {
     display: flex;

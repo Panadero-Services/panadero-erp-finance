@@ -81,8 +81,11 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
         <template #default>
             <div class="mx-auto max-w-xl lg:max-w-9xl">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-2 gap-4">
-                    <welcome-card :set="_set" table="project"/>
+                <div class="flex p-2 gap-2 items-start">
+                    <welcome-card :set="_set" table="pending" :id="1"/>
+                    <welcome-card :set="_set" table="actual" :id="2"/>
+                    <welcome-card :set="_set" table="finished" :id="3"/>
+                    <welcome-card :set="_set" table="todo" :id="4"/>
                 </div>
             </div>
         </template>
