@@ -103,9 +103,11 @@ Route::post('/setgame',[\App\Http\Controllers\GameController::class, 'setgame'])
 Route::get('/getscore',[\App\Http\Controllers\ScoreController::class, 'getscore'])->name('getscore');
 Route::post('/setscore',[\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
 
-
+// stateDataSet
 Route::post('/setstate',[\App\Http\Controllers\StateDatasetController::class, 'setstate'])->name('setstate');
 Route::get('/getstate',[\App\Http\Controllers\StateDatasetController::class, 'getstate'])->name('getstate');
+
+Route::get('/gettables',[\App\Http\Controllers\StateDatasetController::class, 'gettables'])->name('gettables');
 
 
 Route::get('/defaultPages',[\App\Http\Controllers\PageController::class, 'defaultPages'])->name('defaultPages');
@@ -121,7 +123,6 @@ Route::post('/setweb3recordline',[\App\Http\Controllers\Web3RecordController::cl
 
 // web3RecordLine
 Route::resource('web3RecordLines',Web3RecordLineController::class);
-
 
 // page
 Route::get('/getpage',[\App\Http\Controllers\PageController::class, 'getPage'])->name('getpage');

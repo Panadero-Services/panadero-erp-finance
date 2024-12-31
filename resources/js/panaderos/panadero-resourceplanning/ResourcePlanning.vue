@@ -18,6 +18,7 @@ console.log('test panaderoResourcePlanning');
 const props = defineProps({
     contract: Object,
     set: Object,
+    db: Object,
     pulse: Boolean
 });
 
@@ -163,6 +164,28 @@ let _task_scale="#FCFCFC";
 let _weekend="#F2F2F2";
 //let _dark_weekend="#00001A";
 let _dark_weekend="#000000";
+
+
+
+/// remove this section to store!!!
+const _save = async () => {
+  if(props.set.project.id > 0){
+    let _planning =  await planning.serialize();
+    let _payload = {  "model": "StateDataset",
+                      "type": props.set.projectType,
+                      "path": props.set.project.environment+"."+props.set.project.category,
+                      "projectId": props.set.project.id,
+                      "json" : JSON.stringify(_planning),
+                      "isActive": 1
+                     };
+    await props.db.setState(_payload);
+  }
+}
+
+defineExpose({
+  _load, _save
+});
+
 
 
 </script>

@@ -33,12 +33,33 @@ let _animation= ref(true);
 //const _pulse = ref(false);
 const _pulse = defineModel('pulse')
 
-
-const setProjectId = () => {
+const setProjectId = (_title) => {
     if(!( usePage().props.auth.user == null)) {
-        props.set.projectId = 1;
+        // toDo !! retrieve from db
+        props.set.project.id = _title=='none' ? 0 : 1;
+        props.set.project.title = _title;
+        props.set.project.environment = "default";
+        props.set.project.validEnvironments = ["default","test"];
+        props.set.project.category = "primera";
     }
 }
+
+
+
+const _subHeader=ref(true);
+
+// buttons
+const _buttons = ['primera', 'segundo', 'tercera'];
+
+const _changeCat = async (_cat) => { props.set.project.category = _cat; }
+
+// css
+const _button ="rounded px-2 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-indigo-300 dark:ring-gray-600 ";
+const _hover = "hover:bg-indigo-400 dark:hover:bg-indigo-600";
+const _bg = "bg-white dark:bg-black";
+const _bgSelected = "bg-indigo-200 dark:bg-indigo-800";
+const _hoverAdd = "hover:bg-green-400 dark:hover:bg-green-600";
+const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
 
 </script>
 
@@ -84,27 +105,27 @@ const setProjectId = () => {
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     </div>
                 </template>
-
             </div>
 
 
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 text-xxs">
+                <span @click="set.projectVisible = !set.projectVisible" class="mr-0.5 ">project[{{set.project.id}}] </span>
 
+            <div v-if="set.projectVisible">
+                <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
+                <span v-if="set.project.id">
+                    <span class="mr-0.5 ">--> env</span>
+                    <button v-for="env in set.project.validEnvironments" class="mx-0.5" @click="set.project.environment=env" type="button" :class="[_button, _hover, env==set.project.environment ? _bgSelected : _bg]">{{env}}</button>
+                    <span class="mr-0.5">--> slots</span>
+                    <button v-for="(b, idx) in _buttons"  @click="_changeCat(b)" type="button" class="mx-0.5" :class="[_button, _hover, b==set.project.category ? _bgSelected : _bg]">slot{{idx+1}}</button>
+                </span>
+            </div>
 
                 <div v-if="$page.props.auth.user" class="ms-3 relative">
                     <!-- Teams Dropdown -->
                     <Dropdown v-if="$page.props.jetstream.hasTeamFeatures" align="right" width="60">
                         <template #trigger>
-
-
-
-            <!-- Show Project Status for Grid, Mood, Web3, Dashboard -->
-                            <span class="inline-flex rounded-md">
-                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
-                                    project_id: <span @click="setProjectId" class="text-indigo-600 dark:text-indigo-300 mr-2">{{set.projectId}}</span>
-                                </button>
-                            </span>
 
                             <span class="inline-flex rounded-md">
                                 <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
@@ -114,12 +135,6 @@ const setProjectId = () => {
                                     </svg>
                                 </button>
                             </span>
-
-
-
-
-
-
 
                         </template>
 

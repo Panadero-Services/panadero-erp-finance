@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('state_datasets', function (Blueprint $table) {
             $table->id();
             $table->string('type',255);
-            $table->string('title',255);
+            $table->string('path',255);
             $table->longtext('json',255);
             $table->foreignId('project_id')->index();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));

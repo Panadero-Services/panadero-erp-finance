@@ -62,8 +62,6 @@ const pagination = new dhx.Pagination(_pag, {
     pageSize: 50
 });
 
-
-
 });
 </script>
 

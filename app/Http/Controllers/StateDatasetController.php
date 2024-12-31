@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 
 use App\Models\StateDataset;
 
+use Illuminate\Support\Facades\DB;
+
+
 class StateDatasetController extends Controller
 {
     /**
@@ -58,7 +61,6 @@ class StateDatasetController extends Controller
         //
     }
 
-
     /**
      * Update the specified resource in storage.
      */
@@ -73,7 +75,7 @@ class StateDatasetController extends Controller
        $create = StateDataset::updateOrInsert(
             [
             'type' =>  'mood',
-            'title' => $request->title,
+            'path' => $request->path,
             'json' => $request->json,
             'project_id' => $request->projectId,
             'is_active' => $request->isActive
@@ -82,7 +84,7 @@ class StateDatasetController extends Controller
 
         $create = StateDataset::updateOrInsert(
             [   'type' =>  $request->type,
-                'title' => $request->title,
+                'path' => $request->path,
                 'project_id'=> $request->projectId
             ],
             [
@@ -96,10 +98,15 @@ class StateDatasetController extends Controller
 
     public function getstate(Request $request) {
         $state = StateDataset::where('type',$request->type)
-            ->where('title',$request->title)
+            ->where('path',$request->path)
             ->where('project_id',$request->projectId)
             ->first();
         return $state;
+    }
+
+    public function gettables(Request $request) {
+        $tables = DB::select('SHOW TABLES');
+        return $tables;
     }
 
     /**

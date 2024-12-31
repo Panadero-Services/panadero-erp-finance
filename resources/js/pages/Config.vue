@@ -36,8 +36,11 @@ import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 onMounted(async ()=> {
   await _set.initMM();
   await _set.initialize();
+  _tables.value = await _db.getTables("dataset");
+
 });
 
+const _tables = ref(["whatever"]);
 const pulse = ref(false);
 
 const _save = async ()=> {}
@@ -80,6 +83,7 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
 
         <template #default>
             <div class="mx-auto max-w-xl lg:max-w-9xl">
+                
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
                 <div class="flex p-2 gap-2 items-start">
                     <welcome-card :set="_set" table="pending" :id="1"/>
@@ -91,7 +95,14 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
         </template>
 
         <template #footer>
+
+                <div class="grid grid-cols-12 text-xxs">
+                    <p  class="m-1 bg-slate-50 border border-indigo-300" v-for="(value, key)  in _tables">
+                        {{ value[Object.keys(value)] }}
+                    </p>
+                </div>
             <FooterSection  :set="_set" :contract="_contract"/>
+
         </template>
   
     </AppLayout>

@@ -20,14 +20,13 @@ export let useSettingsStore = defineStore('settings',{
         superSelfAdmins : ['henrimatisse','cleopatra'],
         dark: false,
         wrenchMode: false,
+        projectVisible: false,
         cookiesAccepted: false,
   //      animate: true,
         banner: {active: false, msg:"new env initiated...", style:"success"},
         assets: {}, 
-        projectId: 0,
-        projectTitle: 'default',
         projectType: 'none',
-        project: {},
+        project: {id:0, title:"none", validTitles:['none', 'demo'], path:"none", environment:'none', validEnvironments:[], category:'none'},
         colors: {bg:" bg-gradient-to-b from-indigo-100/30 dark:from-gray-800/30 "}
         }),
 

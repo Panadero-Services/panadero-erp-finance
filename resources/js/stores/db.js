@@ -30,8 +30,6 @@ export const useDbStore = defineStore('db',{
                    // const postSignature = crypto.createHmac('sha256', '31234KeyTestevnvornment')
                    //     .update(jsonPayload)
                    //     .digest('hex');
-
-
                     axios
                         .post(`/setstate`,_payload, {
                             headers: {
@@ -51,7 +49,7 @@ export const useDbStore = defineStore('db',{
               check(); 
             });
         }, 
-        async getState (_type, _title, _projectId) {
+        async getState (_type, _path, _projectId) {
            // return ('nowGetPage');
             return new Promise((resolve, reject) => {
               const check = async () => {
@@ -62,7 +60,7 @@ export const useDbStore = defineStore('db',{
                                 caller: 'stores/db.js', 
                                 provider: 'stateDataset', 
                                 type: _type, 
-                                title: _title, 
+                                path: _path, 
                                 projectId: _projectId, 
                                 user: 'jaWsome',
                                 key: '<hashedKey hash#31234KeyTestevnvornment />'
@@ -135,6 +133,32 @@ export const useDbStore = defineStore('db',{
               check(); 
             });
         }, 
+
+    async getTables (_model) {
+            return new Promise((resolve, reject) => {
+              const check = async () => {
+                try {
+                    axios
+                        .get("/gettables", {
+                            params: { 
+                                caller: 'db', 
+                                provider: _model, 
+                                user: 'jaWsome',
+                                key: '<hashedKey hash#31234KeyTestevnvornment />'
+                            }
+                        })
+                        .then((response) => {
+                            resolve(response.data);
+                        })
+                } catch (err) {
+                  reject(`store/db.js:getTables:: ${err}`);
+                }
+              }
+              check(); 
+            });
+        }, 
+
+
 
         async getPrice (_token) {
             return new Promise((resolve, reject) => {
