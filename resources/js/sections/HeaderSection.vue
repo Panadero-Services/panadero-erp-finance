@@ -75,7 +75,7 @@ const menu = [
 
 const _title = 'headerSection';
 
-const _indigo = " text-indigo-700 dark:text-indigo-300 hover:text-black  dark:hover:text-yellow-400 ";
+const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
 const _user = "  text-sm font-normal leading-tight " +_indigo;
 const _user2 =" inline-flex items-center px-2 py-1.5 text-xs font-medium leading-4 text-gray-700 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none focus:bg-gray-500 active:bg-gray-500 ";
 const _basic = " text-sm font-normal leading-tight ";

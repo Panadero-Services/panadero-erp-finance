@@ -44,13 +44,10 @@ const setProjectId = (_title) => {
     }
 }
 
-
-
 const _subHeader=ref(true);
 
 // buttons
 const _buttons = ['primera', 'segundo', 'tercera'];
-
 const _changeCat = async (_cat) => { props.set.project.category = _cat; }
 
 // css
@@ -107,10 +104,8 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                 </template>
             </div>
 
-
-
-            <div class="hidden sm:flex sm:items-center sm:ms-6 text-xxs">
-                <span @click="set.projectVisible = !set.projectVisible" class="mr-0.5 ">project[{{set.project.id}}] </span>
+            <div class="hidden sm:flex sm:items-center sm:ms-6 text-sm">
+                <span @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300">project[{{set.project.id}}] </span>
 
             <div v-if="set.projectVisible">
                 <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
