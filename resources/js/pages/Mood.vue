@@ -19,12 +19,11 @@ import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
+import SideRightSection from "@/sections/SideRightSection.vue"
 
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 
 import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon} from '@heroicons/vue/24/outline'
-
-
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
@@ -34,6 +33,7 @@ const pulse = ref(false);
 // css
 
 const myChild = ref(null);
+const mySideRight = ref(null);
 const _header=ref(true);
 const _subHeader=ref(true);
 
@@ -61,6 +61,7 @@ const navigation = [
 
 const _indigo = " text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-yellow-400 ";
 
+const openSide = ref(false)
 
 </script>
 <template>
@@ -70,6 +71,7 @@ const _indigo = " text-gray-700 dark:text-gray-300 hover:text-black dark:hover:t
             <Banner />
             <HeaderSection v-if="_header" :set="_set" :contract="_contract"/>
             <SubHeaderSection v-if="_subHeader" :set="_set"/>
+            <SideRightSection ref="mySideRight" v-if="_subHeader" :set="_set" />
 
             <div v-if="true" class="absolute space-x-2 z-40" :class="[_header ? 'top-16' : 'top-1', _subHeader ? 'left-32' : 'left-80']" >
               <button v-if="_subHeader" @click="myChild._save" :disabled="_set.project.id==0" type="button" class="rounded bg-white dark:bg-slate-950 px-4 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-green-400 dark:hover:ring-green-600" :class="_set.project.id==0 ? 'opacity-35' : '' ">Save</button>
@@ -86,7 +88,6 @@ const _indigo = " text-gray-700 dark:text-gray-300 hover:text-black dark:hover:t
         </template>
 
         <template #default>
-
  
         <div class="flex ">
 
@@ -100,7 +101,7 @@ const _indigo = " text-gray-700 dark:text-gray-300 hover:text-black dark:hover:t
                     <rocket-launch-icon class="w-16 px-5 pt-3 " :class="_indigo" />
                     <bell-icon class="w-16 px-5 pt-3 " :class="_indigo" />
                     <wallet-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-                    <wrench-icon class="w-16 px-5 pt-3 " :class="_indigo" />
+                    <wrench-icon @click="mySideRight.open = !mySideRight.open"  class="w-16 px-5 pt-3 " :class="_indigo" />
 
                     <li v-for="item in navigation" :key="item.name">
 
