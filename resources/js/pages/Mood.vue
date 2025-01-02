@@ -31,7 +31,6 @@ import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 const pulse = ref(false);
 
 // css
-
 const myChild = ref(null);
 const mySideRight = ref(null);
 const _header=ref(true);
@@ -71,7 +70,7 @@ const openSide = ref(false)
             <Banner />
             <HeaderSection v-if="_header" :set="_set" :contract="_contract"/>
             <SubHeaderSection v-if="_subHeader" :set="_set"/>
-            <SideRightSection ref="mySideRight" v-if="_subHeader" :set="_set" />
+            <SideRightSection ref="mySideRight" :set="_set" />
 
             <div v-if="true" class="absolute space-x-2 z-40" :class="[_header ? 'top-16' : 'top-1', _subHeader ? 'left-32' : 'left-80']" >
               <button v-if="_subHeader" @click="myChild._save" :disabled="_set.project.id==0" type="button" class="rounded bg-white dark:bg-slate-950 px-4 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-green-400 dark:hover:ring-green-600" :class="_set.project.id==0 ? 'opacity-35' : '' ">Save</button>
@@ -113,9 +112,7 @@ const openSide = ref(false)
 
             <div id="whatever" class="w-full ... min-h-4 max-w-9xl dark:bg-black">
                 <div class="" id="toolbar"></div>
-
                 <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse"/>
-
             </div>
 
         </div>

@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { LinkIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/vue/20/solid'
@@ -54,24 +56,51 @@ defineExpose({
  open
 });
 
+
+
+
+const setProjectId = (_title) => {
+    if(!( usePage().props.auth.user == null)) {
+        // toDo !! retrieve from db
+        props.set.project.id = _title=='none' ? 0 : 1;
+        props.set.project.title = _title;
+        props.set.project.environment = "default";
+        props.set.project.validEnvironments = ["default","test"];
+        props.set.project.category = "primera";
+    }
+}
+
+
+
+// buttons
+const _buttons = ['primera', 'segundo', 'tercera'];
+const _changeCat = async (_cat) => { props.set.project.category = _cat; }
+
+// css
+const _button ="rounded px-2 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-indigo-300 dark:ring-gray-600 ";
+const _hover = "hover:bg-indigo-400 dark:hover:bg-indigo-600";
+const _bg = "bg-white dark:bg-black";
+const _bgSelected = "bg-indigo-200 dark:bg-indigo-800";
+const _hoverAdd = "hover:bg-green-400 dark:hover:bg-green-600";
+const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
+
+
+
+
 </script>
-
-
-
 
 <template>
   <TransitionRoot as="template" :show="open">
     <Dialog class="relative z-10" @close="open = false">
       <div class="fixed inset-0" />
-
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
-          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-sm pl-10 sm:pl-16">
+          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-md pl-10 sm:pl-16">
             <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
               <DialogPanel class="pointer-events-auto w-screen max-w-md">
-                <form class="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
+                <form class="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-2xl shadow-blue-700 dark:shadow-blue-200">
                   <div class="h-0 flex-1 overflow-y-auto">
-                    <div class="bg-indigo-700 px-4 py-6 sm:px-6">
+                    <div class="bg-indigo-700 px-4 py-5 sm:px-6">
                       <div class="flex items-center justify-between">
                         <span class="text-base text-white">project.path</span>
                         <div class="ml-3 flex h-7 items-center">
@@ -109,6 +138,23 @@ defineExpose({
                             
 
                           </div>
+
+
+
+
+            <div v-if="set.projectVisible">
+                <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
+                <span v-if="set.project.id">
+                    <span class="mr-0.5 ">--> env</span>
+                    <button v-for="env in set.project.validEnvironments" class="mx-0.5" @click="set.project.environment=env" type="button" :class="[_button, _hover, env==set.project.environment ? _bgSelected : _bg]">{{env}}</button>
+                    <span class="mr-0.5">--> slots</span>
+                    <button v-for="(b, idx) in _buttons"  @click="_changeCat(b)" type="button" class="mx-0.5" :class="[_button, _hover, b==set.project.category ? _bgSelected : _bg]">slot{{idx+1}}</button>
+                </span>
+            </div>
+
+
+
+
                           <div>
                             <label for="project-description" class="block text-sm/6 font-medium text-gray-900">Description</label>
                             <div class="mt-2">
