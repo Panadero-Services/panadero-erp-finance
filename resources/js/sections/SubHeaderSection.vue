@@ -8,6 +8,9 @@ import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
+import { HomeIcon, Bars3Icon, WrenchIcon} from '@heroicons/vue/24/outline'
+
+
 const props = defineProps({
     set: Object
 });
@@ -69,17 +72,21 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
             <div class="flex">
 
                 <!-- Left SubHeader -->
-                <div class="shrink-0 flex items-center ml-4 space-x-4 mt-1">
+                <div class="shrink-0 flex items-center ml-4 space-x-4 ">
 
                     <!-- Darkmode -->
-                    <p class="text-xs text-gray-500 -mt-0.5" @click="set.darkToggle">
+                    <p class="text-xs text-gray-500 -mt-0.5">
+                    </p>
+
+                    <!-- Darkmode -->
+                    <p class="text-xs text-gray-500" @click="set.darkToggle">
                         {{set.dark ? '🌙' : '☀️'}}
                     </p>
 
                     <!-- Pulse Control -->
                     <pulse @pulse="_pulse=$event" :animation="set.animate"/>
                     <p v-if="_animation">  
-                      <span v-if="set.animate" @click="set.animate = false" class=" h-4 w-4 -ml-1">
+                      <span v-if="set.animate" @click="set.animate = false" class="h-4 w-4 -ml-1">
 
                           <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500 dark:bg-lime-500"></span>
                           <span class="-ml-3.5 animate-ping inline-flex h-4 w-4 rounded-full bg-sky-400 dark:bg-lime-500 opacity-75"></span>

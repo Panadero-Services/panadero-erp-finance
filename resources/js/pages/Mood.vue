@@ -23,7 +23,7 @@ import SideRightSection from "@/sections/SideRightSection.vue"
 
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 
-import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon} from '@heroicons/vue/24/outline'
+import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon} from '@heroicons/vue/24/outline'
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
@@ -35,6 +35,7 @@ const myChild = ref(null);
 const mySideRight = ref(null);
 const _header=ref(true);
 const _subHeader=ref(true);
+const _sideBar = ref(false);
 
 
 // css
@@ -71,7 +72,6 @@ const openSide = ref(false)
             <HeaderSection v-if="_header" :set="_set" :contract="_contract"/>
             <SubHeaderSection v-if="_subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set" />
-
             <div v-if="true" class="absolute space-x-2 z-40" :class="[_header ? 'top-16' : 'top-1', _subHeader ? 'left-32' : 'left-80']" >
               <button v-if="_subHeader" @click="myChild._save" :disabled="_set.project.id==0" type="button" class="rounded bg-white dark:bg-slate-950 px-4 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-green-400 dark:hover:ring-green-600" :class="_set.project.id==0 ? 'opacity-35' : '' ">Save</button>
               <button v-if="_subHeader" @click="myChild._load" :disabled="_set.project.id==0" type="button" class="rounded bg-white dark:bg-slate-950 px-4 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-green-400 dark:hover:ring-green-600" :class="_set.project.id==0 ? 'opacity-35' : '' ">Load</button>
@@ -83,48 +83,48 @@ const openSide = ref(false)
               <button v-if="_subHeader"  @click="_header=!_header" type="button" class="rounded bg-white dark:bg-slate-950 px-2 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-indigo-400 dark:hover:ring-indigo-600">Header</button>
               <button @click="_subHeader=!_subHeader" type="button" class="rounded bg-white dark:bg-slate-950 px-1 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-indigo-400 dark:hover:ring-indigo-600">subHeader</button>
             </div>
-
         </template>
 
         <template #default>
- 
-        <div class="flex ">
+            <div class="flex ">
+                
+                <div v-if="_sideBar" class="flex bg-slate-100 dark:bg-slate-950 text-center">
+                  <nav class="flex flex-1 flex-col" aria-label="Sidebar">
+                    <ul role="list" class="-mx-2 space-y-1 mt-4">
+                        <home-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <clipboard-document-check-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
+                        <signal-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <circle-stack-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
+                        <play-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <rocket-launch-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <bell-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <swatch-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <users-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <wallet-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <table-cells-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <server-stack-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <wrench-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
+                        <question-mark-circle-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <li v-for="item in navigation" :key="item.name">
+                        </li>
+                    </ul>
+                  </nav>
+                </div>
+                
+                <div v-if="_subHeader" class="absolute left-1" :class="_header ? 'top-16' : _subHeader ? 'top-0' : 'top-4'">
+                    <bars3-icon @click="_sideBar = !_sideBar" class="w-6 px-1 mt-3" :class="_indigo" />
+                </div>
 
-            <div class="flex bg-slate-100 dark:bg-slate-950 text-center">
-              <nav class="flex flex-1 flex-col" aria-label="Sidebar">
-                <ul role="list" class="-mx-2 space-y-1 mt-4">
-                    <bars3-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-
-                    <home-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-                    <play-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-                    <rocket-launch-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-                    <bell-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-                    <wallet-icon class="w-16 px-5 pt-3 " :class="_indigo" />
-                    <wrench-icon @click="mySideRight.open = !mySideRight.open"  class="w-16 px-5 pt-3 " :class="_indigo" />
-
-                    <li v-for="item in navigation" :key="item.name">
-
-                    </li>
-                </ul>
-              </nav>
+                <div id="whatever" class="w-full ... min-h-4 max-w-9xl dark:bg-black">
+                    <div class="" id="toolbar"></div>
+                    <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse"/>
+                </div>
             </div>
-
-
-            <div id="whatever" class="w-full ... min-h-4 max-w-9xl dark:bg-black">
-                <div class="" id="toolbar"></div>
-                <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse"/>
-            </div>
-
-        </div>
-
         </template>
   
         <template #footer>
-
             <FooterSection  :set="_set" :contract="_contract"/>
-
         </template>
-
         
     </AppLayout>
 </template>

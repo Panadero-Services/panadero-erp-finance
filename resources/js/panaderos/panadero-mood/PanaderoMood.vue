@@ -157,10 +157,12 @@ defineExpose({
 
 </script>
 <template>
-  <div class="mx-0.5">   
+
+  <div class="m-0">   
     <div  class="" id="root"></div>
     <div id="whatever" class="max-w-9xl"></div>
   </div>
+
 </template>
 
 <!-- custom styles -->

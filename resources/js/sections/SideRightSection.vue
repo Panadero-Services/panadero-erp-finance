@@ -17,35 +17,36 @@ const team = [
     email: 'tom.cook@example.com',
     href: '#',
     imageUrl:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    '/storage/profile-photos/lieuwe.jpg'
   },
   {
-    name: 'Whitney Francis',
+    name: 'Alf Francis',
     email: 'whitney.francis@example.com',
     href: '#',
     imageUrl:
-      'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    '/storage/profile-photos/alf.png'
   },
   {
-    name: 'Leonard Krasner',
+    name: 'Rico Krasner',
     email: 'leonard.krasner@example.com',
     href: '#',
     imageUrl:
-      'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    '/storage/profile-photos/rico.png'
   },
   {
-    name: 'Floyd Miles',
+    name: 'Eric Floyd',
     email: 'floyd.miles@example.com',
     href: '#',
     imageUrl:
-      'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    '/storage/profile-photos/eric.png'
   },
+
   {
-    name: 'Emily Selman',
+    name: 'Sadaf Selman',
     email: 'emily.selman@example.com',
     href: '#',
     imageUrl:
-      'https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    '/storage/profile-photos/sadaf.png'
   },
 ]
 
@@ -70,8 +71,6 @@ const setProjectId = (_title) => {
     }
 }
 
-
-
 // buttons
 const _buttons = ['primera', 'segundo', 'tercera'];
 const _changeCat = async (_cat) => { props.set.project.category = _cat; }
@@ -83,9 +82,6 @@ const _bg = "bg-white dark:bg-black";
 const _bgSelected = "bg-indigo-200 dark:bg-indigo-800";
 const _hoverAdd = "hover:bg-green-400 dark:hover:bg-green-600";
 const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
-
-
-
 
 </script>
 
@@ -113,8 +109,6 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                       </div>
                       <div class="mt-1">
                         <span class="font-semibold text-white text-xl">{{set.project.title}}.{{set.project.environment}}.{{set.project.category}}</span>
-
-                        
                       </div>
                     </div>
                     <div class="flex flex-1 flex-col justify-between">
@@ -135,25 +129,18 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                             <div class="mt-2">
                               <input :value="set.project.category" type="text" name="project-category" id="project-category" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                             </div>
-                            
 
                           </div>
 
-
-
-
-            <div v-if="set.projectVisible">
-                <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
-                <span v-if="set.project.id">
-                    <span class="mr-0.5 ">--> env</span>
-                    <button v-for="env in set.project.validEnvironments" class="mx-0.5" @click="set.project.environment=env" type="button" :class="[_button, _hover, env==set.project.environment ? _bgSelected : _bg]">{{env}}</button>
-                    <span class="mr-0.5">--> slots</span>
-                    <button v-for="(b, idx) in _buttons"  @click="_changeCat(b)" type="button" class="mx-0.5" :class="[_button, _hover, b==set.project.category ? _bgSelected : _bg]">slot{{idx+1}}</button>
-                </span>
-            </div>
-
-
-
+                          <div v-if="set.projectVisible">
+                              <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
+                              <span v-if="set.project.id">
+                                  <span class="mr-0.5 ">--> env</span>
+                                  <button v-for="env in set.project.validEnvironments" class="mx-0.5" @click="set.project.environment=env" type="button" :class="[_button, _hover, env==set.project.environment ? _bgSelected : _bg]">{{env}}</button>
+                                  <span class="mr-0.5">--> slots</span>
+                                  <button v-for="(b, idx) in _buttons"  @click="_changeCat(b)" type="button" class="mx-0.5" :class="[_button, _hover, b==set.project.category ? _bgSelected : _bg]">slot{{idx+1}}</button>
+                              </span>
+                          </div>
 
                           <div>
                             <label for="project-description" class="block text-sm/6 font-medium text-gray-900">Description</label>
@@ -162,7 +149,7 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                             </div>
                           </div>
                           <div>
-                            <h3 class="text-sm/6 font-medium text-gray-900">Team Members</h3>
+                            <h3 class="text-sm/6 font-medium text-gray-900">SELF Members</h3>
                             <div class="mt-2">
                               <div class="flex space-x-2">
                                 <a v-for="person in team" :key="person.email" :href="person.href" class="relative rounded-full hover:opacity-75">
