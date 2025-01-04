@@ -14,13 +14,13 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
+
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
 import SideRightSection from "@/sections/SideRightSection.vue"
-
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 
 import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon} from '@heroicons/vue/24/outline'
@@ -37,12 +37,6 @@ const _header=ref(true);
 const _subHeader=ref(true);
 const _sideBar = ref(false);
 
-
-
-
-
-
-
 const openSide = ref(false)
 const _toggleProject = async () => { mySideRight.value.open = !mySideRight.value.open; }
 const whatever = async () => { console.log('whatever')}
@@ -56,15 +50,6 @@ const navigation = [
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
   { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false },
 ];
-
-
-
-
-
-
-
-
-
 
 
 // Theme Buttons
@@ -119,7 +104,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
                 <div v-if="_sideBar" class="flex bg-slate-100 dark:bg-slate-950 text-center">
                   <nav class="flex flex-1 flex-col" aria-label="Sidebar">
                     <ul role="list" class="-mx-2 space-y-1 mt-4">
-                        <home-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <home-icon class="w-10 px-2.5 pt-0 mx-2" :class="_indigo" />
                         <clipboard-document-check-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
                         <signal-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
                         <circle-stack-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
@@ -133,6 +118,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
                         <server-stack-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
                         <wrench-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
                         <question-mark-circle-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+
                         <li v-for="item in navigation" :key="item.name">
                             <component :is="item.icon" @click="item.href" class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
                         </li>
