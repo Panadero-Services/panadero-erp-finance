@@ -21,6 +21,7 @@ import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
 import SideRightSection from "@/sections/SideRightSection.vue"
+import rightTeamSection from "@/sections/rightTeamSection.vue"
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 
 import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon} from '@heroicons/vue/24/outline'
@@ -33,12 +34,14 @@ const pulse = ref(false);
 // css
 const myChild = ref(null);
 const mySideRight = ref(null);
+const myTeamRight = ref(null);
 const _header=ref(true);
 const _subHeader=ref(true);
 const _sideBar = ref(false);
 
 const openSide = ref(false)
 const _toggleProject = async () => { mySideRight.value.open = !mySideRight.value.open; }
+const _toggleTeam = async () => { myTeamRight.value.open = !myTeamRight.value.open; }
 const whatever = async () => { console.log('whatever')}
 
 const navigation = [
@@ -47,6 +50,7 @@ const navigation = [
 //  { name: 'Projects', icon: TableCellsIcon, href: 'whatever', current: false },
 //  { name: 'Calendar', icon: TableCellsIcon, href: '#', current: false },
 //  { name: 'Documents', icon: TableCellsIcon, href: '#', current: false },
+  { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false },
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
   { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false },
 ];
@@ -79,6 +83,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
             <HeaderSection v-if="_header" :set="_set" :contract="_contract"/>
             <SubHeaderSection v-if="_subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set" />
+            <rightTeamSection ref="myTeamRight" :set="_set" />
 
             <!-- buttons subHeader -->
             <!--             

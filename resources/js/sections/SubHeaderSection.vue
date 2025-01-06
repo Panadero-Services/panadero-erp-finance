@@ -112,17 +112,9 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
             </div>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6 text-sm">
-                <span @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300">project[{{set.project.id}}] </span>
+                <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
 
-            <div v-if="set.projectVisible">
-                <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
-                <span v-if="set.project.id">
-                    <span class="mr-0.5 ">--> env</span>
-                    <button v-for="env in set.project.validEnvironments" class="mx-0.5" @click="set.project.environment=env" type="button" :class="[_button, _hover, env==set.project.environment ? _bgSelected : _bg]">{{env}}</button>
-                    <span class="mr-0.5">--> slots</span>
-                    <button v-for="(b, idx) in _buttons"  @click="_changeCat(b)" type="button" class="mx-0.5" :class="[_button, _hover, b==set.project.category ? _bgSelected : _bg]">slot{{idx+1}}</button>
-                </span>
-            </div>
+
 
                 <div v-if="$page.props.auth.user" class="ms-3 relative">
                     <!-- Teams Dropdown -->
