@@ -33,15 +33,6 @@ const _start = (_p) => {
   dataLayer.kpi1++;
 }
 
-
-
-
-
-
-
-
-
-
 const _pulse = computed ( () => { return props.pulse;} );
 
 // watch works directly on a ref

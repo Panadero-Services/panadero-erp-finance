@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 import Dropdown from '@/components/Dropdown.vue';
@@ -8,7 +8,7 @@ import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-import { HomeIcon, Bars3Icon, WrenchIcon} from '@heroicons/vue/24/outline'
+import { HomeIcon, Bars3Icon, EllipsisVerticalIcon, WrenchIcon, H1Icon, H2Icon, BarsArrowDownIcon } from '@heroicons/vue/24/outline'
 
 
 const props = defineProps({
@@ -60,6 +60,41 @@ const _bg = "bg-white dark:bg-black";
 const _bgSelected = "bg-indigo-200 dark:bg-indigo-800";
 const _hoverAdd = "hover:bg-green-400 dark:hover:bg-green-600";
 const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
+const _indigo = " text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-yellow-400 ";
+
+
+
+
+
+// server Section
+const _counter = ref(0);
+const loading = ref(false)
+const _rnd1 = ref(Math.floor(Math.random() * 500));
+const _rnd2 = ref(Math.floor(Math.random() * 500));
+const _col1 = ref("bg-blue-500");
+const _col2 = ref("bg-blue-500");
+
+
+const _rnd =  (_mx=800) => {return Math.floor(Math.random() * _mx);};
+
+watch(_pulse, async (_bool) => {
+    if (_bool) {
+        loading.value = true
+    try {
+        _counter.value++;
+        if(_counter.value > 3){
+            _counter.value = 0;
+            _rnd1.value = _rnd();
+            _rnd2.value = _rnd();
+            _col1.value = _rnd1.value < 500 ? 'bg-lime-500' : _rnd1.value < 700 ? 'bg-yellow-500' : 'bg-red-500';
+            _col2.value = _rnd2.value < 500 ? 'bg-lime-500' : _rnd2.value < 700 ? 'bg-yellow-500' : 'bg-red-500';
+        }
+    } catch (error) {
+    } finally {
+      loading.value = false
+    }
+  }
+})
 
 </script>
 
@@ -71,38 +106,62 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
         <div class="flex justify-between h-10 md:h-10 ">
             <div class="flex">
 
-                <!-- Left SubHeader -->
-                <div class="shrink-0 flex items-center ml-4 space-x-4 ">
+                    <ul role="list" class="flex">
+                        <ellipsis-vertical-icon @click="set.layout.sidebar = !set.layout.sidebar" class="w-10 px-2.5" :class="_indigo" title="toolbar" />
+                        <h1-icon @click="set.layout.header = !set.layout.header" class="w-10 px-2.5" :class="_indigo" title="header"/>
+                        <h2-icon @click="set.layout.subHeader = !set.layout.subHeader" class="w-10 px-2.5" :class="_indigo" title="subHeader" />
+                        <bars-arrow-down-icon @click="set.layout.footer = !set.layout.footer" class="w-10 px-2.5" :class="_indigo" title="footer" />
+        
 
                     <!-- Darkmode -->
-                    <p class="text-xs text-gray-500 -mt-0.5">
-                    </p>
-
-                    <!-- Darkmode -->
-                    <p class="text-xs text-gray-500" @click="set.darkToggle">
+                    <div class="w-10 px-2.5 pt-2.5" :class="_indigo" @click="set.darkToggle">
                         {{set.dark ? '🌙' : '☀️'}}
-                    </p>
+                    </div>
 
-                    <!-- Pulse Control -->
-                    <pulse @pulse="_pulse=$event" :animation="set.animate"/>
-                    <p v-if="_animation">  
-                      <span v-if="set.animate" @click="set.animate = false" class="h-4 w-4 -ml-1">
+                    <div class="pt-2.5">
+                        <!-- Pulse Control -->
+                        <pulse @pulse="_pulse=$event" :animation="set.animate"/>
+                        <p v-if="_animation">  
+                          <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
 
-                          <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500 dark:bg-lime-500"></span>
-                          <span class="-ml-3.5 animate-ping inline-flex h-4 w-4 rounded-full bg-sky-400 dark:bg-lime-500 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-3 w-3 " :class="_col1"  ></span>
+                              <span class="-ml-3.5 animate-ping inline-flex h-4 w-4 rounded-full opacity-75" :class="_col1"></span>
+                            <span class="text-xxxs text-text-gray-800 dark:text-gray-200">{{_rnd1}} ms</span>
+                          </span>
+                          <span v-else class="h-3 w-3 px-2.5" @click="set.animate = true">
+                              <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-200 dark:bg-gray-800"></span>
+                          </span>
+                        </p>
+                        <p v-if="set.animate"  class="text-xs w-4" @click="set.animate">
+                         <!-- Animation Light -->
+                         {{pulse && set.animate}} 
+                        </p>
+                    </div>
 
-                      </span>
-                      <span v-else class="h-3 w-3 -ml-1 h-3 w-3 -ml-1 " @click="set.animate = true">
-                          <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-200 dark:bg-gray-800"></span>
-                      </span>
-                    </p>
 
-                    <p v-if="set.animate"  class="text-xs w-4" @click="set.animate">
-                     <!-- Animation Light -->
-                     {{pulse && set.animate}} 
-                    </p>
+                    <div class="pt-2.5">
+                        <!-- Pulse Control -->
+                        <pulse @pulse="_pulse=$event" :animation="set.animate"/>
+                        <p v-if="_animation">  
+                          <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
+                              <span class="relative inline-flex rounded-full h-3 w-3 " :class="_col2"  ></span>
+                              <span class="-ml-3.5 animate-ping inline-flex h-4 w-4 rounded-full opacity-75" :class="_col2"></span>
+                            <span class="text-xxxs text-text-gray-800 dark:text-gray-200">{{_rnd2}} ms</span>
+                          </span>
+                          <span v-else class="h-3 w-3 px-2.5" @click="set.animate = true">
+                              <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-200 dark:bg-gray-800"></span>
+                          </span>
+                        </p>
+                        <p v-if="set.animate"  class="text-xs w-4" @click="set.animate">
+                         <!-- Animation Light -->
+                         {{pulse && set.animate}} 
+                        </p>
+                    </div>
 
-                </div>
+
+                    </ul>
+
+
 
                 <!-- Navigation Links -->
                 <template v-for="item in menu" :key="item.name" >
@@ -111,8 +170,34 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                 </template>
             </div>
 
+
+
+
+
+
+
+
             <div class="hidden sm:flex sm:items-center sm:ms-6 text-sm">
+
+
+
+
+
+
+
                 <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
+
+
+
+
+  <span v-if="set.project.id>0" class="mx-1 inline-flex items-center gap-x-1.5 rounded-md px-2 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-300 ring-1 ring-inset ring-slate-300 dark:ring-gray-700">
+    <svg class="size-1.5 fill-indigo-400" viewBox="0 0 6 6" aria-hidden="true">
+      <circle cx="3" cy="3" r="3" />
+    </svg>
+    {{_counter + _rnd(20)}}
+  </span>
+
+
 
 
 
@@ -174,11 +259,27 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                         </template>
                     </Dropdown>
                 </div>
+
                 <div v-else class="text-sm mr-3">
                     <Link :href="route('login')">
                         Log in
                     </Link>
                 </div>
+
+
+
+
+              <span class="mx-1 inline-flex items-center gap-x-1.5 rounded-md px-2 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-300 ring-1 ring-inset ring-slate-300 dark:ring-gray-700">
+                <svg class="size-1.5 fill-purple-500" viewBox="0 0 6 6" aria-hidden="true">
+                  <circle cx="3" cy="3" r="3" />
+                </svg>
+                {{_counter + _rnd(20)}}
+              </span>
+
+
+
+
+
 
                 <!-- Settings Dropdown -->
                 <div v-if="$page.props.auth.user" class="ms-2 relative">
@@ -224,6 +325,10 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                         </template>
                     </Dropdown>
                 </div>
+
+
+
+
             </div>
 
             <!-- Hamburger -->

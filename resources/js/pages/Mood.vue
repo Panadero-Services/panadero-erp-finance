@@ -24,7 +24,7 @@ import SideRightSection from "@/sections/SideRightSection.vue"
 import rightTeamSection from "@/sections/rightTeamSection.vue"
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 
-import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon} from '@heroicons/vue/24/outline'
+import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
@@ -80,8 +80,8 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
 
         <template #header>
             <Banner />
-            <HeaderSection v-if="_header" :set="_set" :contract="_contract"/>
-            <SubHeaderSection v-if="_subHeader" :set="_set"/>
+            <HeaderSection v-if="_set.layout.header" :set="_set" :contract="_contract"/>
+            <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set" />
             <rightTeamSection ref="myTeamRight" :set="_set" />
 
@@ -106,9 +106,10 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
         <template #default>
             <div class="flex ">
                 
-                <div v-if="_sideBar" class="flex bg-slate-100 dark:bg-slate-950 text-center">
+                <div v-if="_set.layout.sidebar" class="flex bg-slate-100 dark:bg-slate-950 text-center">
                   <nav class="flex flex-1 flex-col" aria-label="Sidebar">
                     <ul role="list" class="-mx-2 space-y-1 mt-4">
+                        <h2-icon v-if="!_set.layout.subHeader" @click="_set.layout.subHeader = true" class="w-10 px-2.5 pb-3 mx-2" :class="_indigo" />
                         <home-icon class="w-10 px-2.5 pt-0 mx-2" :class="_indigo" />
                         <clipboard-document-check-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
                         <signal-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
@@ -123,7 +124,6 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
                         <server-stack-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
                         <wrench-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
                         <question-mark-circle-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-
                         <li v-for="item in navigation" :key="item.name">
                             <component :is="item.icon" @click="item.href" class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
                         </li>
@@ -131,9 +131,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
                   </nav>
                 </div>
                 
-                <div v-if="_subHeader" class="absolute left-1" :class="_header ? 'top-16' : _subHeader ? 'top-0' : 'top-4'">
-                    <bars3-icon @click="_sideBar = !_sideBar" class="w-6 px-1 mt-3" :class="_indigo" />
-                </div>
+        
 
                 <div id="whatever" class="w-full ... min-h-4 max-w-9xl bg-white">
                     <div class="grid grid-cols-2">     
@@ -156,7 +154,10 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
         </template>
   
         <template #footer>
-            <FooterSection  :set="_set" :contract="_contract"/>
+            <FooterSection v-if="_set.layout.footer" :set="_set" :contract="_contract"/>
+            <h2-icon v-if="!_set.layout.subHeader && !_set.layout.header && !_set.layout.sidebar" @click="_set.layout.subHeader = true" class="w-10 px-2.5 pb-3 mx-2" :class="_indigo" />
+
+
         </template>
         
     </AppLayout>

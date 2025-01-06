@@ -93,15 +93,13 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
           <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-md pl-10 sm:pl-16">
-         
-
 
             <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
               <DialogPanel class="pointer-events-auto w-screen max-w-md">
-                <form class="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-2xl shadow-blue-700 dark:shadow-blue-200">
+                <form class="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-2xl shadow-indigo-800 dark:shadow-blue-200">
                   <div class="h-0 flex-1 overflow-y-auto">
-                    <div class="bg-green-700 pl-2 py-2 sm:pl-3">
-                        <div class="flex"><users-icon class="w-12 text-green-200" /><div class="text-2xl text-green-200 m-3">Team</div></div>
+                    <div class="bg-indigo-700 pl-2 py-2 sm:pl-3">
+                        <div class="flex"><users-icon class="w-12 text-indigo-200" /><div class="text-2xl text-indigo-200 m-3">Team</div></div>
                             <div class="text-center font-semibold text-white text-lg ">
                              {{set.project.title}}.{{set.project.environment}}.{{set.project.category}}
                             </div>

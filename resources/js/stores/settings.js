@@ -26,6 +26,7 @@ export let useSettingsStore = defineStore('settings',{
         banner: {active: false, msg:"new env initiated...", style:"success"},
         assets: {}, 
         projectType: 'none',
+        layout: {sidebar:false, header:true, subHeader:true, footer:true},
         project: {id:0, title:"none", validTitles:['none', 'demo'], path:"none", environment:'none', validEnvironments:[], category:'none'},
         colors: {bg:" bg-gradient-to-b from-indigo-100/30 dark:from-gray-800/30 "}
         }),
