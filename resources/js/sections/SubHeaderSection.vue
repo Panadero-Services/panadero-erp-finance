@@ -187,15 +187,10 @@ watch(_pulse, async (_bool) => {
 
                 <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
 
+<span class="mx-1 inline-flex items-center rounded-md bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30">  {{_counter + _rnd(20)}}</span>
 
 
 
-  <span v-if="set.project.id>0" class="mx-1 inline-flex items-center gap-x-1.5 rounded-md px-2 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-300 ring-1 ring-inset ring-slate-300 dark:ring-gray-700">
-    <svg class="size-1.5 fill-indigo-400" viewBox="0 0 6 6" aria-hidden="true">
-      <circle cx="3" cy="3" r="3" />
-    </svg>
-    {{_counter + _rnd(20)}}
-  </span>
 
 
 
@@ -267,18 +262,7 @@ watch(_pulse, async (_bool) => {
                 </div>
 
 
-
-
-              <span class="mx-1 inline-flex items-center gap-x-1.5 rounded-md px-2 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-300 ring-1 ring-inset ring-slate-300 dark:ring-gray-700">
-                <svg class="size-1.5 fill-purple-500" viewBox="0 0 6 6" aria-hidden="true">
-                  <circle cx="3" cy="3" r="3" />
-                </svg>
-                {{_counter + _rnd(20)}}
-              </span>
-
-
-
-
+                <span class="mx-1 inline-flex items-center rounded-md bg-purple-400/10 px-2 py-1 text-xs font-medium text-purple-400 ring-1 ring-inset ring-indigo-400/30">  {{_counter + _rnd(20)}}</span>
 
 
                 <!-- Settings Dropdown -->
