@@ -104,7 +104,7 @@ watch(_pulse, async (_bool) => {
     <!--Sub Header Icons Navigation Menu -->
     <div class="max-w-9xl">
         <div class="flex justify-between h-10 md:h-10 ">
-            <div class="flex">
+            <div class="flex bg-red-200">
 
                     <ul role="list" class="flex">
                         <ellipsis-vertical-icon @click="set.layout.sidebar = !set.layout.sidebar" class="w-10 px-2.5" :class="_indigo" title="toolbar" />
@@ -170,31 +170,12 @@ watch(_pulse, async (_bool) => {
                 </template>
             </div>
 
+            <div class="bg-blue-200">abc
+            </div>
 
-
-
-
-
-
-
-            <div class="hidden sm:flex sm:items-center sm:ms-6 text-sm">
-
-
-
-
-
-
-
+            <div class="hidden sm:flex sm:items-center sm:ms-6 text-sm bg-green-200">
                 <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
-
-<span class="mx-1 inline-flex items-center rounded-md bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30">  {{_counter + _rnd(20)}}</span>
-
-
-
-
-
-
-
+                <span class="mx-1 inline-flex items-center rounded-md bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30">  {{_counter + _rnd(20)}}</span>
 
                 <div v-if="$page.props.auth.user" class="ms-3 relative">
                     <!-- Teams Dropdown -->
@@ -344,6 +325,11 @@ watch(_pulse, async (_bool) => {
         </div>
     </div>
 
+
+
+
+
+
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
@@ -354,9 +340,9 @@ watch(_pulse, async (_bool) => {
 
         <!-- Responsive Settings Options -->
         <div v-if="$page.props.auth.user"  class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
-            <div class="flex items-center px-4">
+            <div class=" items-center px-4">
                 <div v-if="$page.props.jetstream.managesProfilePhotos" class="shrink-0 me-3">
-                    <img class="h-10 w-10 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
+                    <img class="h-12 w-12 rounded-full object-cover" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
                 </div>
 
                 <div>

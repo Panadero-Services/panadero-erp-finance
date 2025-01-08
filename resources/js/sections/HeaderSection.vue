@@ -78,7 +78,7 @@ const _title = 'headerSection';
 const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
 const _user = "  text-sm font-normal leading-tight " +_indigo;
 const _user2 =" inline-flex items-center px-2 py-1.5 text-xs font-medium leading-4 text-gray-700 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none focus:bg-gray-500 active:bg-gray-500 ";
-const _basic = " text-sm font-normal leading-tight ";
+const _basic = " text-xxs sm:text-xs md:text-sm font-normal leading-tight ";
 const _menu = " flex items-center  "+ _indigo + _basic;
 const _menuClosed = " text-gray-700 text-sm font-normal leading-tight  ";
 const _icon = " w-4 h-4 mr-1.5 ";
@@ -123,7 +123,7 @@ onMounted(async ()=> {
 
 
 <template>
-   <div class="bg-slate-100 dark:bg-black h-12 md:h-16 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-3" >
+   <div class="bg-slate-100 dark:bg-black h-12 md:h-16 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-3 text-xs" >
       <div class=" uppercase col-span-2"> 
             <div class="flex items-center space-x-2 md:spac-x-4 p-3">
 
