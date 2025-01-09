@@ -76,15 +76,17 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
 
 </script>
 <template>
-    <AppLayout title="Tiers" :set="_set">
+    <AppLayout title="Indigo3 Mood" :set="_set">
 
         <template #header>
             <Banner />
             <HeaderSection v-if="_set.layout.header" :set="_set" :contract="_contract"/>
+
             <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set" />
             <rightTeamSection ref="myTeamRight" :set="_set" />
-
+            
+            <!-- -->
             <!-- buttons subHeader -->
             <!--             
             <div v-if="true" class="absolute space-x-2 z-40" :class="[_header ? 'top-16' : 'top-1', _subHeader ? 'left-32' : 'left-80']" >
@@ -100,11 +102,10 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
             </div>
             -->
 
-
         </template>
 
         <template #default>
-            <div class="flex ">
+            <div class="flex">
                 
                 <div v-if="_set.layout.sidebar" class="flex bg-slate-100 dark:bg-slate-950 text-center">
                   <nav class="flex flex-1 flex-col" aria-label="Sidebar">
@@ -134,7 +135,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
         
 
                 <div id="whatever" class="w-full ... min-h-4 max-w-9xl bg-white">
-                    <div class="grid grid-cols-2">     
+                    <div class="grid grid-cols-2 ">     
                         
                         <div class="pl-2" :class="_set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
                             

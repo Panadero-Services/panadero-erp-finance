@@ -75,16 +75,6 @@ const menu = [
 
 const _title = 'headerSection';
 
-const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
-const _user = "  text-sm font-normal leading-tight " +_indigo;
-const _user2 =" inline-flex items-center px-2 py-1.5 text-xs font-medium leading-4 text-gray-700 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none focus:bg-gray-500 active:bg-gray-500 ";
-const _basic = " text-xxs sm:text-xs md:text-sm font-normal leading-tight ";
-const _menu = " flex items-center  "+ _indigo + _basic;
-const _menuClosed = " text-gray-700 text-sm font-normal leading-tight  ";
-const _icon = " w-4 h-4 mr-1.5 ";
-
-//const _menu= "text-xs lg:text-sm font-normal text-gray-700 hover:text-black hover:font-semibold dark:text-gray-300 dark:hover:text-yellow-400 ";
-
 const _wallet = computed(() => {
     if (!props.set.isMetaMask) return _indigo.replace('indigo','red');      // no compatible browser
     if (props.set.wallet=='0x0')return _indigo.replace('indigo','gray'); 
@@ -119,47 +109,57 @@ onMounted(async ()=> {
     if( usePage().props.auth.user == null) if(props.set.projectId > 0) await props.set.setResetProject();
 });
 
+//
+const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400";
+const _user = "  text-sm font-normal leading-tight " +_indigo;
+const _user2 =" inline-flex items-center px-2 py-1.5 text-xs font-medium leading-4 text-gray-700 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none focus:bg-gray-500 active:bg-gray-500 ";
+const _basic = " text-xs lg:text-sm font-normal leading-tight ";
+const _menu = " flex items-center  "+ _indigo + _basic;
+const _menuClosed = " text-gray-700 text-sm font-normal leading-tight  ";
+const _icon = " w-4 h-4 mr-4 ";
+//const _menu= "text-xs lg:text-sm font-normal text-gray-700 hover:text-black hover:font-semibold dark:text-gray-300 dark:hover:text-yellow-400 ";
+
 </script>
 
 
 <template>
-   <div class="bg-slate-100 dark:bg-black h-12 md:h-16 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-3 text-xs" >
+   <div class="bg-slate-100 dark:bg-black h-18 md:h-14 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-2 md:grid-cols-3 text-xs" >
       <div class=" uppercase col-span-2"> 
-            <div class="flex items-center space-x-2 md:spac-x-4 p-3">
+            <div class="flex items-center space-x-1 md:space-x-2 p-3">
 
             <Link href="/">
-               <span><img class="m-0.5 hover:rotate-45" :class="_icon" :src="self2"/></span>
+               <span><img class="m-0.5 hover:rotate-45 dark:brightness-200" :class="_icon" :src="self2"/></span>
             </Link>
 
             <!-- Navigation Links -->
              <template v-for="item in menu" :key="item.name" >
-                     <NavLink v-if="item.when ? item.when() : true" :href="item.url" :active="route().current(item.route)" :class="_menu">
-                         {{item.name}}
+                    <NavLink v-if="item.when ? item.when() : true" :href="item.url" :active="route().current(item.route)" :class="_menu">
+                        {{item.name}}
                      </NavLink>
              </template>
             </div>
         </div>
 
         <!-- SELF Section -->
-        <div> 
-            <div class="flex items-end text-right justify-end space-x-2 md:spac-x-4 lg:p-3 ">
-                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45" style="width:16; height:16px;" :src="self2"/> </span>
-                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45" style="width:16; height:16px;" :src="self2"/> </span>
+        <div class="col-span-2 md:col-span-1 mr-2 mb-4 -mt-1 lg:mt-0"> 
+            <div class="flex items-end text-right justify-end space-x-1 md:space-x-2 md:p-3">
+                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45 h-4 w-4 dark:brightness-200"  :src="self2"/> </span>
+                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45 h-4 w-4 mb-0.5 dark:brightness-200"  :src="self2"/> </span>
                 <!-- SELF Connect -->
                 <p v-if="(!(set.wallet=='0x0'))" class="relative mt-0.5 ml-2 " :class="_menu">
-                    <a  v-if="!(set.self=='nope')" @click="_getNextSelf" :class="_wallet"  >
-                        <span class="" :class="_indigo"> {{set.self}} </span>
+                    <a  v-if="!(set.self=='nope')" @click="_getNextSelf" class="text-xs lg:text-sm" :class="_wallet"  >
+                        <span> {{set.self}}</span>
                     </a>
                 </p>
-                <p v-if="1" class="relative text-xs mx-2">
-                    <a @click="_connect" :class="_wallet" >
-                        <WalletIcon class="w-4 h-4 mt-4" :class="_wallet" /> 
+                <p v-if="1" class="text-xs lg:text-sm">
+                    <a @click="_connect"  >
+                        <WalletIcon class="w-4 h-4 mb-1 " :class="_wallet" /> 
                     </a>
                 </p>
             <!-- Wallet Connect -->
-                <p v-if="(!(set.wallet=='0x0'))" class="relative text-sm mt-0.5  " :class="_menu">
+                <p v-if="(!(set.wallet=='0x0'))"  :class="_menu">
                     <a @click="_disconnect" :class="_wallet"  >
-                        <span class="flex"> {{set.wallet.substr(-4)}} </span>
+                        <span class="flex text-xs lg:text-sm"> {{set.wallet.substr(-4)}} </span>
                     </a>
                 </p>
             </div>
