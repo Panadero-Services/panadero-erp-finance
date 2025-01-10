@@ -116,14 +116,12 @@ const _user2 =" inline-flex items-center px-2 py-1.5 text-xs font-medium leading
 const _basic = " text-xs lg:text-sm font-normal leading-tight ";
 const _menu = " flex items-center  "+ _indigo + _basic;
 const _menuClosed = " text-gray-700 text-sm font-normal leading-tight  ";
-const _icon = " w-4 h-4 mr-4 ";
+const _icon = " w-4 h-4 mr-2 ";
 //const _menu= "text-xs lg:text-sm font-normal text-gray-700 hover:text-black hover:font-semibold dark:text-gray-300 dark:hover:text-yellow-400 ";
-
 </script>
 
-
 <template>
-   <div class="bg-slate-100 dark:bg-black h-18 md:h-14 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-2 md:grid-cols-3 text-xs" >
+   <div class="bg-slate-100 dark:bg-black h-18 md:h-12 border-b border-indigo-50 dark:border-black shadow-sm dark:shadow-lg shadow-gray-200 dark:shadow-slate-600 grid grid-cols-2 md:grid-cols-3 text-xs" >
       <div class=" uppercase col-span-2"> 
             <div class="flex items-center space-x-1 md:space-x-2 p-3">
 
@@ -141,10 +139,10 @@ const _icon = " w-4 h-4 mr-4 ";
         </div>
 
         <!-- SELF Section -->
-        <div class="col-span-2 md:col-span-1 mr-2 mb-4 -mt-1 lg:mt-0"> 
+        <div class="col-span-2 md:col-span-1 mr-1 mb-4 -mt-1 lg:mt-0"> 
             <div class="flex items-end text-right justify-end space-x-1 md:space-x-2 md:p-3">
-                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45 h-4 w-4 dark:brightness-200"  :src="self2"/> </span>
-                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45 h-4 w-4 mb-0.5 dark:brightness-200"  :src="self2"/> </span>
+                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45 h-4 w-4 mb-1 dark:brightness-200"  :src="self2"/> </span>
+                <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45 h-4 w-4 mb-1 dark:brightness-200"  :src="self2"/> </span>
                 <!-- SELF Connect -->
                 <p v-if="(!(set.wallet=='0x0'))" class="relative mt-0.5 ml-2 " :class="_menu">
                     <a  v-if="!(set.self=='nope')" @click="_getNextSelf" class="text-xs lg:text-sm" :class="_wallet"  >

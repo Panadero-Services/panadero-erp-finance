@@ -159,7 +159,7 @@ defineExpose({
 <template>
 
   <div class="m-0">   
-    <div  class="" id="root"></div>
+    <div class="" id="root"></div>
     <div id="whatever" class="max-w-9xl"></div>
   </div>
 
@@ -167,4 +167,23 @@ defineExpose({
 
 <!-- custom styles -->
 <style>
+    .wx-panaderos-theme {
+    --wx-field-width: 100%;
+    --wx-theme-name: panaderos;
+        --wx-kanban-toolbar-height: 56px;
+        --wx-color-font: rgba(5, 5, 5, 0.9);
+        --wx-color-secondary-font: rgba(255, 255, 255, 0.5);
+        --wx-icon-color: rgba(255, 255, 255, 0.7);
+        --wx-icon-color-hover: rgba(255, 255, 255, 0.2);
+        --wx-kanban-background: #eaeefe;
+        --wx-background: #f9fbe7;
+        --wx-background-alt: #666;
+        --wx-kanban-content-background: #d8e0ff;
+        --wx-border: 0.5px solid #818080;
+        --wx-border-medium: 1px solid #818080;
+        --wx-kanban-card-border: 1px solid #818080;
+        --wx-kanban-column-width: 150px;
+        --wx-input-background: #9e9e9e;
+        --wx-color-font-disabled: #878585;
+    }
 </style>

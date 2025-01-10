@@ -60,6 +60,7 @@ const navigation = [
 const _setWillow = () => { _set.dark=false; myChild.value.changeTheme('willow'); }
 const _setMaterial = () => { _set.dark=false; myChild.value.changeTheme('material');}
 const _setWillowDark = () => { _set.dark=true; myChild.value.changeTheme('willow-dark');}
+const _setPanaderos = () => { _set.dark=false; myChild.value.changeTheme('panaderos');}
 
 // css
 const _title = "text-indigo-600 dark:text-indigo-300";
@@ -110,29 +111,27 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
                 <div v-if="_set.layout.sidebar" class="flex bg-slate-100 dark:bg-slate-950 text-center">
                   <nav class="flex flex-1 flex-col" aria-label="Sidebar">
                     <ul role="list" class="-mx-2 space-y-1 mt-4">
-                        <h2-icon v-if="!_set.layout.subHeader" @click="_set.layout.subHeader = true" class="w-10 px-2.5 pb-3 mx-2" :class="_indigo" />
-                        <home-icon class="w-10 px-2.5 pt-0 mx-2" :class="_indigo" />
-                        <clipboard-document-check-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
-                        <signal-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <circle-stack-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
-                        <play-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <rocket-launch-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <bell-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <swatch-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <users-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <wallet-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <table-cells-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <server-stack-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
-                        <wrench-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-2.5 pt-3 mx-2 " :class="_indigo" />
-                        <question-mark-circle-icon class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                        <h2-icon v-if="!_set.layout.subHeader" @click="_set.layout.subHeader = true" class="w-10 px-3 pb-3 mx-2" :class="_indigo" />
+                        <home-icon class="w-10 px-3 pt-0 mx-2" :class="_indigo" />
+                        <clipboard-document-check-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-3 pt-3 mx-2 " :class="_indigo" />
+                        <signal-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <circle-stack-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-3 pt-3 mx-2 " :class="_indigo" />
+                        <play-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <rocket-launch-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <bell-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <swatch-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <users-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <wallet-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <table-cells-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <server-stack-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
+                        <wrench-icon @click="mySideRight.open = !mySideRight.open" class="w-10 px-3 pt-3 mx-2 " :class="_indigo" />
+                        <question-mark-circle-icon class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
                         <li v-for="item in navigation" :key="item.name">
-                            <component :is="item.icon" @click="item.href" class="w-10 px-2.5 pt-3 mx-2" :class="_indigo" />
+                            <component :is="item.icon" @click="item.href" class="w-10 px-3 pt-3 mx-2" :class="_indigo" />
                         </li>
                     </ul>
                   </nav>
                 </div>
-                
-        
 
                 <div id="whatever" class="w-full ... min-h-4 max-w-9xl bg-white">
                     <div class="grid grid-cols-2 ">     
@@ -142,6 +141,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
                             <button @click="_setWillow" type="button" :class="_button">Light</button>
                             <button @click="_setWillowDark" type="button" :class="_button">Dark</button>
                             <button @click="_setMaterial" type="button" :class="_button">Material</button>
+                            <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
                             <button @click="myChild._save" type="button" :class="_button">Save</button>
                             <button @click="myChild._load" type="button" :class="_button">Load</button>
                         
@@ -157,8 +157,6 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
         <template #footer>
             <FooterSection v-if="_set.layout.footer" :set="_set" :contract="_contract"/>
             <h2-icon v-if="!_set.layout.subHeader && !_set.layout.header && !_set.layout.sidebar" @click="_set.layout.subHeader = true" class="w-10 px-2.5 pb-3 mx-2" :class="_indigo" />
-
-
         </template>
         
     </AppLayout>
