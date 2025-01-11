@@ -2,6 +2,7 @@
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 
+
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
