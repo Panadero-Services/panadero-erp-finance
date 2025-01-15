@@ -1,12 +1,16 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
+
+// page
 import AppLayout from '@/layouts/AppLayout.vue';
-
-
-// usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
-import {moduleName, moduleGit} from 'panadero-self';
+
+// sections
+import HeaderSection from "@/sections/HeaderSection.vue"
+import SubHeaderSection from "@/sections/SubHeaderSection.vue"
+import Banner from '@/components/Banner.vue';
+import FooterSection from "@/sections/FooterSection.vue"
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -16,24 +20,15 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-// sections
-import HeaderSection from "@/sections/HeaderSection.vue"
-import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/components/Banner.vue';
-import FooterSection from "@/sections/FooterSection.vue"
-
-
-// cards
-import SelfIntro from "@/pages/dashboard1/cards/SelfIntro.vue";
-import WelcomeCard from "@/pages/config/cards/WelcomeCard.vue";
-
-
-//import PanaderoTable from "@/panaderos/panadero-grid/PanaderoTable.vue";
+// modules
+import {moduleName, moduleGit} from 'panadero-self';
 
 // components
+import SelfIntro from "@/pages/dashboard1/cards/SelfIntro.vue";
+import WelcomeCard from "@/pages/config/cards/WelcomeCard.vue";
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-// webhooks
+// hooks
 onMounted(async ()=> {
   await _set.initMM();
   await _set.initialize();
