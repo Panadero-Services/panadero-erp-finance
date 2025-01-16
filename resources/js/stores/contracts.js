@@ -119,13 +119,6 @@ export const useContractStore = defineStore('contract',{
         },
 
 
-
-
-
-
-
-
-
     },
 });
 
