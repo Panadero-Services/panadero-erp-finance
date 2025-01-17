@@ -117,7 +117,8 @@ onUnmounted(async ()=> {
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-4xl text-center">
         <h2 class="text-base font-semibold leading-7 text-indigo-400">Pricing</h2>
-        <p class="mt-2 text-xl md:text-2xl lg:text-4xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Pricing plans for teams of&nbsp;all&nbsp;sizes</p>
+        <p class="mt-2 text-xl md:text-2xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Your Web3 Business
+        <span class="mt-2 text-xl md:text-2xl lg:text-6xl font-bold tracking-tight text-indigo-600 dark:text-white sm:text-4xl">Starts here!</span></p>
       </div>
       <p class="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-800 dark:text-gray-300">Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.</p>
       <div class="mt-16 flex justify-center">

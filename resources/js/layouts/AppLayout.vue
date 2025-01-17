@@ -28,7 +28,7 @@ const props = defineProps({
             </div>
 
             <!-- Default Content -->
-            <div class="bg-slate-50 dark:bg-slate-900" v-if="$slots.default">
+            <div class="bg-indigo-50 dark:bg-slate-900" v-if="$slots.default">
                 <slot name="default" />
             </div>
 

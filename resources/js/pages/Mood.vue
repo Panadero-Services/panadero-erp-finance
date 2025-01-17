@@ -29,9 +29,8 @@ import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
+// reactive components
 const pulse = ref(false);
-
-// css
 const myChild = ref(null);
 const mySideRight = ref(null);
 const myTeamRight = ref(null);
