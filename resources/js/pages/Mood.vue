@@ -21,8 +21,9 @@ import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
 import SideRightSection from "@/sections/SideRightSection.vue"
-import rightTeamSection from "@/sections/rightTeamSection.vue"
+import RightTeamSection from "@/sections/RightTeamSection.vue"
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
+import DeveloperSection from "@/sections/DeveloperSection.vue"
 
 import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
 
@@ -83,8 +84,8 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
             <HeaderSection v-if="_set.layout.header" :set="_set" :contract="_contract"/>
 
             <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
-            <SideRightSection ref="mySideRight" :set="_set" />
-            <rightTeamSection ref="myTeamRight" :set="_set" />
+            <SideRightSection ref="mySideRight" :set="_set"/>
+            <RightTeamSection ref="myTeamRight" :set="_set"/>
             
             <!-- -->
             <!-- buttons subHeader -->
@@ -155,6 +156,10 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
   
         <template #footer>
             <FooterSection v-if="_set.layout.footer" :set="_set" :contract="_contract"/>
+            <DeveloperSection @click="_set.layout.developer=false" v-if="_set.layout.developer" :set="_set" :contract="_contract"/>
+
+            <div v-else @click="_set.layout.developer=true" class="text-green-500 center">DEVELOPER-SECTION</div>
+
             <h2-icon v-if="!_set.layout.subHeader && !_set.layout.header && !_set.layout.sidebar" @click="_set.layout.subHeader = true" class="w-10 px-2.5 pb-3 mx-2" :class="_indigo" />
         </template>
         

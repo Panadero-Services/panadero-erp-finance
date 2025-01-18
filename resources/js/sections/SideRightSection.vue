@@ -1,14 +1,32 @@
 <script setup>
-import { ref } from 'vue'
+import { ref,  onMounted } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 import { LinkIcon, PlusIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon} from '@heroicons/vue/20/solid'
 
+import { useProjectStore } from '@/stores/ProjectStore';
+const _project = useProjectStore();
 
 const props = defineProps({
     set: Object
+});
+
+
+const _actualProject = ref();
+const _userId = ref(0);
+
+
+// lifeCycle
+onMounted(async ()=> {
+
+  _userId.value = usePage().props.auth.user.id;
+
+  _actualProject.value = await _project.getProjectFromDb(1);
+  console.log( _actualProject.value)
+  
+  // board.selectCard({ id: 3, groupMode: true });
 });
 
 
@@ -92,8 +110,6 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
       <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
           <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-md pl-10 sm:pl-16">
-           
-
 
             <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
               <DialogPanel class="pointer-events-auto w-screen max-w-md">
@@ -101,14 +117,15 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                   <div class="h-0 flex-1 overflow-y-auto">
                     <div class="bg-blue-700 pl-2 py-2 sm:pl-3">
                         <div class="flex"><clipboard-document-check-icon  class="w-12 text-blue-200" /><div class="text-2xl text-green-200 m-3">Project</div></div>
+
+<div>
+userId: {{_userId}}
+</div>
+
                             <div class="text-center font-semibold text-white text-lg ">
                              {{set.project.title}}.{{set.project.environment}}.{{set.project.category}}
                             </div>
                         </div>
-
-
-
-
 
                     <div class="flex flex-1 flex-col justify-between">
                       <div class="divide-y divide-gray-200 px-4 sm:px-6">
@@ -140,7 +157,7 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                           <div>
                             <label for="project-description" class="block text-sm/6 font-medium text-gray-900">Description</label>
                             <div class="mt-2">
-                              <textarea rows="3" name="project-description" id="project-description" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                              <textarea v-model="_actualProject.description" rows="3" name="project-description" id="project-description" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
                             </div>
                           </div>
                           <div>
@@ -176,8 +193,8 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
                                     <input id="privacy-private-to-project" name="privacy" value="private-to-project" aria-describedby="privacy-private-to-project-description" type="radio" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden" />
                                   </div>
                                   <div class="pl-7 text-sm/6">
-                                    <label for="privacy-private-to-project" class="font-medium text-gray-900">Private to project members</label>
-                                    <p id="privacy-private-to-project-description" class="text-gray-500">Only members of this project would be able to access.</p>
+                                    <label for="privacy-private-to-project" class="font-medium text-gray-900">Private to SELF members</label>
+                                    <p id="privacy-private-to-project-description" class="text-gray-500">Only selected SELF id's are able to access.</p>
                                   </div>
                                 </div>
                               </div>

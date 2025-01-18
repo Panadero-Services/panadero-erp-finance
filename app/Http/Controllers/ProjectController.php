@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use Illuminate\Http\Request; 
 use App\Models\Project;
 
 class ProjectController extends Controller
@@ -63,4 +64,31 @@ class ProjectController extends Controller
     {
         //
     }
+
+
+    // if the record does not exist in the database it will be created
+    // JaWsome.Orbit 18.01.25
+    public function getProject(Request $request){
+        //return $request;
+            //$user = Auth::user();
+            $id = $request->id;
+            $project = Project::where('id', $id)->first();
+            if($project==null){
+                $notFound =[
+                    'id' => $id,
+                    'title' => 'notfound', 
+                    'description' => 'this id is not found in the database', 
+                    'json' => '{}', 
+                    'is_active' => 0 ];
+                //Project::create($notFound);
+                sleep(3);
+                return $notFound;
+            }
+            return $project;
+    }
+
+
+
+
+
 }

@@ -15,13 +15,14 @@ use App\Models\Comment;
 use App\Models\Page;
 use App\Http\Controllers\PageController;
 
-//web3 component
 use App\Models\Tag;
 use App\Http\Controllers\TagController;
 use App\Models\Task;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Web3RecordController;
 use App\Http\Controllers\Web3RecordLineController;
+
+use App\Http\Controllers\ProjectController;
 
 // custom token
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -127,6 +128,8 @@ Route::resource('web3RecordLines',Web3RecordLineController::class);
 // page
 Route::get('/getpage',[\App\Http\Controllers\PageController::class, 'getPage'])->name('getpage');
 
+// project
+Route::get('/getproject',[\App\Http\Controllers\ProjectController::class, 'getProject'])->name('getproject');
 
 
 
