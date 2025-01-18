@@ -109,7 +109,6 @@ const _load = async () => {
     let _board = await props.db.getState(_type, _path, _projectId);
     let _jsonBoard = await JSON.parse(_board);
     console.log(_jsonBoard);
-
     board.parse(_jsonBoard);
   }
 }
