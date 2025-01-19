@@ -21,8 +21,11 @@ use App\Models\Task;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Web3RecordController;
 use App\Http\Controllers\Web3RecordLineController;
-
 use App\Http\Controllers\ProjectController;
+use App\Models\Section;
+
+
+
 
 // custom token
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -50,7 +53,23 @@ Route::middleware([
 
     Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
     Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
-    Route::get('mood', function () { return Inertia::render('Mood', []);})->name('mood');
+    Route::get('mood', function () { 
+        return Inertia::render('Mood', [
+            'page'=> Page::with('sections')->where('title','mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get(),
+        ]);
+    })->name('mood');
+
+
+
+
+
+
+
+
+
+
+
     Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
     Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
     Route::get('planning', function () { return Inertia::render('Planning', []);})->name('planning');

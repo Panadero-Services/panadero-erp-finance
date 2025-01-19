@@ -30,6 +30,12 @@ import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
+// props
+const props = defineProps({
+    page: Object,
+    baseSections: Object
+});
+
 // reactive components
 const pulse = ref(false);
 const myChild = ref(null);
@@ -54,7 +60,6 @@ const navigation = [
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
   { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false },
 ];
-
 
 // Theme Buttons
 const _setWillow = () => { _set.dark=false; myChild.value.changeTheme('willow'); }
@@ -81,8 +86,16 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
 
         <template #header>
             <Banner />
-            <HeaderSection v-if="_set.layout.header" :set="_set" :contract="_contract"/>
 
+            <div v-for="section in baseSections"  >
+               <!--   0 Basic Public Header .... -->
+                <div v-if="page.header">
+                    <HeaderSection v-if="section.file =='HeaderSection2.vue'" :set="_set" :contract="_contract" :page="page" :section="section"  />
+                </div>
+            </div>
+            <!-- 
+            <HeaderSection v-if="_set.layout.header" :set="_set" :contract="_contract"/>
+            -->
             <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set"/>
             <RightTeamSection ref="myTeamRight" :set="_set"/>
