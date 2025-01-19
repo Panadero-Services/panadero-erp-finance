@@ -25,12 +25,15 @@ return new class extends Migration
         $table->text('features');
         $table->text('settings');
         $table->text('self');
+        $table->text('self_admin');
         $table->integer('priority');
         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
         $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         $table->boolean('is_active');
+        $table->boolean('self_auth ');
         });
     }
+
 
     /**
      * Reverse the migrations.

@@ -20,12 +20,14 @@ import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
+import FooterSlideSection from "@/sections/FooterSlideSection.vue"
 import SideRightSection from "@/sections/SideRightSection.vue"
 import RightTeamSection from "@/sections/RightTeamSection.vue"
+import RightUserSection from "@/sections/RightUserSection.vue"
 import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 import DeveloperSection from "@/sections/DeveloperSection.vue"
 
-import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
+import { PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, UserIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
@@ -41,13 +43,17 @@ const pulse = ref(false);
 const myChild = ref(null);
 const mySideRight = ref(null);
 const myTeamRight = ref(null);
+const myUserRight = ref(null);
+const myFooterSlide = ref(null);
 const _header=ref(true);
 const _subHeader=ref(true);
 const _sideBar = ref(false);
 
 const openSide = ref(false)
+const _toggleFooter = async () => { myFooterSlide.value.open = !myFooterSlide.value.open; }
 const _toggleProject = async () => { mySideRight.value.open = !mySideRight.value.open; }
 const _toggleTeam = async () => { myTeamRight.value.open = !myTeamRight.value.open; }
+const _toggleUser = async () => { myUserRight.value.open = !myUserRight.value.open; }
 const whatever = async () => { console.log('whatever')}
 
 const navigation = [
@@ -59,6 +65,8 @@ const navigation = [
   { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false },
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
   { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false },
+  { name: 'Developer', icon: WrenchIcon, href: _toggleFooter, current: false },
+  { name: 'User', icon: UserIcon, href: _toggleUser, current: false },
 ];
 
 // Theme Buttons
@@ -79,10 +87,9 @@ const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
 const _indigo = " text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-yellow-400 ";
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:ring-indigo-400 dark:hover:ring-indigo-600";
 
-
 </script>
 <template>
-    <AppLayout title="Indigo3 Mood" :set="_set">
+    <AppLayout title="Indigo3 Mood">
 
         <template #header>
             <Banner />
@@ -99,6 +106,8 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
             <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set"/>
             <RightTeamSection ref="myTeamRight" :set="_set"/>
+            <RightUserSection ref="myUserRight" :set="_set"/>
+            <FooterSlideSection ref="myFooterSlide" :set="_set"/>
             
             <!-- -->
             <!-- buttons subHeader -->

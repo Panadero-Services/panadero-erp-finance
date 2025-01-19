@@ -5,15 +5,20 @@ import Banner from '@/components/Banner.vue';
 
 import ApplicationMark from '@/components/ApplicationMark.vue';
 
+import { useSettingsStore } from '@/stores/settings';
+const _set = useSettingsStore();
+
 const props = defineProps({
-    title: String,
-    set: Object
+    title: String
 });
+
+
+
 
 </script>
 
 <template>
-  <html class="overscroll-none" :class="set.dark ? 'dark bg-black' : 'light bg-indigo-50'">
+  <html class="overscroll-none" :class="_set.dark ? 'dark bg-black' : 'light bg-indigo-50'">
         <div class="bg-slate-50 text-black/50 dark:bg-slate-900 dark:text-white/50  font-roboto">
             <Head :title="title" />
 
