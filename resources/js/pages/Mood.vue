@@ -106,7 +106,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
             <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set"/>
             <RightTeamSection ref="myTeamRight" :set="_set"/>
-            <RightUserSection ref="myUserRight" :set="_set"/>
+            <RightUserSection ref="myUserRight" :set="_set"  :user="$page.props.auth.user"/>
             <FooterSlideSection ref="myFooterSlide" :set="_set"/>
             
             <!-- -->

@@ -11,8 +11,6 @@ const _set = useSettingsStore();
 //const _contract = useContractStore();
 const _db = useDbStore();
 
-
-
 defineProps({
     tokens: Array,
     availablePermissions: Array,

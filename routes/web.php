@@ -24,7 +24,7 @@ use App\Http\Controllers\Web3RecordLineController;
 use App\Http\Controllers\ProjectController;
 use App\Models\Section;
 
-
+use App\Http\Controllers\UserController;
 
 
 // custom token
@@ -59,16 +59,6 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get(),
         ]);
     })->name('mood');
-
-
-
-
-
-
-
-
-
-
 
     Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
     Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
@@ -151,7 +141,10 @@ Route::get('/getpage',[\App\Http\Controllers\PageController::class, 'getPage'])-
 Route::get('/getproject',[\App\Http\Controllers\ProjectController::class, 'getProject'])->name('getproject');
 
 
+Route::resource('users',UserController::class);
 
+// sections
+Route::resource('sections',SectionController::class);
 
 
 
