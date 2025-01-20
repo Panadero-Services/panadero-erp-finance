@@ -141,6 +141,7 @@ Route::get('/getproject',[\App\Http\Controllers\ProjectController::class, 'getPr
 
 
 Route::resource('users',UserController::class);
+Route::post('/updateuserprofile',[UserController::class, 'updateProfile'])->name('updateuserprofile');
 
 // sections
 Route::resource('sections',SectionController::class);

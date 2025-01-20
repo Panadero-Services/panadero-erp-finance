@@ -16,14 +16,15 @@ class UserController extends Controller
     }
 
 
- public function update(Request $request, User $user)
+ public function updateProfile(Request $request, User $user)
     {
+        $id = $request->id;
+        $name = $request->name;
 
-
+        $affectedRows = User::where("id", $id)->update(["name" => $name]);
         sleep(1);
 
-        return $request;
-
+        return $affectedRows;
     }
 
 

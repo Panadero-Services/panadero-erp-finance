@@ -13,23 +13,37 @@ import PrimaryButton from '@/components/PrimaryButton.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import TextInput from '@/components/TextInput.vue';
 
+import { useDbStore } from '@/stores/db';
+const _db = useDbStore();
+
+
+
 const props = defineProps({
     user: Object
 });
 
-const _user = ref(props.user);
 
 const form = useForm({
-    _method: 'PUT',
-    name: props.user.name,
-    email: props.user.email,
-    photo: null,
+    user: props.user
 });
+
+
+
 
 //const updateProfileInformation = () => {
 
 const submit = async () => {
-    await form.put(route("users.update", props.user, form.id), {
+  const _model = "User";
+  const _payload = form.user;
+  console.log(form.user);
+
+await _db.setUser(_model, _payload);
+
+}
+
+const _submit = async () => {
+console.log(form.user);
+    await form.put(route("users.update",form.user), {
         errorBag: 'updateProfileInformation',
         preserveScroll: true,
         onSuccess: () => msgMeThingsHaveChanged(),
@@ -99,7 +113,7 @@ const _button = "scale-90 rounded-md border border-indigo-400 py-2 px-4 mr-1 tex
                       <div class="mt-6 px-4 sm:mt-8 sm:flex sm:items-end sm:px-6">
                         <div class="sm:flex-1">
                             <div class="flex items-center">
-                              <h3 class="text-xl font-bold text-indigo-600 sm:text-3xl">{{_user.name}} </h3>
+                              <h3 class="text-xl font-bold text-indigo-600 sm:text-3xl">{{form.user.name}} </h3>
                               <span class="ml-2.5 inline-block size-2 shrink-0 rounded-full" :class="_bgColor">
                                 <span class="sr-only">Online</span>
                               </span>
@@ -122,9 +136,11 @@ const _button = "scale-90 rounded-md border border-indigo-400 py-2 px-4 mr-1 tex
                           <!-- Name -->
                           <div class="col-span-6 sm:col-span-4">
                               <InputLabel for="name" value="Name" />
-                              <TextInput id="name" v-model="_user.name" type="text" class="mt-1 block w-full" required autocomplete="name"/>
+                              <TextInput id="name" v-model="form.user.name" type="text" class="mt-1 block w-full" required autocomplete="name"/>
                               <InputError :message="form.errors.name" class="mt-2" />
                           </div>
+
+
 
                           <!-- Email 
                           <div class="col-span-6 sm:col-span-4">
@@ -183,10 +199,7 @@ const _button = "scale-90 rounded-md border border-indigo-400 py-2 px-4 mr-1 tex
                     </div>
                   </div>
 
-
-
-
-        </form>
+                </form>
 
 
                 </div>

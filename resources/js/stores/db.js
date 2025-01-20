@@ -110,6 +110,43 @@ export const useDbStore = defineStore('db',{
             });
         }, 
 
+
+        async setUser(_model, _payload) {
+            //console.log(_model);
+            return new Promise((resolve, reject) => {
+              const check = async () => {
+                try {
+                    //this.DebugMode('set.payload', _payload);
+                    const jsonPayload = JSON.stringify(_payload);
+                   // const postSignature = crypto.createHmac('sha256', '31234KeyTestevnvornment')
+                   //     .update(jsonPayload)
+                   //     .digest('hex');
+                    axios
+                        .post(`/updateuserprofile`,_payload, {
+                            headers: {
+                                'withCredentials': true,
+                                'content-type': 'application/json',
+                                'caller': 'useDbStore', 
+                                'model': _model, 
+                                'Sign': 'postSignature',
+                            }
+                        })
+                    .then((response) => {
+                        console.log(response.data);
+                        resolve(response.data);
+                    })
+                } catch (err) {
+                  reject(`store/db.js:post:: ${err}`);
+                }
+              }
+              check(); 
+            });
+        }, 
+
+
+
+
+
         async get (_model) {
             return new Promise((resolve, reject) => {
               const check = async () => {
