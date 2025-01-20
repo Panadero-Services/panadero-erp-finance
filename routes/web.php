@@ -26,7 +26,6 @@ use App\Models\Section;
 
 use App\Http\Controllers\UserController;
 
-
 // custom token
 use App\Http\Middleware\EnsureTokenIsValid;
 
@@ -145,11 +144,3 @@ Route::resource('users',UserController::class);
 
 // sections
 Route::resource('sections',SectionController::class);
-
-
-
-
-
-
-
-
