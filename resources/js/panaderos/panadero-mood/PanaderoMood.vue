@@ -159,7 +159,7 @@ defineExpose({
 
   <div class="m-0">   
     <div class="" id="root"></div>
-    <div id="whatever" class="max-w-9xl"></div>
+    <div id="whatever" class=""></div>
   </div>
 
 </template>

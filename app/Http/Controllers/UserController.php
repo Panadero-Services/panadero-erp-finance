@@ -20,8 +20,14 @@ class UserController extends Controller
     {
         $id = $request->id;
         $name = $request->name;
+        $email = $request->email;
+        $json = $request->json;
 
-        $affectedRows = User::where("id", $id)->update(["name" => $name]);
+        $affectedRows = User::where("id", $id)->update([
+            "name" => $name,
+            "email" => $email,
+            "json" => $json
+        ]);
         sleep(1);
 
         return $affectedRows;
