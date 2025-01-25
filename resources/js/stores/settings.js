@@ -23,7 +23,7 @@ export let useSettingsStore = defineStore('settings',{
         projectVisible: false,
         cookiesAccepted: false,
   //      animate: true,
-        banner: {active: false, msg:"new env initiated...", style:"success"},
+        banner: {active: true, msg:"new env initiated...", style:"success"},
         assets: {}, 
         projectType: 'none',
         layout: {sidebar:false, header:true, subHeader:true, footer:true, developer:false},

@@ -29,8 +29,8 @@ class UserController extends Controller
             "json" => $json
         ]);
         sleep(1);
-
-        return $affectedRows;
+        return "updateProfile successfull: ".$affectedRows;
+//        return $affectedRows;
     }
 
 
