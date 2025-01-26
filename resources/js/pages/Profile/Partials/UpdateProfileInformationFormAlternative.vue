@@ -77,22 +77,12 @@ const clearPhotoFileInput = () => {
 
 <template>
     <FormSection @submitted="updateProfileInformation">
-        
-
 
         <template #form>
             <!-- Profile Photo -->
-            <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4">
+            <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4 h-48 mt-8 ">
                 <!-- Profile Photo File Input -->
-                <input
-                    id="photo"
-                    ref="photoInput"
-                    type="file"
-                    class="hidden"
-                    @change="updatePhotoPreview"
-                >
-
-                <InputLabel for="photo" value="Photo" />
+                <input id="photo" ref="photoInput" type="file" class="hidden" @change="updatePhotoPreview" >
 
                 <!-- Current Profile Photo -->
                 <div v-show="! photoPreview" class="mt-2">
@@ -106,19 +96,15 @@ const clearPhotoFileInput = () => {
                         :style="'background-image: url(\'' + photoPreview + '\');'"
                     />
                 </div>
-
-                <SecondaryButton class="mt-2 me-2" type="button" @click.prevent="selectNewPhoto">
+                <div class="flex -mt-1">
+                <SecondaryButton class="mt-16 me-1 w-24" type="button" @click.prevent="selectNewPhoto">
                     Select A New Photo
                 </SecondaryButton>
 
-                <SecondaryButton
-                    v-if="user.profile_photo_path"
-                    type="button"
-                    class="mt-2"
-                    @click.prevent="deletePhoto"
-                >
+                <SecondaryButton v-if="user.profile_photo_path" type="button" class="mt-16 me-1 w-24" @click.prevent="deletePhoto" >
                     Remove Photo
                 </SecondaryButton>
+                </div>
 
                 <InputError :message="form.errors.photo" class="mt-2" />
             </div>

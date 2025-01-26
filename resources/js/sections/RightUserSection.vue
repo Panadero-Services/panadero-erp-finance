@@ -123,15 +123,15 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                         <div class="flex h-full flex-col overflow-y-scroll shadow-xl"  :class="_set.dark ? 'dark bg-slate-950 shadow-indigo-600' : 'light bg-indigo-50 shadow-indigo-200'">
                            <form @submit.prevent="submit" class="h-full border-l border-gray-400">
 
-                           <!-- Title header-->
+                              <!-- Title header-->
                               <div class="px-2 py-2 h-12 bg-gradient-to-r bg-gradient-to-l from-indigo-100 to-slate-200 dark:from-black dark:to-slate-900">
                                  <div class="items-center justify-between text-slate-600 dark:text-slate-400 text-center">
                                     <div class="flex">
                                        <user-icon class="w-12"/>
-                                          <div class="text-xl m-1">
-                                             User
-                                             <span v-if="_set.mode.dev" class=" ml-2 text-lg text-cyan-600">dev-mode</span>
-                                          </div>
+                                       <div class="text-xl m-1">
+                                          User
+                                          <span v-if="_set.mode.dev" class=" ml-2 text-lg text-cyan-600">dev-mode</span>
+                                       </div>
                                     </div>
 
                                     <!-- id subHeader-->
@@ -150,7 +150,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                                  </div>
                               </div>
 
-                              <!-- update subHeader-->
+                              <!-- updated subHeader-->
                               <div class="px-2 py-2 h-10  bg-gradient-to-r bg-gradient-to-r from-slate-100 to-indigo-100 dark:from-slate-950 dark:to-indigo-950">
                                  <div class="text-slate-600 dark:text-slate-400 text-right">
                                     <div class="">
@@ -163,44 +163,48 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                                  </div>
                               </div>
 
-                              <!-- Picture + name -->
-                              <div class="mt-4 pb-1 sm:pb-1">
-                                 <div class="mt-4  sm:flex sm:items-end">
-                                    <div class="sm:flex-1">
-                                       <div class="text-center h-10">
-                                          <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-300 sm:text-3xl">{{form.user.name}} </h3>
-                                       </div>
-                                    </div>
-                                 </div>
-
-                                 <div class="grid grid-cols-2 mt-4">
-
-
-
-               <div class="" v-if="$page.props.jetstream.canUpdateProfileInformation">
-                    <UpdateProfileInformationFormAlternative :user="$page.props.auth.user" />
-                        
-                </div>
-
-
-                        <!-- Small Photo Section 
-                           <div class="relative h-12 w-12">
-                              <img class="absolute size-full object-cover object-fill rounded-full"  src="/storage/profile-photos/lieuwe.jpg" alt="" />
-                           </div>
-                        -->
-
-
-
-                                    <div class="relative h-48" :class="_bgColor">
-                                       <img class="absolute size-full object-cover object-fill" :class="_set.mode.dev? 'brightness-50 opacity-10 ' : 'brightness-75 opacity-25 ' " src="/storage/profile-photos/lieuwe.jpg" alt="" />
+                              <!-- Title User -->
+                              <div class="mt-3 sm:flex sm:items-end">
+                                 <div class="sm:flex-1">
+                                    <div class="text-center h-10">
+                                       <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-300 sm:text-3xl">{{form.user.name}} </h3>
                                     </div>
                                  </div>
                               </div>
 
+                              <!-- Photo -->
+                              <div class=" text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400 -mt-3">
+                                 <div class="">
+                                    Photo
+                                 </div>
+                              </div>
 
-                              <!-- Content -->
-                              <div class="mt-4 divide-y space-y-2 text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
-                                 <div class=" mb-2">
+                              <!-- Picture + name -->
+                              <div class="">
+
+                                 <div class="grid grid-cols-6 mt-1 ">
+
+                                 <div class="h-64 col-span-3 ml-3" v-if="$page.props.jetstream.canUpdateProfileInformation">
+                                      <UpdateProfileInformationFormAlternative :user="$page.props.auth.user" />
+                                  </div>
+
+                                 <!-- Small Photo Section 
+                                    <div class="relative h-12 w-12">
+                                       <img class="absolute size-full object-cover object-fill rounded-full"  src="/storage/profile-photos/lieuwe.jpg" alt="" />
+                                    </div>
+                                 -->
+
+                                    <div class="relative h-48 w-48 ml-3 col-span-3" :class="_bgColor">
+                                       <img class="absolute size-full object-cover object-fill" :class="_set.mode.dev? 'brightness-50 opacity-10 ' : 'brightness-75 opacity-25 ' " src="/storage/profile-photos/lieuwe.jpg" alt="" />
+                                    </div>
+
+                                 </div>
+                              </div>
+
+
+                              <!-- Profile -->
+                              <div class="mt-12 divide-y space-y-2 text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
+                                 <div class=" mb-3">
                                     Profile Information
                                     <!-- Name -->
                                     <div class="flex col-span-6 sm:col-span-4 mt-2">
@@ -276,7 +280,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
 
                 <!-- SubCategory Other Information -->
-                <div v-if="_set.mode.dev" class="pt-3 mb-4">
+                <div v-if="_set.mode.dev" class="pt-3 pb-3">
                    Other Information
 
                    <!-- email_verified_at -->
@@ -316,7 +320,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
  <!-- profile_photo_path -->
  <div class="grid grid-cols-3 text-xs mx-4 text-slate-600 dark:text-slate-400"> <div>profile_photo_path:</div>
- <div class="col-span-2 text-slate-800 dark:text-slate-300 text-right"> {{form.user.profile_photo_path.substr(0,36)}} ....</div>
+ <div v-if="form.user.profile_photo_path" class="col-span-2 text-slate-800 dark:text-slate-300 text-right"> {{form.user.profile_photo_path.substr(0,36)}} ....</div>
 </div>
 
 <!-- profile_photo_url" -->
@@ -333,7 +337,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
 <div class="pt-3 mb-4">Modes
 
-   <div class="flex gap-x-8 mt-1 text-xs ml-2 text-center">
+   <div class="flex gap-x-8  text-xs ml-2 text-center">
      <div></div>
      <div>
        <label for="first.first" class="block text-gray-700 mb-2 dark:text-slate-300">First</label>
