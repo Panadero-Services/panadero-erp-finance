@@ -18,8 +18,11 @@ import TextInput from '@/components/TextInput.vue';
 import UpdateProfileInformationFormAlternative from '@/pages/Profile/Partials/UpdateProfileInformationFormAlternative.vue';
 
 
+// sub-sections
+import Progress from '@/sections/user-section/Progress.vue';
 
 
+// sub-sections
 import { useSettingsStore } from '@/stores/settings';
 import { useDbStore } from '@/stores/db';
 const _db = useDbStore();
@@ -29,37 +32,75 @@ const props = defineProps({
     user: Object
 });
 
-const _loading = ref(false);
-const _msg=ref({style: 'text-yellow-400', txt: ""});
 
 const form = useForm({
     user: props.user,
     mode: _set.mode
 });
 
+
+const _updateStruct = { 
+   name:"userRequest",
+   loading: false,
+   payload: {},
+   step: 0,
+   start: 0,
+   end: 0,
+   prepare: "",
+   validate1: "",
+   request: "",
+   response: "", 
+   validate2: "",
+   finished: ""
+}
+
+const _oUpdate=ref(_updateStruct);
+const _shadowColor = ref('indigo');
+
+
 //const updateProfileInformation = () => {
 const _update = async () => {
 
-  _loading.value = true;
-  const _start = new Date().getTime();
-  _msg.value = {style: 'text-yellow-600 dark:text-yellow-300', txt: "updateProfile requested..."};
-  const _model = "User";
-  _set.mode = form.mode;
-  form.user.json = JSON.stringify(_set);
-  const _payload = form.user;
-  console.log(form.user);
+   _oUpdate.value = _updateStruct; 
 
-  let _response = await _db.setUser(_model, _payload);
+   // 1 prepare
+   _oUpdate.value.step=0;
+   _oUpdate.value.loading = true;
+   _oUpdate.value.start = new Date().getTime();
+   _oUpdate.value.prepare = "prepared";
 
-  const _elapsed = new Date().getTime() - _start;
+   _shadowColor.value = "yellow";
 
-  if(_set.mode.dev) _response += '--> _elapsed:(' + _elapsed + ' ms)' ;
 
-  _msg.value = {style: 'text-green-500', txt: _response };
+   // 2 validate
+   _oUpdate.value.step = 1;
+   const _model = "User";
+   _set.mode = form.mode;
+   form.user.json = JSON.stringify(_set);
+   _oUpdate.value.payload = form.user;
+   _oUpdate.value.validate1 = "pre-validated";
+   console.log(form.user);
 
-  //_set.banner= {active: true, msg:_msg.value, style:"success"};
+   // 3 request
+   _oUpdate.value.step = 2;
+   let _response = await _db.setUser(_model, _oUpdate.value.payload);
+   _oUpdate.value.request = "requested";
 
-  _loading.value = false;
+   // 4 response
+   _oUpdate.value.step = 3;
+   _oUpdate.value.request = "responded";
+
+   // 5 validate
+   _oUpdate.value.step = 4;
+   _oUpdate.value.end = new Date().getTime() - _oUpdate.value.start;
+   _oUpdate.value.validate2 = "post-validated";
+
+   // 6 finished
+   _oUpdate.value.step = 5;
+   _oUpdate.value.loading = false;
+   _oUpdate.value.finished = "finished";
+
+_shadowColor.value ="indigo";
 
 }
 
@@ -95,7 +136,6 @@ defineExpose({ open });
 const _userColor="indigo";
 
 //const _shadowColor = 'shadow-'+_userColor+'-700 dark:shadow-'+_userColor+'-200';
-const _shadowColor = 'shadow-indigo-600 ';
 const _bgColor = 'bg-indigo-700';
 const _successColor = 'bg-green-600';
 const _hoverColor = 'hover:bg-indigo-500';
@@ -105,6 +145,7 @@ const _theme = computed(() => {
 return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 //return _shadowColor; 
 });
+
 
 </script>
 
@@ -120,7 +161,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                         <DialogPanel class="pointer-events-auto w-screen max-w-md">
 
                         <!-- This is the main div -->
-                        <div class="flex h-full flex-col overflow-y-scroll shadow-xl"  :class="_set.dark ? 'dark bg-slate-950 shadow-indigo-600' : 'light bg-indigo-50 shadow-indigo-200'">
+                        <div class="flex h-full flex-col overflow-y-scroll shadow-xl"  :class="_set.dark ? 'dark bg-slate-950 shadow-'+_shadowColor+'-600' : 'light bg-indigo-50 shadow-'+_shadowColor+'-200'">
                            <form @submit.prevent="submit" class="h-full border-l border-gray-400">
 
                               <!-- Title header-->
@@ -173,7 +214,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                               </div>
 
                               <!-- Photo -->
-                              <div class=" text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400 -mt-3">
+                              <div class=" text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
                                  <div class="">
                                     Photo
                                  </div>
@@ -184,7 +225,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
                                  <div class="grid grid-cols-6 mt-1 ">
 
-                                 <div class="h-64 col-span-3 ml-3" v-if="$page.props.jetstream.canUpdateProfileInformation">
+                                 <div class="h-64 col-span-3 ml-3 " v-if="$page.props.jetstream.canUpdateProfileInformation">
                                       <UpdateProfileInformationFormAlternative :user="$page.props.auth.user" />
                                   </div>
 
@@ -194,8 +235,8 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                                     </div>
                                  -->
 
-                                    <div class="relative h-48 w-48 ml-3 col-span-3" :class="_bgColor">
-                                       <img class="absolute size-full object-cover object-fill" :class="_set.mode.dev? 'brightness-50 opacity-10 ' : 'brightness-75 opacity-25 ' " src="/storage/profile-photos/lieuwe.jpg" alt="" />
+                                    <div class="relative h-48 w-48 ml-3 col-span-3 rounded-md" :class="_bgColor">
+                                       <img class="absolute rounded-md size-full object-cover object-fill" :class="_set.mode.dev? 'brightness-50 opacity-10 ' : 'brightness-75 opacity-25 ' " src="/storage/profile-photos/lieuwe.jpg" alt="" />
                                     </div>
 
                                  </div>
@@ -203,7 +244,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
 
                               <!-- Profile -->
-                              <div class="mt-12 divide-y space-y-2 text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
+                              <div class="mt-16 divide-y space-y-2 text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
                                  <div class=" mb-3">
                                     Profile Information
                                     <!-- Name -->
@@ -238,8 +279,6 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                           <!-- Email 
                           -->
 
-
-
                           <!-- Profile Photo
                           <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4">
                              
@@ -267,14 +306,19 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                               <InputError :message="form.errors.photo" class="mt-2" />
                           </div>
                        -->
-                       <div class="text-xs col-span-2" :class="_msg.style">{{_msg.txt}}</div>
+
+                        <div class="my-2 col-span-4">
+                           <Progress :package="_oUpdate" />
+                        </div>
+
                        <div></div>
                        <div>
-                         <button type="update" :disabled="_loading" @click="_update" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Save</button>
+                         <button type="update" :disabled="_oUpdate.loading" @click="_update" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Save</button>
                       </div>
                       <div>
-                         <button type="cancel" :disabled="_loading" @click="_cancel" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Cancel</button>
+                         <button type="cancel" :disabled="_oUpdate.loading" @click="_cancel" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Cancel</button>
                       </div>
+
                    </div>
                 </div>
 
@@ -335,7 +379,7 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 </div>
 </div>
 
-<div class="pt-3 mb-4">Modes
+<div class="pt-4 mb-4 ">Modes
 
    <div class="flex gap-x-8  text-xs ml-2 text-center">
      <div></div>
