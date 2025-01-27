@@ -21,32 +21,154 @@ const form = useForm({
     mode: props.set.mode
 });
 
-const _updateStruct = { 
-   name:"userRequest",
-   loading: false,
-   payload: {},
-   step: 0,
-   start: 0,
-   end: 0,
-   prepare: "",
-   validate1: "",
-   request: "",
-   response: "", 
-   validate2: "",
-   finished: ""
+
+
+
+
+
+
+
+
+
+
+const _waitFor = (_o, _ms=1000) => new Promise(r => setTimeout(r, _ms));
+
+const _updatePrepare = async (_o, _step=0) => {
+  return new Promise(async function(resolve,reject){
+	//console.log("prepare");
+    try { 
+		_o.start = new Date().getTime();
+    	_o.loading = true; 
+    	_o.stages[_step].result = "prepared"
+    	_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+		await _waitFor(_o, 1500);
+      resolve(_step);
+    } catch (_err) {
+      reject(_err);
+    }  
+  });
 }
 
-const _oUpdate=ref(_updateStruct);
+const _updateValidate1 = async (_o, _step=1) => {
+	//console.log("validate1");
+ 	return new Promise(async function(resolve,reject){
+    	try { 
+			await _waitFor(_o, 1100);
+    		_o.stages[_step].result = "pre-validated"
+    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+      	resolve(_step);
+    	} catch (_err) {
+      	reject(_err);
+    	}  
+  	});
+}
 
-//const updateProfileInformation = () => {
+const _updateRequest = async (_o, _step=2) => {
+	//console.log("request");
+  	return new Promise(async function(resolve,reject){
+   	try {
+			await _waitFor(_o, 1600);
+    		_o.stages[_step].result = "requested"
+    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+      	resolve(_step);
+    	} catch (_err) {
+      	reject(_err);
+    	}  
+  	});
+}
+const _updateResponse = async (_o, _step=3) => {
+	//console.log("request");
+  	return new Promise(async function(resolve,reject){
+   	try {
+			await _waitFor(_o, 1300);
+    		_o.stages[_step].result = "received response"
+    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+      	resolve(_step);
+    	} catch (_err) {
+      	reject(_err);
+    	}  
+  	});
+}
+
+
+const _updateValidate2 = async (_o, _step=4) => {
+	//console.log("validate2");
+  	return new Promise(async function(resolve,reject){
+   	try { 
+			await _waitFor(_o, 2100);
+    		_o.stages[_step].result = "validated response"
+    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+      	resolve(_step);
+    	} catch (_err) {
+      	reject(_err);
+    	}  
+  	});
+}
+
+const _updateComplete = async (_o, _step=5) => {
+	//console.log("complete");
+ 	return new Promise(async function(resolve,reject){
+   	try {
+			await _waitFor(_o,3000);
+    		_o.stages[_step].result = "completed"
+    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+			_o.loading = false; 
+      	resolve(_step);
+    	} catch (_err) {
+      	reject(_err);
+    	}  
+  	});
+}
+
+const _stages = [
+	{ name:"prepare",   result:"", elapsed:0, max:100, f:_updatePrepare },
+	{ name:"validate1", result:"", elapsed:0, max:100, f:_updateValidate1 },
+	{ name:"request",   result:"", elapsed:0, max:100, f:_updateRequest },
+	{ name:"response",  result:"", elapsed:0, max:100, f:_updateResponse },
+	{ name:"validate2", result:"", elapsed:0, max:100, f:_updateValidate2 },
+	{ name:"complete", result:"", elapsed:0, max:100, f:_updateComplete }
+];
+
+const _uStruct = { name:"userRequest", loading: false, step: 0, start: 0, end: 0, stages: _stages, payload: {} }
+const _oUpdate = ref(_uStruct);
+
 const _update = async () => {
+ 	return new Promise(async function(resolve,reject){
+    	try {
+			_oUpdate.value = _uStruct;
 
-   _oUpdate.value = _updateStruct; 
+		   let _O = _oUpdate.value;
+		   let _S =  _O.stages;
+
+			_O.step = await _S[0].f(_O);
+			_O.step = await _S[1].f(_O);
+			_O.step = await _S[2].f(_O);
+			_O.step = await _S[3].f(_O);
+			_O.step = await _S[4].f(_O);
+			_O.step = await _S[5].f(_O);
+
+      	resolve();
+    	} catch (_err) {
+      	reject(_err);
+    	}  
+ 	});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 
    // 1 prepare
    _oUpdate.value.step=0;
-   _oUpdate.value.loading = true;
-   _oUpdate.value.start = new Date().getTime();
    _oUpdate.value.prepare = "prepared";
 
    //_shadowColor.value = "yellow";
@@ -78,9 +200,9 @@ const _update = async () => {
    _oUpdate.value.step = 5;
    _oUpdate.value.loading = false;
    _oUpdate.value.finished = "finished";
+   */
 
    //_shadowColor.value ="indigo";
-}
 
 const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
@@ -141,7 +263,7 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
 			<div>
 				<button type="cancel" :disabled="_oUpdate.loading" @click="_cancel" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Cancel</button>
 			</div>
-			<div class="mt-4 col-span-4">
+			<div class="mt-2 col-span-5">
 				<progress-section :package="_oUpdate" />
 			</div>
 		</div>
