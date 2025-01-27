@@ -21,16 +21,6 @@ const form = useForm({
     mode: props.set.mode
 });
 
-
-
-
-
-
-
-
-
-
-
 const _waitFor = (_o, _ms=1000) => new Promise(r => setTimeout(r, _ms));
 
 const _updatePrepare = async (_o, _step=0) => {
@@ -53,9 +43,10 @@ const _updateValidate1 = async (_o, _step=1) => {
 	//console.log("validate1");
  	return new Promise(async function(resolve,reject){
     	try { 
-			await _waitFor(_o, 1100);
+   		_o.payload = form.user;
     		_o.stages[_step].result = "pre-validated"
     		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+			await _waitFor(_o, 1100);
       	resolve(_step);
     	} catch (_err) {
       	reject(_err);
@@ -67,22 +58,13 @@ const _updateRequest = async (_o, _step=2) => {
 	//console.log("request");
   	return new Promise(async function(resolve,reject){
    	try {
+
+   		const _model = "User";
+
+    		_o.stages[_step].result = await props.db.setUser(_model, _o.payload);
+    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
+
 			await _waitFor(_o, 1600);
-    		_o.stages[_step].result = "requested"
-    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
-      	resolve(_step);
-    	} catch (_err) {
-      	reject(_err);
-    	}  
-  	});
-}
-const _updateResponse = async (_o, _step=3) => {
-	//console.log("request");
-  	return new Promise(async function(resolve,reject){
-   	try {
-			await _waitFor(_o, 1300);
-    		_o.stages[_step].result = "received response"
-    		_o.stages[_step].elapsed = new Date().getTime() - _o.start;
       	resolve(_step);
     	} catch (_err) {
       	reject(_err);
@@ -90,8 +72,7 @@ const _updateResponse = async (_o, _step=3) => {
   	});
 }
 
-
-const _updateValidate2 = async (_o, _step=4) => {
+const _updateValidate2 = async (_o, _step=3) => {
 	//console.log("validate2");
   	return new Promise(async function(resolve,reject){
    	try { 
@@ -105,7 +86,7 @@ const _updateValidate2 = async (_o, _step=4) => {
   	});
 }
 
-const _updateComplete = async (_o, _step=5) => {
+const _updateComplete = async (_o, _step=4) => {
 	//console.log("complete");
  	return new Promise(async function(resolve,reject){
    	try {
@@ -124,7 +105,6 @@ const _stages = [
 	{ name:"prepare",   result:"", elapsed:0, max:100, f:_updatePrepare },
 	{ name:"validate1", result:"", elapsed:0, max:100, f:_updateValidate1 },
 	{ name:"request",   result:"", elapsed:0, max:100, f:_updateRequest },
-	{ name:"response",  result:"", elapsed:0, max:100, f:_updateResponse },
 	{ name:"validate2", result:"", elapsed:0, max:100, f:_updateValidate2 },
 	{ name:"complete", result:"", elapsed:0, max:100, f:_updateComplete }
 ];
@@ -145,7 +125,6 @@ const _update = async () => {
 			_O.step = await _S[2].f(_O);
 			_O.step = await _S[3].f(_O);
 			_O.step = await _S[4].f(_O);
-			_O.step = await _S[5].f(_O);
 
       	resolve();
     	} catch (_err) {
@@ -154,78 +133,25 @@ const _update = async () => {
  	});
 }
 
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-   // 1 prepare
-   _oUpdate.value.step=0;
-   _oUpdate.value.prepare = "prepared";
-
-   //_shadowColor.value = "yellow";
-
-   // 2 validate
-   _oUpdate.value.step = 1;
-   const _model = "User";
-   props.set.mode = form.mode;
-   form.user.json = JSON.stringify(props.set);
-   _oUpdate.value.payload = form.user;
-   _oUpdate.value.validate1 = "pre-validated";
-   console.log(form.user);
-
-   // 3 request
-   _oUpdate.value.step = 2;
-   let _response = await props.db.setUser(_model, _oUpdate.value.payload);
-   _oUpdate.value.request = "requested";
-
-   // 4 response
-   _oUpdate.value.step = 3;
-   _oUpdate.value.request = "responded";
-
-   // 5 validate
-   _oUpdate.value.step = 4;
-   _oUpdate.value.end = new Date().getTime() - _oUpdate.value.start;
-   _oUpdate.value.validate2 = "post-validated";
-
-   // 6 finished
-   _oUpdate.value.step = 5;
-   _oUpdate.value.loading = false;
-   _oUpdate.value.finished = "finished";
-   */
-
-   //_shadowColor.value ="indigo";
-
 const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
 </script>
 <template>
 
-	<div class=""></div>
-
-
 	<!-- Profile -->
-	<div class="pt-1">
+	<div class="">
 
 		<!-- Title User -->
-		<div class="my-1 sm:flex sm:items-end">
+		<div class=" sm:flex sm:items-end">
 			<div class="sm:flex-1">
 				<div class="text-center h-10">
 					<h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-300 sm:text-3xl">{{form.user.name}} </h3>
 				</div>
 			</div>
 		</div>
-
-		Profile Information
-
+		<div class="mt-1">
+				Profile Information
+		</div>
 		<!-- Name -->
 		<div class="flex col-span-6 sm:col-span-4 mt-1">
 			<InputLabel for="name" value="Name" class="mt-2 mr-2"/>
@@ -254,6 +180,11 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
 
 		<!-- Button bar1 -->
 		<div class="grid grid-cols-5 space-x-1 place-items-end py-2">
+
+			<div class="mt-1 col-span-5 -mb-4">
+				<progress-section :package="_oUpdate" />
+			</div>
+
 			<div></div>
 			<div></div>
 			<div></div>
@@ -263,9 +194,7 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
 			<div>
 				<button type="cancel" :disabled="_oUpdate.loading" @click="_cancel" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Cancel</button>
 			</div>
-			<div class="mt-2 col-span-5">
-				<progress-section :package="_oUpdate" />
-			</div>
+
 		</div>
 	</div>
 

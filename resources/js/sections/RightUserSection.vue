@@ -149,7 +149,7 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
 
                                  <div class="grid grid-cols-6 mt-1 ">
 
-                                    <div class="h-64 col-span-3 ml-3 " v-if="$page.props.jetstream.canUpdateProfileInformation">
+                                    <div class="h-48 col-span-3 ml-3 " v-if="$page.props.jetstream.canUpdateProfileInformation">
                                          <UpdateProfileInformationFormAlternative :user="$page.props.auth.user" />
                                      </div>
 
@@ -178,7 +178,7 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
 
 
                 <!-- SubCategory Other Information -->
-                <div v-if="_set.mode.dev" class="pt-3 pb-3">
+                <div v-if="_set.mode.dev || 1" class="pt-3 pb-3">
                    Other Information
 
                    <!-- email_verified_at -->

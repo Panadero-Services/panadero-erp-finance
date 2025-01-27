@@ -80,12 +80,12 @@ const clearPhotoFileInput = () => {
 
         <template #form>
             <!-- Profile Photo -->
-            <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4 h-48 mt-8">
+            <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4 h-24 mt-8">
                 <!-- Profile Photo File Input -->
                 <input id="photo" ref="photoInput" type="file" class="hidden" @change="updatePhotoPreview" >
 
                 <!-- Current Profile Photo -->
-                <div v-show="! photoPreview" class="mt-2">
+                <div v-show="! photoPreview" class="-mt-6">
                     <img :src="user.profile_photo_url" :alt="user.name" class="rounded-full h-20 w-20 object-cover">
                 </div>
 
@@ -97,11 +97,11 @@ const clearPhotoFileInput = () => {
                     />
                 </div>
                 <div class="flex -mt-1">
-                <SecondaryButton class="mt-16 me-1 w-24" type="button" @click.prevent="selectNewPhoto">
+                <SecondaryButton class="mt-8 me-1 w-24" type="button" @click.prevent="selectNewPhoto">
                     Select A New Photo
                 </SecondaryButton>
 
-                <SecondaryButton v-if="user.profile_photo_path" type="button" class="mt-16 me-1 w-24" @click.prevent="deletePhoto" >
+                <SecondaryButton v-if="user.profile_photo_path" type="button" class="mt-8 me-1 w-24" @click.prevent="deletePhoto" >
                     Remove Photo
                 </SecondaryButton>
                 </div>
