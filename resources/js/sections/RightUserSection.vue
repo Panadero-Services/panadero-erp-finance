@@ -1,6 +1,5 @@
 <script setup>
 import { ref,  onMounted, computed } from 'vue'
-
 import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
 import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { UserIcon } from '@heroicons/vue/24/outline'
@@ -8,18 +7,14 @@ import { Switch } from '@headlessui/vue'
 
 import ActionMessage from '@/components/ActionMessage.vue';
 import FormSection from '@/components/FormSection.vue';
-import InputError from '@/components/InputError.vue';
-import InputLabel from '@/components/InputLabel.vue';
+
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
 import TextInput from '@/components/TextInput.vue';
 
-
 import UpdateProfileInformationFormAlternative from '@/pages/Profile/Partials/UpdateProfileInformationFormAlternative.vue';
 
-
-// sub-sections
-import Progress from '@/sections/user-section/Progress.vue';
+import ProfileSection from '@/sections/user-section/ProfileSection.vue';
 
 
 // sub-sections
@@ -32,77 +27,15 @@ const props = defineProps({
     user: Object
 });
 
-
 const form = useForm({
     user: props.user,
     mode: _set.mode
 });
 
 
-const _updateStruct = { 
-   name:"userRequest",
-   loading: false,
-   payload: {},
-   step: 0,
-   start: 0,
-   end: 0,
-   prepare: "",
-   validate1: "",
-   request: "",
-   response: "", 
-   validate2: "",
-   finished: ""
-}
-
-const _oUpdate=ref(_updateStruct);
 const _shadowColor = ref('indigo');
 
 
-//const updateProfileInformation = () => {
-const _update = async () => {
-
-   _oUpdate.value = _updateStruct; 
-
-   // 1 prepare
-   _oUpdate.value.step=0;
-   _oUpdate.value.loading = true;
-   _oUpdate.value.start = new Date().getTime();
-   _oUpdate.value.prepare = "prepared";
-
-   _shadowColor.value = "yellow";
-
-
-   // 2 validate
-   _oUpdate.value.step = 1;
-   const _model = "User";
-   _set.mode = form.mode;
-   form.user.json = JSON.stringify(_set);
-   _oUpdate.value.payload = form.user;
-   _oUpdate.value.validate1 = "pre-validated";
-   console.log(form.user);
-
-   // 3 request
-   _oUpdate.value.step = 2;
-   let _response = await _db.setUser(_model, _oUpdate.value.payload);
-   _oUpdate.value.request = "requested";
-
-   // 4 response
-   _oUpdate.value.step = 3;
-   _oUpdate.value.request = "responded";
-
-   // 5 validate
-   _oUpdate.value.step = 4;
-   _oUpdate.value.end = new Date().getTime() - _oUpdate.value.start;
-   _oUpdate.value.validate2 = "post-validated";
-
-   // 6 finished
-   _oUpdate.value.step = 5;
-   _oUpdate.value.loading = false;
-   _oUpdate.value.finished = "finished";
-
-_shadowColor.value ="indigo";
-
-}
 
 const _cancel = async () => {
   open.value=false;
@@ -139,13 +72,13 @@ const _userColor="indigo";
 const _bgColor = 'bg-indigo-700';
 const _successColor = 'bg-green-600';
 const _hoverColor = 'hover:bg-indigo-500';
-const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
 const _theme = computed(() => {
 return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 //return _shadowColor; 
 });
 
+const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
 </script>
 
@@ -204,17 +137,8 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
                                  </div>
                               </div>
 
-                              <!-- Title User -->
-                              <div class="mt-3 sm:flex sm:items-end">
-                                 <div class="sm:flex-1">
-                                    <div class="text-center h-10">
-                                       <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-300 sm:text-3xl">{{form.user.name}} </h3>
-                                    </div>
-                                 </div>
-                              </div>
-
                               <!-- Photo -->
-                              <div class=" text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
+                              <div class="text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-slate-800 dark:text-slate-400">
                                  <div class="">
                                     Photo
                                  </div>
@@ -225,15 +149,15 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
                                  <div class="grid grid-cols-6 mt-1 ">
 
-                                 <div class="h-64 col-span-3 ml-3 " v-if="$page.props.jetstream.canUpdateProfileInformation">
-                                      <UpdateProfileInformationFormAlternative :user="$page.props.auth.user" />
-                                  </div>
+                                    <div class="h-64 col-span-3 ml-3 " v-if="$page.props.jetstream.canUpdateProfileInformation">
+                                         <UpdateProfileInformationFormAlternative :user="$page.props.auth.user" />
+                                     </div>
 
-                                 <!-- Small Photo Section 
-                                    <div class="relative h-12 w-12">
-                                       <img class="absolute size-full object-cover object-fill rounded-full"  src="/storage/profile-photos/lieuwe.jpg" alt="" />
-                                    </div>
-                                 -->
+                                    <!-- Small Photo Section 
+                                       <div class="relative h-12 w-12">
+                                          <img class="absolute size-full object-cover object-fill rounded-full"  src="/storage/profile-photos/lieuwe.jpg" alt="" />
+                                       </div>
+                                    -->
 
                                     <div class="relative h-48 w-48 ml-3 col-span-3 rounded-md" :class="_bgColor">
                                        <img class="absolute rounded-md size-full object-cover object-fill" :class="_set.mode.dev? 'brightness-50 opacity-10 ' : 'brightness-75 opacity-25 ' " src="/storage/profile-photos/lieuwe.jpg" alt="" />
@@ -245,82 +169,12 @@ return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 
                               <!-- Profile -->
                               <div class="mt-16 divide-y space-y-2 text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
-                                 <div class=" mb-3">
-                                    Profile Information
-                                    <!-- Name -->
-                                    <div class="flex col-span-6 sm:col-span-4 mt-2">
-                                       <InputLabel for="name" value="Name" class="mt-2 mr-2"/>
-                                       <TextInput id="name" v-model="form.user.name" type="text" class="mt-1 block w-full" required />
-                                       <InputError :message="form.errors.name" class="mt-2" />
-                                    </div>
 
-                                    <!-- Email -->
-                                    <div class="flex col-span-6 sm:col-span-4 mt-2">
-                                       <InputLabel for="email" value="Email" class="mt-2 mr-2"/>
-                                       <TextInput id="email" v-model="form.user.email" type="email" class="mt-1 block w-full" required />
-                                       <InputError :message="form.errors.email" class="mt-2" />
 
-                                       <div v-if="$page.props.jetstream.hasEmailVerification && user.email_verified_at === null">
-                                          <p class="text-sm mt-2 dark:text-white">
-                                             Your email address is unverified.
-                                             <Link :href="route('verification.send')" method="post" as="button" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" @click.prevent="sendEmailVerification">
-                                                Click here to re-send the verification email.
-                                             </Link>
-                                          </p>
-                                          <div v-show="verificationLinkSent" class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
-                                             A new verification link has been sent to your email address.
-                                          </div>
-                                       </div>
-                                    </div>
+                              <profile-section :db="_db" :set="_set" :user="user" />
 
-                                    <!-- Button bar1 -->
-                                    <div class="grid grid-cols-5 space-x-1 place-items-end py-2">
 
-                          <!-- Email 
-                          -->
 
-                          <!-- Profile Photo
-                          <div v-if="$page.props.jetstream.managesProfilePhotos" class="col-span-6 sm:col-span-4">
-                             
-                              <!-- Profile Photo File Input - ->
-                              <input id="photo" ref="photoInput" type="file" class="hidden" @change="updatePhotoPreview">
-                              <InputLabel for="photo" value="Photo" />
-                              <!-- Current Profile Photo - ->
-                              <div v-show="! photoPreview" class="mt-2">
-                                  <img :src="user.profile_photo_url" :alt="user.name" class="rounded-full h-20 w-20 object-cover">
-                              </div>
-
-                              <!-- New Profile Photo Preview - ->
-                              <div v-show="photoPreview" class="mt-2">
-                                  <span class="block rounded-full w-20 h-20 bg-cover bg-no-repeat bg-center" :style="'background-image: url(\'' + photoPreview + '\');'"/>
-                              </div>
-
-                              <SecondaryButton class="mt-2 me-2" type="button" @click.prevent="selectNewPhoto">
-                                  Select A New Photo
-                              </SecondaryButton>
-
-                              <SecondaryButton v-if="user.profile_photo_path" type="button" class="mt-2" @click.prevent="deletePhoto">
-                                  Remove Photo
-                              </SecondaryButton>
-
-                              <InputError :message="form.errors.photo" class="mt-2" />
-                          </div>
-                       -->
-
-                        <div class="my-2 col-span-4">
-                           <Progress :package="_oUpdate" />
-                        </div>
-
-                       <div></div>
-                       <div>
-                         <button type="update" :disabled="_oUpdate.loading" @click="_update" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Save</button>
-                      </div>
-                      <div>
-                         <button type="cancel" :disabled="_oUpdate.loading" @click="_cancel" class="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-800 text-white dark:text-slate-300 dark:hover:bg-indigo-900" :class="_button">Cancel</button>
-                      </div>
-
-                   </div>
-                </div>
 
 
                 <!-- SubCategory Other Information -->
