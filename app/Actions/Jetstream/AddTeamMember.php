@@ -50,6 +50,7 @@ class AddTeamMember implements AddsTeamMembers
         )->validateWithBag('addTeamMember');
     }
 
+
     /**
      * Get the validation rules for adding a team member.
      *
