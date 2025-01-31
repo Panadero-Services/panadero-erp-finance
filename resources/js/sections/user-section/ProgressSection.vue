@@ -14,6 +14,7 @@ const props = defineProps({ package: Object });
         <p class="w-16 text-xxs">
           <span class="">{{ _step.name }}</span>
         </p>
+        
 
         <!-- option 1 step pending -->
         <a v-if="_idx < package.step" :title="_step.result" class="block size-3 rounded-full bg-indigo-500 hover:bg-indigo-900 ml-3 mt-1">
