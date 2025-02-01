@@ -14,7 +14,6 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-
 // sections
 import HeaderSection from "@/sections/HeaderSection.vue"
 import SubHeaderSection from "@/sections/SubHeaderSection.vue"
@@ -100,10 +99,11 @@ const navigation = [
 let _extended=ref(false);
 </script>
 <template>
-    <AppLayout title="Indigo3 Mood">
+    <AppLayout :title="page.title">
 
         <template #header>
             <Banner />
+            {{page.title}}
 
             <div v-for="section in baseSections"  >
                <!--   0 Basic Public Header .... -->

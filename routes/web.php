@@ -52,12 +52,28 @@ Route::middleware([
 
     Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
     Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
+    
+
+
     Route::get('mood', function () { 
         return Inertia::render('Mood', [
-            'page'=> Page::with('sections')->where('title','mood')->first(),
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get(),
         ]);
     })->name('mood');
+
+
+    Route::get('bento', function () {
+        return Inertia::render('Bento', [
+            'page'=> Page::with('sections')->where('title','bento')->first(),
+            'baseSections' => Section::where('page_id','0')->get(),
+        ]);
+    })->name('bento');
+
+
+
+
+
 
     Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
     Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
@@ -65,11 +81,6 @@ Route::middleware([
     Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
     Route::get('posts',[PostController::class,'index'])->name('posts');
 
-    Route::get('bento', function () {
-        return Inertia::render('Bento', [
-            'page'=> Page::with('sections')->where('title','bento')->first(),
-        ]);
-    })->name('bento');
 
     Route::get('bots', function () {
         return Inertia::render('Bots', [

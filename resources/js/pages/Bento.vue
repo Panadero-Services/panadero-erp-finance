@@ -49,7 +49,15 @@ const pulse = ref(false);
 
         <template #header>
           <Banner />
-          <HeaderSection :set="_set" :contract="_contract"/>
+
+            <div v-for="section in baseSections"  >
+               <!--   0 Basic Public Header .... -->
+                <div v-if="page.header">
+                    <HeaderSection v-if="section.file =='HeaderSection2.vue'" :set="_set" :contract="_contract" :page="page" :section="section"  />
+                </div>
+            </div>
+
+          
           <SubHeaderSection :set="_set" v-model:pulse="pulse"/>
         </template>
       
