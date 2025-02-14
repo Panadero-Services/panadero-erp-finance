@@ -29,7 +29,6 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-
 // icons
 import { BarsArrowUpIcon, PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, UserIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
 
@@ -52,8 +51,8 @@ const myFooterSlide = ref(null);
 const _header=ref(true);
 const _subHeader=ref(true);
 const _sideBar = ref(false);
-
 const openSide = ref(false)
+
 const _toggleFooter = async () => { myFooterSlide.value.open = !myFooterSlide.value.open; }
 const _toggleProject = async () => { mySideRight.value.open = !mySideRight.value.open; }
 const _toggleTeam = async () => { myTeamRight.value.open = !myTeamRight.value.open; }
@@ -104,7 +103,7 @@ const navigation = [
 let _extended=ref(false);
 </script>
 <template>
-    <AppLayout title="Indigo3 Mood" :set="_set">
+    <AppLayout title="Indigo3 Mood" :bgDark="_set.dark" >
 
         <template #header>
             <Banner />

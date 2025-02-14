@@ -12,9 +12,9 @@ import { WrenchIcon, WalletIcon } from '@heroicons/vue/24/outline'
 
 //props
 const props = defineProps({
+    page: Object,
     set: Object,
     contract: Object,
-    page: Object,
     section: Object
 });
 
