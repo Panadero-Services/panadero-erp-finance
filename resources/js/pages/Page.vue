@@ -2,6 +2,7 @@
 
 // vue
 import {computed, onMounted, onUnmounted, ref} from 'vue';
+
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
@@ -16,6 +17,7 @@ import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 import { useDbStore } from '@/stores/db';
+
 const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
@@ -31,23 +33,20 @@ const pulse = ref(false);
 const myChild = ref(null);
 
 // css
-
 </script>
 
 <template>
     <AppLayout :set="_set" :page="page" :baseSections="baseSections" :contract="_contract">
 
-        <template #header>HEADER</template>
-        <template #intro>INTRO</template>
+        <!-- section1 header -->
+        <template #header></template>
+        <template #intro></template>
 
         <template #default>
-            CONTENT
-                <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse" />
+            <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse" />
         </template>
 
-  
-        <template #footer>FOOTER</template>
-        
+        <template #footer></template>
     </AppLayout>
 </template>
 

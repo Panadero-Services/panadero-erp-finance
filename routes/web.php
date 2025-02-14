@@ -54,7 +54,7 @@ Route::middleware([
     Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
 
     Route::get('mood', function () { 
-        return Inertia::render('Page', [
+        return Inertia::render('Mood', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get(),
             'subject' => 'mood'
@@ -63,7 +63,7 @@ Route::middleware([
 
     Route::get('bento', function () {
         return Inertia::render('Bento', [
-            'page'=> Page::with('sections')->where('title','bento')->first(),
+            'page'=> Page::with('sections')->where('title','Bento')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('bento');

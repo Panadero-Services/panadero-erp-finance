@@ -1,6 +1,7 @@
 <script setup>
 // vue
 import {computed, onMounted, onUnmounted, ref} from 'vue';
+
 // layout
 import AppLayout from '@/layouts/AppLayout.vue';
 
@@ -9,6 +10,11 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
+import HeaderSection from "@/sections/HeaderSection.vue"
+import SubHeaderSection from "@/sections/SubHeaderSection.vue"
+import Banner from '@/components/Banner.vue';
+import FooterSection from "@/sections/FooterSection.vue"
+
 // custom sections
 import MainSection from '@/panaderos/bento/sections/BentoMainSection.vue';
 
@@ -23,9 +29,6 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-//const props = defineProps({
-//    page: Object
-//});
 
 const props = defineProps({
     page: Object,
@@ -48,7 +51,14 @@ const pulse = ref(false);
 <template>
   <html>
     <AppLayout title="Bento" :bgDark="_set.dark" >
+        
         <template #header>
+            <Banner />
+            <!--   0 Basic Header Sections .... -->
+            <div v-for="section in baseSections"  >
+                <HeaderSection v-if="section.file =='HeaderSection' && _set.layout.header" :page="page" :set="_set" :contract="_contract" :section="section"  />
+                <SubHeaderSection v-if="section.file =='SubHeaderSection' && _set.layout.subHeader" :page="page" :set="_set" :contract="_contract" :section="section"  />
+            </div>
         </template>
       
         <template #default>

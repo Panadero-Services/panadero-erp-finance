@@ -1,10 +1,25 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
+
+// layout
 import AppLayout from '@/layouts/AppLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
+
+// sections
+import HeaderSection from "@/sections/HeaderSection.vue"
+import SubHeaderSection from "@/sections/SubHeaderSection.vue"
+import Banner from '@/components/Banner.vue';
+import FooterSection from "@/sections/FooterSection.vue"
+
+import FooterSlideSection from "@/sections/FooterSlideSection.vue"
+import SideRightSection from "@/sections/SideRightSection.vue"
+import RightTeamSection from "@/sections/RightTeamSection.vue"
+import RightUserSection from "@/sections/RightUserSection.vue"
+import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
+import DeveloperSection from "@/sections/DeveloperSection.vue"
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -14,18 +29,8 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-// sections
-import HeaderSection from "@/sections/HeaderSection.vue"
-import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/components/Banner.vue';
-import FooterSection from "@/sections/FooterSection.vue"
-import FooterSlideSection from "@/sections/FooterSlideSection.vue"
-import SideRightSection from "@/sections/SideRightSection.vue"
-import RightTeamSection from "@/sections/RightTeamSection.vue"
-import RightUserSection from "@/sections/RightUserSection.vue"
-import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
-import DeveloperSection from "@/sections/DeveloperSection.vue"
 
+// icons
 import { BarsArrowUpIcon, PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, UserIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
 
 // components
@@ -103,16 +108,14 @@ let _extended=ref(false);
 
         <template #header>
             <Banner />
+            <!--   0 Basic Header Sections .... -->
             <div v-for="section in baseSections"  >
-               <!--   0 Basic Public Header .... -->
-                <div v-if="page.header">
-                    <HeaderSection v-if="section.file =='HeaderSection2.vue'" :set="_set" :contract="_contract" :page="page" :section="section"  />
-                </div>
+                <HeaderSection v-if="section.file =='HeaderSection' && _set.layout.header" :page="page" :set="_set" :contract="_contract" :section="section"  />
+                <SubHeaderSection v-if="section.file =='SubHeaderSection' && _set.layout.subHeader" :page="page" :set="_set" :contract="_contract" :section="section"  />
             </div>
             <!-- 
             <HeaderSection v-if="_set.layout.header" :set="_set" :contract="_contract"/>
             -->
-            <SubHeaderSection v-if="_set.layout.subHeader" :set="_set"/>
             <SideRightSection ref="mySideRight" :set="_set"/>
             <RightTeamSection ref="myTeamRight" :set="_set"/>
             <RightUserSection ref="myUserRight" :user="$page.props.auth.user"/>
@@ -135,20 +138,8 @@ let _extended=ref(false);
                 </div>
 
                 <div id="whatever" class="w-full ... min-h-4 min-w-full bg-white">
-                    <div class="grid grid-cols-2 ">     
-                        <div class="pl-2" :class="_set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
-                            <button @click="_setWillow" type="button" :class="_button">Light</button>
-                            <button @click="_setWillowDark" type="button" :class="_button">Dark</button>
-                            <button @click="_setMaterial" type="button" :class="_button">Material</button>
-                            <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
-                            <button @click="myChild._save" type="button" :class="_button">Save</button>
-                            <button @click="myChild._load" type="button" :class="_button">Load22</button>
-                            <button @click="myChild._load" type="button" :class="_button">Load</button>
-                        </div>      
-                        <div class="" id="toolbar"></div>
-                    </div class="-pl-4">
-                        <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse" />
-                    </div>
+                    <PanaderoMood ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse" />
+                </div>
             </div>
         </template>
   
