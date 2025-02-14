@@ -37,18 +37,18 @@ onMounted(async ()=> {
 });
 
 const menu = [
-    { name: 'Dashboard', url: route('dashboard'), route: 'dashboard', when:() => usePage().props.auth.user },
-    { name: 'Tiers', url: route('tiers'), route: 'tiers' },
-    { name: 'Posts', url: route('posts'), route: 'posts', when:() => usePage().props.auth.user },
-    { name: 'Bento', url: route('bento'), route: 'bento', when:() => usePage().props.auth.user },
-    { name: 'Bots', url: route('bots'), route: 'bots', when:() => usePage().props.auth.user },
+    { name: 'Dashboard',url: route('dashboard'),route: 'dashboard', when:() => usePage().props.auth.user },
+    { name: 'Tiers',    url: route('tiers'),    route: 'tiers' },
+    { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
+    { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
+    { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user },
    // { name: 'Planning', url: route('planning'), route: 'planning', when:() => usePage().props.auth.user },
-    { name: 'Resources', url: route('resources'), route: 'resources', when:() => usePage().props.auth.user },
-    { name: 'Web3', url: route('web3'), route: 'web3', when:() => usePage().props.auth.user },
-    { name: 'Grid', url: route('grid'), route: 'grid', when:() => usePage().props.auth.user },
-    { name: 'Mood', url: route('mood'), route: 'mood', when:() => usePage().props.auth.user },
-    { name: 'Table', url: route('table'), route: 'table', when:() => usePage().props.auth.user },
-    { name: 'Config', url: route('config'), route: 'config', when:() => usePage().props.auth.user }
+    { name: 'Resources',url: route('resources'),route: 'resources', when:() => usePage().props.auth.user },
+    { name: 'Web3',     url: route('web3'),     route: 'web3',      when:() => usePage().props.auth.user },
+    { name: 'Grid',     url: route('grid'),     route: 'grid',      when:() => usePage().props.auth.user },
+    { name: 'Mood',     url: route('mood'),     route: 'mood',      when:() => usePage().props.auth.user },
+    { name: 'Table',    url: route('table'),    route: 'table',     when:() => usePage().props.auth.user },
+    { name: 'Config',   url: route('config'),   route: 'config',    when:() => usePage().props.auth.user }
 ];
 
 // css

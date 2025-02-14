@@ -2,16 +2,13 @@
 // vue
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 // layout
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import HeaderSection from "@/sections/HeaderSection.vue";
-import SubHeaderSection from "@/sections/SubHeaderSection.vue";
-import Banner from '@/components/Banner.vue';
 // custom sections
 import MainSection from '@/panaderos/bento/sections/BentoMainSection.vue';
 
@@ -30,14 +27,19 @@ import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 //    page: Object
 //});
 
+const props = defineProps({
+    page: Object,
+    baseSections: Object
+});
+
+
 const _page = ref([]);
 
 // webhooks
-onMounted(async ()=> {
-   await _set.initMM();
-   await _set.initialize();
-   _page.value = await _db.getPage('bento');
-})
+//onMounted(async ()=> {
+//   await _set.initMM();
+//   await _set.initialize();
+//})
 
 const pulse = ref(false);
 
@@ -45,26 +47,14 @@ const pulse = ref(false);
 
 <template>
   <html>
-    <DashboardLayout title="Bento" :set="_set">
-
+    <AppLayout title="Bento" :bgDark="_set.dark" >
         <template #header>
-          <Banner />
-
-            <div v-for="section in baseSections"  >
-               <!--   0 Basic Public Header .... -->
-                <div v-if="page.header">
-                    <HeaderSection v-if="section.file =='HeaderSection2.vue'" :set="_set" :contract="_contract" :page="page" :section="section"  />
-                </div>
-            </div>
-
-          
-          <SubHeaderSection :set="_set" v-model:pulse="pulse"/>
         </template>
       
         <template #default>
           <MainSection :set="_set" v-model:pulse="pulse"/>
         </template>
     
-    </DashboardLayout>
+    </AppLayout>
     </html>
 </template>

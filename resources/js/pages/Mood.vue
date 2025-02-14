@@ -99,12 +99,10 @@ const navigation = [
 let _extended=ref(false);
 </script>
 <template>
-    <AppLayout :title="page.title">
+    <AppLayout title="Indigo3 Mood" :set="_set">
 
         <template #header>
             <Banner />
-            {{page.title}}
-
             <div v-for="section in baseSections"  >
                <!--   0 Basic Public Header .... -->
                 <div v-if="page.header">
@@ -144,6 +142,7 @@ let _extended=ref(false);
                             <button @click="_setMaterial" type="button" :class="_button">Material</button>
                             <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
                             <button @click="myChild._save" type="button" :class="_button">Save</button>
+                            <button @click="myChild._load" type="button" :class="_button">Load22</button>
                             <button @click="myChild._load" type="button" :class="_button">Load</button>
                         </div>      
                         <div class="" id="toolbar"></div>

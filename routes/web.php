@@ -64,7 +64,7 @@ Route::middleware([
     Route::get('bento', function () {
         return Inertia::render('Bento', [
             'page'=> Page::with('sections')->where('title','bento')->first(),
-            'baseSections' => Section::where('page_id','0')->get(),
+            'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('bento');
 

@@ -269,7 +269,7 @@ export const useDbStore = defineStore('db',{
                             resolve(response.data);
                         })
                 } catch (err) {
-                  reject(`store/db.js:getPrice:: ${err}`);
+                  reject(`store/db.js:getPage:: ${err}`);
                 }
               }
               check(); 
