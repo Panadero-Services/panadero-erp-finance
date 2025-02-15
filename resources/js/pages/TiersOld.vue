@@ -1,38 +1,26 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
-
-// layout
-import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
-// sections
-import MainSection from '@/panaderos/bento/sections/BentoMainSection.vue';
-
 // stores
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 import { useDbStore } from '@/stores/db';
-
 const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-
+// sections
+import HeaderSection from "@/sections/HeaderSection.vue"
+import SubHeaderSection from "@/sections/SubHeaderSection.vue"
+import Banner from '@/components/Banner.vue';
 
 import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/20/solid'
-
-// components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
-
-const props = defineProps({
-    page: Object,
-    baseSections: Object
-});
-
 
 
 const frequencies = [
@@ -89,7 +77,20 @@ const tiers = [
 const frequency = ref(frequencies[0])
 
 
+// webhooks
+onMounted(async ()=> {
+   await _set.initMM();
+   await _set.initialize();
 
+//    this.gantt = gantt;
+
+})
+
+
+onUnmounted(async ()=> {
+    //gantt.destructor();
+    //cont.innerHTML = "";
+})
 
 
 
@@ -98,15 +99,17 @@ const frequency = ref(frequencies[0])
   const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
 </script>
-
 <template>
-   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" >
+    <AppLayout title="Tiers" :set="_set">
 
-      <template #header />
-      <template #intro />
+        <template #header>
+            <Banner />
+            <HeaderSection :set="_set" :contract="_contract"/>
+            <SubHeaderSection :set="_set"/>
+        </template>
 
-      <template #default>
-         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
+        <template #default>
+
 
 
 
@@ -150,15 +153,7 @@ const frequency = ref(frequencies[0])
     </div>
   </div>
 
-
-
-
-
-
-         </div>
-      </template>
-
-      <template #footer />
-
-   </AppToolbarLayout>
+        </template>
+  
+    </AppLayout>
 </template>

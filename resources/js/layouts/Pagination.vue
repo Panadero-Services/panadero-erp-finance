@@ -2,6 +2,7 @@
   import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/20/solid'
   import {Link} from '@inertiajs/vue3'
   import {computed} from "vue";
+  import NavLink from '@/components/NavLink.vue';
 
   const props = defineProps(['meta']);
   const previousUrl = computed(()=> props.meta.links[0].url);
@@ -36,7 +37,7 @@
       <div>
           <!-- Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" -->
         <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm bg-white dark:bg-black" aria-label="Pagination">
-          <a v-for="link in meta.links" 
+          <NavLink v-for="link in meta.links" 
               :href="link.url" 
               class="relative inline-flex items-center first-of-type:rounded-l-md last-of-type:rounded-r-md text-xs px-3 py-2"
               :class="{
@@ -44,7 +45,7 @@
                 'text-gray-900 dark:text-gray-300 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-offset-0': !link.active}
                 "
               v-html="link.label">
-          </a>
+          </NavLink>
         </nav>
       </div>
 
