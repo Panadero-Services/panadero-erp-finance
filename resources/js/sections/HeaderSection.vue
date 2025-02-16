@@ -70,7 +70,7 @@ const _wallet = computed(() => {
 //const _menu= "text-xs lg:text-sm font-normal text-gray-700 hover:text-black hover:font-semibold dark:text-gray-300 dark:hover:text-yellow-400 ";
 
 const _layout = {
-  main   : "grid grid-cols-8 bg-slate-100 dark:bg-black h-18 md:h-12 border-b border-slate-100 dark:border-black shadow-sm shadow-gray-50 dark:shadow-slate-900 text-xs" ,  //  max-w-7xl
+  main   : "grid grid-cols-8 bg-slate-100 dark:bg-black h-18 md:h-12 border-b border-slate-100 dark:border-black shadow-sm shadow-gray-50 dark:shadow-slate-900 text-xs max-w-11xl" ,  //  max-w-7xl
   header : "col-span-8" , 
   left   : "col-span-8 md:col-span-4 mt-2 lg:mt-1 text-left text-xs uppercase", 
   right  : "col-span-8 md:col-span-4 mt-2 lg:mt-1", 

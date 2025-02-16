@@ -21,7 +21,8 @@ import RightUserSection from "@/sections/RightUserSection.vue"
 const props = defineProps({
     title: String,
     set: Object,
-    baseSections: Object
+    baseSections: Object,
+    contract: Object
 });
 
 const _extended=ref(true);
@@ -75,7 +76,7 @@ const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:t
                 <slot name="header"/>
                  <!--   0 Basic Header Sections .... -->
                  <div v-for="section in baseSections">
-                    <HeaderSection v-if="section.file =='HeaderSection' && set.layout.header" :page="page" :set="set" :contract="_contract" :section="section"/>
+                    <HeaderSection v-if="section.file =='HeaderSection' && set.layout.header" :page="page" :set="set" :contract="contract" :section="section"/>
                     <SubHeaderSection v-if="section.file =='SubHeaderSection' && set.layout.subHeader" :page="page" :set="set" :contract="_contract" :section="section"/>
                  </div>
                  <SideRightSection ref="mySideRight" :set="set"/>

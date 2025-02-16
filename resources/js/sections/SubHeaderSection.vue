@@ -98,7 +98,7 @@ watch(_pulse, async (_bool) => {
  <nav class="bg-slate-50 dark:bg-slate-950 border-b border-gray-200 dark:border-gray-800 ">
 
     <!--Sub Header Icons Navigation Menu -->
-    <div class="max-w-9xl grid grid-cols-5 h-20 md:h-10">
+    <div class="max-w-11xl grid grid-cols-5 h-20 md:h-10">
             
             <div class="flex col-span-5 md:col-span-2">
                     <ul role="list" class="flex">
@@ -165,12 +165,12 @@ watch(_pulse, async (_bool) => {
             </div>
 
             <!-- Responsive Navigation Menu optional ... needs work-->
-            <div class="flex justify-end sm:items-right align-right sm:ms-6 ç md:text-sm col-span-5 md:col-span-2">
+            <div class="flex justify-end sm:items-right align-right md:text-sm col-span-5 md:col-span-2">
 
-                <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300 mt-2.5 md:mt-2  font-medium text-gray-500 dark:text-gray-400" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
+                <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300 mt-2.5 md:mt-2 font-medium text-gray-500 dark:text-gray-400" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
                 <span class="m-1 inline-flex items-center rounded-md bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 min-w-6">  {{_counter + _rnd(20)}}</span>
 
-                <div v-if="$page.props.auth.user" class="ms-3 relative">
+                <div v-if="$page.props.auth.user" class="relative">
                     <!-- Teams Dropdown -->
                     <Dropdown v-if="$page.props.jetstream.hasTeamFeatures" align="right" width="60">
                         <template #trigger>
@@ -187,7 +187,7 @@ watch(_pulse, async (_bool) => {
                         </template>
 
                         <template #content>
-                            <div class="w-60">
+                            <div class="">
                                 <!-- Team Management -->
                                 <div class="block px-4 py-2 text-xs text-gray-400">
                                     Manage Team
@@ -238,7 +238,7 @@ watch(_pulse, async (_bool) => {
                 <span class="m-1 inline-flex items-center rounded-md bg-purple-400/10 px-2 py-1 text-xs font-medium text-purple-400 ring-1 ring-inset ring-indigo-400/30 min-w-6">  {{_counter + _rnd(20)}}</span>
 
                 <!-- Settings Dropdown -->
-                <div v-if="$page.props.auth.user" class="ms-2 relative mt-1.5 mr-2 w-16">
+                <div v-if="$page.props.auth.user" class="ms-2 relative mt-1.5 w-16">
                     <Dropdown align="right" width="48">
                         <template #trigger>
 

@@ -30,13 +30,13 @@ const props = defineProps({
 </script>
 
 <template>
-   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" >
+   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract">
 
       <template #header />
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
+         <div id="whatever" class="w-full ... min-h-4  max-w-11xl">
             <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="pulse" />
          </div>
       </template>
