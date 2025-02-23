@@ -8,7 +8,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-mood/PanaderoMood.vue";
+import MainSection from "@/panaderos/panadero-mood/sections/PanaderoMood.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';

@@ -9,7 +9,7 @@ import { Kanban, Toolbar, defaultEditorShape } from "@dhx/trial-kanban";
 import "@dhx/trial-kanban/dist/kanban.css";
 
 //import { getData } from "@dhx/trial-kanban/demos/common/data.js";
-import { getData } from "@/constants/mood-data.js";
+import { getData } from "@/panaderos/panadero-mood/constants/mood-data.js";
 import "@dhx/trial-kanban/assets/demos.css";
 
 // define emits
