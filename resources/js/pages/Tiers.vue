@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
+import {computed, onMounted, onUnmounted, ref, provide} from 'vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -9,7 +9,6 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from '@/panaderos/bento/sections/BentoMainSection.vue';
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -19,8 +18,6 @@ import { useDbStore } from '@/stores/db';
 const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
-
-
 
 import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/20/solid'
@@ -33,6 +30,8 @@ const props = defineProps({
     baseSections: Object
 });
 
+const _pulse = ref(false);
+provide(/* key */ 'pulse', /* value */ _pulse);
 
 
 const frequencies = [
@@ -100,60 +99,56 @@ const frequency = ref(frequencies[0])
 </script>
 
 <template>
-   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" >
+   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
-      <template #header />
+      <template #header>
+         <pulse  v-model="_pulse" :animation="_set.animate"/>
+      </template>
+
       <template #intro />
 
       <template #default>
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
 
-
-
-  <div class="py-6 sm:py-8 lg:py-12">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-4xl text-center">
-        <h2 class="text-base font-semibold leading-7 text-indigo-400">Pricing</h2>
-        <p class="mt-2 text-xl md:text-2xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Your Web3 Business
-        <span class="mt-2 text-xl md:text-2xl lg:text-6xl font-bold tracking-tight text-indigo-600 dark:text-white sm:text-4xl">Starts here!</span></p>
-      </div>
-      <p class="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-800 dark:text-gray-300">Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.</p>
-      <div class="mt-16 flex justify-center">
-        <fieldset aria-label="Payment frequency">
-          <RadioGroup v-model="frequency" class="grid grid-cols-2 gap-x-1 rounded-full bg-white/5 p-1 text-center text-xs font-semibold leading-5 text-white">
-            <RadioGroupOption as="template" v-for="option in frequencies" :key="option.value" :value="option" v-slot="{ checked }">
-              <div :class="[checked ? 'bg-indigo-500' : '', 'cursor-pointer rounded-full px-2.5 py-1']">{{ option.label }}</div>
-            </RadioGroupOption>
-          </RadioGroup>
-        </fieldset>
-      </div>
-      <div class=" isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-        <div v-for="tier in tiers" :key="tier.id" :class="[tier.mostPopular ? 'bg-gray-950 ring-2 ring-indigo-500' : 'ring-1 ring-white/10 bg-gray-900 hover:ring-yellow-400 hover:bg-gray-950', 'rounded-3xl p-8 xl:p-10']">
-          <div class="flex items-center justify-between gap-x-4">
-            <h3 :id="tier.id" class="text-lg font-semibold leading-8 text-black dark:text-white">{{ tier.name }}</h3>
-            <p v-if="tier.mostPopular" class="rounded-full bg-indigo-500 px-2.5 py-1 text-xs font-semibold leading-5 text-white">Most popular</p>
+          <div class="py-6 sm:py-8 lg:py-12">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
+              <div class="mx-auto max-w-4xl text-center">
+                <h2 class="text-base font-semibold leading-7 text-indigo-400">Pricing</h2>
+                <p class="mt-2 text-xl md:text-2xl lg:text-6xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">Your Web3 Business
+                <span class="mt-2 text-xl md:text-2xl lg:text-6xl font-bold tracking-tight text-indigo-600 dark:text-white sm:text-4xl">Starts here!</span></p>
+              </div>
+              <p class="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-800 dark:text-gray-300">Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.</p>
+              <div class="mt-16 flex justify-center">
+                <fieldset aria-label="Payment frequency">
+                  <RadioGroup v-model="frequency" class="grid grid-cols-2 gap-x-1 rounded-full bg-white/5 p-1 text-center text-xs font-semibold leading-5 text-white">
+                    <RadioGroupOption as="template" v-for="option in frequencies" :key="option.value" :value="option" v-slot="{ checked }">
+                      <div :class="[checked ? 'bg-indigo-500' : '', 'cursor-pointer rounded-full px-2.5 py-1']">{{ option.label }}</div>
+                    </RadioGroupOption>
+                  </RadioGroup>
+                </fieldset>
+              </div>
+              <div class=" isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+                <div v-for="tier in tiers" :key="tier.id" :class="[tier.mostPopular ? 'bg-gray-950 ring-2 ring-indigo-500' : 'ring-1 ring-white/10 bg-gray-900 hover:ring-yellow-400 hover:bg-gray-950', 'rounded-3xl p-8 xl:p-10']">
+                  <div class="flex items-center justify-between gap-x-4">
+                    <h3 :id="tier.id" class="text-lg font-semibold leading-8 text-black dark:text-white">{{ tier.name }}</h3>
+                    <p v-if="tier.mostPopular" class="rounded-full bg-indigo-500 px-2.5 py-1 text-xs font-semibold leading-5 text-white">Most popular</p>
+                  </div>
+                  <p class="mt-4 text-sm leading-6 text-gray-300">{{ tier.description }}</p>
+                  <p class="mt-6 flex items-baseline gap-x-1">
+                    <span class="text-4xl font-bold tracking-tight text-white">{{ tier.price[frequency.value] }}</span>
+                    <span class="text-sm font-semibold leading-6 text-gray-300">{{ frequency.priceSuffix }}</span>
+                  </p>
+                  <a :href="tier.href" :aria-describedby="tier.id" :class="[tier.mostPopular ? 'bg-indigo-500 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline-indigo-500' : 'bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white', 'mt-6 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2']">Buy plan</a>
+                  <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-300 xl:mt-10">
+                    <li v-for="feature in tier.features" :key="feature" class="flex gap-x-3">
+                      <CheckIcon class="h-6 w-5 flex-none text-white" aria-hidden="true" />
+                      {{ feature }}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
-          <p class="mt-4 text-sm leading-6 text-gray-300">{{ tier.description }}</p>
-          <p class="mt-6 flex items-baseline gap-x-1">
-            <span class="text-4xl font-bold tracking-tight text-white">{{ tier.price[frequency.value] }}</span>
-            <span class="text-sm font-semibold leading-6 text-gray-300">{{ frequency.priceSuffix }}</span>
-          </p>
-          <a :href="tier.href" :aria-describedby="tier.id" :class="[tier.mostPopular ? 'bg-indigo-500 text-white shadow-sm hover:bg-indigo-400 focus-visible:outline-indigo-500' : 'bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white', 'mt-6 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2']">Buy plan</a>
-          <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-300 xl:mt-10">
-            <li v-for="feature in tier.features" :key="feature" class="flex gap-x-3">
-              <CheckIcon class="h-6 w-5 flex-none text-white" aria-hidden="true" />
-              {{ feature }}
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-
-
 
          </div>
       </template>

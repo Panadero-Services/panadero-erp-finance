@@ -1,19 +1,19 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, inject } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 import Dropdown from '@/components/Dropdown.vue';
 import DropdownLink from '@/components/DropdownLink.vue';
 import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
 import { HomeIcon, Bars3Icon, EllipsisVerticalIcon, WrenchIcon, H1Icon, H2Icon, BarsArrowDownIcon } from '@heroicons/vue/24/outline'
-
 
 const props = defineProps({
     set: Object
 });
+const pulse = inject('pulse')
+
 const showingNavigationDropdown = ref(false);
 
 const switchToTeam = (team) => {
@@ -34,8 +34,6 @@ const menu = [];
 let _animation= ref(true);
 
 //const _pulse = ref(false);
-const _pulse = defineModel('pulse')
-
 const setProjectId = (_title) => {
     if(!( usePage().props.auth.user == null)) {
         // toDo !! retrieve from db
@@ -73,7 +71,7 @@ const _col2 = ref("bg-blue-500");
 
 const _rnd =  (_mx=800) => {return Math.floor(Math.random() * _mx);};
 
-watch(_pulse, async (_bool) => {
+watch(pulse, async (_bool) => {
     if (_bool) {
         loading.value = true
     try {
@@ -114,7 +112,6 @@ watch(_pulse, async (_bool) => {
 
                     <div class="pt-2">
                         <!-- Pulse Control -->
-                        <pulse @pulse="_pulse=$event" :animation="set.animate"/>
                         <p v-if="_animation">  
                           <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
 
@@ -126,15 +123,11 @@ watch(_pulse, async (_bool) => {
                               <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-200 dark:bg-gray-800"></span>
                           </span>
                         </p>
-                        <p v-if="set.animate"  class="text-xs w-4" @click="set.animate">
-                         <!-- Animation Light -->
-                         {{pulse && set.animate}} 
-                        </p>
+
                     </div>
 
                     <div class="pt-2">
                         <!-- Pulse Control -->
-                        <pulse @pulse="_pulse=$event" :animation="set.animate"/>
                         <p v-if="_animation">  
                           <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
                               <span class="relative inline-flex rounded-full h-3 w-3 " :class="_col2"  ></span>
@@ -145,10 +138,7 @@ watch(_pulse, async (_bool) => {
                               <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-200 dark:bg-gray-800"></span>
                           </span>
                         </p>
-                        <p v-if="set.animate"  class="text-xs w-4" @click="set.animate">
-                         <!-- Animation Light -->
-                         {{pulse && set.animate}} 
-                        </p>
+     
                     </div>
 
                     </ul>

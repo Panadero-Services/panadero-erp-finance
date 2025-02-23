@@ -1,4 +1,5 @@
 <script setup>
+import { ref, provide } from 'vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -27,15 +28,21 @@ const props = defineProps({
     page: Object,
     baseSections: Object,
     posts: Object
-
 });
+
+const _pulse = ref(false);
+provide(/* key */ 'pulse', /* value */ _pulse);
+
 
 </script>
 
 <template>
-   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" >
+   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
-      <template #header />
+      <template #header>
+         <pulse  v-model="_pulse" :animation="_set.animate"/>
+      </template>
+
       <template #intro />
 
       <template #default>

@@ -1,6 +1,6 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
-import { moduleName, moduleVersion, moduleGit, panaderoMood} from "panadero-mood";
+import { computed, onMounted, onUnmounted, ref, inject } from 'vue';
+import { moduleName, moduleVersion, moduleGit, panaderoMood } from "panadero-mood";
 
 // kanban
 // moved package back to root folder
@@ -33,6 +33,7 @@ const props = defineProps({
 
 // globals
 const _title="Moodz";
+
 
 // mood define
 const data = [
@@ -155,12 +156,9 @@ const _setMaterial = () => { props.set.dark=false; changeTheme('material');}
 const _setWillowDark = () => { props.set.dark=true; changeTheme('willow-dark');}
 const _setPanaderos = () => { props.set.dark=false; changeTheme('panaderos');}
 
-
-const pulse = ref(false);
-
-
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:ring-indigo-400 dark:hover:ring-indigo-600";
 
+const pulse = inject("pulse");
 
 </script>
 <template>
@@ -176,6 +174,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gr
               <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
               <button @click="_save" type="button" :class="_button">Save</button>
               <button @click="_load" type="button" :class="_button">Load</button>
+              <button @click="_load" type="button" :class="_button">{{pulse}}</button>
 
           </div>      
           <div class="" id="toolbar"></div>

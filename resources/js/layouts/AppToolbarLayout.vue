@@ -22,7 +22,8 @@ const props = defineProps({
     title: String,
     set: Object,
     baseSections: Object,
-    contract: Object
+    contract: Object, 
+    page: Object
 });
 
 const _extended=ref(true);
@@ -77,7 +78,7 @@ const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:t
                  <!--   0 Basic Header Sections .... -->
                  <div v-for="section in baseSections">
                     <HeaderSection v-if="section.file =='HeaderSection' && set.layout.header" :page="page" :set="set" :contract="contract" :section="section"/>
-                    <SubHeaderSection v-if="section.file =='SubHeaderSection' && set.layout.subHeader" :page="page" :set="set" :contract="_contract" :section="section"/>
+                    <SubHeaderSection v-if="section.file =='SubHeaderSection' && set.layout.subHeader" :page="page" :set="set" :contract="contract" :section="section"/>
                  </div>
                  <SideRightSection ref="mySideRight" :set="set"/>
                  <RightTeamSection ref="myTeamRight" :set="set"/>
@@ -115,8 +116,8 @@ const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:t
             <!-- Footer Content -->
             <div v-if="$slots.footer">
                 <slot name="footer"/>
-                <FooterSection v-if="set.layout.footer" :set="set" :contract="_contract"/>
-                <DeveloperSection @click="set.layout.developer=false" v-if="set.layout.developer" :set="set" :contract="_contract"/>
+                <FooterSection v-if="set.layout.footer" :set="set" :contract="contract"/>
+                <DeveloperSection @click="set.layout.developer=false" v-if="set.layout.developer" :set="set" :contract="contract"/>
                 <div v-else @click="set.layout.developer=true" class="text-green-500 center">DEVELOPER-SECTION</div>
                 <h2-icon v-if="!set.layout.subHeader && !set.layout.header && !set.layout.sidebar" @click="set.layout.subHeader = true" class="w-10 px-2.5 pb-3 mx-2" :class="_indigo"/>
             </div>

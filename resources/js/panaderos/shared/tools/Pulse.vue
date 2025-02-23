@@ -1,12 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+    const _pulse = defineModel()
+    const props = defineProps({
+        animation: Boolean
+    });
 
-
-  const props = defineProps({
-    animation: Boolean
-  });
-
-const emit = defineEmits(['pulse'])
+//const emit = defineEmits(['pulse'])
 
 // *** Timer Section ***
 // pageTimer
@@ -20,13 +19,13 @@ onMounted(async ()=> {
 
 const _started= ref(true);
 const _pulseTime = ref(PULSE_TIME);
-const _pulse=ref(false);
+const _ppulse=ref(false);
 var _pageTimer;
 var _startTimer = async () => {
     _pageTimer = setInterval( () => {
         if (props.animation){
             _pulse.value = !_pulse.value;
-            emit('pulse', _pulse.value);
+            //emit('pulse', _pulse.value);
         }
     }, _pulseTime.value);
 }
