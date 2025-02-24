@@ -1,25 +1,28 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import {computed, onMounted, onUnmounted, ref, provide} from 'vue';
+
+// layout
+import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 import {moduleName, moduleGit} from 'panadero-self';
 
+// sections
+
 // stores
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 import { useDbStore } from '@/stores/db';
+
 const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-// sections
-import HeaderSection from "@/sections/HeaderSection.vue"
-import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/components/Banner.vue';
-import Welcome from '@/components/Welcome.vue';
+// components
+import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+
 
 // cards
 import WelcomeCard from "@/pages/dashboard1/cards/WelcomeCard.vue";
@@ -45,9 +48,12 @@ import Stars from '@/panaderos/Stars.vue';
 import Game from '@/panaderos/Game.vue';
 import ApplicationLogo from '@/components/logoSelf.vue';
 
+
 const selfVersion ="0.2.1";
 
 const props =defineProps({
+    page: Object,
+    baseSections: Object,
     canLogin: Boolean,
     canRegister: Boolean,
     laravelVersion: String,
@@ -88,8 +94,9 @@ var usdPrice=0.01;
 
 let selfResolve=ref("SELF");
 
+const _pulse = ref(false);
+provide(/* key */ 'pulse', /* value */ _pulse);
 
-//const windowHeight = window.innerHeight;
 
 // css
 const _title = "text-indigo-600 dark:text-indigo-300";
@@ -116,23 +123,24 @@ const keyUpResolve = async (_selfResolve) => {
     selfResolve.value = _selfResolve;
 }
 
+
 </script>
 
 <template>
+   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
-    <AppLayout title="Dashboard" :set="_set">
-
-        <template #header>
+      <template #header>
+         <pulse  v-model="_pulse" :animation="_set.animate"/>
             <self-game1-overlay v-if="_set.game3On && _set.language=='EN'"  :callSign="selfResolve" :w="1200" :h="1600" />
+      </template>
 
-            <Banner />
-            <HeaderSection :set="_set" :contract="_contract"/>
-            <SubHeaderSection :set="_set"/>
-        </template>
+      <template #intro />
 
-        <template #default>
+      <template #default>
+         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
 
-            <self-intro />
+
+ <self-intro />
 
             <div class="mx-auto max-w-xl lg:max-w-7xl">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
@@ -166,8 +174,15 @@ const keyUpResolve = async (_selfResolve) => {
                 </div>
             </div>
 
-        </template>
-    </AppLayout>
+
+
+
+         </div>
+      </template>
+
+      <template #footer />
+
+   </AppToolbarLayout>
 </template>
 
 <style>
