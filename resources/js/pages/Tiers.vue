@@ -87,14 +87,9 @@ const tiers = [
 
 const frequency = ref(frequencies[0])
 
-
-
-
-
-
 // css
-  const _title = "text-indigo-600 dark:text-indigo-300";
-  const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
+const _title = "text-indigo-600 dark:text-indigo-300";
+const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
 </script>
 
