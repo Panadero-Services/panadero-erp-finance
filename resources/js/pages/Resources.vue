@@ -48,7 +48,7 @@ _set.layout.footer=false;
 
       <template #default>
          <div id="whatever" class="w-screen">
-            <MainSection ref="myChild" :set="_set" :contract="_contract" :db="_db" v-model:pulse="_pulse"/>
+            <MainSection ref="myChild" :set="_set" :contract="_contract" :db="_db"/>
          </div>
       </template>
 

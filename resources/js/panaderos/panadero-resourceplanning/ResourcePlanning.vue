@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, inject, watch } from 'vue';
 import { moduleName, moduleVersion, panaderoResourcePlanning } from "panadero-resourceplanning";
 
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
@@ -23,12 +23,13 @@ const props = defineProps({
     contract: Object,
     set: Object,
     db: Object,
-    pulse: Boolean
 });
+
+   
 
 // globals
 const _title="ResourcePlanning";
-const _counter=ref(0);
+const _colorCount=ref(0);
 
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
@@ -371,9 +372,9 @@ const _save = async () => {
 
 const color = ref(defaultColor);
 const _changeColor = async () => {
-    _counter.value++;
-    if (_counter.value >= colors.length) _counter.value=0;
-    color.value = colors[_counter.value];
+    _colorCount.value++;
+    if (_colorCount.value >= colors.length) _colorCount.value=0;
+    color.value = colors[_colorCount.value];
 }
 
 defineExpose({
@@ -391,6 +392,26 @@ const show = async () => {
     });
 }
 
+
+
+// pulseObject .. reload... 
+const _pulse = inject('pulse')
+const _pulseCount = ref(0);
+
+watch(_pulse, (_new, _old) => {
+    if(_pulseCount.value++ == 120) {
+        _doRefresh();
+    };
+});
+const _doRefresh = async () => {
+    _pulseCount.value=0;
+    console.log("_doRefresh");
+    //await _reset();
+    await _load();
+}
+
+
+// CSS
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 //const pulse = inject("pulse");
 
@@ -407,13 +428,12 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
             <button @click="_parse" type="button" :class="_button">Parse</button>
             <button @click="_save" type="button" :class="_button">Save</button>
-
         </div>    
-        <div class=" items-end text-center" id="toolbar">
+        <div class=" items-end text-left" id="toolbar">
             
-            <div  class="col-span-1 text-xs mt-4">
-                {{moduleName}}
-                {{moduleVersion}}
+            <div  class="col-span-1 text-xs mt-4 ">
+                <span>{{moduleName}}</span>
+                <span class="ml-2" :class="_pulse? 'text-green-500' : ''">{{moduleVersion}}</span>
             </div>
 
         </div>
