@@ -368,8 +368,10 @@ export const useWeb3DbStore = defineStore('web3Db',{
             });
         }, 
 
-
         // njet working.. crypto module needs attention!
+
+
+
         /** Panadero API Calls
         * important: SELF API requirement specs!!!!
         * all API' need to be 100% secure!
@@ -444,6 +446,12 @@ export const useWeb3DbStore = defineStore('web3Db',{
 
         async setRecord(_i) {
             let start = 0;
+
+
         },
+
+
+
     },
+
 });

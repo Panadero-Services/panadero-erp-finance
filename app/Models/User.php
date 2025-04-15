@@ -13,7 +13,10 @@ use Laravel\Sanctum\HasApiTokens;
 
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 
 class User extends Authenticatable //implements MustVerifyEmail
 {
@@ -76,5 +79,23 @@ class User extends Authenticatable //implements MustVerifyEmail
     public function comments(): HasMany {
         return $this->hasMany(Comment::class);
     }
+
+    public function roles() : BelongsToMany {
+       // return $this->belongsToMany(Role::class);
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole(string $role) : bool {
+        return $this->roles->contains('name', $role);
+    }
+
+    public function hasAnyRole(array $roles): bool {
+        return $this->roles()->whereIn('name', $roles)->exists();
+    }
+
+
+
+
+
 
 }

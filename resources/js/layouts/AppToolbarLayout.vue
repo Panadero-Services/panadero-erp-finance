@@ -62,7 +62,7 @@ const _toolbarItems = [
 ];
 
 // css
-const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
+const _indigo = " text-gray-400 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
 
 </script>
 
@@ -92,16 +92,16 @@ const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:t
             </div>
 
             <!-- Main Content -->
-            <div class="bg-slate-50 dark:bg-black" v-if="$slots.default">
+            <div class="bg-gray-100 dark:bg-black" v-if="$slots.default">
                 <div class="flex">
-                    <div v-if="set.layout.sidebar" class="flex bg-slate-100 dark:bg-slate-950">
-                      <nav class="flex flex-1 flex-col" aria-label="Sidebar">
+                    <div v-if="set.layout.sidebar" class="flex bg-gray-100 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800">
+                      <nav class="flex flex-1 flex-col mx-3 " aria-label="Sidebar">
                         <ul role="list" class=" space-y-1 mt-1" :class="_extended?'w-32':'w-12'">
                             <h2-icon v-if="!set.layout.subHeader" @click="set.layout.subHeader=true" class="w-10 px-3 pb-3 mx-2" :class="_indigo"/>
                             <li v-for="item in _toolbarItems" :key="item.name" class="-ml-1">
                                  <span @click="item.href" class="flex pt-3" :class="_indigo">
                                     <component :is="item.icon" :set="set" class="w-10 px-3 mx-1"/>
-                                    <span v-if="_extended" class="-ml-1 text-sm">
+                                    <span v-if="_extended" class="-ml-1 text-xs text-gray-800 dark:text-gray-300">
                                         {{item.name}}
                                     </span>
                                 </span>
@@ -109,7 +109,9 @@ const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:t
                         </ul>
                       </nav>
                     </div>
-                    <slot name="default" />
+                    <div class="mx-8">
+                        <slot name="default" />
+                    </div>
                 </div>
             </div>
 

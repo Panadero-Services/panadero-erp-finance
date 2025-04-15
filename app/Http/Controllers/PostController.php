@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Gate;
 
 class PostController extends Controller
 {
@@ -15,6 +16,13 @@ class PostController extends Controller
      */
     public function index()
     {
+
+      if (Gate::denies('admin-access')){
+            return response('UnAuthorized.',401);
+        }
+
+
+        
         return inertia('Posts',[
             'posts'=> PostResource::collection(Post::with('user')->paginate()),
         ]);

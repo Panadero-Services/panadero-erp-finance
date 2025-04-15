@@ -15,7 +15,7 @@ const props = defineProps({
 <template>
 
  <div class="relative max-lg:row-start-1">
-   <div class="absolute inset-px rounded-lg bg-white dark:bg-gray-950 max-lg:rounded-t-[2rem]" :class="_shadow" />
+   <div class="absolute inset-px rounded-sm bg-white dark:bg-gray-950 max-lg:rounded-t-[2rem]" :class="_shadow" />
    <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
      <div class="px-8 pt-8 sm:px-10 sm:pt-10">
        <p class="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-gray-50">{{post.id}} {{post.title}}</p>
@@ -40,7 +40,7 @@ const props = defineProps({
          </div>
      </div>
    </div>
-   <div class="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]" />
+   <div class="pointer-events-none absolute inset-px rounded-sm shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]" />
  </div>
    
 </template>

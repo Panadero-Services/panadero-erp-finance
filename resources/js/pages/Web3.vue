@@ -1,12 +1,16 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
+import { ref, provide } from 'vue';
 
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
+// layout
+import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
+
+// usePage
+import { usePage } from '@inertiajs/vue3';
+const _usePage = usePage();
 
 // sections
-import HeaderSection from "@/sections/HeaderSection.vue"
-import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/components/Banner.vue';
+import MainSection from "@/sections/Web3Section.vue";
+//import BotsSection from "@/sections/BotsSection.vue"
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -17,31 +21,36 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-import Web3Section from "@/sections/Web3Section.vue";
-//import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
-//import { CheckIcon } from '@heroicons/vue/20/solid'
+// components
+import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
+const props = defineProps({
+    page: Object,
+    baseSections: Object
+});
 
-// webhooks
-onMounted(async ()=> {
-})
+const myChild = ref(null);
+const _pulse = ref(false);
+provide(/* key */ 'pulse', /* value */ _pulse);
 
 </script>
+
 <template>
-    <DashboardLayout title="Tiers" :set="_set">
-        <template #header>
-            <Banner />
-            <HeaderSection :set="_set" :contract="_contract"/>
-            <SubHeaderSection :set="_set"/>
-        </template>
+   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
-        <template #default>
-            <Web3Section />
-        </template>
+      <template #header>
+         <pulse  v-model="_pulse" :animation="_set.animate"/>
+      </template>
 
-    </DashboardLayout>
+      <template #intro />
+
+      <template #default>
+         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
+            <MainSection ref="myChild" :set="_set" :contract="_contract" :db="_db" v-model:pulse="_pulse"/>
+         </div>
+      </template>
+
+      <template #footer />
+
+   </AppToolbarLayout>
 </template>
-
-<style>
-
-</style>

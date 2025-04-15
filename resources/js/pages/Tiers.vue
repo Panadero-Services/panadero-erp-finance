@@ -105,6 +105,11 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
       <template #default>
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
 
+
+{{$page.props.auth}}
+
+
+
           <div class="py-6 sm:py-8 lg:py-12">
             <div class="mx-auto max-w-7xl px-6 lg:px-8">
               <div class="mx-auto max-w-4xl text-center">

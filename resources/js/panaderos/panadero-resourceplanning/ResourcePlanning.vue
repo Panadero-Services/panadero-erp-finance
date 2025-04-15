@@ -1,8 +1,12 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { moduleName, moduleVersion, panaderoResourcePlanning } from "panadero-resourceplanning";
 
-import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
+import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
+import "@/panaderos/panadero-resourceplanning/dhtmlxgantt.css";
+
+import { gantt } from "dhtmlx-gantt";
+import { resourceData, ppl, ppl_vince, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } from  "./constants/rm_planning.js";
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -24,96 +28,256 @@ const props = defineProps({
 
 // globals
 const _title="ResourcePlanning";
-
 const _counter=ref(0);
-
-var _resourceData = [
-      {id: 1, text: "Infodatek Introductie2", type: "project", progress: 0.2, open: true, start_date: "30-10-2024 00:00", duration: 16, end_date: "10-11-2024 00:00", parent: 0},
-      {id: 2, text: "Presentatie", type: "project", progress: 0.2, open: true, start_date: "30-10-2024 00:00", duration: 3, end_date: "03-11-2024 00:00", parent: 1},
-      {id: 3, text: "IntroA", start_date: "30-10-2024 00:00", duration: 2, parent: 2, progress: 0.2, open: true, end_date: "31-10-2024 00:00", "owner": [{ "resource_id": "5", "value": 2 }] },
-      {id: 4, text: "Decide ", start_date: "31-10-2024 00:00", type: "milestone", parent: 2, progress: 0, open: true, end_date: "31-10-2024 00:00", duration: 2},
-      {id: 5, text: "IntroB", start_date: "01-11-2024 00:00", duration: 1, parent: 2, progress: 0, open: true, end_date: "02-11-2024 00:00"},
-      {id: 6, text: "CodeBase Study", type: "project", start_date: "08-11-2024 00:00", duration: 8, parent: 1, progress: 0, open: true, end_date: "19-11-2024 00:00"},
-      {id: 7, text: "DB Scheme", start_date: "04-11-2024 00:00", duration: 2, progress: 0, parent: 6, open: true, end_date: "06-11-2024 00:00"},
-      {id: 8, text: "Models", start_date: "07-11-2024 00:00", duration: 2, parent: 6, progress: 0, open: true, end_date: "09-11-2024 00:00", "owner": [{ "resource_id": "5", "value": 2 }]},
-      {id: 9, text: "App lLayout", start_date: "11-11-2024 00:00", duration: 2, parent: 6, progress: 0.1, open: true, end_date: "13-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 10, text: "App Logic", start_date: "14-11-2024 00:00", duration: 2, parent: 6, progress: 0, open: true, end_date: "16-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 11, text: "Frontend", start_date: "18-11-2024 00:00", duration: 2, parent: 6, progress: 0.1, open: true, end_date: "20-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 12, text: "Backend", start_date: "21-11-2024 00:00", duration: 2, parent: 6, progress: 0, open: true, end_date: "23-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 13, text: "Correctie Programn", type: "project", start_date: "01-11-2024 00:00", duration: 30, parent: 0, progress: 0.1, open: false, end_date: "30-11-2024 00:00"},
-      {id: 14, text: "Item #6 Beta Release",  start_date: "28-10-2024 00:00", duration: 5, parent: 13, progress: 0.5, open: true, end_date: "02-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 15, text: "Item #7 Integrate System",  start_date: "04-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "09-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 16, text: "Item #8 Interface setup",  start_date: "11-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "16-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 17, text: "Item #9 Structure redesign",  start_date: "18-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "23-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 18, text: "Item #10 Structure Modules",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 19, text: "Item #11 Structure Components",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 1, "value": 8 }]},
-      {id: 20, text: "Deployment 1.5", start_date: "27-11-2024 00:00", type: "milestone", parent: 13, progress: 0, open: true, end_date: "27-11-2024 00:00", duration: 1},
-      {id: 21, text: "Item #12 Deployments",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 2, "value": 8 }]},
-      {id: 22, text: "Item #13 Rebalance datasources",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 23, text: "Item #14 Training",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 8 }]},
-      {id: 24, text: "Item #15 Documentation",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 5, "value": 8 }]},
-      {id: 25, text: "Final Deployment 2.0", start_date: "27-11-2024 00:00", type: "milestone", parent: 13, progress: 0, open: true, end_date: "27-11-2024 00:00", duration: 1},
-      {id: 31, text: "Custom Features", type: "project", start_date: "03-11-2024 00:00", duration: 5, parent: 0, progress: 0.2, open: false, end_date: "08-11-2024 00:00"},
-      {id: 32, text: "KlantA database", start_date: "01-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "08-11-2024 00:00"},
-      {id: 33, text: "KlantB Userbase", start_date: "04-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "11-11-2024 00:00"},
-      {id: 34, text: "Interface setup", start_date: "08-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "15-11-2024 00:00"},
-      {id: 35, text: "Documentation creation", start_date: "10-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "17-11-2024 00:00"},
-      {id: 36, text: "Release v1.0", start_date: "19-11-2024 00:00", type: "milestone", parent: 35, progress: 0, open: true, end_date: "19-11-2024 00:00", duration: 1}
-    ];
-
-var _ppl = [
- {id: 1, text: "R&D", parent:null},
- {id: 2, text: "Development", parent:null},
- {id: 3, text: "Mike", parent:1, unit: "hours/day" },
- {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
- {id: 5, text: "Anna", parent:2, unit: "hours/day" },
- {id: 6, text: "Floe", parent:2, unit: "hours/day" },
- {id: 6, text: "Stuart", parent:2, unit: "hours/day" },
- {id: 6, text: "Phill", parent:2, unit: "hours/day" },
- {id: 7, text: "Unassigned", parent:2},
- ];
-
-var _links = [
-   {id: "1", source: "1", target: "2", type: "1"},
-   {id: "2", source: "2", target: "3", type: "0"},
-   {id: "3", source: "3", target: "4", type: "0"},
-   {id: "4", source: "4", target: "5", type: "0"},
-   {id: "5", source: "2", target: "6", type: "0"},
-   {id: "6", source: "5", target: "7", type: "0"},
-   {id: "7", source: "7", target: "8", type: "0"},
-   {id: "8", source: "8", target: "9", type: "0"},
-   {id: "9", source: "9", target: "10", type: "0"},
-   {id: "10", source: "10", target: "11", type: "0"},
-   {id: "11", source: "11", target: "12", type: "0"},
-   {id: "12", source: "14", target: "15", type: "0"},
-   {id: "13", source: "15", target: "16", type: "0"},
-   {id: "14", source: "16", target: "17", type: "0"},
-   {id: "15", source: "17", target: "18", type: "0"},
-   {id: "16", source: "18", target: "19", type: "0"},
-   {id: "17", source: "19", target: "20", type: "0"},
-   {id: "18", source: "20", target: "21", type: "0"},
-   {id: "19", source: "21", target: "22", type: "0"},
-   {id: "20", source: "22", target: "23", type: "0"},
-   {id: "20", source: "23", target: "24", type: "0"},
-   {id: "20", source: "24", target: "25", type: "0"},
-   {id: "21", source: "32", target: "33", type: "0"},
-   {id: "22", source: "33", target: "34", type: "0"},
-   {id: "23", source: "34", target: "35", type: "0"},
-   {id: "24", source: "35", target: "36", type: "0"},
-   ];
 
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
+//let planning = new panaderoResourcePlanning("whateverz");
 
-let planning = new panaderoResourcePlanning("whateverz");
+const _init = async () => {
+    gantt.init("whateverz");
+    gantt.message({ text: "Panadero Resource Planning Module Initialize", expire: 0 });
+    gantt.message({ text: "Issue resources from module RentMagic", expire: 0 });
+}
 
+const _config_scales = async () => {
+    gantt.config.scale_height = 80;
+    gantt.config.scales = [
+        { unit: "week", step: 1, format: " Week %w" },
+        { unit: "day", step: 1, format: "%d.%m" },
+        { unit: "day", step: 1, format: "%D" },
+         // {unit: "hour", step: 2, format: "%H"},
+    ];
+
+    gantt.config.row_height = 32;
+    gantt.config.bar_height = 24;
+    gantt.config.min_column_width = 40;
+}
+
+const _config_columns = async () => {
+
+    gantt.config.columns = [
+        { name: "text", tree: true, width: 250, resize: true },
+        { name: "start_date", align: "center", width: 100, resize: true },
+       // {name: "end_date", align: "center", width: 100, resize: true},
+        { name: "owner", align: "center", width: 100, label: "Owner", template: function (task) {
+                if (task.type == gantt.config.types.project) {
+                    return "";
+                }
+
+                var store = gantt.getDatastore("resource");
+                var assignments = task[gantt.config.resource_property];
+
+                if (!assignments || !assignments.length) {
+                    return "Unassigned";
+                }
+
+                if(assignments.length == 1){
+                    return store.getItem(assignments[0].resource_id).text;
+                }
+
+                var result = "";
+                assignments.forEach(function(assignment) {
+                    var owner = store.getItem(assignment.resource_id);
+                    if (!owner)
+                    return;
+                    result += "<div class='owner-label' title='" + owner.text + "'>" + owner.text.substr(0, 1) + "</div>";
+                });
+
+                return result;
+            }, resize: true
+        },
+        { name: "duration", width: 60, align: "center", resize: true },
+        { name: "add", width: 44 }
+    ];
+}
 
 onMounted(async ()=> {
-    await planning.init();
-    await planning.setSkin(props.set.dark ? "dark" :  "meadow");
-    await planning.load(_resourceData, _links, _ppl);
-    await planning.parse();
+
+    //await _init();
+    await _config_scales();
+    await _config_columns();
+
+    function getResourceAssignments(resourceId) {
+        var assignments;
+        var store = gantt.getDatastore(gantt.config.resource_store);
+        var resource = store.getItem(resourceId);
+
+        if (resource.$level === 0) {
+            assignments = [];
+            store.getChildren(resourceId).forEach(function(childId){
+            assignments = assignments.concat(gantt.getResourceAssignments(childId));
+         });
+       } else if (resource.$level === 1) {
+          assignments = gantt.getResourceAssignments(resourceId);
+       }else{
+          assignments = gantt.getResourceAssignments(resource.$resource_id, resource.$task_id);
+       }
+       return assignments;
+    }
+
+    var resourceConfig = {
+        columns: [
+            {
+                name: "name", label: "Name", tree:true, template: function (resource) {
+                    return resource.text;
+                }
+            },
+            {
+                name: "workload", label: "Workload", template: function (resource) {
+                    var totalDuration = 0;
+                    if (resource.$level == 2) {
+                        var assignment = gantt.getResourceAssignments(resource.$resource_id, resource.$task_id)[0];
+                        totalDuration = resource.duration * assignment.value;
+                    } else {
+                        var assignments = getResourceAssignments(resource.id);
+                        assignments.forEach(function (assignment) {
+                        var task = gantt.getTask(assignment.task_id);
+                        totalDuration += Number(assignment.value) * task.duration;
+                    });
+                    }
+                    return (totalDuration || 0) + "h";
+                }
+            }
+        ]
+    };
+
+    gantt.templates.resource_cell_class = function(start_date, end_date, resource, tasks) {
+        var css = [];
+        css.push("resource_marker");
+        if (tasks.length <= 1) {
+            css.push("workday_ok");
+        } else {
+            css.push("workday_over");
+        }
+        return css.join(" ");
+    };
+
+
+    gantt.templates.resource_cell_value = function(start_date, end_date, resource, tasks) {
+        var result = 0;
+        tasks.forEach(function(item) {
+            var assignments = gantt.getResourceAssignments(resource.id, item.id);
+            assignments.forEach(function(assignment){
+                var task = gantt.getTask(assignment.task_id);
+                result += assignment.value * 1;
+            });
+        });
+
+        if(result % 1){
+            result = Math.round(result * 10)/10;
+        }
+        return "<div>" + result + "</div>";
+    };
+
+    gantt.locale.labels.section_resources = "Owners";
+
+    gantt.config.lightbox.sections = [
+        { name: "description", height: 38, map_to: "text", type: "textarea", focus: true },
+        { name: "type", map_to: "type", type: "select", 
+            options: [
+                { key: "task", label: "task" },
+                { key: "project", label: "project" },
+                { key: "milestone", label: "milestone" }
+            ]},
+        { name: "resources", type: "resources", map_to: "owner", options: gantt.serverList("people"), default_value:4 },
+        { name: "time", type: "duration", map_to: "auto"},
+        { name: "parent", type: "parent", allow_root: "true", root_label: "No parent", filter: function (id, task) {
+                /*  if(task.$level > 1){
+                        return false;
+                    }else{
+                        return true;
+                    }*/
+                return true;
+            }
+        }
+    ];
+
+    gantt.config.resource_store = "resource";
+    gantt.config.resource_property = "owner";
+    gantt.config.order_branch = true;
+    gantt.config.open_tree_initially = true;
+
+    gantt.config.layout = {
+        css: "gantt_container",
+        rows: [
+            {
+                cols: [
+                    { view: "grid", group:"grids", scrollY: "scrollVer" },
+                    { resizer: true, width: 1 },
+                    { view: "timeline", scrollX: "scrollHor", scrollY: "scrollVer" },
+                    { view: "scrollbar", id: "scrollVer", group:"vertical" }
+                ],
+                gravity:2
+            },
+            { resizer: true, width: 1 },
+            {
+                config: resourceConfig,
+                cols: [
+                    { view: "resourceGrid", group:"grids", width: 435, scrollY: "resourceVScroll" },
+                    { resizer: true, width: 1 },
+                    { view: "resourceTimeline", scrollX: "scrollHor", scrollY: "resourceVScroll" },
+                    { view: "scrollbar", id: "resourceVScroll", group:"vertical" }
+                ],
+                gravity: 1
+            },
+            { view: "scrollbar", id: "scrollHor"}
+        ]
+    };
+
+    gantt.templates.scale_cell_class = function(date) {
+        if(date.getDay()==0||date.getDay()==6) {
+           return "weekend";
+       }
+    };
+    gantt.templates.timeline_cell_class = function(task,date) {
+        if(date.getDay()==0||date.getDay()==6) { 
+            return "weekend" ;
+        }
+    };
+    await props.set.setProjectType('resourcePlanning');
+
+    await _init();
+    // await _config_scales();
+    // await _config_columns();
+    // await _parse(resourceData, links);
 })
+
+
+
+    var updateInfo = function () {
+        var state = gantt.getState(),
+            tasks = gantt.getTaskByTime(state.min_date, state.max_date),
+            types = gantt.config.types,
+            result = {},
+            html = "",
+            active = false;
+
+        // get available types
+        result[types.task] = 0;
+        result[types.project] = 0;
+        result[types.milestone] = 0;
+
+        // sort tasks by type
+        for (var i = 0, l = tasks.length; i < l; i++) {
+            if (tasks[i].type && result[tasks[i].type] != "undefined")
+                result[tasks[i].type] += 1;
+            else
+                result[types.task] += 1;
+        }
+        // render list items for each type
+        for (var j in result) {
+            if (j == types.task)
+                active = true;
+            else
+                active = false;
+            html += getListItemHTML(j, result[j], active);
+        }
+
+        document.getElementById("gantt_info").innerHTML = html;
+    };
+
+
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i >= 0; i--) {
@@ -122,96 +286,143 @@ function shuffleArray(array) {
     }
 }
 
-const _shuffle = async () => {
-   shuffleArray(_resourceData);
+const _parse = async (_data, _links) => {
+
+    var resourcesStore = gantt.createDatastore({
+        name: gantt.config.resource_store,
+        type: "treeDatastore",
+        initItem: function (item) {
+            item.parent = item.parent || gantt.config.root_id;
+            item[gantt.config.resource_property] = item.parent;
+            item.open = true;
+            return item;
+        }
+    });
+
+    resourcesStore.attachEvent("onParse", function() {
+        var people = [];
+        resourcesStore.eachItem(function(res) {
+            if(!resourcesStore.hasChild(res.id)) {
+                var copy = gantt.copy(res);
+                copy.key = res.id;
+                copy.label = res.text;
+                people.push(copy);
+            }
+        });
+        gantt.updateCollection("people", people);
+    });
+
+    if (props.set.project.title=="vince") resourcesStore.parse(ppl_vince);
+    else resourcesStore.parse(ppl);
+    gantt.parse({ data: _data, links: _links });
 }
 
-const _init = async () => {
-   await planning.init();
+onUnmounted(async ()=> {
+    gantt.clearAll(); 
+    //gantt.destructor();
+})
+
+const _shuffle = async () => {
+   //shuffleArray(resourceData);
+    await _config_scales();
+    await _config_columns();
+    await _init();
+}
+
+const _reset = async () => {
+    await gantt.clearAll();
+    gantt.setSkin(props.set.dark ? "dark" : 'meadow');
+    await _config_scales();
+    await _config_columns();
+    await _init();
 }
 
 const _load = async () => {
-   await planning.load(_resourceData, _links, _ppl);
+  if(props.set.project.id > 0){
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+    let _type = props.set.projectType;
+    let _projectId = props.set.project.id;
+    console.log(_path);
+    let _resourcePlanning = await props.db.getState(_type, _path, _projectId);
+    let _resPlan = await JSON.parse(_resourcePlanning);
+    console.log(_resPlan.data, _resPlan.links);
+    await _parse(_resPlan.data, _resPlan.links);
+    
+  }
 }
 
-const _parse = async () => {
-   await planning.parse();
+/// move this section to store!!!
+const _save = async () => {
+  if(props.set.project.id > 0){
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+
+    let _resourcePlanning =  await gantt.serialize();
+    let _payload = {  "model": "StateDataset",
+                      "type": props.set.projectType,
+                      "path": _path,
+                      "projectId": props.set.project.id,
+                      "json" : JSON.stringify(_resourcePlanning),
+                      "isActive": 1
+                     };
+    await props.db.setState(_payload);
+    gantt.message({ text: "Saved Environment", expire: 0 });
+  }
 }
 
-
+const color = ref(defaultColor);
 const _changeColor = async () => {
     _counter.value++;
     if (_counter.value >= colors.length) _counter.value=0;
     color.value = colors[_counter.value];
 }
 
-
-
-const colors = [['#00695c','#26a69a','#330099','#6633FF', '#ede'],
-['#F9C241','#FCDF9C','#3CB2C9','#A7E1EC', '#121'],
-['#37AFE1','#4CC9FE','#FFB22C','#FFDE4D', '#121'],
-['#9B7EBD','#D4BEE4','#A5B68D','#C1CFA1', '#121'],
-['#0D92F4','#F95454','#0A6847','#F3CA52', '#000'],
-['#344C64','#577B8D','#3C3D37','#697565', '#ede']];
-
-//let color = ref(['#00695c','#26a69a','#330099','#6633FF', '#ede']);
-//let color = ref(['#F9C241','#FCDF9C','#3CB2C9','#A7E1EC', '#121']);
-let color = ref(['#37AFE1','#4CC9FE','#FFB22C','#FFDE4D', '#121']);
-//let color = ref(['#9B7EBD','#D4BEE4','#A5B68D','#C1CFA1', '#121']);
-//let color = ref(['#344C64','#577B8D','#3C3D37','#697565', '#ede']);
-
-let _task_scale="#FCFCFC";
-let _weekend="#F2F2F2";
-//let _dark_weekend="#00001A";
-let _dark_weekend="#000000";
-
-
-
-/// remove this section to store!!!
-const _save = async () => {
-  if(props.set.project.id > 0){
-    let _planning =  await planning.serialize();
-    let _payload = {  "model": "StateDataset",
-                      "type": props.set.projectType,
-                      "path": props.set.project.environment+"."+props.set.project.category,
-                      "projectId": props.set.project.id,
-                      "json" : JSON.stringify(_planning),
-                      "isActive": 1
-                     };
-    await props.db.setState(_payload);
-  }
-}
-
 defineExpose({
   _load, _save
 });
 
+const show = async () => {
+    console.log('show');
 
+    dhx.alert({
+        header: "i3 Alert Box",
+        text: "With the help of i3 components you are able to create versatile user interfaces for web apps of any kind. Modern technologies and design make our library a great tool for developers working on the most complex projects. And here i3Message represents a small but indispensable toolkit of helpers for initializing all types of messages: notifications, alert and confirmation boxes, and tooltips. Try out the abilities of dhtmlxMessage in our interactive demos and samples.",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    });
+}
+
+const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+//const pulse = inject("pulse");
 
 </script>
 
 <template>
-	<div class="mx-0.5">
-   <div class="grid grid-cols-12 text-xxs sm:text-xs md-text-sm dark:text-gray-200">
-      <div @click="emit('switch')" class="col-span-2">
-       {{moduleName}}
-       {{moduleVersion}}
-     </div>
-     <div @click="_changeColor">COLOR_{{_counter}}</div>
-     <div @click="_init">INIT</div>
-     <div @click="_load">LOAD</div>
-     <div @click="_shuffle">SHUFFLE</div>
-     <div @click="_parse">PARSE</div>
-   </div>
-   <div id="whateverz" class="h-screen max-w-9xl bg-black"></div>
 
-	<div class=" mt-2 gap-2 lg:mt-3 lg:gap-3 grid grid-cols-12" :id="_counter">	
-	</div>
+    <div class="grid grid-cols-4">     
+        <div class="flex pl-2 col-span-3 mb-1 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
+ 
+            <button @click="_changeColor" type="button" :class="_button">Color</button>
+            <button @click="_reset" type="button" :class="_button">Reset</button>
+            <button @click="_load" type="button" :class="_button">Load</button>
+            <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
+            <button @click="_parse" type="button" :class="_button">Parse</button>
+            <button @click="_save" type="button" :class="_button">Save</button>
 
-	</div>
+        </div>    
+        <div class=" items-end text-center" id="toolbar">
+            
+            <div  class="col-span-1 text-xs mt-4">
+                {{moduleName}}
+                {{moduleVersion}}
+            </div>
+
+        </div>
+    </div class="-pl-4">
+    <div id="root" class=""></div>
+    <div id="whateverz" class="h-screen max-w-9xl bg-black"></div>
+
 </template>
 <style>
-
 
 :root {
     --background-color: #ffffff;
@@ -241,23 +452,23 @@ defineExpose({
 }
 
 .gantt_task_scale{
-    background-color: v-bind(_task_scale);
+    background-color: v-bind(taskScaleColor);
     font-size: 10px;
     border-bottom: 1px solid #cecece;
 }
 
 .dark .gantt_task_scale {
-    background-color: v-bind(_dark_weekend);
+    background-color: v-bind(darkWeekendColor);
 }
 
 .gantt_grid_scale .gantt_grid_head_cell {
-    background-color: v-bind(_task_scale);
+    background-color: v-bind(taskScaleColor);
     font-size: 12px;
     border-bottom: 1px solid #cecece;
 }
 
 .dark .gantt_grid_scale .gantt_grid_head_cell {
-    background-color: v-bind(_dark_weekend);
+    background-color: v-bind(darkWeekendColor);
 }
 
 .gantt_grid_data{
@@ -302,8 +513,8 @@ defineExpose({
     background-color:  v-bind(color[0]);
   }
 
-  .weekend{ background: v-bind(_weekend) !important;}
-  .dark .weekend{ background: v-bind(_dark_weekend) !important;}
+  .weekend{ background: v-bind(weekendColor) !important;}
+  .dark .weekend{ background: v-bind(darkWeekendColor) !important;}
 
   .gantt_milestone {
     background: #FFCC33 }

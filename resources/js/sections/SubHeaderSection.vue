@@ -39,8 +39,8 @@ const setProjectId = (_title) => {
         // toDo !! retrieve from db
         props.set.project.id = _title=='none' ? 0 : 1;
         props.set.project.title = _title;
-        props.set.project.environment = "default";
-        props.set.project.validEnvironments = ["default","test"];
+        props.set.project.environment = "sandbox";
+        props.set.project.validEnvironments = ["master", "alternative", "sandbox"];
         props.set.project.category = "primera";
     }
 }
@@ -90,27 +90,46 @@ watch(pulse, async (_bool) => {
   }
 })
 
+
+const _categories = ['primera','segundo','tercera'];
+
+const switchCat = async (_a) => {
+    props.set.project.category = _categories[_a];
+}
+
+
+
+
+
+const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
+
+const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300";
+const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:text-gray-500 dark:hover:ring-indigo-400 hover:ring-indigo-300 hover:text-gray-400";
+
+
+
+
 </script>
 
 <template>
- <nav class="bg-slate-50 dark:bg-slate-950 border-b border-gray-200 dark:border-gray-800 ">
+ <nav class="bg-gray-100 dark:bg-slate-950 border-b border-gray-200 dark:border-gray-800 ">
 
     <!--Sub Header Icons Navigation Menu -->
     <div class="max-w-11xl grid grid-cols-5 h-20 md:h-10">
             
             <div class="flex col-span-5 md:col-span-2">
                     <ul role="list" class="flex">
-                        <ellipsis-vertical-icon @click="set.layout.sidebar = !set.layout.sidebar" class="w-10 px-3" :class="_indigo" title="toolbar" />
-                        <h1-icon @click="set.layout.header = !set.layout.header" class="w-10 px-3" :class="_indigo" title="header"/>
-                        <h2-icon @click="set.layout.subHeader = !set.layout.subHeader" class="w-10 px-3" :class="_indigo" title="subHeader" />
-                        <bars-arrow-down-icon @click="set.layout.footer = !set.layout.footer" class="w-10 px-3" :class="_indigo" title="footer" />
+                        <ellipsis-vertical-icon @click="set.layout.sidebar = !set.layout.sidebar" class="w-8 px-2" :class="_indigo" title="toolbar" />
+                        <h1-icon @click="set.layout.header = !set.layout.header" class="w-8 px-2" :class="_indigo" title="header"/>
+                        <h2-icon @click="set.layout.subHeader = !set.layout.subHeader" class="w-8 px-2" :class="_indigo" title="subHeader" />
+                        <bars-arrow-down-icon @click="set.layout.footer = !set.layout.footer" class="w-8 px-2" :class="_indigo" title="footer" />
 
                     <!-- Darkmode -->
-                    <div class="w-10 px-2.5 pt-2" :class="_indigo" @click="set.darkToggle">
+                    <div class="w-10 px-2.5 pt-2.5" :class="_indigo" @click="set.darkToggle">
                         {{set.dark ? '🌙' : '☀️'}}
                     </div>
 
-                    <div class="pt-2">
+                    <div class="pt-2.5">
                         <!-- Pulse Control -->
                         <p v-if="_animation">  
                           <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
@@ -126,7 +145,7 @@ watch(pulse, async (_bool) => {
 
                     </div>
 
-                    <div class="pt-2">
+                    <div class="pt-2.5">
                         <!-- Pulse Control -->
                         <p v-if="_animation">  
                           <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
@@ -157,8 +176,12 @@ watch(pulse, async (_bool) => {
             <!-- Responsive Navigation Menu optional ... needs work-->
             <div class="flex justify-end sm:items-right align-right md:text-sm col-span-5 md:col-span-2">
 
-                <span v-if="set.project.id>0" @click="set.projectVisible = !set.projectVisible" class="mr-0.5 hover:text-black dark:hover:text-yellow-300 mt-2.5 md:mt-2 font-medium text-gray-500 dark:text-gray-400" :title="set.project.title+'.'+set.project.environment+'.'+set.project.category">project[{{set.project.id}}] </span>
-                <span class="m-1 inline-flex items-center rounded-md bg-indigo-400/10 px-2 py-1 text-xs font-medium text-indigo-400 ring-1 ring-inset ring-indigo-400/30 min-w-6">  {{_counter + _rnd(20)}}</span>
+            <div class="flex space-x-0.5 mx-1" v-if="set.project.id>0">
+                <div @click="switchCat(0)" :class="[_button1, _switchSelected]">{{set.domain}}.{{set.project.title}}.{{set.project.environment}}.</div>
+                <div @click="switchCat(0)" :class="[_button1,set.project.category=='primera' ? _switchSelected : _switchUnSelected]">00</div>
+                <div @click="switchCat(1)" :class="[_button1,set.project.category=='segundo' ? _switchSelected : _switchUnSelected]">01</div>
+                <div @click="switchCat(2)" :class="[_button1,set.project.category=='tercera' ? _switchSelected : _switchUnSelected]">02</div>
+            </div>   
 
                 <div v-if="$page.props.auth.user" class="relative">
                     <!-- Teams Dropdown -->
@@ -166,7 +189,7 @@ watch(pulse, async (_bool) => {
                         <template #trigger>
 
                             <span class="inline-flex rounded-md">
-                                <button type="button" class="inline-flex items-center px-3 mt-3 md:mt-2 border border-transparent text-xs md:text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-yellow-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
+                                <button type="button" class="inline-flex items-center px-3 mt-3 md:mt-2 border border-transparent text-xs md:text-xs leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-yellow-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
                                     {{ $page.props.auth.user.current_team.name }}
                                     <svg class="ms-2 -me-0.5 h-3 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
@@ -219,7 +242,7 @@ watch(pulse, async (_bool) => {
                     </Dropdown>
                 </div>
 
-                <div v-else class="text-sm mr-3">
+                <div v-else class="text-xs mr-3">
                     <Link :href="route('login')">
                         Log in
                     </Link>

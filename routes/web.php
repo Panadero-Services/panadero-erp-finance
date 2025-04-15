@@ -23,11 +23,13 @@ use App\Http\Controllers\Web3RecordController;
 use App\Http\Controllers\Web3RecordLineController;
 use App\Http\Controllers\ProjectController;
 use App\Models\Section;
+use App\Models\Role;
 
 use App\Http\Controllers\UserController;
 
 // custom token
 use App\Http\Middleware\EnsureTokenIsValid;
+use App\Http\Middleware\RoleAccessMiddleware;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -52,20 +54,31 @@ Route::middleware([
         ]);
     })->name('mood');
 
+
     Route::get('bento', function () {
         return Inertia::render('Bento', [
             'page'=> Page::with('sections')->where('title','Bento')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('bento');
+    })->name('bento')->middleware(RoleAccessMiddleware::class.':admin,author');
 
+    Route::get('tiers', function () {
+        return Inertia::render('Tiers', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('tiers')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+//  Gate function
+//  Route::middleware('can:admin-access')->get('posts', function () {
     Route::get('posts', function () {
         return Inertia::render('Posts', [
              'posts'=> PostResource::collection(Post::with('user')->paginate()),
             'page'=> Page::with('sections')->where('title','Posts')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('posts');
+    })->name('posts')->middleware(RoleAccessMiddleware::class.':admin,member');
+
 
     Route::get('grid', function () {
         return Inertia::render('Grid', [
@@ -74,34 +87,59 @@ Route::middleware([
         ]);
     })->name('grid');
 
-    Route::get('tiers', function () {
-        return Inertia::render('Tiers', [
-            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+    Route::get('bots', function () {
+        return Inertia::render('Bots', [
+            'page'=> Page::with('sections')->where('title','Bots')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('tiers');
+    })->name('bots');
 
+    Route::get('resources', function () {
+        return Inertia::render('Resources', [
+            'page'=> Page::with('sections')->where('title','Resources')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('resources');
 
+    Route::get('project', function () {
+        return Inertia::render('Project', [
+            'page'=> Page::with('sections')->where('title','Project')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project');
 
+    Route::get('web3', function () {
+        return Inertia::render('Web3', [
+            'page'=> Page::with('sections')->where('title','Web3')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('web3');
 
+    Route::get('config', function () {
+        return Inertia::render('Config', [
+            'page'=> Page::with('sections')->where('title','Config')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('config');
 
-
+    Route::get('table', function () {
+        return Inertia::render('Table', [
+            'page'=> Page::with('sections')->where('title','Table')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('table');
 
 
 
    // Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
-    Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
+  //  Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
 
-    Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
-    Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
+  //  Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
+  //  Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
     Route::get('planning', function () { return Inertia::render('Planning', []);})->name('planning');
-    Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
+  //  Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
   //  Route::get('posts',[PostController::class,'index'])->name('posts');
 
-    Route::get('bots', function () {
-        return Inertia::render('Bots', [
-        ]);
-    })->name('bots');
 
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard',[
@@ -115,6 +153,12 @@ Route::middleware([
     })->name('dashboard');
 
 });
+
+
+
+
+
+
 
 //Route::get('posts',[PostController::class,'index'])->name('posts');
 Route::get('test/{id?}', function($id=1){

@@ -1,150 +1,94 @@
 import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 import { ethers } from 'ethers';
 import Tokens from "../../js/constants/tokens.json";
 import Providers from "../../js/constants/providers.json";
 
-//import { useWalletStore } from "@/stores/WalletStore.js";
-//const walletStore = useWalletStore()
+export const useTokenStore = defineStore('token', () => {
+    const name = ref("");
+    const chainNr = ref(0);
+    const endPoint = ref("");
+    const type = ref("");
+    const address = ref("0x0");
+    const decimals = ref(18);
+    const balances = ref({});
+    const abi = ref([]);
+    const balance = ref(-1);
 
+    const provider = computed(() => {
+        if (chainNr.value === 97) endPoint.value = Providers.BSC_Testnet_4.node;
+        if (chainNr.value === 56) endPoint.value = Providers.BSC_9.node;
+        if (chainNr.value === 5) endPoint.value = Providers.GOERLI_1.node;
+        if (chainNr.value === 137) endPoint.value = Providers.POLYGON_1.node;
+        if (chainNr.value === 80001) endPoint.value = Providers.POLYGON_Testnet_1.node;
+        if (chainNr.value === 62621) endPoint.value = Providers.MTV_1.node;
+        return new ethers.JsonRpcProvider(endPoint.value);
+    });
 
-//const SwappyTestnet="0xd2ca18bb5aF11dF7c349184eA10CF8Fc35aF9b12";
-//const bscScanApiKey = import.meta.env.VITE_BSCSCAN_API_KEY;
-//const bscKey = "SQWT7KQ9QR7DCPE7HQV17N1EQBF935QQKZ";
-//import { useWalletStore } from "@/stores/WalletStore.js";
-//const walletStore = useWalletStore();
-/*
-*/
-export let useTokenStore = defineStore('token',{
-    state: () => ({
-        name: "" , 
-        chainNr: 0,
-        endPoint:"",
-        type: "",
-        address:"0x0",
-        decimals: 18,
-        balances:{},
-        abi:[],
-        balance: -1 // not used
-    }),
-  
-    //Getters are exactly the equivalent of computed values for the state of a Store. They can be defined with the getters property in defineStore(). They receive the state as the first parameter to encourage the usage of arrow function:
-    getters: {
-        doubleCount: (state) => state.balance * 2,
+    async function reset() {
+        name.value = "";
+        chainNr.value = 0;
+        type.value = "";
+        address.value = "0x0";
+        decimals.value = 18;
+        balances.value = {};
+        abi.value = [];
+        balance.value = -1;
+    }
 
-        provider(state) {
+    function increment() {
+        balance.value++;
+    }
 
-//            let _endPoint = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
-//            if(this.chainNr==56)_endPoint = 'https://bsc-dataseed1.binance.org/';
+    function decrement() {
+        balance.value--;
+    }
 
-            let _endPoint;
-            
-            if(this.chainNr==97) this.endPoint = Providers.BSC_Testnet_4.node;
-            if(this.chainNr==56) this.endPoint = Providers.BSC_9.node;
-            if(this.chainNr==5) this.endPoint = Providers.GOERLI_1.node;
-            if(this.chainNr==137) this.endPoint = Providers.POLYGON_1.node;
-            if(this.chainNr==80001) this.endPoint = Providers.POLYGON_Testnet_1.node;
-            if(this.chainNr==62621) this.endPoint = Providers.MTV_1.node;
+    function set(_name) {
+        name.value = _name;
+        chainNr.value = Tokens[_name].chain_id;
+        type.value = Tokens[_name].type;
+        address.value = Tokens[_name].address;
+        decimals.value = Tokens[_name].decimals;
+        abi.value = Tokens[_name].abi;
+    }
 
-            // When using the JSON-RPC API, the network will be automatically detected
-            // API Providers
-            // const provider = new ethers.providers.AlchemyProvider('goerli', 'your-alchemy-api-key');
-            // const provider = new ethers.providers.InfuraProvider('goerli', 'your-infura-api-key');
-            // const provider = new ethers.providers.EtherscanProvider('goerli', 'your-etherscan-api-key');
-            // Node Providers .. JsonRpcProvider... HardhatProvider.. Web3Provider
-            // const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
+    function setFromDb(_e) {
+        name.value = _e.title;
+        chainNr.value = _e.web3chain.chain_nr;
+        type.value = _e.web3type.title;
+        address.value = _e.address;
+        decimals.value = 18;
+        abi.value = _e.abi;
+    }
 
-            // 1. Using Web3Provider(), When we want to do transactions via metamask.
-            // const web3Modal = new Web3Modal.connect();
-            // const provider = new ethers.providers.Web3Provider(connection);
-            // now ethers.js will not use the default hardhat provider
+    async function readContract(contractAddress, abi, functionName, params = []) {
+        const contract = new ethers.Contract(contractAddress, abi, provider.value);
+        return await contract[functionName](...params);
+    }
 
+    async function getBalanceFromDb(_e, _wallet) {
+        let _balance = await readContract(_e.address, _e.abi, "balanceOf", [_wallet]);
+        let _convertBalance = Number(BigInt(_balance) / 1000_000_000_000_000n) / 1000;
+        if (!balances.value[_e.title]) balances.value[_e.title] = {};
+        balances.value[_e.title][_wallet] = _convertBalance;
+        return { name: _e.title, balance: _convertBalance };
+    }
 
-            // 2. using JsonRpcProvider
-            // this will not use MM
-            return new ethers.JsonRpcProvider(this.endPoint);
+    async function getBalanceFromJson(_token, _wallet) {
+        let _balance = await readContract(Tokens[_token].address, Tokens[_token].abi, "balanceOf", [_wallet]);
+        let _convertBalance = Number(BigInt(_balance) / 1000_000_000_000_000n) / 1000;
+        if (!balances.value[_token]) balances.value[_token] = {};
+        balances.value[_token][_wallet] = _convertBalance;
+        return { name: _token, balance: _convertBalance };
+    }
 
+    async function initialize() {
+        //await fill();
+    }
 
-// Setup: npm install ethers
-//const ethers = require("ethers");
-//const url = "https://eth-mainnet.alchemyapi.io/v2/your-api-key";
-//const customHttpProvider = new ethers.providers.JsonRpcProvider(url);
-
-
-        }
-    },
-    actions: {
-
-        async initialize() {
-          //  this.fill();
-        },
-
-        async reset(){
-            this.name = "";
-            this.assets = {};
-            this.chainNr = 0;
-            this.type = "";
-            this.address = "0x0";
-            this.decimals =  18;
-            this.balances = {};
-            this.abi = [];
-            this.balance = -1; // not used
-        },
-
-        increment() {
-            this.balance++;
-        },
-        decrement() {
-            this.balance--;
-        },
-        set(_name) {
-            this.name=_name;
-            this.chainNr=Tokens[this.name].chain_id;
-            this.type=Tokens[this.name].type;
-            this.address=Tokens[this.name].address;
-            this.decimals=Tokens[this.name].decimals;
-            this.abi=Tokens[this.name].abi;
-        },
-        
-        setFromDb(_e) {
-            this.name = _e.title;
-            this.chainNr = _e.web3chain.chain_nr
-            this.type = _e.web3type.title;
-            this.address = _e.address;
-            this.decimals = 18;
-            this.abi = _e.abi;
-        },
-
-        async initialize() {
-            //this.balance();
-        },
-        
-        async readContract(contractAddress, abi, functionName, params = []) {
-            this.address = contractAddress;
-            this.decimals = 18;
-            const name = new ethers.Contract(this.address, abi, this.provider);
-            return await name[functionName](...params);
-        },
-
-        async getBalanceFromDb(_e, _wallet) {
-            console.log(_e.address,_wallet);
-            let _balance = await this.readContract(_e.address, _e.abi, "balanceOf", [_wallet]);
-            let _convert = Number(BigInt(_balance)/ 1000_000_000_000_000n);
-            let _convertBalance = _convert/1000;
-            console.log(_e.title , "balance",_wallet,': ', _convertBalance);
-            if (this.balances[_e.title]===undefined)this.balances[_e.title]={};
-                this.balances[_e.title][_wallet]= _convertBalance;
-            return {name:_e.title, balance:_convertBalance};
-        },
-
-        async getBalanceFromJson(_token, _wallet) {
-            let _balance = await this.readContract(Tokens[_token].address, Tokens[_token].abi, "balanceOf", [_wallet]);
-            let _convert = Number(BigInt(_balance)/ 1000_000_000_000_000n);
-            let _convertBalance = _convert/1000;
-            console.log(_token , "balance",_wallet,': ', _convertBalance);
-            if (this.balances[_token]===undefined)this.balances[_token]={};
-                this.balances[_token][_wallet]= _convertBalance;
-            return {name:_token, balance:_convertBalance};
-        },
-    },
-
+    return {
+        name, chainNr, endPoint, type, address, decimals, balances, abi, balance, provider, initialize,
+        reset, increment, decrement, set, setFromDb, readContract, getBalanceFromDb, getBalanceFromJson
+    };
 });

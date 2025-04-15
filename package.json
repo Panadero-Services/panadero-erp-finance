@@ -6,7 +6,6 @@
         "build": "vite build",
         "ssh": "ssh -i bastion.pem ubuntu@15.188.147.145"
     },
-
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.14",
         "@tailwindcss/forms": "^0.5.7",
@@ -20,12 +19,12 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
-        "@dhx/trial-kanban": "file:kanban_trial",
+        "@dhx/kanban": "file:vendor/dhx_kanban",
         "@headlessui/vue": "^1.7.23",
         "@heroicons/vue": "^2.1.5",
         "@metamask/detect-provider": "^2.0.0",
         "date-fns": "^4.1.0",
-        "dhtmlx-gantt": "file:gantt_trial",
+        "dhtmlx-gantt": "file:vendor/dhx_gantt",
         "dhx-gridpack-package": "file:gridpack_trial_9_0",
         "ethers": "^6.6.4",
         "heroicons": "^2.1.5",
@@ -35,9 +34,9 @@
         "panadero-bridge": "github:lieuwebakker/panadero-bridge",
         "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
         "panadero-grid": "github:Panadero-Services/panadero-grid",
-        "panadero-mood": "github:Panadero-Services/panadero-mood",
         "panadero-minigames": "github:lieuwebakker/panadero-minigames",
-        "panadero-resourceplanning": "github:lieuwebakker/panadero-resourceplanning",
+        "panadero-mood": "github:Panadero-Services/panadero-mood",
+        "panadero-resourceplanning": "file:vendor/panadero/panadero-resourceplanning",
         "panadero-self": "github:lieuwebakker/panadero-self",
         "panadero-server": "github:lieuwebakker/panadero-server",
         "panadero-sim": "github:lieuwebakker/panadero-sim",

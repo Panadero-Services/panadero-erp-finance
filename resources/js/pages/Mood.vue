@@ -27,24 +27,26 @@ const props = defineProps({
     page: Object,
     baseSections: Object
 });
+const myChild = ref(null);
 const _pulse = ref(false);
 provide(/* key */ 'pulse', /* value */ _pulse);
 
+// dashboard specifics
+_set.layout.footer=false;
 </script>
 
 <template>
    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
       <template #header>
-         <pulse  v-model="_pulse" :animation="_set.animate"/>
+         <pulse v-model="_pulse" :animation="_set.animate"/>
       </template>
 
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="w-full ... min-h-4  max-w-11xl">
+         <div id="whatever" class="w-screen">
             <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="_pulse" />
-            }
          </div>
       </template>
 

@@ -35,8 +35,8 @@ provide(/* key */ 'pulse', /* value */ _pulse);
 
 <template>
    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
-
       <template #header>
+
          <pulse  v-model="_pulse" :animation="_set.animate"/>
       </template>
 

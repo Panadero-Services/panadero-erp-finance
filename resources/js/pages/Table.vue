@@ -1,82 +1,60 @@
 <script setup>
-import {computed, onMounted, onUnmounted, ref} from 'vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { ref, provide } from 'vue';
+
+// layout
+import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
+// sections
+//import MainSection from "@/sections/Web3Section.vue";
+//import MainSection from "@/pages/dashboard1/cards/SelfIntro.vue";
+import MainSection from "@/panaderos/panadero-grid/PanaderoTable.vue";
+
+//import BotsSection from "@/sections/BotsSection.vue"
+
 // stores
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 import { useDbStore } from '@/stores/db';
+
 const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-// sections
-import HeaderSection from "@/sections/HeaderSection.vue"
-import SubHeaderSection from "@/sections/SubHeaderSection.vue"
-import Banner from '@/components/Banner.vue';
-
-import PanaderoTable from "@/panaderos/panadero-grid/PanaderoTable.vue";
-
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-// webhooks
-onMounted(async ()=> {
-  await _set.initMM();
-  await _set.initialize();
+const props = defineProps({
+    page: Object,
+    baseSections: Object
 });
 
-const pulse = ref(false);
-
-const _save = async ()=> {}
-const _load = async ()=> {}
 
 const myChild = ref(null);
-const _header = ref(true);
-const _subHeader = ref(true);
-
-// buttons
-const _buttons = ['d1', 's2', 't3'];
-
-// css
-const _button ="rounded px-2 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-indigo-300 dark:ring-gray-600 ";
-const _hover = "hover:bg-indigo-400 dark:hover:bg-indigo-600";
-const _bg = "bg-white dark:bg-black";
-const _bgSelected = "bg-indigo-200 dark:bg-indigo-800";
-const _hoverAdd = "hover:bg-green-400 dark:hover:bg-green-600";
-const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
+const _pulse = ref(false);
+provide(/* key */ 'pulse', /* value */ _pulse);
 
 </script>
+
 <template>
-    <AppLayout title="Tiers" :set="_set">
+   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
-        <template #header>
+      <template #header>
+         <pulse  v-model="_pulse" :animation="_set.animate"/>
+      </template>
 
-            <Banner />
-            <HeaderSection v-if="_header" :set="_set" :contract="_contract"/>
-            <SubHeaderSection v-if="_subHeader" :set="_set"/>
-                    
-            <div v-if="true" class="absolute space-x-2 z-40 " :class="[_header ? 'top-16' : 'top-1', _subHeader ? 'left-32' : 'left-80']" >
-              <button v-if="_subHeader" v-for="b in _buttons"  @click="_set.projectTitle=b" type="button" :class="[_button, _hover, b==_set.projectTitle ? _bgSelected : _bg]">{{b}}</button>
-              <button v-if="_subHeader" @click="myChild._add" type="button" :class="[_button, _bg, _hoverAdd]">Add</button>
-              <button v-if="_subHeader" @click="myChild._delete" type="button" :class="[_button, _bg, _hoverDelete]">Delete</button>
-              <button v-if="_subHeader"  @click="_header=!_header" type="button" :class="[_button, _bg, _hover]">Header</button>
-              <button @click="_subHeader=!_subHeader" type="button"  :class="[_button, _bg, _hover]">subHeader</button>
-            </div>
+      <template #intro />
 
-        </template>
+      <template #default>
+         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
+            <MainSection ref="myChild" :set="_set" :contract="_contract" :db="_db" v-model:pulse="_pulse"/>
+         </div>
+      </template>
 
-        <template #default>
+      <template #footer />
 
-            <div id="whatever" class="h-screen max-w-9xl bg-black">
-                <PanaderoTable ref="myChild" :contract="_contract" :set="_set" :pulse="pulse"/>
-            </div>
-
-        </template>
-  
-    </AppLayout>
+   </AppToolbarLayout>
 </template>

@@ -5,16 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
     public function index()
     {
+
+        if (Gate::denies('admin-access')){
+            return response('Gate denies: UnAuthorized.',401);
+        }
+
         return Inertia::render('Users/Index', [
             'users' => User::paginate(6)
         ]);
     }
-
 
  public function updateProfile(Request $request, User $user)
     {

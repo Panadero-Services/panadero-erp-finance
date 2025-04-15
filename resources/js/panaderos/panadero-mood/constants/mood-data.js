@@ -28,6 +28,8 @@ function getData() {
 		color: true,
 		menu: true,
 		cover: true,
+		links: true,
+		comments: true,
 		attached: false,
 	};
 

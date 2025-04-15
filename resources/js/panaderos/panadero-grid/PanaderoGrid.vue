@@ -5,8 +5,8 @@ import { moduleName, moduleVersion, moduleGit, panaderoGrid} from "panadero-grid
 // gridpack
 // moved package back to root folder
 // now exists in two folder 1.root 2./panadero-grid/vendor
-import "dhx-gridpack-package/codebase/gridpack.js";
-import "dhtmlx-gridpack/codebase/gridpack.css";
+//import "dhx-gridpack-package/codebase/gridpack.js";
+//import "dhtmlx-gridpack/codebase/gridpack.css";
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -21,6 +21,7 @@ console.log(`moduleGit: ${moduleGit}`);
 const props = defineProps({
     contract: Object,
     set: Object,
+    db: Object,
     pulse: Boolean
 });
 
@@ -33,12 +34,15 @@ const data =  pGrid.initialData();
 const users =  pGrid.initialUsers();
 const srcPhoto = "https://snippet.dhtmlx.com/codebase/data/common/img/02/avatar_";
 
+
+
 // grid columns
 const columns = [
-  { id: "paid", header: [ { text: `
-        <label class="dhx_checkbox dhx_cell-editor__checkbox ">
-          <input type="checkbox" class="dhx_checkbox__input dhx_checkbox--check-all">
-          <span class="dhx_checkbox__visual-input "></span>
+  { id: "paid", width:12, header: [ { text: `
+    <span class="bg-black" >
+        <label class=" dhx_cell-editor__checkbox ">
+          <input type="checkbox" class="dhx_checkbox__input dhx_checkbox--check-all ">
+          <span class="dhx_checkbox__visual-input"></span></span>
         </label> `, rowspan: 2, htmlEnable: true }], type: "boolean", sortable: false },
   { id: "project", header: [{ text: "Project" }, { content: "comboFilter", tooltipTemplate: () => "Choose a project" } ], footer: [{ text: "Total" }], resizable: true },
   { id: "access", header: [ { text: "Access" }, { content: "comboFilter", filterConfig: { multiselection: true } } ],
@@ -60,8 +64,14 @@ const columns = [
   { id: "project_id", header: [{ text: "Project ID", align: "center" }, { content: "inputFilter" }], align: "center", patternMask: "ISS-000.0", }
 ];
 
+const MAIN_FONT_SIZE = 11;
+
+
+
+
+
 // grid columns routines
-columns.forEach(column => column.minWidth = 150);
+columns.forEach(column => column.minWidth = 80);
 
 function getAccessTemplate(values) {
   if (!values.length) return "";
@@ -109,6 +119,8 @@ onMounted(async ()=> {
     height: "auto",
     dragItem: "both",
     selection: "row",
+    rowHeight: 30,
+    headerRowHeight: 28,
     css: props.set.dark ? "custom-black" : "custom",
     eventHandlers: {
       onclick: {
@@ -122,6 +134,10 @@ onMounted(async ()=> {
       },
     },
   });
+
+  document.documentElement.style.setProperty("--dhx-font-size-normal", MAIN_FONT_SIZE+"px");
+  document.documentElement.style.setProperty("--dhx-border", "0.5px solid #555 " );
+  document.documentElement.style.setProperty("--dhx-header-height", "12px" );
 });
 
 onUnmounted(async ()=> {
@@ -137,11 +153,15 @@ defineExpose({
 
 </script>
 <template>
-  <div class="mx-0.5">
-   
-   <div id="grid" class="h-screen max-w-9xl bg-black"></div>
-
+  <div class="mr-16">   
+      <div class="grid grid-cols-2 mt-4">     
+        <div class="bg-gray-100" id="toolbar">
+        </div>
+      </div class="-pl-4">
+    <div id="grid" class="" ></div>
+    <div id="whatever" class=""></div>
   </div>
+
 </template>
 
 <!-- custom styles -->
@@ -150,30 +170,39 @@ defineExpose({
     display: flex;
   }
     .custom {
-        --dhx-font-color-primary: #222;
-        --dhx-background-primary: #fff;
-        --dhx-s-grid-header-background: #f5f8fa;
+        --dhx-font-color-primary: #111;
+        --dhx-background-primary: #f6f7fe;
+        --dhx-s-grid-header-background: #e6e9f9;
         --dhx-border-color: #4A555E;
-        --dhx-border: var(--dhx-border-width) solid var(--dhx-border-color);
     }
 
     .custom-black {
         --dhx-font-color-primary: #bbb;
-        --dhx-background-primary: #212;
-        --dhx-s-grid-header-background: #b86c02;
+        --dhx-background-primary: #0f0428;
+        --dhx-s-grid-header-background: #111;
         --dhx-border-color: #4A555E;
-        --dhx-border: var(--dhx-border-width) solid var(--dhx-border-color);
+        --dhx-row-height: 24px;
     }
+
+  .dhx_checkbox__visual-input{
+    background: #e6e9f9;
+    padding: 1px;
+  }
+
+  .whatever{
+    background: #61C874;
+  }
 
   .dhx-demo_grid-user-photo {
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     background: #61C874;
     text-align: center;
     line-height: 23px;
-    border: solid 1px #FFF;
+    border: solid 0.5px #fff;
     color: white;
+    font-size: 9px;
     font-weight: 500;
     margin-right: -3px;
   }

@@ -5,12 +5,12 @@ import { moduleName, moduleVersion, moduleGit, panaderoMood } from "panadero-moo
 // kanban
 // moved package back to root folder
 // now exists in two folder 1.root 2./panadero-mood/vendor
-import { Kanban, Toolbar, defaultEditorShape } from "@dhx/trial-kanban";
-import "@dhx/trial-kanban/dist/kanban.css";
+import { Kanban, Toolbar, defaultEditorShape } from "@dhx/kanban";
+import "@dhx/kanban/dist/kanban.css";
 
 //import { getData } from "@dhx/trial-kanban/demos/common/data.js";
 import { getData } from "@/panaderos/panadero-mood/constants/mood-data.js";
-import "@dhx/trial-kanban/assets/demos.css";
+import "@dhx/kanban/assets/demos.css";
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -114,6 +114,75 @@ const _load = async () => {
   }
 }
 
+
+
+ const editorShape = [
+        {
+            key: "label",
+            type: "text",
+            label: "Label",
+            modalSection: "left", // places the control in the left column of the modal editor
+        },
+        {
+            key: "description",
+            type: "textarea",
+            label: "Description",
+            modalSection: "left",
+        },
+        {
+            key: "start_date",
+            type: "date",
+            label: "Start date",
+            modalSection: "right", // places the control in the right column of the modal editor
+        },
+        {
+            key: "end_date",
+            type: "date",
+            label: "End date",
+            modalSection: "right",
+        },
+        {
+            key: "priority",
+            type: "combo",
+            label: "Priority",
+            modalSection: "right",
+        },
+        {
+            key: "users",
+            type: "multiselect",
+            label: "Users",
+            modalSection: "right",
+        },
+        {
+            key: "color",
+            type: "color",
+            label: "Color",
+            modalSection: "right",
+        },
+        {
+            key: "progress",
+            type: "progress",
+            label: "Progress",
+            modalSection: "right",
+        },
+        {
+            key: "links",
+            type: "links",
+            label: "Links",
+            modalSection: "left",
+        },
+        {
+            key: "comments",
+            type: "comments",
+            label: "Comments",
+            config: {
+                placement: "editor",
+            },
+            modalSection: "left",
+        },
+    ];
+
+
 let board, bar;
 
 // webhooks
@@ -124,7 +193,16 @@ onMounted(async ()=> {
 
   const { columns, cards, users, cardShape } = getData();   
 
-  board = new Kanban("#root", { columns, cards, cardShape, theme: { name: props.set.dark ? "willow-dark" : "willow" }, });
+  board = new Kanban("#root", 
+    { columns, cards, cardShape, 
+      theme: { name: props.set.dark ? "willow-dark" : "willow" }, 
+      editorShape,
+      editor: {
+        placement: "modal", // "sidebar" (default) | "modal"
+        autoSave: false 
+    },
+
+    });
   bar = new Toolbar("#toolbar", { api: board.api, theme: props.set.dark ? "willow-dark" : "willow", });
   
   await loadEvents();
@@ -156,7 +234,7 @@ const _setMaterial = () => { props.set.dark=false; changeTheme('material');}
 const _setWillowDark = () => { props.set.dark=true; changeTheme('willow-dark');}
 const _setPanaderos = () => { props.set.dark=false; changeTheme('panaderos');}
 
-const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:ring-indigo-400 dark:hover:ring-indigo-600";
+const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 const pulse = inject("pulse");
 
@@ -165,8 +243,8 @@ const pulse = inject("pulse");
 
   <div class="m-0">   
         
-      <div class="grid grid-cols-2 ">     
-          <div class="pl-2" :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
+      <div class="grid grid-cols-2">     
+          <div class="pl-2 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
 
               <button @click="_setWillow" type="button" :class="_button">Light</button>
               <button @click="_setWillowDark" type="button" :class="_button">Dark</button>
@@ -181,7 +259,7 @@ const pulse = inject("pulse");
       </div class="-pl-4">
 
 
-    <div class="" id="root"></div>
+    <div id="root" class=""></div>
     <div id="whatever" class=""></div>
   </div>
 
@@ -189,6 +267,13 @@ const pulse = inject("pulse");
 
 <!-- custom styles -->
 <style>
+
+    .wx-willow-theme {
+        --wx-background: rgb(243 244 246);
+        --wx-input-background: #fff;
+        --wx-input-border: #111;
+    }
+
     .wx-panaderos-theme {
     --wx-field-width: 100%;
     --wx-theme-name: panaderos;

@@ -1,6 +1,13 @@
 import './bootstrap';
 import '../css/app.css';
 
+import "/vendor/dhx_suite/codebase/suite.js?v=9.1.3";
+import "/vendor/dhx_suite/codebase/suite.css?v=9.1.3";
+
+
+//import "/vendor/MaterialDesign/materialdesignicons.css?v=6.4.2";
+
+
 // gridpack
 //import "dhx-gridpack-package/codebase/gridpack.js";
 //import "dhtmlx-gridpack/codebase/gridpack.css";

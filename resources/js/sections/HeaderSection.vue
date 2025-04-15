@@ -43,6 +43,7 @@ const menu = [
     { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
     { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user },
    // { name: 'Planning', url: route('planning'), route: 'planning', when:() => usePage().props.auth.user },
+    { name: 'Project',url: route('project'),route: 'project', when:() => usePage().props.auth.user },
     { name: 'Resources',url: route('resources'),route: 'resources', when:() => usePage().props.auth.user },
     { name: 'Web3',     url: route('web3'),     route: 'web3',      when:() => usePage().props.auth.user },
     { name: 'Grid',     url: route('grid'),     route: 'grid',      when:() => usePage().props.auth.user },
@@ -52,7 +53,7 @@ const menu = [
 ];
 
 // css
-const _basic = " text-xs lg:text-sm font-normal leading-tight ";
+const _basic = " text-xxs lg:text-xs font-normal leading-tight ";
 const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400";
 const _menu = " flex items-center  "+ _indigo + _basic;
 const _icon = " w-4 h-4 mr-2 ";
@@ -70,7 +71,7 @@ const _wallet = computed(() => {
 //const _menu= "text-xs lg:text-sm font-normal text-gray-700 hover:text-black hover:font-semibold dark:text-gray-300 dark:hover:text-yellow-400 ";
 
 const _layout = {
-  main   : "grid grid-cols-8 bg-slate-100 dark:bg-black h-18 md:h-12 border-b border-slate-100 dark:border-black shadow-sm shadow-gray-50 dark:shadow-slate-900 text-xs max-w-11xl" ,  //  max-w-7xl
+  main   : "grid grid-cols-8 bg-gray-100 dark:bg-black h-18 md:h-12 border-b border-slate-100 dark:border-black shadow-sm shadow-gray-50 dark:shadow-slate-900 text-xs max-w-11xl" ,  //  max-w-7xl
   header : "col-span-8" , 
   left   : "col-span-8 md:col-span-4 mt-2 lg:mt-1 text-left text-xs uppercase", 
   right  : "col-span-8 md:col-span-4 mt-2 lg:mt-1", 
@@ -109,23 +110,23 @@ const _layout = {
             <!-- SELF Section -->
             <div class=" "> 
                 <div class="flex items-end text-right justify-end space-x-1 md:space-x-2 md:p-3">
-                    <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45 h-4 w-4 mb-1 dark:brightness-200" :src="logo"/> </span>
-                    <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45 h-4 w-4 mb-1 dark:brightness-200" :src="logo"/> </span>
+                    <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45 h-3 w-3 mb-1 dark:brightness-200" :src="logo"/> </span>
+                    <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45 h-3 w-3 mb-1 dark:brightness-200" :src="logo"/> </span>
                     <!-- SELF Connect -->
                     <p v-if="(!(set.wallet=='0x0'))" class="relative mt-0.5 ml-2" :class="_menu">
-                        <a  v-if="!(set.self=='nope')" @click="_getNextSelf" class="text-xs lg:text-sm" :class="_wallet">
+                        <a  v-if="!(set.self=='nope')" @click="_getNextSelf" class="text-xs lg:text-xs" :class="_wallet">
                             <span>{{set.self}}</span>
                         </a>
                     </p>
                     <p v-if="1" class="text-xs lg:text-sm">
                         <a @click="_connect">
-                            <WalletIcon class="w-4 h-4 mb-1" :class="_wallet"/> 
+                            <WalletIcon class="w-3.5 h-3.5 mb-1" :class="_wallet"/> 
                         </a>
                     </p>
                     <!-- Wallet Connect -->
                     <p v-if="(!(set.wallet=='0x0'))"  :class="_menu">
                         <a @click="_disconnect" :class="_wallet">
-                            <span class="flex text-xs lg:text-sm">{{set.wallet.substr(-4)}}</span>
+                            <span class="flex text-xs lg:text-xs">{{set.wallet.substr(-4)}}</span>
                         </a>
                     </p>
                 </div>

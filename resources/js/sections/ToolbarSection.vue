@@ -19,7 +19,7 @@ const _toggle = async ( _subject) => { emit('activate',  _subject); }
 const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
 
 const navigation = [
-  { name: 'Extended', icon: BarsArrowUpIcon, href: _toggleExtended, current: false },
+  { name: 'Extened', icon: BarsArrowUpIcon, href: _toggleExtended, current: false },
   { name: 'Documents', icon: ClipboardDocumentCheckIcon, href: whatever, current: false },
   { name: 'Signals', icon: SignalIcon, href: whatever, current: false },
   { name: 'Basetables', icon: CircleStackIcon, href: whatever, current: false },

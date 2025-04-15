@@ -47,8 +47,8 @@ provide(/* key */ 'pulse', /* value */ _pulse);
 
       <template #default>
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
-            <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              <div v-for="post in posts.data" key="post.id" class="p-4 text-sm ">
+            <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div v-for="post in posts.data" key="post.id" class="text-sm">
                   <PostCard :post="post" />
               </div>
             </div>

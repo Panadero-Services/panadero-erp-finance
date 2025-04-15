@@ -1,168 +1,95 @@
- import { defineStore } from 'pinia';
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 import axios from 'axios';
 
-export const useGameStore = defineStore('game',{
-    state: () => ({
-        gameOn: false,
-        highScore: 230,
-        stage: 0,
-        score: 0,
-        highScoreHolder:'none'
-    }),
+export const useGameStore = defineStore('game', () => {
+    const gameOn = ref(false);
+    const highScore = ref(230);
+    const stage = ref(0);
+    const score = ref(0);
+    const highScoreHolder = ref('none');
 
-    actions: {
-        async set(_model, _payload) {
-            //console.log(_model);
-            return new Promise((resolve, reject) => {
-              const check = async () => {
-                try {
-                    const jsonPayload = JSON.stringify(_payload);
-                   // const postSignature = crypto.createHmac('sha256', '31234KeyTestevnvornment')
-                   //     .update(jsonPayload)
-                   //     .digest('hex');
-                    console.log(_payload);
-                    axios
-                        .post(`/setgame`,_payload, {
-                            headers: {
-                                'withCredentials': true,
-                                'content-type': 'application/json',
-                                'caller': 'useGameStore', 
-                                'model': _model, 
-                                'Sign': 'postSignature'
-                            }
-                        })
-                        .then((response) => {
-                            console.log('response:', response)
-                        resolve();
-                    })
-                } catch (err) {
-                  reject(`store/game.js:post:: ${err}`);
+    async function set(_model, _payload) {
+        try {
+            console.log(_payload);
+            const response = await axios.post(`/setgame`, _payload, {
+                headers: {
+                    'withCredentials': true,
+                    'content-type': 'application/json',
+                    'caller': 'useGameStore',
+                    'model': _model,
+                    'Sign': 'postSignature'
                 }
-              }
-              check(); 
             });
-        }, 
-
-        async get (_game) {
-            return new Promise((resolve, reject) => {
-              const check = async () => {
-                try {
-                    axios
-                        .get("/getgame", {
-                            params: { 
-                                caller: 'store/game.js', 
-                                provider: 'game', 
-                                user: 'jaWsome',
-                                title: _game,
-                                key: '<hashedKey hash#31234KeyTestevnvornment />'
-                            }
-                        })
-                        .then((response) => {
-                            resolve(response.data);
-                        })
-                } catch (err) {
-                  reject(`store/game.js:getGame: ${err}`);
-                }
-              }
-              check(); 
-            });
-        }, 
-
-
-
-
-
-
-
-
-
-        async setScore(_model, _payload) {
-            return new Promise((resolve, reject) => {
-              const check = async () => {
-                try {
-                    const jsonPayload = JSON.stringify(_payload);
-                    
-console.log(_model, _payload);
-
-                    axios
-                        .post(`/setscore`,_payload, {
-                            headers: {
-                                'withCredentials': true,
-                                'content-type': 'application/json',
-                                'caller': 'useGameStore', 
-                                'model': _model, 
-                                'Sign': 'postSignature'
-                            }
-                        })
-                        .then((response) => {
-                        resolve(response.data);
-                    })
-                } catch (err) {
-                  reject(`store/game.js:post:: ${err}`);
-                }
-              }
-              check(); 
-            });
-        }, 
-
-
-
-
-
-        async getScore (_game) {
-            return new Promise((resolve, reject) => {
-              const check = async () => {
-                try {
-                    axios
-                        .get("/getgame", {
-                            params: { 
-                                caller: 'store/game.js', 
-                                provider: 'game', 
-                                user: 'jaWsome',
-                                title: 'highScore',
-                                key: '<hashedKey hash#31234KeyTestevnvornment />'
-                            }
-                        })
-                        .then((response) => {
-                            this.highScore = response.data.nvalue;
-                            this.highScoreHolder = response.data.description;
-                            resolve(response.data);
-                        })
-                } catch (err) {
-                  reject(`store/game.js:getHighscore:: ${err}`);
-                }
-              }
-              check(); 
-            });
-        }, 
-
-
-
-        async getHighScore (_game) {
-            return new Promise((resolve, reject) => {
-              const check = async () => {
-                try {
-                    axios
-                        .get("/getgame", {
-                            params: { 
-                                caller: 'store/game.js', 
-                                provider: 'game', 
-                                user: 'jaWsome',
-                                title: 'highScore',
-                                key: '<hashedKey hash#31234KeyTestevnvornment />'
-                            }
-                        })
-                        .then((response) => {
-                            this.highScore = response.data.nvalue;
-                            this.highScoreHolder = response.data.description;
-                            resolve(response.data);
-                        })
-                } catch (err) {
-                  reject(`store/game.js:getHighscore:: ${err}`);
-                }
-              }
-              check(); 
-            });
-        }, 
+            console.log('response:', response);
+        } catch (err) {
+            console.error(`store/game.js:post:: ${err}`);
+        }
     }
+
+    async function get(_game) {
+        try {
+            const response = await axios.get("/getgame", {
+                params: {
+                    caller: 'store/game.js',
+                    provider: 'game',
+                    user: 'jaWsome',
+                    title: _game,
+                    key: '<hashedKey hash#31234KeyTestevnvornment />'
+                }
+            });
+            return response.data;
+        } catch (err) {
+            console.error(`store/game.js:getGame: ${err}`);
+        }
+    }
+
+    async function setScore(_model, _payload) {
+        try {
+            console.log(_model, _payload);
+            const response = await axios.post(`/setscore`, _payload, {
+                headers: {
+                    'withCredentials': true,
+                    'content-type': 'application/json',
+                    'caller': 'useGameStore',
+                    'model': _model,
+                    'Sign': 'postSignature'
+                }
+            });
+            return response.data;
+        } catch (err) {
+            console.error(`store/game.js:post:: ${err}`);
+        }
+    }
+
+    async function getHighScore() {
+        try {
+            const response = await axios.get("/getgame", {
+                params: {
+                    caller: 'store/game.js',
+                    provider: 'game',
+                    user: 'jaWsome',
+                    title: 'highScore',
+                    key: '<hashedKey hash#31234KeyTestevnvornment />'
+                }
+            });
+            highScore.value = response.data.nvalue;
+            highScoreHolder.value = response.data.description;
+            return response.data;
+        } catch (err) {
+            console.error(`store/game.js:getHighscore:: ${err}`);
+        }
+    }
+
+    return {
+        gameOn,
+        highScore,
+        stage,
+        score,
+        highScoreHolder,
+        set,
+        get,
+        setScore,
+        getHighScore
+    };
 });

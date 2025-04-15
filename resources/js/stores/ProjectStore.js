@@ -1,50 +1,51 @@
 import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 import axios from 'axios';
 
-export let useProjectStore = defineStore('project',{
-    state: () => ({
-        balance:1,
-        defaultTitle: "none", 
-        defaultEnvironment: "none", 
-        defaultPath: "none", 
-        defaultCategory: "none", 
-        validTitles: ['none', 'demo'] , 
-        validEnvironments: [] , 
-    }),
-  
-    //Getters are exactly the equivalent of computed values for the state of a Store. They can be defined with the getters property in defineStore(). They receive the state as the first parameter to encourage the usage of arrow function:
-    getters: {
-        doubleCount: (state) => state.balance * 2,
-    },
-    actions: {
+export const useProjectStore = defineStore('project', () => {
+    const balance = ref(1);
+    const defaultTitle = ref("none");
+    const defaultEnvironment = ref("none");
+    const defaultPath = ref("none");
+    const defaultCategory = ref("none");
+    const validTitles = ref(['none', 'demo']);
+    const validEnvironments = ref([]);
 
-        async initialize() {
-          //  this.fill();
-        },
+    const doubleCount = computed(() => balance.value * 2);
 
-        async getProjectFromDb(_projectId) {
-            return new Promise((resolve, reject) => {
-              const check = async () => {
+    async function initialize() {
+        // this.fill();
+    }
+
+    async function getProjectFromDb(_projectId) {
+        return new Promise((resolve, reject) => {
+            const check = async () => {
                 try {
-                    axios
-                        .get("/getproject", {
-                            params: { 
-                                id: _projectId,
-                                provider: 'Project', 
-                            }
-                        })
-                        .then((response) => {
-                            resolve(response.data);
-                        })
+                    const response = await axios.get("/getproject", {
+                        params: {
+                            id: _projectId,
+                            provider: 'Project',
+                        }
+                    });
+                    resolve(response.data);
                 } catch (err) {
-                  reject(`stores/ProjectStore:getProjectFromDb:: ${err}`);
+                    reject(`stores/ProjectStore:getProjectFromDb:: ${err}`);
                 }
-              }
-              check(); 
-            });
+            };
+            check();
+        });
+    }
 
-
-        },
-    },
-
+    return {
+        balance,
+        defaultTitle,
+        defaultEnvironment,
+        defaultPath,
+        defaultCategory,
+        validTitles,
+        validEnvironments,
+        doubleCount,
+        initialize,
+        getProjectFromDb
+    };
 });

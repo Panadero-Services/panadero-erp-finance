@@ -1,140 +1,117 @@
 import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
 import { ethers } from 'ethers';
 import Contracts from "../../js/constants/contracts.json";
 import Providers from "../../js/constants/providers.json";
 
-export const useContractStore = defineStore('contract',{
-    state: () => ({
-            name: "" , 
-            chainNr: 97,
-            endPoint:"",
-            type: "",
-            address:"0x0",
-            decimals: 18,
-            balances:{},
-            abi:[],
-            balance: -1,  // not used, 
+export const useContractStore = defineStore('contract', () => {
+    const name = ref("");
+    const chainNr = ref(97);
+    const endPoint = ref("");
+    const type = ref("");
+    const address = ref("0x0");
+    const decimals = ref(18);
+    const balances = ref({});
+    const abi = ref([]);
+    const stats = ref([]); // contractLines
 
-            // new fields for contracts dashboard / stakepool
-            stats:[] // these are the contractLines
+    const provider = computed(() => {
+        switch (chainNr.value) {
+            case 97: endPoint.value = Providers.BSC_Testnet_4.node; break;
+            case 56: endPoint.value = Providers.BSC_9.node; break;
+            case 5: endPoint.value = Providers.GOERLI_1.node; break;
+            case 137: endPoint.value = Providers.POLYGON_1.node; break;
+            case 80001: endPoint.value = Providers.POLYGON_Testnet_1.node; break;
+            case 62621: endPoint.value = Providers.MTV_1.node; break;
+            default: endPoint.value = "";
+        }
+        return new ethers.JsonRpcProvider(endPoint.value);
+    });
 
-    }),
+    async function initialize() {
+        console.log('initialize');
+    }
 
-    //Getters are exactly the equivalent of computed values for the state of a Store. They can be defined with the getters property in defineStore(). They receive the state as the first parameter to encourage the usage of arrow function:
-    getters: {
-        provider(state) {
-            let _endPoint;
-            if(this.chainNr==97) this.endPoint = Providers.BSC_Testnet_4.node;
-            if(this.chainNr==56) this.endPoint = Providers.BSC_9.node;
-            if(this.chainNr==5) this.endPoint = Providers.GOERLI_1.node;
-            if(this.chainNr==137) this.endPoint = Providers.POLYGON_1.node;
-            if(this.chainNr==80001) this.endPoint = Providers.POLYGON_Testnet_1.node;
-            if(this.chainNr==62621) this.endPoint = Providers.MTV_1.node;
-            return new ethers.JsonRpcProvider(this.endPoint);
-        },
-    },
+    async function getStats() {
+        console.log('getStats');
+    }
 
-    actions: {
-        async initialize() {
-            console.log('initialize');
-        },
+    async function reset() {
+        name.value = "";
+        type.value = "";
+        balances.value = {};
+        chainNr.value = 0;
+        address.value = "0x0";
+        abi.value = [];
+    }
 
-        async getStats(){
-            console.log('getStats');
-        },
+    function set(_name) {
+        name.value = _name;
+        chainNr.value = Contracts[_name].chain_id;
+        type.value = Contracts[_name].type;
+        address.value = Contracts[_name].address;
+        balances.value = {};
+        abi.value = Contracts[_name].abi;
+    }
 
-        async reset(){
-            this.name = "";
-            this.type = "";
-            this.description = "";
-            this.balances = {};
-            this.chainId = 0;
-            this.address = "0x0";
-            this.abi = [];
-        },
+    function setFromDb(_e) {
+        name.value = _e.title;
+        chainNr.value = _e.web3chain.chain_nr;
+        type.value = _e.web3type.title;
+        address.value = _e.address;
+        decimals.value = 18;
+        abi.value = _e.abi;
+    }
 
-        set(_name) {
-            this.name=_name;
-            this.chainId=Contracts[this.name].chain_id;
-            this.type=Contracts[this.name].type;
-            this.address=Contracts[this.name].address;
-            this.balances = {};
-            this.abi=Contracts[this.name].abi;
-        },
-        
-        setFromDb(_e) {
-            this.name = _e.title;
-            this.chainNr = _e.web3chain.chain_nr
-            this.type = _e.web3type.title;
-            this.address = _e.address;
-            this.decimals = 18;
-            this.abi = _e.abi;
-        },
+    async function readContract(contractAddress, contractAbi, functionName, params = []) {
+        const contract = new ethers.Contract(contractAddress, contractAbi, provider.value);
+        return await contract[functionName](...params);
+    }
 
-        async readContract(contractAddress, abi, functionName, params = []) {
-            this.address = contractAddress;
-            this.decimals = 18;
-            const name = new ethers.Contract(this.address, abi, this.provider);
-            return await name[functionName](...params);
-        },
+    async function getBalanceFromDb(_e, _wallet) {
+        console.log(_e.address, _wallet);
+        let _balance = await readContract(_e.address, _e.abi, "totalSupply", []);
+        let _convertBalance = Number(BigInt(_balance) / 1_000_000_000_000_000n) / 1000;
+        console.log(_e.title, "balance", _wallet, ": ", _convertBalance);
+        if (!balances.value[_e.title]) balances.value[_e.title] = {};
+        balances.value[_e.title][_wallet] = _convertBalance;
+        return { name: _e.title, balance: _convertBalance };
+    }
 
-        async getBalanceFromDb(_e, _wallet) {
-            console.log(_e.address,_wallet);
-            let _balance = await this.readContract(_e.address, _e.abi, "totalSupply", []);
-            let _convert = Number(BigInt(_balance)/ 1000_000_000_000_000n);
-            let _convertBalance = _convert/1000;
-            console.log(_e.title , "balance",_wallet,': ', _convertBalance);
-            if (this.balances[_e.title]===undefined)this.balances[_e.title]={};
-                this.balances[_e.title][_wallet]= _convertBalance;
-            return {name:_e.title, balance:_convertBalance};
-        },
+    async function getTotalSupply(_e) {
+        console.log(_e.address);
+        let _supply = await readContract(_e.address, _e.abi, "duration", []);
+        console.log(_e.title, "supply", ": ", _supply);
+        return { name: _e.title, supply: _supply };
+    }
 
-        async getTotalSupply(_e) {
-            console.log(_e.address);
-            let _supply = await this.readContract(_e.address, _e.abi, "duration", []);
-           // let _convert = Number(BigInt(_supply)/ 1000_000_000_000_000n);
-           // let _convertSupply = _convert/1000;
-            console.log(_e.title , "supply",': ', _supply);
-            return {name:_e.title, supply:_supply};
-        },
+    async function getBalanceFromJson(_contract, _wallet) {
+        let _balance = await readContract(Contracts[_contract].address, Contracts[_contract].abi, "totalSupply", [_wallet]);
+        let _convertBalance = Number(BigInt(_balance) / 1_000_000_000_000_000n) / 1000;
+        console.log(_contract, "balance", _wallet, ": ", _convertBalance);
+        if (!balances.value[_contract]) balances.value[_contract] = {};
+        balances.value[_contract][_wallet] = _convertBalance;
+        return { name: _contract, balance: _convertBalance };
+    }
 
-        async getBalanceFromJson(_contract, _wallet) {
-            let _balance = await this.readContract(Contracts[_contract].address, Contracts[_contract].abi, "totalSupply", [_wallet]);
-            let _convert = Number(BigInt(_balance)/ 1000_000_000_000_000n);
-            let _convertBalance = _convert/1000;
-            console.log(_contract , "balance",_wallet,': ', _convertBalance);
-            if (this.balances[_contract]===undefined)this.balances[_contract]={};
-                this.balances[_contract][_wallet]= _convertBalance;
-            return {name:_contract, balance:_convertBalance};
-        },
+    async function readContractWithChain(_address, _abi, _function, _chainNr, _params = []) {
+        chainNr.value = _chainNr;
+        return await readContract(_address, _abi, _function, _params);
+    }
 
-/*        async runReadFunction(_e, _f, _params = []) {
-            let result = await this.readContract(_e.address, _e.abi, _f, _params);
-            console.log(_e.title , _f,': ', result);
-            return result;
-        },
-*/
+    async function runReadFunction(_line) {
+        console.log(_line);
+        let params = _line.parameters.length > 0 ? _line.parameters.split(",") : [];
+        let result = await readContractWithChain(_line.address, _line.contractAbi, _line.line, _line.chainNr, params);
+        console.log(_line.line, ": ", result);
+        return result;
+    }
 
-        async readContract(_address, _abi, _function, _chainNr , _params = []) {
-            this.address = _address;
-            this.decimals = 18;
-            this.chainNr = _chainNr;
-            const name = new ethers.Contract(this.address, _abi, this.provider);
-            return await name[_function](..._params);
-        },
-
-        async runReadFunction(_line) {
-            console.log(_line);
-
-            let params = [];
-            if (_line.parameters.length > 0) params = _line.parameters.split(",");
-            console.log(params, params.length);
-
-            let result = await this.readContract(_line.address, _line.contractAbi, _line.line, _line.chainNr,  params);
-            console.log( _line.line,': ', result);
-            return result;
-        },
-
-    },
+    return {
+        name, chainNr, endPoint, type, address, decimals, balances, abi, stats,
+        provider,
+        initialize, getStats, reset, set, setFromDb,
+        readContract, getBalanceFromDb, getTotalSupply, getBalanceFromJson,
+        readContractWithChain, runReadFunction
+    };
 });
-

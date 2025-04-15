@@ -80,8 +80,8 @@ const setProjectId = (_title) => {
         // toDo !! retrieve from db
         props.set.project.id = _title=='none' ? 0 : 1;
         props.set.project.title = _title;
-        props.set.project.environment = "default";
-        props.set.project.validEnvironments = ["default","test"];
+        props.set.project.environment = "sandbox";
+        props.set.project.validEnvironments = ["master", "alternative", "sandbox"];
         props.set.project.category = "primera";
     }
 }
