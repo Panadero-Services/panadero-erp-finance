@@ -4,7 +4,6 @@
 /public/hot
 /storage/*.key
 /vendor
-!/vendor/dhx_gantt/*
 .env
 .env.backup
 .env.production
