@@ -11,7 +11,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
-import PanaderoMood from "@/panaderos/panadero-mood/PanaderoMood.vue";
+import PanaderoMood from "@/panaderos/panadero-mood/sections/PanaderoMood.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
