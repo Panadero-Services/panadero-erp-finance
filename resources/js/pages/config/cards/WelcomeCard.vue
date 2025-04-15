@@ -6,8 +6,8 @@ import {computed, onMounted, onUnmounted, ref} from 'vue';
 // gridpack
 // moved package back to root folder
 // now exists in two folder 1.root 2./panadero-grid/vendor
-import "dhx-gridpack-package/codebase/gridpack.js";
-import "dhtmlx-gridpack/codebase/gridpack.css";
+//import "dhx-gridpack-package/codebase/gridpack.js";
+//import "dhtmlx-gridpack/codebase/gridpack.css";
 
 const dataset =[{}];
 
