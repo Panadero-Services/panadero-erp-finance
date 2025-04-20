@@ -8,6 +8,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const app = ref('PANADEROS');
     const language = ref('EN');
     const domain = ref('SELF');
+    const domainFunction = ref('home');
     const pageDetail = ref(true);
     const web3On = ref(true);
     const game3On = ref(false);
@@ -127,7 +128,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }
 
     return {
-        company, app, language, domain, pageDetail, web3On, game3On, wallet, self, animate, healthMonitor,
+        domainFunction, company, app, language, domain, pageDetail, web3On, game3On, wallet, self, animate, healthMonitor,
         isMetaMask, isSelfAdmin, superSelfAdmins, mode, dark, projectVisible, cookiesAccepted,
         banner, assets, projectType, layout, project, colors,
         setLanguage, web3Toggle, game3Toggle, darkToggle, setSelf, resetSelf, pageDetailToggle,

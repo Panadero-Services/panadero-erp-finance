@@ -56,7 +56,7 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
                         </div>
 
                         <div class="bg-white dark:bg-gray-950 overflow-hidden shadow-xl sm:rounded-lg max-w-7xl" :class="_shadow">
-                            <Welcome />
+Test
                         </div>
                     </div>
                 </div>

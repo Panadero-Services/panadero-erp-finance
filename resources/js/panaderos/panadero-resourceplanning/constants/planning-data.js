@@ -1,4 +1,6 @@
-const resourceData = [
+function getData() {
+
+    const resourceData = [
       {id: 1, text: "RM Analyse", type: "project", progress: 0.99, open: false, start_date: "11-11-2024 00:00", duration: 40, end_date: "02-01-2025 00:00", parent: 0},
      
         {id: 2, text: "Onboarding Infodatek", type: "project", progress: 0.99, open: false, start_date: "11-11-2024 00:00", duration: 15, end_date: "18-11-2024 00:00", parent: 1},
@@ -82,129 +84,144 @@ const resourceData = [
 
     ];
 
-const ppl = [
- {id: 1, text: "R&D", parent:null},
- {id: 2, text: "devOps", parent:null},
- {id: 3, text: "Lieuwe", parent:1, unit: "hours/day" },
- {id: 4, text: "Marco", parent:2, unit: "hours/day" },
- {id: 5, text: "Gert-Jan", parent:2, unit: "hours/day" },
- {id: 6, text: "Mark", parent:2, unit: "hours/day" },
- {id: 7, text: "Dwayne", parent:2, unit: "hours/day" },
- {id: 8, text: "Andreas", parent:2, unit: "hours/day" },
- {id: 9, text: "Unassigned", parent:2},
- ];
+    const ppl = [
+     {id: 1, text: "R&D", parent:null},
+     {id: 2, text: "devOps", parent:null},
+     {id: 3, text: "Lieuwe", parent:1, unit: "hours/day" },
+     {id: 4, text: "Marco", parent:2, unit: "hours/day" },
+     {id: 5, text: "Gert-Jan", parent:2, unit: "hours/day" },
+     {id: 6, text: "Mark", parent:2, unit: "hours/day" },
+     {id: 7, text: "Dwayne", parent:2, unit: "hours/day" },
+     {id: 8, text: "Andreas", parent:2, unit: "hours/day" },
+     {id: 9, text: "Unassigned", parent:2},
+     ];
 
-const ppl_vince = [
- {id: 1, text: "Planning", parent:null},
- {id: 2, text: "Klusploeg", parent:null},
- {id: 3, text: "Vince", parent:1, unit: "hours/day" },
- {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
- {id: 5, text: "Tessa", parent:2, unit: "hours/day" },
- {id: 6, text: "Mitchel", parent:2, unit: "hours/day" },
- {id: 9, text: "Unassigned", parent:2},
- ];
+    const resources = [
+     {id: 1, text: "Planning", parent:null},
+     {id: 2, text: "Klusploeg", parent:null},
+     {id: 3, text: "Vince", parent:1, unit: "hours/day" },
+     {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
+     {id: 5, text: "Tessa", parent:2, unit: "hours/day" },
+     {id: 6, text: "Mitchel", parent:2, unit: "hours/day" },
+     {id: 9, text: "Unassigned", parent:2},
+     ];
 
-const links = [
-   {id: "1", source: "1", target: "2", type: "1"},
-   {id: "2", source: "1", target: "3", type: "0"},
-   {id: "3", source: "3", target: "4", type: "0"},
-   {id: "4", source: "4", target: "5", type: "0"},
-   {id: "5", source: "5", target: "37", type: "0"},
-   {id: "25", source: "2", target: "37", type: "0"},
-   {id: "26", source: "37", target: "6", type: "0"},
-   {id: "27", source: "6", target: "40", type: "0"},
-   {id: "28", source: "2", target: "38", type: "0"},
-   {id: "29", source: "38", target: "30", type: "0"},
-   {id: "30", source: "30", target: "6", type: "0"},
-   {id: "31", source: "12", target: "39", type: "0"},
-   {id: "32", source: "39", target: "40", type: "0"},
-   {id: "33", source: "40", target: "13", type: "0"},
+    const links = [
+       {id: "1", source: "1", target: "2", type: "1"},
+       {id: "2", source: "1", target: "3", type: "0"},
+       {id: "3", source: "3", target: "4", type: "0"},
+       {id: "4", source: "4", target: "5", type: "0"},
+       {id: "5", source: "5", target: "37", type: "0"},
+       {id: "25", source: "2", target: "37", type: "0"},
+       {id: "26", source: "37", target: "6", type: "0"},
+       {id: "27", source: "6", target: "40", type: "0"},
+       {id: "28", source: "2", target: "38", type: "0"},
+       {id: "29", source: "38", target: "30", type: "0"},
+       {id: "30", source: "30", target: "6", type: "0"},
+       {id: "31", source: "12", target: "39", type: "0"},
+       {id: "32", source: "39", target: "40", type: "0"},
+       {id: "33", source: "40", target: "13", type: "0"},
 
-   {id: "34", source: "41", target: "42", type: "0"},
-   {id: "35", source: "42", target: "43", type: "0"},
-   {id: "36", source: "43", target: "44", type: "0"},
-   {id: "37", source: "44", target: "45", type: "0"},
-   {id: "38", source: "45", target: "46", type: "0"},
-   {id: "39", source: "46", target: "47", type: "0"},
-   {id: "40", source: "47", target: "48", type: "0"},
-   {id: "41", source: "48", target: "49", type: "0"},
+       {id: "34", source: "41", target: "42", type: "0"},
+       {id: "35", source: "42", target: "43", type: "0"},
+       {id: "36", source: "43", target: "44", type: "0"},
+       {id: "37", source: "44", target: "45", type: "0"},
+       {id: "38", source: "45", target: "46", type: "0"},
+       {id: "39", source: "46", target: "47", type: "0"},
+       {id: "40", source: "47", target: "48", type: "0"},
+       {id: "41", source: "48", target: "49", type: "0"},
 
-   {id: "6", source: "30", target: "7", type: "0"},
-   {id: "7", source: "7", target: "8", type: "0"},
-   {id: "8", source: "8", target: "9", type: "0"},
-   {id: "9", source: "9", target: "10", type: "0"},
-   {id: "10", source: "10", target: "11", type: "0"},
-   {id: "11", source: "11", target: "12", type: "0"},
+       {id: "6", source: "30", target: "7", type: "0"},
+       {id: "7", source: "7", target: "8", type: "0"},
+       {id: "8", source: "8", target: "9", type: "0"},
+       {id: "9", source: "9", target: "10", type: "0"},
+       {id: "10", source: "10", target: "11", type: "0"},
+       {id: "11", source: "11", target: "12", type: "0"},
 
-   {id: "13", source: "15", target: "16", type: "0"},
-   {id: "14", source: "16", target: "17", type: "0"},
-   {id: "15", source: "17", target: "18", type: "0"},
-   {id: "16", source: "18", target: "19", type: "0"},
-   {id: "17", source: "19", target: "20", type: "0"},
-   {id: "18", source: "20", target: "21", type: "0"},
-   {id: "19", source: "21", target: "22", type: "0"},
-   {id: "20", source: "22", target: "23", type: "0"},
-   {id: "20", source: "23", target: "24", type: "0"},
-   {id: "20", source: "24", target: "25", type: "0"},
-   {id: "21", source: "32", target: "33", type: "0"},
-   {id: "22", source: "33", target: "34", type: "0"},
-   {id: "23", source: "34", target: "35", type: "0"},
-   {id: "24", source: "35", target: "36", type: "0"},
+       {id: "13", source: "15", target: "16", type: "0"},
+       {id: "14", source: "16", target: "17", type: "0"},
+       {id: "15", source: "17", target: "18", type: "0"},
+       {id: "16", source: "18", target: "19", type: "0"},
+       {id: "17", source: "19", target: "20", type: "0"},
+       {id: "18", source: "20", target: "21", type: "0"},
+       {id: "19", source: "21", target: "22", type: "0"},
+       {id: "20", source: "22", target: "23", type: "0"},
+       {id: "20", source: "23", target: "24", type: "0"},
+       {id: "20", source: "24", target: "25", type: "0"},
+       {id: "21", source: "32", target: "33", type: "0"},
+       {id: "22", source: "33", target: "34", type: "0"},
+       {id: "23", source: "34", target: "35", type: "0"},
+       {id: "24", source: "35", target: "36", type: "0"},
 
-   {id: "12", source: "14", target: "56", type: "0"},
-   {id: "41", source: "14", target: "57", type: "0"},
-   {id: "42", source: "14", target: "65", type: "0"},
-   {id: "43", source: "56", target: "58", type: "0"},
-   {id: "44", source: "57", target: "58", type: "0"},
-   {id: "45", source: "65", target: "58", type: "0"},
+       {id: "12", source: "14", target: "56", type: "0"},
+       {id: "41", source: "14", target: "57", type: "0"},
+       {id: "42", source: "14", target: "65", type: "0"},
+       {id: "43", source: "56", target: "58", type: "0"},
+       {id: "44", source: "57", target: "58", type: "0"},
+       {id: "45", source: "65", target: "58", type: "0"},
 
-   {id: "46", source: "58", target: "15", type: "0"},
-   {id: "47", source: "58", target: "61", type: "0"},
-   {id: "48", source: "58", target: "62", type: "0"},
-   {id: "49", source: "58", target: "63", type: "0"},
+       {id: "46", source: "58", target: "15", type: "0"},
+       {id: "47", source: "58", target: "61", type: "0"},
+       {id: "48", source: "58", target: "62", type: "0"},
+       {id: "49", source: "58", target: "63", type: "0"},
 
-   {id: "50", source: "15", target: "59", type: "0"},
-   {id: "51", source: "61", target: "59", type: "0"},
-   {id: "52", source: "62", target: "59", type: "0"},
-   {id: "53", source: "63", target: "59", type: "0"},
+       {id: "50", source: "15", target: "59", type: "0"},
+       {id: "51", source: "61", target: "59", type: "0"},
+       {id: "52", source: "62", target: "59", type: "0"},
+       {id: "53", source: "63", target: "59", type: "0"},
 
-   {id: "54", source: "59", target: "17", type: "0"},
-   {id: "55", source: "59", target: "26", type: "0"},
-   {id: "56", source: "59", target: "27", type: "0"},
-   {id: "57", source: "59", target: "28", type: "0"},
-   {id: "58", source: "59", target: "29", type: "0"},
+       {id: "54", source: "59", target: "17", type: "0"},
+       {id: "55", source: "59", target: "26", type: "0"},
+       {id: "56", source: "59", target: "27", type: "0"},
+       {id: "57", source: "59", target: "28", type: "0"},
+       {id: "58", source: "59", target: "29", type: "0"},
 
-   {id: "59", source: "17", target: "20", type: "0"},
-   {id: "60", source: "26", target: "20", type: "0"},
-   {id: "61", source: "27", target: "20", type: "0"},
-   {id: "62", source: "28", target: "20", type: "0"},
-   {id: "63", source: "29", target: "20", type: "0"},
+       {id: "59", source: "17", target: "20", type: "0"},
+       {id: "60", source: "26", target: "20", type: "0"},
+       {id: "61", source: "27", target: "20", type: "0"},
+       {id: "62", source: "28", target: "20", type: "0"},
+       {id: "63", source: "29", target: "20", type: "0"},
 
-   {id: "64", source: "65", target: "66", type: "0"},
-   {id: "65", source: "66", target: "67", type: "0"},
-   {id: "66", source: "67", target: "68", type: "0"},
-   {id: "67", source: "68", target: "69", type: "0"},
-   {id: "68", source: "69", target: "70", type: "0"},
-   {id: "69", source: "70", target: "71", type: "0"},
+       {id: "64", source: "65", target: "66", type: "0"},
+       {id: "65", source: "66", target: "67", type: "0"},
+       {id: "66", source: "67", target: "68", type: "0"},
+       {id: "67", source: "68", target: "69", type: "0"},
+       {id: "68", source: "69", target: "70", type: "0"},
+       {id: "69", source: "70", target: "71", type: "0"},
 
-   ];
+       ];
 
-const colors = [['#00695c','#26a69a','#330099','#6633FF', '#ede'],
-['#F9C241','#FCDF9C','#3CB2C9','#A7E1EC', '#121'],
-['#37AFE1','#4CC9FE','#FFB22C','#FFDE4D', '#121'],
-['#9B7EBD','#D4BEE4','#A5B68D','#C1CFA1', '#121'],
-['#0D92F4','#F95454','#0A6847','#F3CA52', '#000'],
-['#344C64','#577B8D','#3C3D37','#697565', '#ede']];
+    const colors = [['#00695c','#26a69a','#330099','#6633FF', '#ede'],
+    ['#F9C241','#FCDF9C','#3CB2C9','#A7E1EC', '#121'],
+    ['#37AFE1','#4CC9FE','#FFB22C','#FFDE4D', '#121'],
+    ['#9B7EBD','#D4BEE4','#A5B68D','#C1CFA1', '#121'],
+    ['#0D92F4','#F95454','#0A6847','#F3CA52', '#000'],
+    ['#344C64','#577B8D','#3C3D37','#697565', '#ede']];
 
 //let color = ref(['#00695c','#26a69a','#330099','#6633FF', '#ede']);
 //let color = ref(['#F9C241','#FCDF9C','#3CB2C9','#A7E1EC', '#121']);
 //let color = ref(['#9B7EBD','#D4BEE4','#A5B68D','#C1CFA1', '#121']);
 //let color = ref(['#344C64','#577B8D','#3C3D37','#697565', '#ede']);
 
-const defaultColor = ['#37AFE1','#4CC9FE','#FFB22C','#FFDE4D', '#121'];
+    const defaultColor = ['#37AFE1','#4CC9FE','#FFB22C','#FFDE4D', '#121'];
 
-const taskScaleColor = "#FCFCFC";
-const weekendColor = "#F2F2F2";
-const darkWeekendColor = "#000000";
+    const taskScaleColor = "#FCFCFC";
+    const weekendColor = "#F2F2F2";
+    const darkWeekendColor = "#000000";
 
-export {resourceData, ppl, ppl_vince, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor };
+
+    return {
+        resources, // ppl_vince
+        resourceData, 
+        ppl, 
+        links, 
+        colors, 
+        defaultColor, 
+        taskScaleColor, 
+        weekendColor,
+        darkWeekendColor 
+    };
+
+}
+
+export { getData }

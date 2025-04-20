@@ -3,6 +3,7 @@ import {computed, onMounted, onUnmounted, ref} from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import Welcome from '@/components/Welcome.vue';
+import NavLink from '@/components/NavLink.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
@@ -38,6 +39,11 @@ onMounted(async ()=> {
 const _title = "text-indigo-600 dark:text-indigo-300";
 const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
+// css
+const _basic = " text-xxs lg:text-xs font-normal leading-tight ";
+const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400";
+const _menu = " flex items-center  "+ _indigo + _basic;
+
 </script>
 <template>
 
@@ -54,6 +60,12 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
                             <!-- <ApplicationLogo class="block w-80 h-80" /> -->
                             <img src="@/layouts/logos/original.png">
                         </div>
+                        <NavLink href="./dashboard"  :class="_menu">
+                            dashboard
+                        </NavLink>
+
+
+
 
                         <div class="bg-white dark:bg-gray-950 overflow-hidden shadow-xl sm:rounded-lg max-w-7xl" :class="_shadow">
                             <Welcome />

@@ -63,16 +63,17 @@ const _toolbarItems = [
 
 // css
 const _indigo = " text-gray-400 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
+const _sideSpacing = "mx-3";
 
 </script>
 
 <template>
   <html class="overscroll-none" :class="set.dark ? 'dark bg-black' : 'light bg-indigo-50'">
-        <div class="bg-slate-50 text-black/50 dark:bg-black dark:text-white/50 h-screen font-roboto">
+        <div class="bg-slate-50 text-black/50 dark:bg-black dark:text-white/50 h-screen w-screen font-roboto">
             <Head :title="title"/>
 
             <!-- Header Content -->
-            <div v-if="$slots.header">
+            <div :class="_sideSpacing" v-if="$slots.header">
                 <Banner />
                 <slot name="header"/>
                  <!--   0 Basic Header Sections .... -->
@@ -109,7 +110,7 @@ const _indigo = " text-gray-400 dark:text-gray-400 hover:text-black dark:hover:t
                         </ul>
                       </nav>
                     </div>
-                    <div class="mx-8">
+                    <div :class="_sideSpacing">
                         <slot name="default" />
                     </div>
                 </div>

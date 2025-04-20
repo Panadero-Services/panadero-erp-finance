@@ -1,4 +1,5 @@
 <script setup>
+//home/dashboard
 import {computed, onMounted, onUnmounted, ref, provide} from 'vue';
 
 // layout
@@ -23,10 +24,9 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
-
+import BusinessFunctionCard from "@/pages/home/BusinessFunctionCard.vue";
 
 import WelcomeCard from "@/pages/dashboard1/cards/WelcomeCard.vue";
 import StakepoolCard from "@/pages/dashboard1/cards/StakepoolCard.vue";
@@ -65,6 +65,7 @@ const props =defineProps({
 
 // webhooks
 onMounted(async ()=> {
+    _set.domainFunction='home';
    await _set.initMM();
    await _set.initialize();
 })
@@ -105,15 +106,15 @@ provide(/* key */ 'pulse', /* value */ _pulse);
 const _title = "text-indigo-600 dark:text-indigo-300";
 const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
-    function disableScroll() {
-        document.body.classList.
-        add("stop-scrolling");
-    }
+function disableScroll() {
+    document.body.classList.
+    add("stop-scrolling");
+}
 
-    function enableScroll() {
-        document.body.classList
-        .remove("stop-scrolling");
-    }
+function enableScroll() {
+    document.body.classList
+    .remove("stop-scrolling");
+}
 
 const _startGame = async () => {
     await _set.game3Toggle();
@@ -121,11 +122,81 @@ const _startGame = async () => {
     else enableScroll();
 }
 
-
 const keyUpResolve = async (_selfResolve) => {
     selfResolve.value = _selfResolve;
 }
 
+const _functions = [
+    {"item":"Home", "title":"Home Page", "description": "This function is all about articles/ posts and other content", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Welcome', url: route('home/welcome'),    route: 'home/welcome' },
+                { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' }]
+                ,"featured":"1"
+    }, 
+
+    {"item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content", "options" : 
+            [   
+                { name: 'Dashboard',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
+                { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
+                { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
+                { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user }]
+    }, 
+    {"item":"ERP", "title":"Resource Planning", "description": "This function is all planning and control over time consuming resources", "options" : 
+            [   
+                { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'resoures' },
+                { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user }]
+                ,"featured":"1"
+     },
+    {"item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+    {"item":"I3P", "title":"Production Control", "description": "This function controls your production processes", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+    {"item":"Sales", "title":"Sales Manager", "description": "This function controls your sales processes", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+    {"item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+
+    {"item":"Bots", "title":"Automated AI Agents", "description": "This function handles your AI requirements", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+    {"item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+    {"item":"DeFi", "title":"Decentralized Finance", "description": "This function takes care of your decentralized payment architecture", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+
+    {"item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+    {"item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "options" : 
+            [   
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+     },
+];
 
 </script>
 
@@ -146,6 +217,9 @@ const keyUpResolve = async (_selfResolve) => {
             <div class="">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:grid-cols-3 pt-12 gap-4 ">
+                    <div v-for="_f in _functions" ><business-function-card :set="_set" :f="_f"   /></div>
+                    <div><user-card :set="_set"/></div>
+                    <div><user-card :set="_set"/></div>
                     <div><user-card :set="_set"/></div>
                     <div><user-card :set="_set"/></div>
                     <div><user-card :set="_set"/></div>

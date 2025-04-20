@@ -3,10 +3,12 @@ import { computed, onMounted, onUnmounted, ref, inject, watch } from 'vue';
 import { moduleName, moduleVersion, panaderoResourcePlanning } from "panadero-resourceplanning";
 
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
-import "@/panaderos/panadero-resourceplanning/dhtmlxgantt.css";
 
 import { gantt } from "dhtmlx-gantt";
-import { resourceData, ppl, ppl_vince, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } from  "./constants/rm_planning.js";
+
+//import { resourceData, ppl, ppl_vince, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } from  "./constants/rm_planning.js";
+import { getData } from "@/panaderos/panadero-resourceplanning/constants/planning-data.js";
+import "@/panaderos/panadero-resourceplanning/dhtmlxgantt.css";
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -25,24 +27,27 @@ const props = defineProps({
     db: Object,
 });
 
-   
-
 // globals
 const _title="ResourcePlanning";
 const _colorCount=ref(0);
+const {resources, resourceData, ppl, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } =getData();
 
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
-//let planning = new panaderoResourcePlanning("whateverz");
+//let planning = new panaderoResourcePlanning("resource_id");
 
 const _init = async () => {
-    gantt.init("whateverz");
+    gantt.init("resource_id");
+    gantt.setSkin(props.set.dark ? "dark" : 'meadow');
     gantt.message({ text: "Panadero Resource Planning Module Initialize", expire: 0 });
     gantt.message({ text: "Issue resources from module RentMagic", expire: 0 });
 }
 
-const _config_scales = async () => {
+const _config = async () => {
     gantt.config.scale_height = 80;
+    //gantt.i18n.setLocale("nl");
+    gantt.config.date_format = "%d-%m-%Y %H:%i";
+   // gantt.config.date_format = "%Y-%m-%d %H:%i";
     gantt.config.scales = [
         { unit: "week", step: 1, format: " Week %w" },
         { unit: "day", step: 1, format: "%d.%m" },
@@ -53,71 +58,65 @@ const _config_scales = async () => {
     gantt.config.row_height = 32;
     gantt.config.bar_height = 24;
     gantt.config.min_column_width = 40;
+    gantt.config.resource_store = "resource";
+    gantt.config.resource_property = "owner";
+    gantt.locale.labels.section_resources = "Owners";
+    gantt.config.order_branch = true;
+    gantt.config.open_tree_initially = true;
 }
 
-const _config_columns = async () => {
-
+const _configColumns = async () => {
     gantt.config.columns = [
         { name: "text", tree: true, width: 250, resize: true },
         { name: "start_date", align: "center", width: 100, resize: true },
-       // {name: "end_date", align: "center", width: 100, resize: true},
-        { name: "owner", align: "center", width: 100, label: "Owner", template: function (task) {
-                if (task.type == gantt.config.types.project) {
-                    return "";
-                }
-
-                var store = gantt.getDatastore("resource");
-                var assignments = task[gantt.config.resource_property];
-
-                if (!assignments || !assignments.length) {
-                    return "Unassigned";
-                }
-
-                if(assignments.length == 1){
-                    return store.getItem(assignments[0].resource_id).text;
-                }
-
+        //{ name: "end_date", align: "center", width: 100, resize: true},
+        {   name: "owner", 
+            align: "center", 
+            width: 100, 
+            label: "Owner", 
+            template: function (task) {
+                if (task.type == gantt.config.types.project) return ""; 
+                var store = gantt.getDatastore(gantt.config.resource_store);    // resource
+                var owners = task[gantt.config.resource_property];              // owner 
+                if (!owners || !owners.length) return "- -"; 
+                if(owners.length == 1) return store.getItem(owners[0].resource_id).text; 
                 var result = "";
-                assignments.forEach(function(assignment) {
-                    var owner = store.getItem(assignment.resource_id);
-                    if (!owner)
-                    return;
-                    result += "<div class='owner-label' title='" + owner.text + "'>" + owner.text.substr(0, 1) + "</div>";
+                owners.forEach(function(owner) {
+                    var owner = store.getItem(owner.resource_id);
+                    if (!owner) return;
+                    result += "<div class='owner-label' title='" + owner.text + "'>" + owner.text.substr(0, 2) + "</div>";
                 });
-
                 return result;
-            }, resize: true
+            }, 
+            resize: true
         },
         { name: "duration", width: 60, align: "center", resize: true },
         { name: "add", width: 44 }
     ];
 }
 
-onMounted(async ()=> {
+// get number of hours for 
+const _getAssignments = (resourceId) => {
+    var assignments;
+    var store = gantt.getDatastore(gantt.config.resource_store);    //resource
+    var resource = store.getItem(resourceId);
 
-    //await _init();
-    await _config_scales();
-    await _config_columns();
-
-    function getResourceAssignments(resourceId) {
-        var assignments;
-        var store = gantt.getDatastore(gantt.config.resource_store);
-        var resource = store.getItem(resourceId);
-
-        if (resource.$level === 0) {
-            assignments = [];
-            store.getChildren(resourceId).forEach(function(childId){
+    if (resource.$level === 0) {
+        assignments = [];
+        store.getChildren(resourceId).forEach(function(childId) {
             assignments = assignments.concat(gantt.getResourceAssignments(childId));
-         });
-       } else if (resource.$level === 1) {
-          assignments = gantt.getResourceAssignments(resourceId);
-       }else{
-          assignments = gantt.getResourceAssignments(resource.$resource_id, resource.$task_id);
-       }
-       return assignments;
-    }
+        });
+   } else if (resource.$level === 1) {
+      assignments = gantt.getResourceAssignments(resourceId);
+   } else{
+      assignments = gantt.getResourceAssignments(resource.$resource_id, resource.$task_id);
+   }
+//   console.log(assignments);
+   return assignments;
+}
 
-    var resourceConfig = {
+const _configResourceColumns = async () => {
+    var _resource_columns = {
         columns: [
             {
                 name: "name", label: "Name", tree:true, template: function (resource) {
@@ -131,7 +130,7 @@ onMounted(async ()=> {
                         var assignment = gantt.getResourceAssignments(resource.$resource_id, resource.$task_id)[0];
                         totalDuration = resource.duration * assignment.value;
                     } else {
-                        var assignments = getResourceAssignments(resource.id);
+                        var assignments = _getAssignments(resource.id);
                         assignments.forEach(function (assignment) {
                         var task = gantt.getTask(assignment.task_id);
                         totalDuration += Number(assignment.value) * task.duration;
@@ -142,19 +141,19 @@ onMounted(async ()=> {
             }
         ]
     };
+    return _resource_columns;
+}
 
+const _cssMarker = async () => {
     gantt.templates.resource_cell_class = function(start_date, end_date, resource, tasks) {
         var css = [];
         css.push("resource_marker");
-        if (tasks.length <= 1) {
-            css.push("workday_ok");
-        } else {
-            css.push("workday_over");
-        }
+        tasks.length <= 1 ? css.push("workday_ok") : css.push("workday_over") ;
         return css.join(" ");
     };
+}
 
-
+const _drawHourCircles = async () => {
     gantt.templates.resource_cell_value = function(start_date, end_date, resource, tasks) {
         var result = 0;
         tasks.forEach(function(item) {
@@ -164,15 +163,19 @@ onMounted(async ()=> {
                 result += assignment.value * 1;
             });
         });
-
         if(result % 1){
             result = Math.round(result * 10)/10;
         }
+        if (result > 0)
         return "<div>" + result + "</div>";
     };
+}
 
-    gantt.locale.labels.section_resources = "Owners";
+const _whateverRoutine = async () => {
+    return '_whateverRoutine?';
+}
 
+const _lightBox = async () => {
     gantt.config.lightbox.sections = [
         { name: "description", height: 38, map_to: "text", type: "textarea", focus: true },
         { name: "type", map_to: "type", type: "select", 
@@ -181,7 +184,7 @@ onMounted(async ()=> {
                 { key: "project", label: "project" },
                 { key: "milestone", label: "milestone" }
             ]},
-        { name: "resources", type: "resources", map_to: "owner", options: gantt.serverList("people"), default_value:4 },
+        { name: "resources", type: "resources", map_to: "owner", options: gantt.serverList("people"), default_value: 4 },
         { name: "time", type: "duration", map_to: "auto"},
         { name: "parent", type: "parent", allow_root: "true", root_label: "No parent", filter: function (id, task) {
                 /*  if(task.$level > 1){
@@ -193,12 +196,9 @@ onMounted(async ()=> {
             }
         }
     ];
+}
 
-    gantt.config.resource_store = "resource";
-    gantt.config.resource_property = "owner";
-    gantt.config.order_branch = true;
-    gantt.config.open_tree_initially = true;
-
+const _configLayout = async (_resource_columns) => {
     gantt.config.layout = {
         css: "gantt_container",
         rows: [
@@ -213,7 +213,7 @@ onMounted(async ()=> {
             },
             { resizer: true, width: 1 },
             {
-                config: resourceConfig,
+                config: _resource_columns,
                 cols: [
                     { view: "resourceGrid", group:"grids", width: 435, scrollY: "resourceVScroll" },
                     { resizer: true, width: 1 },
@@ -236,59 +236,29 @@ onMounted(async ()=> {
             return "weekend" ;
         }
     };
-    await props.set.setProjectType('resourcePlanning');
-
-    await _init();
-    // await _config_scales();
-    // await _config_columns();
-    // await _parse(resourceData, links);
-})
-
-
-
-    var updateInfo = function () {
-        var state = gantt.getState(),
-            tasks = gantt.getTaskByTime(state.min_date, state.max_date),
-            types = gantt.config.types,
-            result = {},
-            html = "",
-            active = false;
-
-        // get available types
-        result[types.task] = 0;
-        result[types.project] = 0;
-        result[types.milestone] = 0;
-
-        // sort tasks by type
-        for (var i = 0, l = tasks.length; i < l; i++) {
-            if (tasks[i].type && result[tasks[i].type] != "undefined")
-                result[tasks[i].type] += 1;
-            else
-                result[types.task] += 1;
-        }
-        // render list items for each type
-        for (var j in result) {
-            if (j == types.task)
-                active = true;
-            else
-                active = false;
-            html += getListItemHTML(j, result[j], active);
-        }
-
-        document.getElementById("gantt_info").innerHTML = html;
-    };
-
-
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i >= 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
 }
 
-const _parse = async (_data, _links) => {
+onMounted(async ()=> {
+    await _config();
+    await _configColumns();
+    var _resource_columns = await _configResourceColumns();
+    await _cssMarker();
+    await _drawHourCircles();
+    await _lightBox();
+    await _configLayout(_resource_columns);
 
+    await props.set.setProjectType('resourcePlanning');
+
+
+gantt.plugins({
+    fullscreen: true
+});
+
+
+    await _init();
+})
+
+const _parseResourcesStore = async () => {
     var resourcesStore = gantt.createDatastore({
         name: gantt.config.resource_store,
         type: "treeDatastore",
@@ -313,8 +283,13 @@ const _parse = async (_data, _links) => {
         gantt.updateCollection("people", people);
     });
 
-    if (props.set.project.title=="vince") resourcesStore.parse(ppl_vince);
+    if (props.set.project.title=="vince") resourcesStore.parse(resources);
     else resourcesStore.parse(ppl);
+}
+
+
+
+const _parse = async (_data, _links) => {
     gantt.parse({ data: _data, links: _links });
 }
 
@@ -323,35 +298,33 @@ onUnmounted(async ()=> {
     //gantt.destructor();
 })
 
-const _shuffle = async () => {
-   //shuffleArray(resourceData);
-    await _config_scales();
-    await _config_columns();
-    await _init();
-}
-
+// button Reset
 const _reset = async () => {
     await gantt.clearAll();
     gantt.setSkin(props.set.dark ? "dark" : 'meadow');
-    await _config_scales();
-    await _config_columns();
+    await _config();
+    await _configColumns();
     await _init();
 }
 
+// button 
 const _load = async () => {
-  if(props.set.project.id > 0){
+  if(props.set.project.id > 0) {
     const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
-    let _type = props.set.projectType;
-    let _projectId = props.set.project.id;
-    console.log(_path);
+    const _type = props.set.projectType;
+    const _projectId = props.set.project.id;
+    //console.log(_path);
     let _resourcePlanning = await props.db.getState(_type, _path, _projectId);
     let _resPlan = await JSON.parse(_resourcePlanning);
-    console.log(_resPlan.data, _resPlan.links);
-    await _parse(_resPlan.data, _resPlan.links);
+    //console.log(_resPlan.data, _resPlan.links);
     
+    await _parseResourcesStore();
+    await _parse(_resPlan.data, _resPlan.links);
+//    await _parse(resourceData, links);
   }
 }
 
+// button Save
 /// move this section to store!!!
 const _save = async () => {
   if(props.set.project.id > 0){
@@ -370,12 +343,72 @@ const _save = async () => {
   }
 }
 
+// button Shuffle
+const _shuffle = async () => {
+    //shuffleArray(resourceData);
+    await _config();
+    await _configColumns();
+    await _init();
+}
+
+// button FullScreen
+const _fullScreen = async () => {
+   if (!gantt.getState().fullscreen) {
+        // expanding the gantt to full screen
+        await gantt.expand();
+    }
+    else {
+        // collapsing the gantt to the normal mode
+        await gantt.collapse();
+    }
+}
+
+const shuffleArray = async (array) => {
+    for (let i = array.length - 1; i >= 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+// button Color
 const color = ref(defaultColor);
 const _changeColor = async () => {
     _colorCount.value++;
     if (_colorCount.value >= colors.length) _colorCount.value=0;
     color.value = colors[_colorCount.value];
 }
+
+const updateInfo = async () => {
+    var state = gantt.getState();
+    var tasks = gantt.getTaskByTime(state.min_date, state.max_date);
+    var types = gantt.config.types;
+    var result = {};
+    var html = "";
+    var active = false;
+
+    // get available types
+    result[types.task] = 0;
+    result[types.project] = 0;
+    result[types.milestone] = 0;
+
+    // sort tasks by type
+    for (var i = 0, l = tasks.length; i < l; i++) {
+        if (tasks[i].type && result[tasks[i].type] != "undefined")
+            result[tasks[i].type] += 1;
+        else
+            result[types.task] += 1;
+    }
+    // render list items for each type
+    for (var j in result) {
+        if (j == types.task)
+            active = true;
+        else
+            active = false;
+        html += getListItemHTML(j, result[j], active);
+    }
+
+    document.getElementById("gantt_info").innerHTML = html;
+};
 
 defineExpose({
   _load, _save
@@ -391,8 +424,6 @@ const show = async () => {
         buttons: ["ok"],
     });
 }
-
-
 
 // pulseObject .. reload... 
 const _pulse = inject('pulse')
@@ -418,34 +449,33 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
 </script>
 
 <template>
-
+<div class="m-0">   
     <div class="grid grid-cols-4">     
         <div class="flex pl-2 col-span-3 mb-1 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
- 
-            <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_reset" type="button" :class="_button">Reset</button>
             <button @click="_load" type="button" :class="_button">Load</button>
-            <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
-            <button @click="_parse" type="button" :class="_button">Parse</button>
             <button @click="_save" type="button" :class="_button">Save</button>
+            <button @click="_parse" type="button" :class="_button">Parse</button>
+            <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
+            <button @click="_changeColor" type="button" :class="_button">Color</button>
+            <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
         </div>    
-        <div class=" items-end text-left" id="toolbar">
-            
+        <div class="items-end text-right mr-6" id="toolbar">
             <div  class="col-span-1 text-xs mt-4 ">
                 <span>{{moduleName}}</span>
                 <span class="ml-2" :class="_pulse? 'text-green-500' : ''">{{moduleVersion}}</span>
             </div>
-
         </div>
-    </div class="-pl-4">
-    <div id="root" class=""></div>
-    <div id="whateverz" class="h-screen max-w-9xl bg-black"></div>
-
+    </div>
+    <div class="grid grid-cols-2" :class="set.layout.sidebar ? 'pr-48' : 'pr-4'">     
+        <div id="resource_id" class="col-span-2 h-screen"></div>
+    </div>
+</div>
 </template>
 <style>
 
 :root {
-    --background-color: #ffffff;
+    --background-color: #666;
     --text-color: #000000;
     --primary-color: #d2e8de;
 }
@@ -564,7 +594,7 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
     .owner-label {
       width: 20px;
       height: 20px;      
-      font-size: 12px;
+      font-size: 10px;
       display: inline-flex;
       justify-content: center;
       align-items: center;

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, provide } from 'vue';
+import { ref, provide } from 'vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -10,7 +10,6 @@ const _usePage = usePage();
 
 // sections
 import MainSection from "@/panaderos/panadero-resourceplanning/ResourcePlanning.vue";
-//import BotsSection from "@/sections/BotsSection.vue"
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -28,7 +27,6 @@ const props = defineProps({
     page: Object,
     baseSections: Object
 });
-
 const myChild = ref(null);
 const _pulse = ref(false);
 provide(/* key */ 'pulse', /* value */ _pulse);
@@ -41,14 +39,16 @@ _set.layout.footer=false;
    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
       <template #header>
-         <pulse  v-model="_pulse" :animation="_set.animate"/>
+         <pulse v-model="_pulse" :animation="_set.animate"/>
       </template>
 
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="w-screen">
-            <MainSection ref="myChild" :set="_set" :contract="_contract" :db="_db"/>
+         <div id="whateverz" class="w-screen">
+            <div class="">
+               <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" />
+            </div>
          </div>
       </template>
 

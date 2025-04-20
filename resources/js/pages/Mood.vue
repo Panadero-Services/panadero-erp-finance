@@ -45,8 +45,10 @@ _set.layout.footer=false;
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="w-screen">
-            <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="_pulse" />
+         <div id="" class="">
+            <div class="">
+               <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" />
+            </div>
          </div>
       </template>
 

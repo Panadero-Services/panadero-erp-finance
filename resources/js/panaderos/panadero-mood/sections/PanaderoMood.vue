@@ -20,15 +20,13 @@ console.log('test panaderoMood');
 console.log(`moduleName: ${moduleName}`);
 console.log(`moduleVersion: ${moduleVersion}`);
 console.log(`moduleGit: ${moduleGit}`);
-
 // call parameters
 
 const props = defineProps({
     //ref: Object, ref is a reserved property
     contract: Object,
     set: Object,
-    db: Object,
-    pulse: Boolean
+    db: Object
 });
 
 // globals
@@ -37,7 +35,7 @@ const _title="Moodz";
 
 // mood define
 const data = [
-  { project: "Real Estate", owner: "Sep Bakker", start_date: "Fri Feb 02 2024 00:00:00", end_date: "Wed Jun 05 2024 00:00:00", status: "Done", hours: 92, cost: 3588, budget: 11768, balance: 8180, paid: true, access: "1, 2, 4", renewals: "1-2 times", project_id: 9969 },
+  { project: "Real Estate", owner: "Sep Bakker", start_date: "10-01.25 08:00:00", end_date: "11.01.25 16:00:00", status: "Done", hours: 92, cost: 3588, budget: 11768, balance: 8180, paid: true, access: "1, 2, 4", renewals: "1-2 times", project_id: 9969 },
   { project: "HR Application", owner: "Anja Marcus", start_date: "Sun Mar 03 2024 00:00:00", end_date: "Sat Feb 07 2024 00:00:00", status: "Done", hours: 340, cost: 15980, budget: 18856, balance: 2876, paid: true, access: "4, 5", renewals: "1 time", project_id: 1342 },
   { project: "HR Application", owner: "Sir Kroesdalen", start_date: "Mon Jan 01 2024 00:00:00", end_date: "Wed Jan 09 2024 00:00:00", status: "Done", hours: 484, cost: 21296, budget: 14907, balance: -6389, paid: false, access: "3, 1",renewals: "1 time",project_id: 1110 },
   { project: "Inventory", owner: "Damien Rice", start_date: "Tue Jan 01 2024 00:00:00", end_date: "Sun Jun 11 2024 00:00:00", status: "Done", hours: 345, cost: 14835, budget: 70911, balance: 56076, paid: false, access: "2, 4, 5",renewals: "1-2 times",project_id: 6789 },
@@ -87,10 +85,12 @@ const _delete = () => {}
 /// remove this section to store!!!
 const _save = async () => {
   if(props.set.project.id > 0){
-    let _board =  await board.serialize();
-    let _payload = {  "model": "StateDataset",
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+
+    const _board =  await board.serialize();
+    const _payload = {  "model": "StateDataset",
                       "type": props.set.projectType,
-                      "path": props.set.project.environment+"."+props.set.project.category,
+                      "path": _path,
                       "projectId": props.set.project.id,
                       "json" : JSON.stringify(_board),
                       "isActive": 1
@@ -102,25 +102,70 @@ const _save = async () => {
 /// move this section also to store!!!
 const _load = async () => {
   if(props.set.project.id > 0){
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+    const _type = props.set.projectType;
+    const _projectId = props.set.project.id;
 
-    let _type = props.set.projectType;
-    let _path = props.set.project.environment+"."+props.set.project.category;
-    let _projectId = props.set.project.id;
-
-    let _board = await props.db.getState(_type, _path, _projectId);
-    let _jsonBoard = await JSON.parse(_board);
+    const _board = await props.db.getState(_type, _path, _projectId);
+    const _jsonBoard = await JSON.parse(_board);
     console.log(_jsonBoard);
     board.parse(_jsonBoard);
   }
 }
 
+const _loadGantt = async () => {
+  if(props.set.project.id > 0){
 
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+    //const _type = props.set.projectType;
+    const _type = "resourcePlanning";
+    const _projectId = props.set.project.id;
+    const _board = await props.db.getState(_type, _path, _projectId);
+//    console.log(_board);
+    const _jsonBoard = await JSON.parse(_board.replace('"data"','"cards"'));
+    _jsonBoard.cards.forEach(v => {
+
+        v.progress = v.progress*100;
+        if (v.progress<1) v.column = "idle";
+            else if (v.progress<10) v.column = "pending";
+                else if (v.progress<99) v.column = "started";
+                    else v.column = "done";
+        
+        //v.color = "#33B0B4";
+        v.color = "";
+        if (v.type=='project') v.color = "#58C3FE";
+        if (v.type=='milestone') v.color = "#F1B941";
+
+
+    console.log(v.start_date);
+
+        v.start_date = v.start_date.substring(3,6)+v.start_date.substring(0,3)+v.start_date.substring(6);// + '-' +v.start_date.substring(0,2)+'-'+ v.start_date.substring(10,4);
+        v.end_date = v.end_date.substring(3,6)+v.end_date.substring(0,3)+v.end_date.substring(6);// + '-' +v.start_date.substring(0,2)+'-'+ v.start_date.substring(10,4);
+
+        v.start_date = new Date(v.start_date);
+        v.end_date = new Date(v.end_date);
+        //return gantt.date.str_to_date("%d-%m-%Y %H:%i")(date);
+    console.log(v.start_date);
+
+
+//        v.start_date = v.start_date.substring(3,6)+v.start_date.substring(0,3)+v.start_date.substring(6);// + '-' +v.start_date.substring(0,2)+'-'+ v.start_date.substring(10,4);
+//        v.end_date = v.end_date.substring(3,6)+v.end_date.substring(0,3)+v.end_date.substring(6);// + '-' +v.start_date.substring(0,2)+'-'+ v.start_date.substring(10,4);
+//console.log(v.start_date);
+
+        v['label'] = v['text'];
+        v.users = [];
+        if('owner' in v) v.owner.forEach(x => {v.users.push(parseInt(x.resource_id))});
+    });
+    console.log(_jsonBoard);
+    board.parse(_jsonBoard);
+  }
+}
 
  const editorShape = [
         {
             key: "label",
             type: "text",
-            label: "Label",
+            label: "Labelz",
             modalSection: "left", // places the control in the left column of the modal editor
         },
         {
@@ -133,12 +178,14 @@ const _load = async () => {
             key: "start_date",
             type: "date",
             label: "Start date",
+            format:"%d-%m-%Y %H:%i",
             modalSection: "right", // places the control in the right column of the modal editor
         },
         {
             key: "end_date",
             type: "date",
             label: "End date",
+            format:"%d-%m-%Y %H:%i",
             modalSection: "right",
         },
         {
@@ -187,6 +234,7 @@ let board, bar;
 
 // webhooks
 onMounted(async ()=> {
+    console.log(navigator.language);
   await props.set.initMM();
   await props.set.initialize();
   await props.set.setProjectType('mood');
@@ -201,6 +249,7 @@ onMounted(async ()=> {
         placement: "modal", // "sidebar" (default) | "modal"
         autoSave: false 
     },
+
 
     });
   bar = new Toolbar("#toolbar", { api: board.api, theme: props.set.dark ? "willow-dark" : "willow", });
@@ -241,27 +290,25 @@ const pulse = inject("pulse");
 </script>
 <template>
 
-  <div class="m-0">   
-        
-      <div class="grid grid-cols-2">     
-          <div class="pl-2 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
-
-              <button @click="_setWillow" type="button" :class="_button">Light</button>
-              <button @click="_setWillowDark" type="button" :class="_button">Dark</button>
-              <button @click="_setMaterial" type="button" :class="_button">Material</button>
-              <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
-              <button @click="_save" type="button" :class="_button">Save</button>
-              <button @click="_load" type="button" :class="_button">Load</button>
-              <button @click="_load" type="button" :class="_button">{{pulse}}</button>
-
-          </div>      
-          <div class="" id="toolbar"></div>
-      </div class="-pl-4">
-
-
-    <div id="root" class=""></div>
-    <div id="whatever" class=""></div>
-  </div>
+<div class="m-0">   
+    <div class="grid grid-cols-2">     
+        <div class="pl-2 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
+            <button @click="_setWillow" type="button" :class="_button">Light</button>
+            <button @click="_setWillowDark" type="button" :class="_button">Dark</button>
+            <button @click="_setMaterial" type="button" :class="_button">Material</button>
+            <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
+            <button @click="_save" type="button" :class="_button">Save</button>
+            <button @click="_load" type="button" :class="_button">Load</button>
+            <button @click="_loadGantt" type="button" :class="_button">loadGantt</button>
+            <button @click="_load" type="button" :class="_button">{{pulse}}</button>
+        </div>      
+        <div class="" id="toolbar"></div>
+    </div>
+    <div class="grid grid-cols-2">     
+        <div id="root" class="col-span-2"></div>
+        <div id="whatever" class=""></div>
+    </div>
+</div>
 
 </template>
 

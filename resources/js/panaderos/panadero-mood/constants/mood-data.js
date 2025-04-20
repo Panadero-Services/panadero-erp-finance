@@ -1,11 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 function getData() {
-	const users = [
-		{ id: 1, label: "Don Cirucus", avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user1.png" },
-		{ id: 2, label: "Alpha Long", avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user2.jpeg" },
-		{ id: 3, label: "Eric Allen", avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user3.png" },
-		{ id: 4, label: "JaWsome Short", avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user4.png" },
-	];
+	
+    const users = [
+     {id: 1, label: "Planning", parent:null, avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user1.png" },
+     {id: 2, label: "Klusploeg", parent:null, avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user2.jpeg" },
+     {id: 3, label: "Vince", parent:1, unit: "hours/day" },
+     {id: 4, label: "Lieuwe", parent:2, unit: "hours/day" },
+     {id: 5, label: "Tessa", parent:2, unit: "hours/day" },
+     {id: 6, label: "Mitchel", parent:2, unit: "hours/day" },
+     {id: 9, label: "Unassigned", parent:2},
+     ];
 
 	const cardShape = {
 		label: true,
@@ -53,7 +57,7 @@ function getData() {
 			label: "Integration with Angular/React",
 			priority: 1,
 			color: "#65D3B3",
-			start_date: new Date("01/07/2021"),
+			start_date: new Date("01-06-2025"),
 			users: [3, 2],
 			column: "backlog",
 			type: "feature",
@@ -90,7 +94,7 @@ function getData() {
 			label: "Searching and filtering",
 			priority: 1,
 			color: "#58C3FE",
-			start_date: new Date("01/09/2021"),
+			start_date: new Date("03-06-2025"),
 			users: [3, 1],
 			progress: 1,
 			column: "backlog",
@@ -100,7 +104,7 @@ function getData() {
 			id: 4,
 			label: "Set the tasks priorities",
 			color: "#FFC975",
-			start_date: new Date("12/21/2020"),
+			start_date: new Date("05-06-2025"),
 			users: [4],
 			progress: 75,
 			column: "idle",
@@ -121,7 +125,7 @@ function getData() {
 			id: 5,
 			label: "Custom icons",
 			color: "#65D3B3",
-			start_date: new Date("01/07/2021"),
+			start_date: new Date("01-07-2025"),
 			users: [3, 2],
 			column: "idle",
 			type: "task",
@@ -130,7 +134,8 @@ function getData() {
 			id: 6,
 			label: "Integration with Gantt",
 			color: "#FFC975",
-			start_date: new Date("12/21/2020"),
+			start_date: new Date("12-06-2025"),
+
 			users: [4],
 			progress: 75,
 			column: "idle",
@@ -170,7 +175,7 @@ function getData() {
 			label: "Create cards and lists from the UI and from code",
 			priority: 3,
 			color: "#65D3B3",
-			start_date: new Date("01/07/2021"),
+			start_date: new Date("01-07-2025"),
 			users: [3, 2],
 			column: "done",
 			type: "feature",
@@ -188,7 +193,7 @@ function getData() {
 			label: "Progress bar",
 			priority: 1,
 			color: "#FFC975",
-			start_date: new Date("12/9/2020"),
+			start_date: new Date("12-05-2025"),
 			users: [1, 4, 3],
 			progress: 100,
 			column: "done",
@@ -230,7 +235,7 @@ function getData() {
 			id: 16,
 			label: "Set the feature buttonbar",
 			color: "#FFC975",
-			start_date: new Date("12/21/2020"),
+			start_date: new Date("12-06-2025"),
 			users: [4],
 			progress: 20,
 			column: "started",
@@ -251,7 +256,7 @@ function getData() {
 			id: 17,
 			label: "Predict the feature customer demand",
 			color: "#FFC975",
-			start_date: new Date("12/21/2020"),
+			start_date: new Date("12-05-2025"),
 			users: [4],
 			progress: 10,
 			column: "started",
@@ -342,10 +347,10 @@ function getData() {
 	];
 
 	return {
+		users,
 		rows,
 		columns,
 		cards,
-		users,
 		cardShape,
 		groupData,
 		links,

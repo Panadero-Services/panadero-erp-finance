@@ -23,10 +23,8 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
-
 
 import WelcomeCard from "@/pages/dashboard1/cards/WelcomeCard.vue";
 import StakepoolCard from "@/pages/dashboard1/cards/StakepoolCard.vue";
@@ -53,6 +51,7 @@ import ApplicationLogo from '@/components/logoSelf.vue';
 
 
 const selfVersion ="0.2.1";
+const title = "ERP";
 
 const props =defineProps({
     page: Object,
@@ -65,6 +64,7 @@ const props =defineProps({
 
 // webhooks
 onMounted(async ()=> {
+    _set.domainFunction='erp';
    await _set.initMM();
    await _set.initialize();
 })
@@ -146,11 +146,8 @@ const keyUpResolve = async (_selfResolve) => {
             <div class="">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:grid-cols-3 pt-12 gap-4 ">
-                    <div><user-card :set="_set"/></div>
-                    <div><user-card :set="_set"/></div>
-                    <div><user-card :set="_set"/></div>
-
                     <div><stakepool-card :on="_set.web3On" :url="url.stakepool" :apr1="_contract.presaleApr" :apr2="_contract.publicApr"/></div>
+         {{title}}{{_set.domainFunction}}
                     <div><welcome-card :on="_set.web3On" :url="url.welcome" :price="_db.usdPrice" /></div>
                     <div><register-card :on="_set.web3On" :url="url.register" :supply="_contract.nftTotalSupply"/></div>
                     <div><wallet-card :on="_set.web3On" :wallet="_set.wallet" :names="_contract.resolvedNames.split(',')"/></div>

@@ -31,14 +31,26 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\RoleAccessMiddleware;
 
+
+
+// Route::get('{any}', function () {return view('app'); })->where('any', '.*');
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
+    return redirect()->route('home/welcome');
+});
+
+Route::get('home', function () {
+    return redirect()->route('home/welcome');
+});
+
+Route::get('home/welcome', function () {
+    return Inertia::render('home/Welcome', [
+        //'canLogin' => Route::has('login'),
+        //'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-});
+})->name('home/welcome');//->middleware(RoleAccessMiddleware::class.':admin,author');
+
 
 Route::middleware([
     'auth:sanctum',
@@ -46,13 +58,56 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
+    Route::get('home/dashboard', function () {
+        return Inertia::render('home/Dashboard', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/dashboard');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    Route::get('mood', function () { 
+    Route::get('home/tiers', function () {
+        return Inertia::render('home/Tiers', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/tiers');//->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('erp/dashboard', function () {
+        return Inertia::render('erp/ErpDashboard', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('erp/dashboard');//->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('erp/mood', function () { 
         return Inertia::render('Mood', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('mood');
+    })->name('erp/mood')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('erp/resources', function () {
+        return Inertia::render('Resources', [
+            'page'=> Page::with('sections')->where('title','Resources')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('erp/resources');
+
+});
+
+
+
+  
+
+
+    Route::get('home/tiers', function () {
+        return Inertia::render('home/Tiers', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/tiers')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+
 
 
     Route::get('bento', function () {
@@ -62,12 +117,7 @@ Route::middleware([
         ]);
     })->name('bento')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    Route::get('tiers', function () {
-        return Inertia::render('Tiers', [
-            'page'=> Page::with('sections')->where('title','Tiers')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('tiers')->middleware(RoleAccessMiddleware::class.':admin,author');
+
 
 //  Gate function
 //  Route::middleware('can:admin-access')->get('posts', function () {
@@ -94,12 +144,7 @@ Route::middleware([
         ]);
     })->name('bots');
 
-    Route::get('resources', function () {
-        return Inertia::render('Resources', [
-            'page'=> Page::with('sections')->where('title','Resources')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('resources');
+
 
     Route::get('project', function () {
         return Inertia::render('Project', [
@@ -139,25 +184,6 @@ Route::middleware([
     Route::get('planning', function () { return Inertia::render('Planning', []);})->name('planning');
   //  Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
   //  Route::get('posts',[PostController::class,'index'])->name('posts');
-
-
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard',[
-            'page'=> Page::with('sections')->where('title','Tiers')->first(),
-            'baseSections' => Section::where('page_id','0')->get(),
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
-    })->name('dashboard');
-
-});
-
-
-
-
-
 
 
 //Route::get('posts',[PostController::class,'index'])->name('posts');
@@ -218,3 +244,66 @@ Route::post('/updateuserprofile',[UserController::class, 'updateProfile'])->name
 
 // sections
 Route::resource('sections',SectionController::class);
+
+/*
+plan
+
+Functies
+--------
+1 home
+1.0. dashboard
+    1.1. tiers
+    1.2. bento
+    1.3. posts
+    1.4. overview
+    1.5. users
+    1.6. config
+2 cms
+    1.0. dashboard
+    1.1. articles
+    1.2. categories
+    1.3. posts
+3 erp
+    3.0. dashboard
+    3.1. project
+    3.2. resource
+    3.3. kanban
+    3.4. todo
+    3.5. rca
+4 logistics
+    4.0. dashboard
+    4.1. closeout
+    4.2. in
+    4.3. out
+    4.4. planning
+    4.5. forecast
+5 production
+    5.0. dashboard
+    5.1. rawMaterials
+    5.2. procesA
+    5.3. procesB
+    5.4. finishedProd
+6 sales
+7 web3
+8 bots
+9 socials
+10 indigo1
+    10.0. dashboard
+    10.1. sim
+    10.2. report
+11 indigo2
+    11.0. dashboard.
+
+
+
+Modules
+1 dashboard
+2 grid
+3 kanban
+4 gantt
+5 landing
+6 adminSection
+7 
+
+*/
+
