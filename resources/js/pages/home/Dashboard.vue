@@ -132,7 +132,7 @@ const _functions = [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Welcome', url: route('home/welcome'),    route: 'home/welcome' },
                 { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' }]
-                ,"featured":"1"
+                ,"status":"upgrading"
     }, 
 
     {"item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content", "options" : 
@@ -141,60 +141,75 @@ const _functions = [
                 { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
                 { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user }]
+                ,"status":"featured"
+
     }, 
     {"item":"ERP", "title":"Resource Planning", "description": "This function is all planning and control over time consuming resources", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'resoures' },
                 { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user }]
-                ,"featured":"1"
+                ,"status":"featured"
      },
     {"item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"scheduled"
      },
     {"item":"I3P", "title":"Production Control", "description": "This function controls your production processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"scheduled"
      },
     {"item":"Sales", "title":"Sales Manager", "description": "This function controls your sales processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"scheduled"
      },
     {"item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"upgrading"
      },
 
-    {"item":"Bots", "title":"Automated AI Agents", "description": "This function handles your AI requirements", "options" : 
+    {"item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"upgrading"
      },
     {"item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"scheduled"
      },
     {"item":"DeFi", "title":"Decentralized Finance", "description": "This function takes care of your decentralized payment architecture", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' }
+            ]
+            ,"status":"scheduled"
+
      },
 
     {"item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' }
+            ]
+            ,"status":"deprecated"
+
      },
     {"item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+            ,"status":"deprecated"
      },
 ];
 
@@ -216,7 +231,7 @@ const _functions = [
             <!--    <self-intro /> -->
             <div class="">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:grid-cols-3 pt-12 gap-4 ">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 5xl:grid-cols-6 xl:grid-cols-3 pt-12 gap-4 ">
                     <div v-for="_f in _functions" ><business-function-card :set="_set" :f="_f"   /></div>
                     <div><user-card :set="_set"/></div>
                     <div><user-card :set="_set"/></div>
