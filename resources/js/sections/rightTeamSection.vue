@@ -40,14 +40,19 @@ const _theme = computed(() => {
 
 const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
-
 const stats = [
-  { label: 'Founded', value: '2021' },
-  { label: 'Employees', value: '37' },
-  { label: 'Countries', value: '12' },
-  { label: 'Raised', value: '$25M' },
+  { label: 'Founded', value: '2025' },
+  { label: 'Members', value: '37' },
+  { label: 'Projects', value: '12' },
+  { label: 'Domains', value: '3' },
 ]
 
+const _title = "text-3xl"
+const _base = "text-xs"
+const _main = "text-black dark:text-white";
+const _sub = "text-gray-600 dark:text-gray-300 text-xs";
+const _index = "text-indigo-600 dark:text-indigo-300";
+const _value = "text-green-600 dark:text-green-400";
 
 </script>
 
@@ -62,42 +67,64 @@ const stats = [
 
    <!-- This is the main div -->
    <div class="flex h-full flex-col overflow-y-scroll shadow-2xl shadow-indigo-700 dark:shadow-indigo-200"  :class="_set.dark ? 'dark bg-slate-950 shadow-'+_shadowColor+'-600' : 'light bg-gray-100 shadow-'+_shadowColor+'-200'">
-      <div>
-         <div class="-mt-12 absolute inline-flex items-center justify-center w-12 h-12 overflow-hidden bg-purple-500 rounded-full dark:bg-purple-700 divide-y ">
-            <span class="font-bold text-sm text-gray-50 dark:text-gray-300">Teams</span>
-         </div>
+      
+
+      <div class="divide-y divide-slate-200 dark:divide-slate-900" :class="_main">
 
          <!-- Header -->
-         <div class="text-gray-600 dark:text-gray-400 text-xs justify-center"> 
-            <div class="grid grid-cols-3 mt-4 pt-3 text-black dark:text-white text-3xl ">
+         <div class="my-4" :class="_base"> 
+            <div class="grid grid-cols-6 m-2">
               
-               <div class="text-black dark:text-white text-center text-xs mt-1">
-                  <div class="ml-4 flex"><users-icon class="w-8"/>
-                  <div class="text-indigo-300 text-center m-3">{{_set.domain}}</div>
-                  </div>
-                  <div class="text-gray-600">Domain</div>
+               <div class="ml-2" :class="[_title,_index]">
+                  <users-icon class="w-14"/>
                </div>
               
-               <div class="text-black dark:text-white text-center">
-                  <div>Teams</div>
-                  <div class="text-gray-600 text-xs">Settings Function</div>
+               <div class="col-span-2 ml-2">
+                  <div :class="[_title, _index]">Team</div>
+                  <div class="ml-2" :class="_sub">Preferences</div>
                </div>  
-               <div class="text-black dark:text-white text-center text-xs mt-3">
-                  <div class="text-indigo-300 text-center ">{{_set.domain}}</div>
-                  <div class="text-gray-600">Domain</div>
+
+               <div class="col-span-3 mt-0 grid grid-cols-3 gap-x-2">
+                  <div class="text-right" :class="_sub">Domain</div>
+                  <div class="col-span-2" :class="_index">{{_set.domain}}</div>
+                  <div class="text-right -mt-1" :class="_sub">Team</div>
+                  <div class="col-span-2 -mt-1" :class="_index">{{_set.domain}}</div>
+                  <div class="text-right -mt-1" :class="_sub">Project</div>
+                  <div class=" -mt-1" :class="_index">{{_set.domain}}</div>
                </div>
             </div>
          </div>
 
-
-      <div>
-         <dl class="mt-16 grid grid-cols-1 gap-x-6 gap-y-12 sm:mt-20 sm:grid-cols-2 sm:gap-y-16 lg:mt-28 lg:grid-cols-4 mr-2">
-            <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-l border-white/20 pl-6">
-               <dd class="text-xl font-semibold tracking-tight text-white text-center">{{ stat.value }}</dd>
-               <dt class="text-base text-gray-300 text-center">{{ stat.label }}</dt>
+         <div class="my-3 h-64" :class="_base"> 
+            <div class="grid grid-cols-6 m-3">
+               section2
             </div>
-         </dl>
-      </div>
+         </div>
+
+
+         <div class="my-3 h-64" :class="_base"> 
+            <div class="grid grid-cols-6 m-3">
+               section3
+            </div>
+         </div>
+
+         <div class="my-3 h-64" :class="_base"> 
+            <div class="grid grid-cols-6 m-3">
+               section4
+            </div>
+         </div>
+
+
+
+
+         <div class="my-3">
+            <dl class="grid grid-cols-1 gap-x-3 sm:grid-cols-2 lg:grid-cols-4 mt-3">
+               <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-r border-white/20">
+                  <dd class="text-xl font-semibold tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
+                  <dt class="text-base text-center" >{{ stat.label }}</dt>
+               </div>
+            </dl>
+         </div>
 
 
       </div>
