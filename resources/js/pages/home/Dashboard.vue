@@ -27,28 +27,9 @@ import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
 import BusinessFunctionCard from "@/pages/home/BusinessFunctionCard.vue";
+import ModuleCard from "@/pages/home/ModuleCard.vue";
 
-import WelcomeCard from "@/pages/dashboard1/cards/WelcomeCard.vue";
-import StakepoolCard from "@/pages/dashboard1/cards/StakepoolCard.vue";
-import RegisterCard from "@/pages/dashboard1/cards/RegisterCard.vue";
-import WalletCard from "@/pages/dashboard1/cards/WalletCard.vue";
-import KleverCard from "@/pages/dashboard1/cards/KleverCard.vue";
-import SelfCard from "@/pages/dashboard1/cards/SelfCard.vue";
-import BridgeCard from "@/pages/dashboard1/cards/BridgeCard.vue";
 
-import SelfRegisterCard from "@/pages/dashboard1/cards/SelfRegisterCard.vue";
-import SelfNameResolvingCard from "@/pages/dashboard1/cards/SelfNameResolvingCard.vue";
-import SelfAuctionCard from "@/pages/dashboard1/cards/SelfAuctionCard.vue";
-import SelfRegisterLinkCard from "@/pages/dashboard1/cards/SelfRegisterLinkCard.vue";
-import SelfStakeLinkCard from "@/pages/dashboard1/cards/SelfStakeLinkCard.vue";
-import WhitepaperLinkCard from "@/pages/dashboard1/cards/WhitepaperLinkCard.vue";
-import SelfIntro from "@/pages/dashboard1/cards/SelfIntro.vue";
-import SelfGame1Card from "@/pages/dashboard1/cards/SelfGame1Card.vue";
-import SelfGame1Overlay from "@/pages/dashboard1/cards/SelfGame1Overlay.vue";
-import DashboardFooter from "@/pages/dashboard1/DashboardFooter.vue";
-
-import Stars from '@/panaderos/Stars.vue';
-import Game from '@/panaderos/Game.vue';
 import ApplicationLogo from '@/components/logoSelf.vue';
 
 
@@ -126,8 +107,57 @@ const keyUpResolve = async (_selfResolve) => {
     selfResolve.value = _selfResolve;
 }
 
+
+const _modules = [
+    { "item":"Grid", "title":"Grid feature", "description": "This module is all about relative content browsing", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            , "status":"featured"
+    }, 
+    { "item":"Event", "title":"Scheduler feature", "description": "This module is all about eventHandlers", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            , "status":"featured"
+    }, 
+    { "item":"Mood", "title":"Mood feature", "description": "This module is all about task assigments and todo browsing", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            , "status":"featured"
+    }, 
+    { "item":"Calc", "title":"Spreadsheet feature", "description": "This moduls is all about calculation requirements", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            , "status":"featured"
+    }, 
+    { "item":"Proj", "title":"Project feature", "description": "This modules is all about project handling", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            , "status":"featured"
+    }, 
+    { "item":"Contract", "title":"Contract feature", "description": "This modules is all web3 Contract browsing", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            , "status":"featured"
+    }, 
+    { "item":"Gantt", "title":"Gantt feature ", "description": "This module is all about planning projects", "options" : 
+            [   
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+            ]
+            ,"status":"featured"
+    }
+];
+
+
+
+
 const _functions = [
-    {"item":"Home", "title":"Home Page", "description": "This function is all about articles/ posts and other content", "options" : 
+    { "item":"Home", "title":"Home Page", "description": "This function is all about articles/ posts and other content", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Welcome', url: route('home/welcome'),    route: 'home/welcome' },
@@ -135,7 +165,7 @@ const _functions = [
                 ,"status":"upgrading"
     }, 
 
-    {"item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content", "options" : 
+    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content", "options" : 
             [   
                 { name: 'Dashboard',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
@@ -144,26 +174,26 @@ const _functions = [
                 ,"status":"featured"
 
     }, 
-    {"item":"ERP", "title":"Resource Planning", "description": "This function is all planning and control over time consuming resources", "options" : 
+    { "item":"ERP", "title":"Resource Planning", "description": "This function is all planning and control over time consuming resources", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'resoures' },
                 { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user }]
                 ,"status":"featured"
      },
-    {"item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "options" : 
+    { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
             ,"status":"scheduled"
      },
-    {"item":"I3P", "title":"Production Control", "description": "This function controls your production processes", "options" : 
+    { "item":"I3P", "title":"Production Control", "description": "This function controls your production processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
             ,"status":"scheduled"
      },
-    {"item":"Sales", "title":"Sales Manager", "description": "This function controls your sales processes", "options" : 
+    { "item":"Sales", "title":"Sales Manager", "description": "This function controls your sales processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
@@ -176,19 +206,19 @@ const _functions = [
             ,"status":"upgrading"
      },
 
-    {"item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "options" : 
+    { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
             ,"status":"upgrading"
      },
-    {"item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "options" : 
+    { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
             ,"status":"scheduled"
      },
-    {"item":"DeFi", "title":"Decentralized Finance", "description": "This function takes care of your decentralized payment architecture", "options" : 
+    { "item":"DeFi", "title":"Decentralized Finance", "description": "This function takes care of your decentralized payment architecture", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' }
@@ -197,7 +227,7 @@ const _functions = [
 
      },
 
-    {"item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "options" : 
+    { "item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' }
@@ -205,13 +235,17 @@ const _functions = [
             ,"status":"deprecated"
 
      },
-    {"item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "options" : 
+    { "item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
             ,"status":"deprecated"
      },
 ];
+
+const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+
+const filter = ref("");
 
 </script>
 
@@ -220,50 +254,30 @@ const _functions = [
 
       <template #header>
          <pulse  v-model="_pulse" :animation="_set.animate"/>
-            <self-game1-overlay v-if="_set.game3On && _set.language=='EN'" :callSign="selfResolve" :w="1200" :h="1600" />
       </template>
 
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="">
 
+        <div class="grid grid-cols-2"> 
+            <div class="pl-2 " >
+                <button @click="_set.dark=false" type="button" :class="_button">Light</button>
+                <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
+            </div>      
+            <div class="" id="toolbar">
+                <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" 
+                class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
+            </div>
+        </div>
+
+         <div id="whatever" class="">{{filter}}
             <!--    <self-intro /> -->
             <div class="">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 5xl:grid-cols-6 xl:grid-cols-3 pt-12 gap-4 ">
-                    <div v-for="_f in _functions" ><business-function-card :set="_set" :f="_f"   /></div>
-                    <div><user-card :set="_set"/></div>
-                    <div><user-card :set="_set"/></div>
-                    <div><user-card :set="_set"/></div>
-                    <div><user-card :set="_set"/></div>
-                    <div><user-card :set="_set"/></div>
-
-                    <div><stakepool-card :on="_set.web3On" :url="url.stakepool" :apr1="_contract.presaleApr" :apr2="_contract.publicApr"/></div>
-                    <div><welcome-card :on="_set.web3On" :url="url.welcome" :price="_db.usdPrice" /></div>
-                    <div><register-card :on="_set.web3On" :url="url.register" :supply="_contract.nftTotalSupply"/></div>
-                    <div><wallet-card :on="_set.web3On" :wallet="_set.wallet" :names="_contract.resolvedNames.split(',')"/></div>
-                </div>
-            </div>
-
-            <div class="mx-auto mt-2 max-w-7xl">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6">
-
-                    <whitepaper-link-card url="url.welcome" :usd1="_db.usdPrice" :usd2="usdPrice" />
-
-                    <self-game1-card v-if="validWallet & validNames" 
-                                    :ready="validWallet && validNick && validNick && !_set.game3On" 
-                                    :gameOn="_set.game3On"
-                                    :overlay="_set.game3On && _set.language=='NL'"
-                                    :callSign="selfResolve"
-                                    @start="_startGame" />
-
-                    <self-stake-link-card v-if="!(validMM && validWallet)" url="url.stakepool" :presaleApr="parseFloat(_contract.presaleApr)/100" :publicApr="parseFloat(_contract.publicApr)/100" />
-                    <self-register-link-card v-if="!(validMM && validNames)" register="register" :nftTotalSupply="_contract.nftTotalSupply" />
-                    <self-name-resolving-card v-if="validMM && validWallet" :set="_set" :validNick="validNick" :validMM="validMM" :validWallet="validWallet" @keyUp="keyUpResolve"/>
-                    <self-register-card v-if="validMM && validWallet" :set="_set" />
-                    <self-auction-card v-if="!(validMM && validNames)" url="url.auction" :set="_set" />
-                    <dashboard-footer :laravelVersion="laravelVersion" :phpVersion="phpVersion" :selfVersion="selfVersion" :moduleName="moduleName" :moduleGit="moduleGit" />
+                    <template v-for="_f in _functions"><div v-if="_f.title.toLowerCase().includes(filter)" ><business-function-card :set="_set" :f="_f"   /></div></template>
+                    <template v-for="_m in _modules"><div v-if="_m.title.toLowerCase().includes(filter)" ><module-card :set="_set" :f="_m"   /></div></template>
 
                 </div>
             </div>
@@ -295,5 +309,8 @@ const _functions = [
     height: 100%;
     overflow: hidden;
 }
+
+
+
 
 </style>

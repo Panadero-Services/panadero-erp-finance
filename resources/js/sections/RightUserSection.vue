@@ -3,6 +3,7 @@ import { ref,  onMounted, computed } from 'vue'
 import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
 import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { UserIcon } from '@heroicons/vue/24/outline'
+import { UsersIcon } from '@heroicons/vue/24/outline'
 
 import ActionMessage from '@/components/ActionMessage.vue';
 import FormSection from '@/components/FormSection.vue';
@@ -39,21 +40,6 @@ const _cancel = async () => {
   open.value=false;
 }
 
-// DEPRECATED 22 jan 2025
-/*
-const _submit = async () => {
-console.log(form.user);
-    await form.put(route("users.update",form.user), {
-        errorBag: 'updateProfileInformation',
-        preserveScroll: true,
-        onSuccess: () => msgMeThingsHaveChanged(),
-    });
-};
-*/
-
-// lifeCycle
-onMounted(async ()=> {
-});
 
 const msgMeThingsHaveChanged = async () => {
   console.log('msgMeThingsHaveChanged', msgMeThingsHaveChanged);
@@ -167,14 +153,14 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
                               <!-- Profile -->
                               <div class="mt-16 divide-y space-y-2 text-lg divide-slate-300 dark:divide-gray-600 mx-3 text-gray-800 dark:text-slate-400">
 
-      <!-- Title User -->
-      <div class=" sm:flex sm:items-end">
-         <div class="sm:flex-1">
-            <div class="text-center h-10">
-               <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-300 sm:text-3xl">{{form.user.name}} </h3>
+            <!-- Title User -->
+            <div class=" sm:flex sm:items-end">
+               <div class="sm:flex-1">
+                  <div class="text-center h-10">
+                     <h3 class="text-xl font-bold text-indigo-600 dark:text-indigo-300 sm:text-3xl">{{form.user.name}} </h3>
+                  </div>
+               </div>
             </div>
-         </div>
-      </div>
 
 
    <user-profile-section  v-if="_set.mode.full && !_set.mode.noob" :db="_db" :set="_set" :user="user" />
