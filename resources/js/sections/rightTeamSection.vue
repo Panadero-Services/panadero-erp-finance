@@ -26,8 +26,19 @@ const props = defineProps({
     user: Object
 });
 
+const members = ref([
+   {id: 1, text: "Planning", parent:null},
+   {id: 2, text: "Klusploeg", parent:null},
+   {id: 3, text: "Vince", parent:1, unit: "hours/day" },
+   {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
+   {id: 5, text: "Tessa", parent:2, unit: "hours/day" },
+   {id: 6, text: "Mitchel", parent:2, unit: "hours/day" },
+   {id: 9, text: "Unassigned", parent:2},
+]);
+
 const _teams = ref([]);
 const _actualTeam= ref("JaW's Team");
+
 
 onMounted(async ()=> {
    console.log('lets do it !');
@@ -69,7 +80,7 @@ const _buttonDisabled = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset t
 const stats = computed(() => {
 return [
   { label: 'Founded', value: '2025' },
-  { label: 'Members', value: '37' },
+  { label: 'Members', value: members.value.length },
   { label: 'Projects', value: '12' },
   { label: 'Teams', value: _teams.value.length },
 ]
@@ -131,10 +142,10 @@ const _inputField = computed(()=>{
       <!-- Intro -->
       <template #default>
 
-         <div class="p-3 h-64" :class="[_base, _main]"> 
+         <div class="p-3 h-80 overflow-y-scroll" :class="[_base, _main]"> 
             <!-- Select Active Team -->
             Teams
-            <div class="flex flex-wrap">
+            <div class="flex flex-wrap ">
                <div v-for="_team in _teams" class="">
                   <div>
                      <button @click="_actualTeam=_team.name" type="button" :class="[_button,_actualTeam == _team.name ? 'dark:bg-indigo-600 bg-indigo-200' : '']">{{_team.name}}</button>
@@ -143,26 +154,29 @@ const _inputField = computed(()=>{
             </div>
 
             <!-- Input New Team -->
-            <div class="mt-12 ml-2">
-                   Input: 
+            <div class="mt-4 ml-2">
                <div class="block">
-                  <input v-model="newTeamName" placeholder="NewTeam" :class="_inputField" />
-                  <button @click="_insertTeam" :disabled="!_validInputField" type="button" :class="_validInputField ? _button : _buttonDisabled">Create</button>
+                   Input: 
+                  <input class="ml-2" v-model="newTeamName" placeholder="NewTeam" :class="_inputField" />
+                  <button class="ml-2" @click="_insertTeam" :disabled="!_validInputField" type="button" :class="_validInputField ? _button : _buttonDisabled">Create</button>
                </div>           
             </div>
 
          </div>
 
-         <div class="my-3 h-64" :class="[_base, _main]"> 
-            <div class="grid grid-cols-6 m-3">
+         <div class="p-3 h-80" :class="[_base, _main]"> 
                members
+            <div class="m-3 flex flex-wrap">
+               <div v-for="m in members">
+                     <button type="button" class="" :class="_button">{{m.id}}{{m.text}}</button>
+               </div>
             </div>
          </div>
 
       </template>
 
       <template #stats>
-         <div class="my-3 h-64" :class="[_base, _main]"> 
+         <div class="my-3 h-40" :class="[_base, _main]"> 
             <div class="grid grid-cols-6 m-3">
                activities
             </div>
