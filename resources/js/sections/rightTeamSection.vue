@@ -1,7 +1,12 @@
 <script setup>
 import { ref,  onMounted, computed } from 'vue'
+
+
+// layout
+import RightSectionLayout from '@/sections/layouts/RightSectionLayout.vue';
+
+
 import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
-import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import { UsersIcon } from '@heroicons/vue/24/outline'
 
 import UpdateProfileInformationFormAlternative from '@/pages/Profile/Partials/UpdateProfileInformationFormAlternative.vue';
@@ -29,6 +34,17 @@ onMounted(async ()=> {
    _teams.value = await _db.get('Team');
 });
 
+const _insertTeam = async () => {
+   const _model = "Team";
+   const _payload = {   "model": "Team",
+                        "name" : newTeamName.value, 
+                        "user_id" : 12, 
+                        "personal_team" : 0
+                  };
+   const _result = await _db.insertTeam(_model, _payload);
+   _teams.value = await _db.get('Team');
+
+}
 
 const _shadowColor = ref('indigo');
 
@@ -48,13 +64,16 @@ const _theme = computed(() => {
 
 //const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 const _button = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _buttonDisabled = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800 ";
 
-const stats =ref( [
+const stats = computed(() => {
+return [
   { label: 'Founded', value: '2025' },
   { label: 'Members', value: '37' },
   { label: 'Projects', value: '12' },
-  { label: 'Teams', value: _teams.value.length+2 },
-]);
+  { label: 'Teams', value: _teams.value.length },
+]
+});
 
 const _title = "text-3xl"
 const _base = "text-xs"
@@ -63,29 +82,33 @@ const _sub = "text-gray-600 dark:text-gray-300 text-xs";
 const _index = "text-indigo-600 dark:text-indigo-300";
 const _value = "text-green-600 dark:text-green-400";
 
+const newTeamName = ref('New');
+
+const _validInputField = computed(()=>{
+   if (_teams.value.find(e => e.name === newTeamName.value)) return false;
+   return newTeamName.value.length>5 && 
+         newTeamName.value.length<18 && 
+         Boolean(newTeamName.value.match(/^[A-Za-z0-9]*$/)) ;
+});
+
+const _inputField = computed(()=>{
+   let _inputCss = "text-xs p-1 bg-slate-50 dark:bg-slate-950 border-0 ring-1 dark:ring-slate-900 ring-slate-200 focus:ring-indigo-600 ";
+   _inputCss +=  _validInputField.value ? 'text-green-600 ' : 'text-red-700 ';
+   return _inputCss;
+});
+
 </script>
 
 <template>
-<TransitionRoot as="template" :show="open">
-<Dialog class="relative z-10" @close="open=false">
-<div class="fixed inset-0 overflow-hidden">
-<div class="absolute inset-0 overflow-hidden">
-<div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16 ">
-<TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
-<DialogPanel class="pointer-events-auto w-screen max-w-md">
+   <RightSectionLayout :set="_set" :open="open">
 
-   <!-- This is the main div -->
-   <div class="flex h-full flex-col overflow-y-scroll shadow-2xl shadow-indigo-700 dark:shadow-indigo-200"  :class="_set.dark ? 'dark bg-slate-950 shadow-'+_shadowColor+'-600' : 'light bg-gray-100 shadow-'+_shadowColor+'-200'">
-      
-
-      <div class="divide-y divide-slate-200 dark:divide-slate-900" :class="_main">
-
-         <!-- Header -->
+      <!-- Header -->
+      <template #header>
          <div class="my-4" :class="_base"> 
             <div class="grid grid-cols-6 m-2">
               
                <div class="ml-2" :class="[_title,_index]">
-                  <users-icon class="w-14"/>
+                  <users-icon class="w-12"/>
                </div>
               
                <div class="col-span-2 ml-2">
@@ -103,30 +126,52 @@ const _value = "text-green-600 dark:text-green-400";
                </div>
             </div>
          </div>
+      </template>
 
-         <div class="p-3 h-64" :class="_base"> 
-               Teams
-            <div class="flex ">
-               <div v-for="_team in _teams">
-                  
-                <button @click="_actualTeam=_team.name" type="button" :class="[_button,_actualTeam == _team.name ? 'dark:bg-indigo-600 bg-indigo-200' : '']">{{_team.name}}</button>
+      <!-- Intro -->
+      <template #default>
 
+         <div class="p-3 h-64" :class="[_base, _main]"> 
+            <!-- Select Active Team -->
+            Teams
+            <div class="flex flex-wrap">
+               <div v-for="_team in _teams" class="">
+                  <div>
+                     <button @click="_actualTeam=_team.name" type="button" :class="[_button,_actualTeam == _team.name ? 'dark:bg-indigo-600 bg-indigo-200' : '']">{{_team.name}}</button>
+                  </div>
                </div>
-
             </div>
+
+            <!-- Input New Team -->
+            <div class="mt-12 ml-2">
+                   Input: 
+               <div class="block">
+                  <input v-model="newTeamName" placeholder="NewTeam" :class="_inputField" />
+                  <button @click="_insertTeam" :disabled="!_validInputField" type="button" :class="_validInputField ? _button : _buttonDisabled">Create</button>
+               </div>           
+            </div>
+
          </div>
 
-         <div class="my-3 h-64" :class="_base"> 
+         <div class="my-3 h-64" :class="[_base, _main]"> 
             <div class="grid grid-cols-6 m-3">
                members
             </div>
          </div>
 
-         <div class="my-3 h-64" :class="_base"> 
+      </template>
+
+      <template #stats>
+         <div class="my-3 h-64" :class="[_base, _main]"> 
             <div class="grid grid-cols-6 m-3">
                activities
             </div>
          </div>
+      </template>
+
+
+      <!-- Footer -->
+      <template #footer>
 
          <div class="h-8 mx-3" :class="_base"> 
             <div class="grid grid-cols-6">
@@ -141,20 +186,11 @@ const _value = "text-green-600 dark:text-green-400";
             <dl class="grid grid-cols-1 gap-x-3 sm:grid-cols-2 lg:grid-cols-4 mt-3">
                <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-r border-white/20">
                   <dd class="text-xl font-semibold tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
-                  <dt class="text-base text-center" >{{ stat.label }}</dt>
+                  <dt class="text-base text-center dark:text-gray-300" >{{ stat.label }}</dt>
                </div>
             </dl>
          </div>
+      </template>
 
-      </div>
-
-</div>
-
-</DialogPanel>
-</TransitionChild>
-</div>
-</div>
-</div>
-</Dialog>
-</TransitionRoot>
+   </RightSectionLayout>
 </template>

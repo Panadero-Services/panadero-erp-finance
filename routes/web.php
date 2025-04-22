@@ -26,6 +26,7 @@ use App\Models\Section;
 use App\Models\Role;
 
 use App\Http\Controllers\UserController;
+//use Laravel\Jetstream\Http\Controllers\Inertia\TeamController;
 
 // custom token
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -233,12 +234,19 @@ Route::get('/getpage',[\App\Http\Controllers\PageController::class, 'getPage'])-
 // project
 Route::get('/getproject',[\App\Http\Controllers\ProjectController::class, 'getProject'])->name('getproject');
 
-
+// user
 Route::resource('users',UserController::class);
 Route::post('/updateuserprofile',[UserController::class, 'updateProfile'])->name('updateuserprofile');
 
 // sections
 Route::resource('sections',SectionController::class);
+
+// team
+Route::post('/insertTeam',[Web3RecordController::class, 'insertTeam'])->name('insertTeam');
+
+
+
+
 
 /*
 plan

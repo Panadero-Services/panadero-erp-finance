@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
+use App\Models\Team;
+
 use App\Models\Web3Record;
 use App\Models\Web3Type;
 use App\Models\Web3Project;
@@ -26,8 +28,6 @@ class Web3RecordController extends Controller
         //    'web3Record' => $web3records
         //]);
     }
-
-
 
     /** api Calls 
     * client: Web3DbStore.js
@@ -52,11 +52,8 @@ class Web3RecordController extends Controller
         return response()->json($r);
     }
 
-
-
-
- /** api Calls 
-     * client: Web3DbStore.js
+    /** api Calls 
+    * client: Web3DbStore.js
     */
     public function getrecords(Request $request)
     {
@@ -75,12 +72,8 @@ class Web3RecordController extends Controller
         return response()->json($r);
     }
 
-
-
-
-
     /** api Calls 
-     * client: Web3DbStore.js
+    * client: Web3DbStore.js
     */
     public function getweb3records(Request $request)
     {
@@ -149,8 +142,6 @@ class Web3RecordController extends Controller
 
 */
 
-
-
     /** api Calls 
     * client: Web3DbStore.js
     * Dynamically load web3RecordLine
@@ -197,9 +188,6 @@ class Web3RecordController extends Controller
         return 'updated';
     }
 
-
-
-
     public function setweb3recordcomplete(Request $request)
     {
         if ($request->field=="completed") {
@@ -219,7 +207,6 @@ class Web3RecordController extends Controller
         }
         return 'updated';
     }
-
 
     /**
      * Show the form for creating a new resource.
@@ -338,4 +325,26 @@ class Web3RecordController extends Controller
         return ;
 
     }
+
+
+/**
+     * Create a new team.
+     * manually created for 
+     *
+     */
+    public function insertTeam(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|min:6',
+            'name' => 'required|string|max:18'
+        ]);
+        $create = Team::create([
+            'name' => $request->name,
+            'user_id' => $request->user_id,
+            'personal_team' => $request->personal_team
+        ]);
+        return $request;
+
+    }
+
 }

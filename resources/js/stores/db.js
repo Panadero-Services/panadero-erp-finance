@@ -49,6 +49,25 @@ export const useDbStore = defineStore('db', () => {
         }
     }
 
+    async function insertTeam(_model, _payload) {
+       try {
+                console.log(_payload);
+
+            const response = await axios.post('/insertTeam', _payload, {
+                headers: {
+                    'withCredentials': true,
+                    'content-type': 'application/json',
+                    'caller': 'useDbStore',
+                    'model': _model,
+                    'Sign': 'postSignature'
+                }
+            });
+            return response.data;
+        } catch (err) {
+            throw new Error(`store/db.js: set error: ${err}`);
+        }
+    }
+
     async function set(_model, _payload) {
         try {
             const response = await axios.post('/setrecord', _payload, {
@@ -102,6 +121,6 @@ export const useDbStore = defineStore('db', () => {
 
     return {
         records, debugMode, payload, usdPrice, nRecords,
-        setDebugMode, setState, getState, set, get, getPrice
+        setDebugMode, setState, getState, set, get, getPrice, insertTeam
     };
 });
