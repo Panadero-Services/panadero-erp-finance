@@ -57,7 +57,6 @@ function getData() {
         {id: 29, text: "Pre-controller",  start_date: "24-03-2025 00:00", duration: 5, parent: 49, progress: 1, open: false, end_date: "29-03-2025 00:00", "owner": [{ "resource_id": 7, "value": 8 }]},
         {id: 20, text: "Evaluation 3.0", start_date: "31-03-2025 00:00", type: "milestone", parent: 49, progress: 0.6, open: false, end_date: "01-04-2025 00:00", duration: 1},
 
-
         {id: 60, text: "RM new TD Implementation", type: "project", start_date: "04-04-2025 00:00", duration: 5, parent: 31, progress: 0.1, open: false, end_date: "05-05-2025 00:00"},
         {id: 64, text: "Item #9 Structure redesign",  start_date: "18-04-2025 00:00", duration: 5, parent: 55, progress: 0, open: true, end_date: "23-04-2025 00:00", "owner": [{ "resource_id": 9, "value": 1 }]},
         {id: 18, text: "Item #10 Structure Modules",  start_date: "25-04-2025 00:00", duration: 5, parent: 55, progress: 0, open: true, end_date: "30-04-2025 00:00", "owner": [{ "resource_id": 9, "value": 1 }]},

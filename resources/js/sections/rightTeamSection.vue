@@ -26,7 +26,7 @@ const props = defineProps({
     user: Object
 });
 
-const members = ref([
+const _members = ref([
    {id: 1, text: "Planning", parent:null},
    {id: 2, text: "Klusploeg", parent:null},
    {id: 3, text: "Vince", parent:1, unit: "hours/day" },
@@ -57,6 +57,11 @@ const _insertTeam = async () => {
 
 }
 
+
+const _insertMember = async () => {
+   _members.value.push( {id: 7, text: newMemberName.value, parent:2, unit: "hours/day" });
+}
+
 const _shadowColor = ref('indigo');
 
 const _cancel = async () => {
@@ -80,7 +85,7 @@ const _buttonDisabled = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset t
 const stats = computed(() => {
 return [
   { label: 'Founded', value: '2025' },
-  { label: 'Members', value: members.value.length },
+  { label: 'Members', value: _members.value.length },
   { label: 'Projects', value: '12' },
   { label: 'Teams', value: _teams.value.length },
 ]
@@ -94,17 +99,31 @@ const _index = "text-indigo-600 dark:text-indigo-300";
 const _value = "text-green-600 dark:text-green-400";
 
 const newTeamName = ref('New');
+const newMemberName = ref('Member');
 
-const _validInputField = computed(()=>{
+const _validInputTeam = computed(()=>{
    if (_teams.value.find(e => e.name === newTeamName.value)) return false;
    return newTeamName.value.length>5 && 
          newTeamName.value.length<18 && 
          Boolean(newTeamName.value.match(/^[A-Za-z0-9]*$/)) ;
 });
 
-const _inputField = computed(()=>{
+const _inputTeam = computed(()=>{
    let _inputCss = "text-xs p-1 bg-slate-50 dark:bg-slate-950 border-0 ring-1 dark:ring-slate-900 ring-slate-200 focus:ring-indigo-600 ";
-   _inputCss +=  _validInputField.value ? 'text-green-600 ' : 'text-red-700 ';
+   _inputCss +=  _validInputTeam.value ? 'text-green-600 ' : 'text-red-700 ';
+   return _inputCss;
+});
+
+const _validInputMember = computed(()=>{
+   if (_members.value.find(e => e.text === newMemberName.value)) return false;
+   return newMemberName.value.length>3 && 
+         newMemberName.value.length<12 && 
+         Boolean(newMemberName.value.match(/^[A-Za-z0-9]*$/)) ;
+});
+
+const _inputMember = computed(()=>{
+   let _inputCss = "text-xs p-1 bg-slate-50 dark:bg-slate-950 border-0 ring-1 dark:ring-slate-900 ring-slate-200 focus:ring-indigo-600 ";
+   _inputCss +=  _validInputMember.value ? 'text-green-600 ' : 'text-red-700 ';
    return _inputCss;
 });
 
@@ -142,47 +161,59 @@ const _inputField = computed(()=>{
       <!-- Intro -->
       <template #default>
 
-         <div class="p-3 h-80 overflow-y-scroll" :class="[_base, _main]"> 
+         <div class="p-3 h-64 overflow-y-scroll " :class="[_base, _main]"> 
+            
+            <!-- Input New Team -->
+            <div class=" ml-2">
+               <div class="mb-0">Teams</div>
+               <div class="justify-end text-right -mt-4 mb-6">
+                  <input class="ml-2" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" />
+                  <button class="ml-2" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button>
+               </div>           
+            </div>
+
             <!-- Select Active Team -->
-            Teams
-            <div class="flex flex-wrap ">
+            <div class="m-2 flex flex-wrap ">
                <div v-for="_team in _teams" class="">
                   <div>
-                     <button @click="_actualTeam=_team.name" type="button" :class="[_button,_actualTeam == _team.name ? 'dark:bg-indigo-600 bg-indigo-200' : '']">{{_team.name}}</button>
+                     <button type="button"  @click="_actualTeam=_team.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset " :class="_actualTeam==_team.name ? 'bg-indigo-500/20 ring-indigo-300 text-indigo-800 dark:text-indigo-300 ' : 'bg-gray-500/20 ring-gray-500/20 text-gray-800 dark:text-gray-400 '">{{_team.name}}</button>
                   </div>
                </div>
             </div>
 
-            <!-- Input New Team -->
-            <div class="mt-4 ml-2">
-               <div class="block">
-                   Input: 
-                  <input class="ml-2" v-model="newTeamName" placeholder="NewTeam" :class="_inputField" />
-                  <button class="ml-2" @click="_insertTeam" :disabled="!_validInputField" type="button" :class="_validInputField ? _button : _buttonDisabled">Create</button>
+         </div>
+
+            <!-- List Members -->
+         <div class="p-3 h-64 items-end" :class="[_base, _main]"> 
+            <!-- Input New Member -->
+            <div class="ml-2">
+               <div class="mb-0">Members</div>
+               <div class="justify-end text-right -mt-4 mb-6">
+                  <input class="ml-2" v-model="newMemberName" placeholder="NewMember" :class="_inputMember" />
+                  <button class="ml-2" @click="_insertMember" :disabled="!_validInputMember" type="button" :class="_validInputMember ? _button : _buttonDisabled">Create</button>
                </div>           
             </div>
 
-         </div>
 
-         <div class="p-3 h-80" :class="[_base, _main]"> 
-               members
-            <div class="m-3 flex flex-wrap">
-               <div v-for="m in members">
-                     <button type="button" class="" :class="_button">{{m.id}}{{m.text}}</button>
+            <div class="m-2 flex flex-wrap">
+               <div v-for="m in _members">
+                     <button type="button" class="m-1 inline-flex items-center rounded-md bg-slate-400/10 px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20" >{{m.id}}{{m.text}}</button>
                </div>
             </div>
+
+
+
          </div>
 
       </template>
 
       <template #stats>
-         <div class="my-3 h-40" :class="[_base, _main]"> 
+         <div class="my-3 h-32" :class="[_base, _main]"> 
             <div class="grid grid-cols-6 m-3">
-               activities
+               Activities
             </div>
          </div>
       </template>
-
 
       <!-- Footer -->
       <template #footer>
