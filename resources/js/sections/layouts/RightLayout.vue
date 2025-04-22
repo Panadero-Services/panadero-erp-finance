@@ -21,15 +21,6 @@ const props = defineProps({
     user: Object
 });
 
-const _teams = ref([]);
-const _actualTeam= ref("JaW's Team");
-
-onMounted(async ()=> {
-   console.log('lets do it !');
-   _teams.value = await _db.get('Team');
-});
-
-
 const _shadowColor = ref('indigo');
 
 const _cancel = async () => {
@@ -46,15 +37,14 @@ const _theme = computed(() => {
   return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 });
 
-//const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
-const _button = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
-const stats =ref( [
+const stats = [
   { label: 'Founded', value: '2025' },
   { label: 'Members', value: '37' },
   { label: 'Projects', value: '12' },
-  { label: 'Teams', value: _teams.value.length+2 },
-]);
+  { label: 'Domains', value: '3' },
+]
 
 const _title = "text-3xl"
 const _base = "text-xs"
@@ -97,43 +87,28 @@ const _value = "text-green-600 dark:text-green-400";
                   <div class="text-right" :class="_sub">Domain</div>
                   <div class="col-span-2" :class="_index">{{_set.domain}}</div>
                   <div class="text-right -mt-1" :class="_sub">Team</div>
-                  <div class="col-span-2 -mt-1" :class="_index">{{_actualTeam}}</div>
+                  <div class="col-span-2 -mt-1" :class="_index">{{_set.domain}}</div>
                   <div class="text-right -mt-1" :class="_sub">Project</div>
                   <div class=" -mt-1" :class="_index">{{_set.domain}}</div>
                </div>
             </div>
          </div>
 
-         <div class="p-3 h-64" :class="_base"> 
-               Teams
-            <div class="flex ">
-               <div v-for="_team in _teams">
-                  
-                <button @click="_actualTeam=_team.name" type="button" :class="[_button,_actualTeam == _team.name ? 'dark:bg-indigo-600 bg-indigo-200' : '']">{{_team.name}}</button>
-
-               </div>
-
+         <div class="my-3 h-64" :class="_base"> 
+            <div class="grid grid-cols-6 m-3">
+               section2
             </div>
          </div>
 
          <div class="my-3 h-64" :class="_base"> 
             <div class="grid grid-cols-6 m-3">
-               members
+               section3
             </div>
          </div>
 
          <div class="my-3 h-64" :class="_base"> 
             <div class="grid grid-cols-6 m-3">
-               activities
-            </div>
-         </div>
-
-         <div class="h-8 mx-3" :class="_base"> 
-            <div class="grid grid-cols-6">
-                <button @click="_set.dark=false" type="button" :class="_button">Light</button>
-                <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-                <div class="col-span-3"></div>
-                <button @click="open=false" type="button" :class="_button">Cancel</button>
+               section4
             </div>
          </div>
 
@@ -145,6 +120,7 @@ const _value = "text-green-600 dark:text-green-400";
                </div>
             </dl>
          </div>
+
 
       </div>
 

@@ -52,6 +52,33 @@ class Web3RecordController extends Controller
         return response()->json($r);
     }
 
+
+
+
+ /** api Calls 
+     * client: Web3DbStore.js
+    */
+    public function getrecords(Request $request)
+    {
+        // default API CALL
+        $caller = $request->caller;
+        $provider = $request->provider;
+        $user = $request->user;
+        $key = $request->key;
+        $active = true;
+        
+        $r=(object)NULL;
+        // check Valid Provider (model) calls
+        $model = 'App\Models\\'.$provider;
+        if ($provider == 'Team') $r = $model::select(['id', 'name', 'user_id'])->orderBy("id", "desc")->where('id','>' ,0)->get();
+    
+        return response()->json($r);
+    }
+
+
+
+
+
     /** api Calls 
      * client: Web3DbStore.js
     */

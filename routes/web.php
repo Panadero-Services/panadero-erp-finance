@@ -95,11 +95,6 @@ Route::middleware([
 
 });
 
-
-
-  
-
-
     Route::get('home/tiers', function () {
         return Inertia::render('home/Tiers', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
@@ -107,17 +102,12 @@ Route::middleware([
         ]);
     })->name('home/tiers')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-
-
-
     Route::get('bento', function () {
         return Inertia::render('Bento', [
             'page'=> Page::with('sections')->where('title','Bento')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('bento')->middleware(RoleAccessMiddleware::class.':admin,author');
-
-
 
 //  Gate function
 //  Route::middleware('can:admin-access')->get('posts', function () {
@@ -228,6 +218,11 @@ Route::get('/getweb3records',[\App\Http\Controllers\Web3RecordController::class,
 Route::post('/setweb3record',[\App\Http\Controllers\Web3RecordController::class, 'setweb3record'])->name('setweb3record');
 Route::post('/setweb3recordcomplete',[\App\Http\Controllers\Web3RecordController::class, 'setweb3recordcomplete'])->name('setweb3recordcomplete');
 Route::post('/setweb3recordline',[\App\Http\Controllers\Web3RecordController::class, 'setweb3recordline'])->name('setweb3recordline');
+
+Route::get('/getrecords',[\App\Http\Controllers\Web3RecordController::class, 'getrecords'])->name('getrecords');
+
+
+
 
 // web3RecordLine
 Route::resource('web3RecordLines',Web3RecordLineController::class);
