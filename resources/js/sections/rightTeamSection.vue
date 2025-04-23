@@ -218,7 +218,9 @@ const _inputMember = computed(()=>{
       <!-- Footer -->
       <template #footer>
 
-         <div class="h-8 mx-3" :class="_base"> 
+<div class="absolute bottom-1 right-0">
+
+         <div class="h-12 mx-2" :class="_base"> 
             <div class="grid grid-cols-6">
                 <button @click="_set.dark=false" type="button" :class="_button">Light</button>
                 <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
@@ -227,14 +229,17 @@ const _inputMember = computed(()=>{
             </div>
          </div>
 
-         <div class="my-3">
-            <dl class="grid grid-cols-1 gap-x-3 sm:grid-cols-2 lg:grid-cols-4 mt-3">
+         <div class="my-1 ">
+            <dl class="grid grid-cols-1 gap-x-12 sm:grid-cols-2 lg:grid-cols-4 mt-3">
                <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-r border-white/20">
-                  <dd class="text-xl font-semibold tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
+                  <dd class="text-lg tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
                   <dt class="text-base text-center dark:text-gray-300" >{{ stat.label }}</dt>
                </div>
             </dl>
          </div>
+</div>
+
+
       </template>
 
    </RightSectionLayout>
