@@ -27,8 +27,8 @@ const props = defineProps({
 });
 
 const _members = ref([
-   {id: 1, text: "Planning", parent:null},
-   {id: 2, text: "Klusploeg", parent:null},
+   {id: 1, text: "Planning", parent:0},
+   {id: 2, text: "Klusploeg", parent:0},
    {id: 3, text: "Vince", parent:1, unit: "hours/day" },
    {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
    {id: 5, text: "Tessa", parent:2, unit: "hours/day" },
@@ -62,7 +62,7 @@ const _insertMember = async () => {
    var _next=1;
    while(_members.value.find(e => e.id==_next)) _next++; 
 
-   _members.value.push( {id: _next, text: newMemberName.value, parent:2, unit: "hours/day" });
+   _members.value.push( {id: _next, text: newMemberName.value, parent:parentSelected.value, unit: unitSelected.value});
 }
 
 const _shadowColor = ref('indigo');
@@ -82,8 +82,8 @@ const _theme = computed(() => {
 });
 
 //const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
-const _button = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
-const _buttonDisabled = "mt-2 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800 ";
+const _button = "rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _buttonDisabled = "rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800 ";
 
 const stats = computed(() => {
 return [
@@ -103,7 +103,8 @@ const _value = "text-green-600 dark:text-green-400";
 
 const newTeamName = ref('New');
 const newMemberName = ref('Member');
-const newSelected = ref('hours/day');
+const unitSelected = ref('hours/day');
+const parentSelected = ref('NULL');
 
 const _validInputTeam = computed(()=>{
    if (_teams.value.find(e => e.name === newTeamName.value)) return false;
@@ -130,6 +131,15 @@ const _inputMember = computed(()=>{
    _inputCss +=  _validInputMember.value ? 'text-green-600 ' : 'text-red-700 ';
    return _inputCss;
 });
+
+
+const _parentOptions = computed(()=>{
+   //let _options = ['NULL'];
+   let _options= _members.value.filter(e => e.parent===0);
+   return _options;
+});
+
+
 
 </script>
 
@@ -165,26 +175,34 @@ const _inputMember = computed(()=>{
       <!-- Intro -->
       <template #default>
 
-         <div class="p-3 h-80 " :class="[_base, _main]"> 
-            
-            <!-- Input New Team -->
-            <div class=" ml-2 h-8">
-               <div class="mb-0 text-base">Teams</div>
-            </div>
-            <div class=" ml-2 h-24">
-               <div class="justify-end text-right">
-                  whatever
+         <!-- Teams Section -->  
+         <div class="p-2 h-80 " :class="[_base, _main]"> 
+
+            <!-- Teams Input New -->
+            <div class="h-24">
+               <div class="h-6">
+                  <div class="mb-0 text-sm">Teams</div>
                </div>
-               <div class="justify-end text-right">
-                  <input class="ml-2" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" />
-                  <button class="ml-2" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button>
-               </div>           
-           
+               <div class="h-6 grid grid-cols-6 dark:text-gray-600">
+                  <div></div>
+                  <div>name</div>
+               </div>
+               <div class="h-8 grid grid-cols-6">
+                  <div></div>
+                  <div class="text-r col-span-2"><input class="w-32" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" /></div>           
+                  <div></div>              
+                  <div></div>              
+                  <div><button class="" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button></div>
+               </div>
+               <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
+                  <div></div>
+                  <div id="status_team"></div>
+               </div>
             </div>
 
-            <!-- Select Active Team -->
-            <div class=" overflow-y-scroll h-48">
-               <div class="m-2 flex flex-wrap ">
+            <!-- Teams Select Active Team -->
+            <div class=" overflow-y-scroll h-48 mt-4">
+               <div class="ml-2 flex flex-wrap ">
                   <div v-for="_team in _teams" class="">
                      <div>
                         <button type="button"  @click="_actualTeam=_team.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset dark:hover:ring-indigo-400 hover:ring-black " :class="_actualTeam==_team.name ? 'bg-indigo-500/20 ring-indigo-500 text-indigo-700 dark:text-indigo-300' : 'bg-gray-500/20 ring-gray-500/20 text-gray-800 dark:text-gray-400 '">{{_team.name}}</button>
@@ -195,43 +213,70 @@ const _inputMember = computed(()=>{
 
          </div>
 
-            <!-- List Members -->
-         <div class="p-3 h-80 items-end mt-4" :class="[_base, _main]"> 
-            <!-- Input New Member -->
-            <div class="ml-2 h-32">
-               <div class="mb-0">Members</div>
-               <div class="justify-end text-right -mt-4 mb-4">
+         <!-- Members -->
 
 
-<select v-model="newSelected" :class="_inputMember">
-  <option>hours/day</option>
-  <option>hours/week</option>
-  <option>hours/month</option>
-</select>
+ <!-- Teams Section -->  
+         <div class="p-2 h-80 " :class="[_base, _main]"> 
 
+            <!-- Teams Input New -->
+            <div class="h-24">
+               <div class="h-6">
+                  <div class="mb-0 text-sm">Members</div>
+               </div>
+               <div class="h-6 grid grid-cols-6 dark:text-gray-600">
+                  <div class="ml-2">units</div>
+                  <div class="ml-10 col-span-2">name</div>
+                  <div class="ml-8 col-span-2">parent</div>
+                  <div></div>
+               </div>
+               <div class="h-8 grid grid-cols-6">
 
+                 <div class="ml-2">
+                     <select class="w-24" v-model="unitSelected" :class="_inputMember">
+                       <option>hours/day</option>
+                       <option>hours/week</option>
+                       <option>hours/month</option>
+                     </select>
+                  </div> 
 
-                  <input class="ml-2 w-24" v-model="newMemberName" placeholder="NewMember" maxlength = "12" :class="_inputMember" />
-                  <button class="ml-2" @click="_insertMember" :disabled="!_validInputMember" type="button" :class="_validInputMember ? _button : _buttonDisabled">Create</button>
-               </div>           
+                  <div class="text-r col-span-2 ml-10"><input class="w-32" v-model="newMemberName" placeholder="NewMember" maxlength="12" :class="_inputMember" /></div>       
+              
+                  <div class="ml-8 col-span-2">
+                     <select v-model="parentSelected" class="w-28" :class="_inputMember">
+                       <option :value="0">null</option>
+                       <option v-for="option in _parentOptions"  :value="option.id">{{option.text}}</option>
+                     </select>
+                  </div>    
+
+                  <div><button class="ml-2" @click="_insertMember" :disabled="!_validInputMember" type="button" :class="_validInputMember ? _button : _buttonDisabled">Create</button></div>
+               </div>
+
+               <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
+                  <div></div>
+                  <div id="status_member"></div>
+               </div>
             </div>
-            <div class=" overflow-y-scroll h-48">
+
+            <div class=" overflow-y-scroll h-48 mt-4">
                <div class="mx-2 flex flex-wrap">
                   <div v-for="m in _members">
                         <button type="button" class="m-1 inline-flex items-center rounded-md bg-slate-400/10 px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20" >{{m.id}} {{m.text}}</button>
                   </div>
                </div>
             </div>
-
-         </div>
+      </div>
 
       </template>
 
       <template #stats>
-         <div class="my-3 h-32" :class="[_base, _main]"> 
-            <div class="grid grid-cols-6 m-3">
-               Activities
+         <div class="p-2 h-80 items-end mt-4" :class="[_base, _main]"> 
+            <!-- Input New Member -->
+            <div class="ml-2 h-32">
+               <div class="mb-0 text-sm">Activities</div>
+               <div class="justify-end text-right -mt-4 mb-4">
             </div>
+         </div>
          </div>
       </template>
 
