@@ -82,7 +82,7 @@ function getData() {
         {id: 71, text: "Evaluation 4.0", start_date: "13-05-2025 00:00", type: "milestone", parent: 65, progress: 0.0, open: false, end_date: "13-05-2025 00:00", duration: 1},
 
     ];
-
+/*
     const ppl = [
      {id: 1, text: "R&D", parent:null},
      {id: 2, text: "devOps", parent:null},
@@ -94,6 +94,10 @@ function getData() {
      {id: 8, text: "Andreas", parent:2, unit: "hours/day" },
      {id: 9, text: "Unassigned", parent:2},
      ];
+*/
+
+const ppl =[{"id":1,"text":"Planning","parent":0},{"id":2,"text":"Klusploeg","parent":0},{"id":3,"text":"Vince","parent":1,"unit":"hours/day"},{"id":4,"text":"Lieuwe","parent":2,"unit":"hours/day"},{"id":5,"text":"Tessa","parent":2,"unit":"hours/day"},{"id":6,"text":"Mitchel","parent":2,"unit":"hours/day"},{"id":9,"text":"Unassigned","parent":2},{"id":7,"text":"Member","parent":1,"unit":"hours/day"},{"id":8,"text":"Louis","parent":1,"unit":"hours/day"},{"id":10,"text":"Admin","parent":0,"unit":"hours/day"},{"id":11,"text":"Fred","parent":10,"unit":"hours/day"},{"id":12,"text":"FreeWilly","parent":10,"unit":"hours/day"}];
+
 
     const resources = [
      {id: 1, text: "Planning", parent:null},

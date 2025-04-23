@@ -26,15 +26,20 @@ const props = defineProps({
     user: Object
 });
 
+
+
 const _members = ref([
    {id: 1, text: "Planning", parent:0},
-   {id: 2, text: "Klusploeg", parent:0},
-   {id: 3, text: "Vince", parent:1, unit: "hours/day" },
-   {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
-   {id: 5, text: "Tessa", parent:2, unit: "hours/day" },
-   {id: 6, text: "Mitchel", parent:2, unit: "hours/day" },
-   {id: 9, text: "Unassigned", parent:2},
+   {id: 9, text: "Unassigned", parent:1}
 ]);
+
+const _defaultMembers = [
+   {id: 1, text: "Planning", parent:0},
+   {id: 2, text: "Development", parent:0},
+   {id: 3, text: "Lieuwe", parent:1, unit: "hours/day" },
+   {id: 4, text: "Vince", parent:2, unit: "hours/day" },
+   {id: 9, text: "Unassigned", parent:2},
+];
 
 const _teams = ref([]);
 const _actualTeam= ref("JaW's Team");
@@ -139,6 +144,32 @@ const _parentOptions = computed(()=>{
    return _options;
 });
 
+/// remove this section to store!!!
+const _save = async () => {
+  if(3 > 0){
+    const _path = _set.domain+".team."+_actualTeam.value;
+
+//    const jsonMembers =  await _members.value.serialize();
+    const _payload = {  "model": "Team",
+                      "type": "team",
+                      "path": _path,
+                      "projectId": 0,
+                      "_actualTeam": _actualTeam.value,
+                      "json" : JSON.stringify(_members.value),
+                      "isActive": 1
+                     };
+    await _db.setState(_payload);
+  }
+}
+
+/// move this section also to store!!!
+const _load = async () => {
+    const _path = _set.domain+".team."+_actualTeam.value;
+    const _type = "team";
+    const _projectId = 0;
+    const _team = await _db.getState(_type, _path, _projectId);
+    _members.value = await JSON.parse(_team);
+}
 
 
 </script>
@@ -190,9 +221,9 @@ const _parentOptions = computed(()=>{
                <div class="h-8 grid grid-cols-6">
                   <div></div>
                   <div class="text-r col-span-2"><input class="w-32" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" /></div>           
-                  <div></div>              
-                  <div></div>              
                   <div><button class="" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button></div>
+                  <button class="mx-1.5" @click="_save" type="button" :class="_button">Save</button>
+                  <button class="mx-1.5" @click="_load" type="button" :class="_button">Load</button>
                </div>
                <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
                   <div></div>
@@ -283,14 +314,19 @@ const _parentOptions = computed(()=>{
       <!-- Footer -->
       <template #footer>
 
-<div class="absolute bottom-1 right-0">
+   <div class="absolute bottom-1 right-0">
 
-         <div class="h-12 mx-2" :class="_base"> 
-            <div class="grid grid-cols-6">
-                <button @click="_set.dark=false" type="button" :class="_button">Light</button>
-                <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-                <div class="col-span-3"></div>
-                <button @click="open=false" type="button" :class="_button">Cancel</button>
+         <div class="h-18 mr-4 " :class="_base"> 
+            <div class="grid grid-cols-6 gap-2">
+               <button @click="_members = _defaultMembers" type="button" :class="_button">Default</button>
+               <button @click="_members = []" type="button" :class="_button">Clear</button>
+
+
+               <button @click="_set.dark=false" type="button" :class="_button">Light</button>
+               <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
+               <div></div>
+               <button @click="open=false" type="button" :class="_button">Cancel</button>
+
             </div>
          </div>
 
@@ -302,7 +338,7 @@ const _parentOptions = computed(()=>{
                </div>
             </dl>
          </div>
-</div>
+   </div>
 
 
       </template>
