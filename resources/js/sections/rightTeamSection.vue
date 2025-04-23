@@ -144,7 +144,22 @@ const _parentOptions = computed(()=>{
    return _options;
 });
 
-/// remove this section to store!!!
+/// move this section to store!!!
+const _setProject = async () => {
+   if(_set.project.id > 0) {
+      const _path = _set.domain+"."+_set.project.title+"."+_set.project.environment;
+      let _payload = {  "model": "Team",
+                      "type": "team",
+                      "path": _path,
+                      "projectId": _set.project.id,
+                      "json" : JSON.stringify(_members.value),
+                      "isActive": 1
+                     };
+      //console.log(_payload);
+      await _db.setState(_payload);
+   }
+}
+
 const _save = async () => {
   if(3 > 0){
     const _path = _set.domain+".team."+_actualTeam.value;
@@ -169,6 +184,10 @@ const _load = async () => {
     const _projectId = 0;
     const _team = await _db.getState(_type, _path, _projectId);
     _members.value = await JSON.parse(_team);
+
+  if(_set.project.id > 0) {
+      _set.project.resources = _members.value;
+  }
 }
 
 
@@ -222,8 +241,7 @@ const _load = async () => {
                   <div></div>
                   <div class="text-r col-span-2"><input class="w-32" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" /></div>           
                   <div><button class="" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button></div>
-                  <button class="mx-1.5" @click="_save" type="button" :class="_button">Save</button>
-                  <button class="mx-1.5" @click="_load" type="button" :class="_button">Load</button>
+
                </div>
                <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
                   <div></div>
@@ -314,31 +332,38 @@ const _load = async () => {
       <!-- Footer -->
       <template #footer>
 
-   <div class="absolute bottom-1 right-0">
+         <div class="absolute bottom-1 right-0">
 
-         <div class="h-18 mr-4 " :class="_base"> 
-            <div class="grid grid-cols-6 gap-2">
-               <button @click="_members = _defaultMembers" type="button" :class="_button">Default</button>
-               <button @click="_members = []" type="button" :class="_button">Clear</button>
-
-
-               <button @click="_set.dark=false" type="button" :class="_button">Light</button>
-               <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-               <div></div>
-               <button @click="open=false" type="button" :class="_button">Cancel</button>
-
-            </div>
-         </div>
-
-         <div class="my-1 ">
-            <dl class="grid grid-cols-1 gap-x-12 sm:grid-cols-2 lg:grid-cols-4 mt-3">
-               <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-r border-white/20">
-                  <dd class="text-lg tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
-                  <dt class="text-base text-center dark:text-gray-300" >{{ stat.label }}</dt>
+            <div class="h-10 mr-4 " :class="_base"> 
+               <div class="grid grid-cols-6 gap-2">
+                  <button :disabled="_set.project.id<1" @click="_setProject" type="button" title="Assign current Team to active Project!" class="hover:bg-green-800 bg-indigo-800 text-white" :class="_button">Project</button>
+                  <div></div>
+                  <button @click="_members = _defaultMembers" type="button" :class="_button">Default</button>
+                  <button @click="_members = []" type="button" :class="_button">Clear</button>
+                  <button @click="_save" type="button" :class="_button">Save</button>
+                  <button @click="_load" type="button" :class="_button">Load</button>
                </div>
-            </dl>
+            </div>
+
+            <div class="h-10 mr-4 " :class="_base"> 
+               <div class="grid grid-cols-6 gap-2">
+                  <button @click="_set.dark=false" type="button" :class="_button">Light</button>
+                  <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
+                  <div class="col-span-3"></div>
+                  <button @click="open=false" type="button" :class="_button">Cancel</button>
+               </div>
+            </div>
+
+            <div class="my-1 ">
+               <dl class="grid grid-cols-1 gap-x-12 sm:grid-cols-2 lg:grid-cols-4 mt-3">
+                  <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-r border-white/20">
+                     <dd class="text-lg tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
+                     <dt class="text-base text-center dark:text-gray-300" >{{ stat.label }}</dt>
+                  </div>
+               </dl>
+            </div>
+
          </div>
-   </div>
 
 
       </template>

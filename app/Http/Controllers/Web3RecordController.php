@@ -326,7 +326,6 @@ class Web3RecordController extends Controller
 
     }
 
-
 /**
      * Create a new team.
      * manually created for 

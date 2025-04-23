@@ -283,6 +283,11 @@ const _parseResourcesStore = async () => {
         gantt.updateCollection("people", people);
     });
 
+    if (props.set.project.resources ) {
+        resourcesStore.parse(props.set.project.resources);
+        return;
+    }
+
     if (props.set.project.title=="vince") resourcesStore.parse(resources);
     else resourcesStore.parse(ppl);
 }
