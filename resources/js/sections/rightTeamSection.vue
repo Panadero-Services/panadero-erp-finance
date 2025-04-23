@@ -59,7 +59,10 @@ const _insertTeam = async () => {
 
 
 const _insertMember = async () => {
-   _members.value.push( {id: 7, text: newMemberName.value, parent:2, unit: "hours/day" });
+   var _next=1;
+   while(_members.value.find(e => e.id==_next)) _next++; 
+
+   _members.value.push( {id: _next, text: newMemberName.value, parent:2, unit: "hours/day" });
 }
 
 const _shadowColor = ref('indigo');
@@ -100,6 +103,7 @@ const _value = "text-green-600 dark:text-green-400";
 
 const newTeamName = ref('New');
 const newMemberName = ref('Member');
+const newSelected = ref('hours/day');
 
 const _validInputTeam = computed(()=>{
    if (_teams.value.find(e => e.name === newTeamName.value)) return false;
@@ -116,7 +120,7 @@ const _inputTeam = computed(()=>{
 
 const _validInputMember = computed(()=>{
    if (_members.value.find(e => e.text === newMemberName.value)) return false;
-   return newMemberName.value.length>3 && 
+   return newMemberName.value.length>2 && 
          newMemberName.value.length<12 && 
          Boolean(newMemberName.value.match(/^[A-Za-z0-9]*$/)) ;
 });
@@ -161,22 +165,30 @@ const _inputMember = computed(()=>{
       <!-- Intro -->
       <template #default>
 
-         <div class="p-3 h-64 overflow-y-scroll " :class="[_base, _main]"> 
+         <div class="p-3 h-80 " :class="[_base, _main]"> 
             
             <!-- Input New Team -->
-            <div class=" ml-2">
-               <div class="mb-0">Teams</div>
-               <div class="justify-end text-right -mt-4 mb-6">
+            <div class=" ml-2 h-8">
+               <div class="mb-0 text-base">Teams</div>
+            </div>
+            <div class=" ml-2 h-24">
+               <div class="justify-end text-right">
+                  whatever
+               </div>
+               <div class="justify-end text-right">
                   <input class="ml-2" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" />
                   <button class="ml-2" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button>
                </div>           
+           
             </div>
 
             <!-- Select Active Team -->
-            <div class="m-2 flex flex-wrap ">
-               <div v-for="_team in _teams" class="">
-                  <div>
-                     <button type="button"  @click="_actualTeam=_team.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset " :class="_actualTeam==_team.name ? 'bg-indigo-500/20 ring-indigo-300 text-indigo-800 dark:text-indigo-300 ' : 'bg-gray-500/20 ring-gray-500/20 text-gray-800 dark:text-gray-400 '">{{_team.name}}</button>
+            <div class=" overflow-y-scroll h-48">
+               <div class="m-2 flex flex-wrap ">
+                  <div v-for="_team in _teams" class="">
+                     <div>
+                        <button type="button"  @click="_actualTeam=_team.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset dark:hover:ring-indigo-400 hover:ring-black " :class="_actualTeam==_team.name ? 'bg-indigo-500/20 ring-indigo-500 text-indigo-700 dark:text-indigo-300' : 'bg-gray-500/20 ring-gray-500/20 text-gray-800 dark:text-gray-400 '">{{_team.name}}</button>
+                     </div>
                   </div>
                </div>
             </div>
@@ -184,24 +196,32 @@ const _inputMember = computed(()=>{
          </div>
 
             <!-- List Members -->
-         <div class="p-3 h-64 items-end" :class="[_base, _main]"> 
+         <div class="p-3 h-80 items-end mt-4" :class="[_base, _main]"> 
             <!-- Input New Member -->
-            <div class="ml-2">
+            <div class="ml-2 h-32">
                <div class="mb-0">Members</div>
-               <div class="justify-end text-right -mt-4 mb-6">
-                  <input class="ml-2" v-model="newMemberName" placeholder="NewMember" :class="_inputMember" />
+               <div class="justify-end text-right -mt-4 mb-4">
+
+
+<select v-model="newSelected" :class="_inputMember">
+  <option>hours/day</option>
+  <option>hours/week</option>
+  <option>hours/month</option>
+</select>
+
+
+
+                  <input class="ml-2 w-24" v-model="newMemberName" placeholder="NewMember" maxlength = "12" :class="_inputMember" />
                   <button class="ml-2" @click="_insertMember" :disabled="!_validInputMember" type="button" :class="_validInputMember ? _button : _buttonDisabled">Create</button>
                </div>           
             </div>
-
-
-            <div class="m-2 flex flex-wrap">
-               <div v-for="m in _members">
-                     <button type="button" class="m-1 inline-flex items-center rounded-md bg-slate-400/10 px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20" >{{m.id}}{{m.text}}</button>
+            <div class=" overflow-y-scroll h-48">
+               <div class="mx-2 flex flex-wrap">
+                  <div v-for="m in _members">
+                        <button type="button" class="m-1 inline-flex items-center rounded-md bg-slate-400/10 px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20" >{{m.id}} {{m.text}}</button>
+                  </div>
                </div>
             </div>
-
-
 
          </div>
 
