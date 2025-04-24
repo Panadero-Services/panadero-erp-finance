@@ -202,7 +202,7 @@ const _functions = [
     {"item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
+                { name: 'Web3',    url: route('web3'),    route: 'web3' } ]
             ,"status":"upgrading"
      },
 

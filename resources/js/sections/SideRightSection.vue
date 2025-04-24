@@ -1,241 +1,224 @@
 <script setup>
-import { ref,  onMounted } from 'vue'
-import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { ref,  onMounted, computed } from 'vue'
 
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { XMarkIcon } from '@heroicons/vue/24/outline'
-import { LinkIcon, PlusIcon, QuestionMarkCircleIcon, ClipboardDocumentCheckIcon} from '@heroicons/vue/20/solid'
 
-import { useProjectStore } from '@/stores/ProjectStore';
-const _project = useProjectStore();
+// layout
+import RightSectionLayout from '@/sections/layouts/RightSectionLayout.vue';
+
+
+import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
+import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline'
+
+//import UpdateProfileInformationFormAlternative from '@/pages/Profile/Partials/UpdateProfileInformationFormAlternative.vue';
+
+// subsections
+//import UserProfileSection from '@/sections/user-section/UserProfileSection.vue';
+//import UserOtherSection from '@/sections/user-section/UserOtherSection.vue';
+import UserModeSection from '@/sections/user-section/UserModeSection.vue';
+
+// stores
+import { useSettingsStore } from '@/stores/settings';
+import { useDbStore } from '@/stores/db';
+const _db = useDbStore();
+const _set = useSettingsStore();
 
 const props = defineProps({
-    set: Object
+    user: Object
 });
 
+const _projects = ref([]);
+const _actualProject= ref("ActualProject");
 
-const _actualProject = ref();
-const _userId = ref(0);
 
-
-// lifeCycle
 onMounted(async ()=> {
-  _userId.value = usePage().props.auth.user.id;
-  _actualProject.value = await _project.getProjectFromDb(1);
-  console.log( _actualProject.value)
-  // board.selectCard({ id: 3, groupMode: true });
+   console.log('lets do it !');
+   _projects.value = await _db.get('Project');
 });
 
-
-const team = [
-  {
-    name: 'Tom Cook',
-    email: 'tom.cook@example.com',
-    href: '#',
-    imageUrl:
-    '/storage/profile-photos/lieuwe.jpg'
-  },
-  {
-    name: 'Alf Francis',
-    email: 'whitney.francis@example.com',
-    href: '#',
-    imageUrl:
-    '/storage/profile-photos/alf.png'
-  },
-  {
-    name: 'Rico Krasner',
-    email: 'leonard.krasner@example.com',
-    href: '#',
-    imageUrl:
-    '/storage/profile-photos/rico.png'
-  },
-  {
-    name: 'Eric Floyd',
-    email: 'floyd.miles@example.com',
-    href: '#',
-    imageUrl:'/storage/profile-photos/eric.png'
-  },
-
-  {
-    name: 'Sadaf Selman',
-    email: 'emily.selman@example.com',
-    href: '#',
-    imageUrl:
-    '/storage/profile-photos/sadaf.png'
-  },
-]
-
-const open = ref(false)
-
-
-defineExpose({
- open
-});
-
-
-
-
-const setProjectId = (_title) => {
-    if(!( usePage().props.auth.user == null)) {
-        // toDo !! retrieve from db
-        props.set.project.id = _title=='none' ? 0 : 1;
-        props.set.project.title = _title;
-        props.set.project.environment = "sandbox";
-        props.set.project.validEnvironments = ["master", "alternative", "sandbox"];
-        props.set.project.category = "primera";
-    }
+const _insertProject = async () => {
+   const _model = "Project";
+   const _payload = {   "model": "Project",
+                        "name" : newProjectName.value, 
+                        "user_id" : 12, 
+                        "personal_team" : 0
+                  };
+   const _result = await _db.insertProject(_model, _payload);
+   _projects.value = await _db.get('Project');
 }
 
-// buttons
-const _buttons = ['primera', 'segundo', 'tercera'];
-const _changeCat = async (_cat) => { props.set.project.category = _cat; }
+const _shadowColor = ref('indigo');
 
-// css
-const _button ="rounded px-2 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-indigo-300 dark:ring-gray-600 ";
-const _hover = "hover:bg-indigo-400 dark:hover:bg-indigo-600";
-const _bg = "bg-white dark:bg-black";
-const _bgSelected = "bg-indigo-200 dark:bg-indigo-800";
-const _hoverAdd = "hover:bg-green-400 dark:hover:bg-green-600";
-const _hoverDelete = "hover:bg-red-400 dark:hover:bg-red-600";
+const _cancel = async () => {
+  open.value=false;
+}
+//  'open' command
+const open = ref(false)
+defineExpose({ open });
+
+// css 
+const _hoverColor = 'hover:bg-indigo-500';
+
+const _theme = computed(() => {
+  return _set.dark ? "bg-indigo-950" : "bg-slate-100";
+});
+
+//const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
+const _button = "rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _buttonDisabled = "rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800 ";
+
+const stats = computed(() => {
+return [
+  { label: 'Founded', value: '2025' },
+  { label: 'Members', value: 0 },
+  { label: 'Teams', value: '12' },
+  { label: 'Projects', value: _projects.value.length },
+]
+});
+
+const _title = "text-3xl"
+const _base = "text-xs"
+const _main = "text-black dark:text-white";
+const _sub = "text-gray-600 dark:text-gray-300 text-xs";
+const _index = "text-indigo-600 dark:text-indigo-300";
+const _value = "text-green-600 dark:text-green-400";
+
+const newProjectName = ref('New');
+
+const _validInputProject = computed(()=>{
+   //if (_projects.value.find(e => e.name === newProjectName.value)) return false;
+   return newProjectName.value.length>5 && 
+         newProjectName.value.length<18 && 
+         Boolean(newProjectName.value.match(/^[A-Za-z0-9]*$/)) ;
+});
+
+const _inputProject = computed(()=>{
+   let _inputCss = "text-xs p-1 bg-slate-50 dark:bg-slate-950 border-0 ring-1 dark:ring-slate-900 ring-slate-200 focus:ring-indigo-600 ";
+   _inputCss +=  _validInputProject.value ? 'text-green-600 ' : 'text-red-700 ';
+   return _inputCss;
+});
+
+const _activeLabel = 'ring-gray-500 text-indigo-700 dark:text-indigo-300';
+const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text-gray-400';
+const _sectionTitle = "h-6 text-sm dark:text-gray-400 text-gray-600";
 
 </script>
 
 <template>
-  <TransitionRoot as="template" :show="open">
-    <Dialog class="relative z-10" @close="open = false">
-      <div class="fixed inset-0" />
-      <div class="fixed inset-0 overflow-hidden">
-        <div class="absolute inset-0 overflow-hidden">
-          <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-md pl-10 sm:pl-16">
+   <RightSectionLayout :set="_set" :open="open">
 
-            <TransitionChild as="template" enter="transform transition ease-in-out duration-500 sm:duration-700" enter-from="translate-x-full" enter-to="translate-x-0" leave="transform transition ease-in-out duration-500 sm:duration-700" leave-from="translate-x-0" leave-to="translate-x-full">
-              <DialogPanel class="pointer-events-auto w-screen max-w-md">
-                <form class="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-2xl shadow-blue-700 dark:shadow-blue-200">
-                  <div class="h-0 flex-1 overflow-y-auto">
-                    <div class="bg-blue-700 pl-2 py-2 sm:pl-3">
-                        <div class="flex"><clipboard-document-check-icon  class="w-12 text-blue-200" /><div class="text-2xl text-green-200 m-3">Project</div></div>
+      <!-- Header -->
+      <template #header>
+         <div class="my-4" :class="_base"> 
+            <div class="grid grid-cols-6 m-2">
+              
+               <div class="ml-2" :class="[_title,_index]">
+                  <clipboard-document-check-icon class="w-12"/>
+               </div>
+              
+               <div class="col-span-2 ml-2">
+                  <div :class="[_title, _index]">Project</div>
+                  <div class="ml-2" :class="_sub">Preferences</div>
+               </div>  
 
-<div>
-userId: {{_userId}}
-</div>
+               <div class="col-span-3 mt-0 grid grid-cols-3 gap-x-2">
+                  <div class="text-right" :class="_sub">Domain</div>
+                  <div class="col-span-2" :class="_index">{{_set.domain}}</div>
+                  <div class="text-right -mt-1" :class="_sub">Project</div>
+                  <div class="col-span-2 -mt-1" :class="_index">{{_actualProject}}</div>
+                  <div class="text-right -mt-1" :class="_sub">Project</div>
+                  <div class=" -mt-1" :class="_index">{{_set.domain}}</div>
+               </div>
+            </div>
+         </div>
+      </template>
 
-                            <div class="text-center font-semibold text-white text-lg ">
-                             {{set.project.title}}.{{set.project.environment}}.{{set.project.category}}
-                            </div>
-                        </div>
+      <!-- Intro -->
+      <template #default>
 
-                    <div class="flex flex-1 flex-col justify-between">
-                      <div class="divide-y divide-gray-200 px-4 sm:px-6">
-                        <div class="space-y-6 pb-5 pt-6">
-                          <div>
+         <!-- Project Section -->  
+         <div class="p-2 h-64 " :class="[_base, _main]"> 
+            <div :class="_sectionTitle">Projects</div>
 
-                            <label for="project-name" class="block text-sm/6 font-medium text-gray-900">Project</label>
-                            <div class="m-1">
-                              <button @click="setProjectId(title)" v-for="title in set.project.validTitles" type="button" class="mx-0.5" :class="[_button, _hover, title==set.project.title ? _bgSelected : _bg]">{{title}}</button> 
-                            </div>
-                            
-                            <label for="project-name" class="block text-sm/6 font-medium text-gray-900 mt-4">Environment</label>
-                            <div class="m-1">
-                              <span v-if="set.project.id">
-                                  <button v-for="env in set.project.validEnvironments" class="mx-0.5" @click="set.project.environment=env" type="button" :class="[_button, _hover, env==set.project.environment ? _bgSelected : _bg]">{{env}}</button>
-                              </span>
-                            </div>
+            <!-- Project Input Section -->
+            <div v-if="_set.mode.advanced && !_set.mode.noob">
+               <div class="h-6 grid grid-cols-6">
+                  <div></div>
+                  <div>name</div>
+               </div>
+               <div class="h-8 grid grid-cols-6">
+                  <div></div>
+                  <div class="text-r col-span-2"><input class="w-32" v-model="newProjectName" placeholder="NewProject" :class="_inputProject" /></div>           
+                  <div><button class="" @click="_insertProject" :disabled="!_validInputProject" type="button" :class="_validInputProject ? _button : _buttonDisabled">Create</button></div>
+               </div>
+               <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
+                  <div></div>
+                  <div id="status_project"></div>
+               </div>
+            </div>
 
-                            <label for="project-name" class="block text-sm/6 font-medium text-gray-900 mt-4">Slot</label>
-                            <div class="m-1">
-                               <span v-if="set.project.id">
-                                    <button v-for="(b, idx) in _buttons"  @click="_changeCat(b)" type="button" class="mx-0.5" :class="[_button, _hover, b==set.project.category ? _bgSelected : _bg]">slot{{idx+1}}</button>
-                                </span>
-                            </div>
-
-                          </div>
-
-
-                          <div>
-                            <label for="project-description" class="block text-sm/6 font-medium text-gray-900">Description</label>
-                            <div class="mt-2">
-                              <textarea v-model="_actualProject.description" rows="3" name="project-description" id="project-description" class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
-                            </div>
-                          </div>
-                          <div>
-                            <h3 class="text-sm/6 font-medium text-gray-900">SELF Members</h3>
-                            <div class="mt-2">
-                              <div class="flex space-x-2">
-                                <a v-for="person in team" :key="person.email" :href="person.href" class="relative rounded-full hover:opacity-75">
-                                  <img class="inline-block size-8 rounded-full" :src="person.imageUrl" :alt="person.name" />
-                                </a>
-                                <button type="button" class="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-dashed border-gray-200 bg-white text-gray-400 hover:border-gray-300 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                  <span class="absolute -inset-2" />
-                                  <span class="sr-only">Add team member</span>
-                                  <PlusIcon class="size-5" aria-hidden="true" />
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <fieldset>
-                            <legend class="text-sm/6 font-medium text-gray-900">Privacy</legend>
-                            <div class="mt-2 space-y-4">
-                              <div class="relative flex items-start">
-                                <div class="absolute flex h-6 items-center">
-                                  <input id="privacy-public" name="privacy" value="public" aria-describedby="privacy-public-description" type="radio" checked="" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden" />
-                                </div>
-                                <div class="pl-7 text-sm/6">
-                                  <label for="privacy-public" class="font-medium text-gray-900">Public access</label>
-                                  <p id="privacy-public-description" class="text-gray-500">Everyone with the link will see this project.</p>
-                                </div>
-                              </div>
-                              <div>
-                                <div class="relative flex items-start">
-                                  <div class="absolute flex h-6 items-center">
-                                    <input id="privacy-private-to-project" name="privacy" value="private-to-project" aria-describedby="privacy-private-to-project-description" type="radio" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden" />
-                                  </div>
-                                  <div class="pl-7 text-sm/6">
-                                    <label for="privacy-private-to-project" class="font-medium text-gray-900">Private to SELF members</label>
-                                    <p id="privacy-private-to-project-description" class="text-gray-500">Only selected SELF id's are able to access.</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div>
-                                <div class="relative flex items-start">
-                                  <div class="absolute flex h-6 items-center">
-                                    <input id="privacy-private" name="privacy" value="private" aria-describedby="privacy-private-to-project-description" type="radio" class="relative size-4 appearance-none rounded-full border border-gray-300 before:absolute before:inset-1 before:rounded-full before:bg-white checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden [&:not(:checked)]:before:hidden" />
-                                  </div>
-                                  <div class="pl-7 text-sm/6">
-                                    <label for="privacy-private" class="font-medium text-gray-900">Private to you</label>
-                                    <p id="privacy-private-description" class="text-gray-500">You are the only one able to access this project.</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </fieldset>
-                        </div>
-                        <div class="pb-6 pt-4">
-                          <div class="flex text-sm">
-                            <a href="#" class="group inline-flex items-center font-medium text-indigo-600 hover:text-indigo-900">
-                              <LinkIcon class="size-5 text-indigo-500 group-hover:text-indigo-900" aria-hidden="true" />
-                              <span class="ml-2">Copy link</span>
-                            </a>
-                          </div>
-                          <div class="mt-4 flex text-sm">
-                            <a href="#" class="group inline-flex items-center text-gray-500 hover:text-gray-900">
-                              <QuestionMarkCircleIcon class="size-5 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
-                              <span class="ml-2">Learn more about sharing</span>
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+            <!-- Projects Select Active Project -->
+            <div class=" overflow-y-scroll h-32 mt-2">
+               <div class="ml-2 flex flex-wrap ">
+                  <div v-for="_project in _projects" class="">
+                     <div>
+                        <button type="button"  @click="_actualProject=_project.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset dark:hover:ring-indigo-400 hover:ring-black " :class="_actualProject==_project.name ? _activeLabel : _inActiveLabel">{{_project.name}}</button>
+                     </div>
                   </div>
-                  <div class="flex shrink-0 justify-end px-4 py-4">
-                    <button type="button" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" @click="open = false">Cancel</button>
-                    <button type="submit" class="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
-                  </div>
-                </form>
-              </DialogPanel>
-            </TransitionChild>
-          </div>
-        </div>
+               </div>
+            </div>
+
+         </div>
+
+         <!-- Members Section -->  
+         <div class="p-2 h-80 " :class="[_base, _main]"> 
+            <div :class="_sectionTitle">Members</div>
+
+
       </div>
-    </Dialog>
-  </TransitionRoot>
+
+      </template>
+
+      <template #stats>
+      </template>
+
+      <!-- Footer -->
+      <template #footer>
+
+         <div >
+            <div class="mt-2 ml-2" :class="_sectionTitle">Actions</div>
+
+            <div class="h-10" :class="_base"> 
+               <div class="grid grid-cols-6 gap-2">
+                  <div class="col-span-5"></div>
+                  <button @click="open=false" type="button" :class="_button">Cancel</button>
+               </div>
+            </div>
+
+            <div class="h-10" :class="_base"> 
+               <div v-if="_set.mode.advanced && !_set.mode.noob" class="grid grid-cols-6 gap-2">
+                  <div class="col-span-5"></div>
+                  <div></div>
+               </div>
+
+            </div>
+      
+            <div class="mt-4 ml-2" :class="_sectionTitle">UserModes</div>
+            <user-mode-section :set="_set" />
+
+         </div>
+
+         <div class="mt-8">
+            <div class="mt-4" v-if="_set.mode.full">
+               <dl class="grid grid-cols-1 gap-x-4 sm:grid-cols-2 lg:grid-cols-4 mt-3">
+                  <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 gap-x-4 border-r border-gray-300 dark:border-gray-700">
+                     <dd class="text-base text-center tracking-tight " :class="_value">{{ stat.value }}</dd>
+                     <dt class="text-center" :class="_sectionTitle" >{{ stat.label }}</dt>
+                  </div>
+               </dl>
+            </div>
+         </div>
+
+      </template>
+
+   </RightSectionLayout>
 </template>

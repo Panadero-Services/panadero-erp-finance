@@ -9,11 +9,11 @@ import RightSectionLayout from '@/sections/layouts/RightSectionLayout.vue';
 import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
 import { UsersIcon } from '@heroicons/vue/24/outline'
 
-import UpdateProfileInformationFormAlternative from '@/pages/Profile/Partials/UpdateProfileInformationFormAlternative.vue';
+//import UpdateProfileInformationFormAlternative from '@/pages/Profile/Partials/UpdateProfileInformationFormAlternative.vue';
 
 // subsections
-import UserProfileSection from '@/sections/user-section/UserProfileSection.vue';
-import UserOtherSection from '@/sections/user-section/UserOtherSection.vue';
+//import UserProfileSection from '@/sections/user-section/UserProfileSection.vue';
+//import UserOtherSection from '@/sections/user-section/UserOtherSection.vue';
 import UserModeSection from '@/sections/user-section/UserModeSection.vue';
 
 // stores

@@ -12,7 +12,7 @@ const _shadowColor = ref('indigo');
 const _hoverColor = 'hover:bg-indigo-500';
 
 const _theme = computed(() => {
-  return props.set.dark ? "bg-black" : "bg-slate-100";
+  return props.set.dark ? "bg-slate-950" : "bg-slate-100";
 });
 </script>
 
