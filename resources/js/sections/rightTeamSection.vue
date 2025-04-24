@@ -66,8 +66,8 @@ const _insertTeam = async () => {
 const _insertMember = async () => {
    var _next=1;
    while(_members.value.find(e => e.id==_next)) _next++; 
-
    _members.value.push( {id: _next, text: newMemberName.value, parent:parentSelected.value, unit: unitSelected.value});
+   newMemberName.value = "";
 }
 
 const _shadowColor = ref('indigo');
@@ -190,6 +190,9 @@ const _load = async () => {
   }
 }
 
+const _activeLabel = 'ring-gray-500 text-indigo-700 dark:text-indigo-300';
+const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text-gray-400';
+
 
 </script>
 
@@ -226,14 +229,13 @@ const _load = async () => {
       <template #default>
 
          <!-- Teams Section -->  
-         <div class="p-2 h-80 " :class="[_base, _main]"> 
+         <div class="p-2 h-64 " :class="[_base, _main]"> 
 
             <!-- Teams Input New -->
             <div class="h-24">
-               <div class="h-6">
-                  <div class="mb-0 text-sm">Teams</div>
-               </div>
-               <div class="h-6 grid grid-cols-6 dark:text-gray-600">
+            <div class="h-6 text-sm dark:text-gray-400 text-gray-600 text-base">Teams</div>
+
+               <div class="h-6 grid grid-cols-6 ">
                   <div></div>
                   <div>name</div>
                </div>
@@ -241,7 +243,6 @@ const _load = async () => {
                   <div></div>
                   <div class="text-r col-span-2"><input class="w-32" v-model="newTeamName" placeholder="NewTeam" :class="_inputTeam" /></div>           
                   <div><button class="" @click="_insertTeam" :disabled="!_validInputTeam" type="button" :class="_validInputTeam ? _button : _buttonDisabled">Create</button></div>
-
                </div>
                <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
                   <div></div>
@@ -250,11 +251,11 @@ const _load = async () => {
             </div>
 
             <!-- Teams Select Active Team -->
-            <div class=" overflow-y-scroll h-48 mt-4">
+            <div class=" overflow-y-scroll h-40 mt-2">
                <div class="ml-2 flex flex-wrap ">
                   <div v-for="_team in _teams" class="">
                      <div>
-                        <button type="button"  @click="_actualTeam=_team.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset dark:hover:ring-indigo-400 hover:ring-black " :class="_actualTeam==_team.name ? 'bg-indigo-500/20 ring-indigo-500 text-indigo-700 dark:text-indigo-300' : 'bg-gray-500/20 ring-gray-500/20 text-gray-800 dark:text-gray-400 '">{{_team.name}}</button>
+                        <button type="button"  @click="_actualTeam=_team.name" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium ring-1 ring-inset dark:hover:ring-indigo-400 hover:ring-black " :class="_actualTeam==_team.name ? _activeLabel : _inActiveLabel">{{_team.name}}</button>
                      </div>
                   </div>
                </div>
@@ -262,26 +263,23 @@ const _load = async () => {
 
          </div>
 
-         <!-- Members -->
-
-
- <!-- Teams Section -->  
+         <!-- Members Section -->  
          <div class="p-2 h-80 " :class="[_base, _main]"> 
 
             <!-- Teams Input New -->
             <div class="h-24">
-               <div class="h-6">
-                  <div class="mb-0 text-sm">Members</div>
-               </div>
-               <div class="h-6 grid grid-cols-6 dark:text-gray-600">
-                  <div class="ml-2">units</div>
+
+            <div class="h-6 text-sm dark:text-gray-400 text-gray-600 text-base ">Members</div>
+
+               <div class="h-6 grid grid-cols-6 ">
+                  <div class="ml-3">units</div>
                   <div class="ml-10 col-span-2">name</div>
                   <div class="ml-8 col-span-2">parent</div>
                   <div></div>
                </div>
                <div class="h-8 grid grid-cols-6">
 
-                 <div class="ml-2">
+                 <div class="ml-3">
                      <select class="w-24" v-model="unitSelected" :class="_inputMember">
                        <option>hours/day</option>
                        <option>hours/week</option>
@@ -298,7 +296,7 @@ const _load = async () => {
                      </select>
                   </div>    
 
-                  <div><button class="ml-2" @click="_insertMember" :disabled="!_validInputMember" type="button" :class="_validInputMember ? _button : _buttonDisabled">Create</button></div>
+                  <div><button class="ml-2" @click="_insertMember" :disabled="!_validInputMember" type="button" :class="_validInputMember ? _button : _buttonDisabled">Insert</button></div>
                </div>
 
                <div class="h-4 grid grid-cols-6 dark:text-gray-600 text-center">
@@ -307,10 +305,10 @@ const _load = async () => {
                </div>
             </div>
 
-            <div class=" overflow-y-scroll h-48 mt-4">
-               <div class="mx-2 flex flex-wrap">
+            <div class=" overflow-y-scroll h-48">
+               <div class="ml-2 flex flex-wrap">
                   <div v-for="m in _members">
-                        <button type="button" class="m-1 inline-flex items-center rounded-md bg-slate-400/10 px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20" >{{m.id}} {{m.text}}</button>
+                     <button type="button" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset bg-slate-600/10" :class="m.parent==0 ? _activeLabel : _inActiveLabel" >{{m.id}} {{m.text}}</button>
                   </div>
                </div>
             </div>
@@ -319,22 +317,16 @@ const _load = async () => {
       </template>
 
       <template #stats>
-         <div class="p-2 h-80 items-end mt-4" :class="[_base, _main]"> 
-            <!-- Input New Member -->
-            <div class="ml-2 h-32">
-               <div class="mb-0 text-sm">Activities</div>
-               <div class="justify-end text-right -mt-4 mb-4">
-            </div>
-         </div>
-         </div>
+
       </template>
 
       <!-- Footer -->
       <template #footer>
 
-         <div class="absolute bottom-1 right-0">
+         <div class="mx-3">
+            <div class="h-12 text-sm dark:text-gray-400 text-gray-600 text-base">Actions</div>
 
-            <div class="h-10 mr-4 " :class="_base"> 
+            <div class="h-12 ml-2" :class="_base"> 
                <div class="grid grid-cols-6 gap-2">
                   <button :disabled="_set.project.id<1" @click="_setProject" type="button" title="Assign current Team to active Project!" class="hover:bg-green-800 bg-indigo-800 text-white" :class="_button">Project</button>
                   <div></div>
@@ -345,7 +337,7 @@ const _load = async () => {
                </div>
             </div>
 
-            <div class="h-10 mr-4 " :class="_base"> 
+            <div class="h-8 ml-2" :class="_base"> 
                <div class="grid grid-cols-6 gap-2">
                   <button @click="_set.dark=false" type="button" :class="_button">Light</button>
                   <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
@@ -354,17 +346,20 @@ const _load = async () => {
                </div>
             </div>
 
-            <div class="my-1 ">
-               <dl class="grid grid-cols-1 gap-x-12 sm:grid-cols-2 lg:grid-cols-4 mt-3">
-                  <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 border-r border-white/20">
-                     <dd class="text-lg tracking-tight text-center" :class="_value">{{ stat.value }}</dd>
+            <div class="p-2 h-2 h-8" :class="[_base, _main]"> 
+            </div>
+
+            <user-mode-section :set="_set" />
+            
+            <div class="mt-8">
+               <dl class="grid grid-cols-1 gap-x-4 sm:grid-cols-2 lg:grid-cols-4 mt-3">
+                  <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 gap-x-4 border-r border-gray-300 dark:border-gray-700">
+                     <dd class="text-base text-center tracking-tight " :class="_value">{{ stat.value }}</dd>
                      <dt class="text-base text-center dark:text-gray-300" >{{ stat.label }}</dt>
                   </div>
                </dl>
             </div>
-
          </div>
-
 
       </template>
 
