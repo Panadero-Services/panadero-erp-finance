@@ -13,11 +13,17 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
 <template>
 
 <!-- User Mode Buttons -->
-<div class="pt-4 mb-4 ">Modes
-	<div class="flex gap-x-8  text-xs ml-2 text-center">
+<div class="pt-4 mb-4">
+	<div class="grid grid-cols-6 text-xs ml-2 text-center">
 		
 		<!-- Button Spacer  -->
-		<div></div>
+		<div>
+			<label for="set.mode.first" class="block text-gray-700 mb-2 dark:text-slate-300">DarkMode</label>
+			<Switch v-model="set.dark" :disabled='false' :class="[set.dark ? 'bg-gray-600 dark:bg-gray-800' : 'bg-gray-200 dark:bg-slate-500', 'relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2']">
+				<span class="sr-only">set.dark</span>
+				<span aria-hidden="true"  :class="[set.dark ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white dark:bg-slate-400 shadow ring-0 transition duration-200 ease-in-out']" />
+			</Switch>
+		</div>
 
 		<!-- Button mode.first  -->
 		<div>

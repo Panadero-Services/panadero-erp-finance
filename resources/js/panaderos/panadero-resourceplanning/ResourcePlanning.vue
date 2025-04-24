@@ -6,7 +6,6 @@ import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
 
 import { gantt } from "dhtmlx-gantt";
 
-//import { resourceData, ppl, ppl_vince, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } from  "./constants/rm_planning.js";
 import { getData } from "@/panaderos/panadero-resourceplanning/constants/planning-data.js";
 import "@/panaderos/panadero-resourceplanning/dhtmlxgantt.css";
 
@@ -30,7 +29,7 @@ const props = defineProps({
 // globals
 const _title="ResourcePlanning";
 const _colorCount=ref(0);
-const {resources, resourceData, ppl, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } =getData();
+const {resources, resourceData, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } =getData();
 
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
@@ -283,13 +282,28 @@ const _parseResourcesStore = async () => {
         gantt.updateCollection("people", people);
     });
 
-    if (props.set.project.resources ) {
-        resourcesStore.parse(props.set.project.resources);
-        return;
-    }
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
+    const _team = await props.db.getState("team", _path, props.set.project.id);
 
-    if (props.set.project.title=="vince") resourcesStore.parse(resources);
-    else resourcesStore.parse(ppl);
+    console.log('_team');
+    console.log(_team);
+
+    if (_team==null) resourcesStore.parse(resources);
+    else resourcesStore.parse(JSON.parse(_team));
+
+    console.log(resources);
+    //
+
+    /*
+        if (props.set.project.resources ) {
+            resourcesStore.parse(props.set.project.resources);
+            return;
+        }
+
+        if (props.set.project.title=="vince") resourcesStore.parse(resources);
+        else resourcesStore.parse(resources);
+    */
+
 }
 
 

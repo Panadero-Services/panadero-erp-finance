@@ -96,16 +96,18 @@ function getData() {
      ];
 */
 
-const ppl =[{"id":1,"text":"Planning","parent":0},{"id":2,"text":"Klusploeg","parent":0},{"id":3,"text":"Vince","parent":1,"unit":"hours/day"},{"id":4,"text":"Lieuwe","parent":2,"unit":"hours/day"},{"id":5,"text":"Tessa","parent":2,"unit":"hours/day"},{"id":6,"text":"Mitchel","parent":2,"unit":"hours/day"},{"id":9,"text":"Unassigned","parent":2},{"id":7,"text":"Member","parent":1,"unit":"hours/day"},{"id":8,"text":"Louis","parent":1,"unit":"hours/day"},{"id":10,"text":"Admin","parent":0,"unit":"hours/day"},{"id":11,"text":"Fred","parent":10,"unit":"hours/day"},{"id":12,"text":"FreeWilly","parent":10,"unit":"hours/day"}];
+//const ppl =[{"id":1,"text":"Planning","parent":0},{"id":2,"text":"Klusploeg","parent":0},{"id":3,"text":"Vince","parent":1,"unit":"hours/day"},{"id":4,"text":"Lieuwe","parent":2,"unit":"hours/day"},{"id":5,"text":"Tessa","parent":2,"unit":"hours/day"},{"id":6,"text":"Mitchel","parent":2,"unit":"hours/day"},{"id":9,"text":"Unassigned","parent":2},{"id":7,"text":"Member","parent":1,"unit":"hours/day"},{"id":8,"text":"Louis","parent":1,"unit":"hours/day"},{"id":10,"text":"Admin","parent":0,"unit":"hours/day"},{"id":11,"text":"Fred","parent":10,"unit":"hours/day"},{"id":12,"text":"FreeWilly","parent":10,"unit":"hours/day"}];
 
 
     const resources = [
      {id: 1, text: "Planning", parent:null},
-     {id: 2, text: "Klusploeg", parent:null},
-     {id: 3, text: "Vince", parent:1, unit: "hours/day" },
-     {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
-     {id: 5, text: "Tessa", parent:2, unit: "hours/day" },
-     {id: 6, text: "Mitchel", parent:2, unit: "hours/day" },
+     {id: 2, text: "devOps", parent:null},
+     {id: 3, text: "Boss1", parent:1, unit: "hours/day" },
+     {id: 4, text: "Boss2", parent:1, unit: "hours/day" },
+     {id: 5, text: "Worker1", parent:2, unit: "hours/day" },
+     {id: 6, text: "Worker2", parent:2, unit: "hours/day" },
+     {id: 7, text: "Worker3", parent:2, unit: "hours/day" },
+     {id: 8, text: "Tourist", parent:2, unit: "hours/day" },
      {id: 9, text: "Unassigned", parent:2},
      ];
 
@@ -216,7 +218,6 @@ const ppl =[{"id":1,"text":"Planning","parent":0},{"id":2,"text":"Klusploeg","pa
     return {
         resources, // ppl_vince
         resourceData, 
-        ppl, 
         links, 
         colors, 
         defaultColor, 

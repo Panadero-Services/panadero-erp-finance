@@ -26,8 +26,6 @@ const props = defineProps({
     user: Object
 });
 
-
-
 const _members = ref([
    {id: 1, text: "Planning", parent:0},
    {id: 9, text: "Unassigned", parent:1}
@@ -59,15 +57,14 @@ const _insertTeam = async () => {
                   };
    const _result = await _db.insertTeam(_model, _payload);
    _teams.value = await _db.get('Team');
-
 }
-
 
 const _insertMember = async () => {
    var _next=1;
    while(_members.value.find(e => e.id==_next)) _next++; 
    _members.value.push( {id: _next, text: newMemberName.value, parent:parentSelected.value, unit: unitSelected.value});
    newMemberName.value = "";
+   _members.value.sort((a, b) => a.id - b.id);
 }
 
 const _shadowColor = ref('indigo');
@@ -127,7 +124,7 @@ const _inputTeam = computed(()=>{
 const _validInputMember = computed(()=>{
    if (_members.value.find(e => e.text === newMemberName.value)) return false;
    return newMemberName.value.length>2 && 
-         newMemberName.value.length<12 && 
+         newMemberName.value.length<16 && 
          Boolean(newMemberName.value.match(/^[A-Za-z0-9]*$/)) ;
 });
 
@@ -136,6 +133,12 @@ const _inputMember = computed(()=>{
    _inputCss +=  _validInputMember.value ? 'text-green-600 ' : 'text-red-700 ';
    return _inputCss;
 });
+
+
+const _removeMember = async (_index) => {
+   _members.value.splice(_index,1);
+}
+
 
 
 const _parentOptions = computed(()=>{
@@ -159,6 +162,20 @@ const _setProject = async () => {
       await _db.setState(_payload);
    }
 }
+
+const _shuffle = async () => {
+   var _next=0;
+   // randomize
+   _members.value.sort(function() { return .5 - Math.random(); });
+   // remove old id
+   _members.value.filter(e=>e.parent>0).forEach(f =>f.id=0);
+   // set next id
+   _members.value.filter(e=>e.parent>0).forEach(function(f) {
+      while(_members.value.find(e => e.id==_next)) _next++; 
+      f.id=_next;
+   });
+}
+
 
 const _save = async () => {
   if(3 > 0){
@@ -190,9 +207,15 @@ const _load = async () => {
   }
 }
 
+const _redRing = computed(()=>{
+   let _css= "";
+   if (_set.mode.dev) _css = "hover:ring-slate-600 hover:bg-red-700 hover:text-white";
+   return _css;
+});
+
 const _activeLabel = 'ring-gray-500 text-indigo-700 dark:text-indigo-300';
 const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text-gray-400';
-
+const _sectionTitle = "h-6 text-sm dark:text-gray-400 text-gray-600";
 
 </script>
 
@@ -230,12 +253,11 @@ const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text
 
          <!-- Teams Section -->  
          <div class="p-2 h-64 " :class="[_base, _main]"> 
+            <div :class="_sectionTitle">Teams</div>
 
-            <!-- Teams Input New -->
-            <div class="h-24">
-            <div class="h-6 text-sm dark:text-gray-400 text-gray-600 text-base">Teams</div>
-
-               <div class="h-6 grid grid-cols-6 ">
+            <!-- Teams Input Section -->
+            <div v-if="_set.mode.advanced && !_set.mode.noob">
+               <div class="h-6 grid grid-cols-6">
                   <div></div>
                   <div>name</div>
                </div>
@@ -251,7 +273,7 @@ const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text
             </div>
 
             <!-- Teams Select Active Team -->
-            <div class=" overflow-y-scroll h-40 mt-2">
+            <div class=" overflow-y-scroll h-32 mt-2">
                <div class="ml-2 flex flex-wrap ">
                   <div v-for="_team in _teams" class="">
                      <div>
@@ -265,13 +287,11 @@ const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text
 
          <!-- Members Section -->  
          <div class="p-2 h-80 " :class="[_base, _main]"> 
+            <div :class="_sectionTitle">Members</div>
 
             <!-- Teams Input New -->
-            <div class="h-24">
-
-            <div class="h-6 text-sm dark:text-gray-400 text-gray-600 text-base ">Members</div>
-
-               <div class="h-6 grid grid-cols-6 ">
+            <div v-if="_set.mode.advanced && !_set.mode.noob">
+               <div class="h-6 grid grid-cols-6 mt-2">
                   <div class="ml-3">units</div>
                   <div class="ml-10 col-span-2">name</div>
                   <div class="ml-8 col-span-2">parent</div>
@@ -287,7 +307,7 @@ const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text
                      </select>
                   </div> 
 
-                  <div class="text-r col-span-2 ml-10"><input class="w-32" v-model="newMemberName" placeholder="NewMember" maxlength="12" :class="_inputMember" /></div>       
+                  <div class="text-r col-span-2 ml-10"><input class="w-32" v-model="newMemberName" placeholder="NewMember" maxlength="16" :class="_inputMember" /></div>       
               
                   <div class="ml-8 col-span-2">
                      <select v-model="parentSelected" class="w-28" :class="_inputMember">
@@ -305,10 +325,10 @@ const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text
                </div>
             </div>
 
-            <div class=" overflow-y-scroll h-48">
+            <div class=" overflow-y-scroll h-48 mt-2">
                <div class="ml-2 flex flex-wrap">
-                  <div v-for="m in _members">
-                     <button type="button" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset bg-slate-600/10" :class="m.parent==0 ? _activeLabel : _inActiveLabel" >{{m.id}} {{m.text}}</button>
+                  <div v-for="(m, _index) in _members">
+                     <button @click="_removeMember(_index)" :disabled="!_set.mode.dev" :title="'parent:'+m.parent" type="button" class="m-1 inline-flex items-center rounded-md px-2.5 py-1 text-xxs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset bg-slate-600/10" :class="[m.parent==0 ? _activeLabel : _inActiveLabel, _redRing]" >{{m.id}} {{m.text}}</button>
                   </div>
                </div>
             </div>
@@ -323,39 +343,44 @@ const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text
       <!-- Footer -->
       <template #footer>
 
-         <div class="mx-3">
-            <div class="h-12 text-sm dark:text-gray-400 text-gray-600 text-base">Actions</div>
+         <div >
+            <div class="mt-2 ml-2" :class="_sectionTitle">Actions</div>
 
-            <div class="h-12 ml-2" :class="_base"> 
+            <div class="h-10" :class="_base"> 
                <div class="grid grid-cols-6 gap-2">
-                  <button :disabled="_set.project.id<1" @click="_setProject" type="button" title="Assign current Team to active Project!" class="hover:bg-green-800 bg-indigo-800 text-white" :class="_button">Project</button>
-                  <div></div>
-                  <button @click="_members = _defaultMembers" type="button" :class="_button">Default</button>
-                  <button @click="_members = []" type="button" :class="_button">Clear</button>
-                  <button @click="_save" type="button" :class="_button">Save</button>
+                  <div class="col-span-2"></div>
+                  <div v-if="!_set.mode.full" class="col-span-2"></div>
+                  <button v-if="_set.mode.full" @click="_members=_defaultMembers" type="button" :class="_button">Default</button>
+                  <button v-if="_set.mode.full" @click="_members=[]" type="button" :class="_button">Clear</button>
                   <button @click="_load" type="button" :class="_button">Load</button>
-               </div>
-            </div>
-
-            <div class="h-8 ml-2" :class="_base"> 
-               <div class="grid grid-cols-6 gap-2">
-                  <button @click="_set.dark=false" type="button" :class="_button">Light</button>
-                  <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-                  <div class="col-span-3"></div>
                   <button @click="open=false" type="button" :class="_button">Cancel</button>
                </div>
             </div>
 
-            <div class="p-2 h-2 h-8" :class="[_base, _main]"> 
-            </div>
+            <div class="h-10" :class="_base"> 
+               <div v-if="_set.mode.advanced && !_set.mode.noob" class="grid grid-cols-6 gap-2">
+                  <div></div>
+                  <button v-if="_set.project.id > 0" :disabled="_set.project.id<1" @click="_setProject" type="button" title="Assign current Team to active Project!" class="hover:bg-green-800 bg-indigo-800 text-white" :class="_button">Project</button>
+                  <div v-if="_set.project.id < 1"></div>
+                  <div class="col-span-2"></div>
+                  <button v-if="_set.mode.dev" @click="_shuffle" type="button" :class="_button">Shuffle</button>
+                  <div v-if="!_set.mode.dev"></div>
+                  <button @click="_save" type="button" :class="_button">Save</button>
+               </div>
 
+            </div>
+      
+            <div class="mt-4 ml-2" :class="_sectionTitle">UserModes</div>
             <user-mode-section :set="_set" />
-            
-            <div class="mt-8">
+
+         </div>
+
+         <div class="mt-8">
+            <div class="mt-4" v-if="_set.mode.full">
                <dl class="grid grid-cols-1 gap-x-4 sm:grid-cols-2 lg:grid-cols-4 mt-3">
                   <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 gap-x-4 border-r border-gray-300 dark:border-gray-700">
                      <dd class="text-base text-center tracking-tight " :class="_value">{{ stat.value }}</dd>
-                     <dt class="text-base text-center dark:text-gray-300" >{{ stat.label }}</dt>
+                     <dt class="text-center" :class="_sectionTitle" >{{ stat.label }}</dt>
                   </div>
                </dl>
             </div>
