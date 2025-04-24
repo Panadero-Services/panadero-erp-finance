@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 function getData() {
 	
-    const users = [
-     {id: 1, label: "Planning", parent:null, avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user1.png" },
-     {id: 2, label: "Klusploeg", parent:null, avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user2.jpeg" },
-     {id: 3, label: "Vince", parent:1, unit: "hours/day" },
-     {id: 4, label: "Lieuwe", parent:2, unit: "hours/day" },
-     {id: 5, label: "Tessa", parent:2, unit: "hours/day" },
-     {id: 6, label: "Mitchel", parent:2, unit: "hours/day" },
-     {id: 9, label: "Unassigned", parent:2},
-     ];
+   const users = [
+		{id: 1, label: "Planning", parent:null},
+		{id: 2, label: "devOps", parent:null},
+		{id: 3, label: "Boss1", parent:1, unit: "hours/day", avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user1.png" },
+		{id: 4, label: "Boss2", parent:1, unit: "hours/day", avatar: "https://snippet.dhtmlx.com/codebase/data/kanban/03/user2.jpeg" },
+		{id: 5, label: "Worker1", parent:2, unit: "hours/day" },
+		{id: 6, label: "Worker2", parent:2, unit: "hours/day" },
+		{id: 7, label: "Worker3", parent:2, unit: "hours/day" },
+		{id: 8, label: "Tourist2", parent:2, unit: "hours/day" },
+		{id: 9, label: "Unassigned", parent:2},
+    ];
 
 	const cardShape = {
 		label: true,
