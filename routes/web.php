@@ -243,6 +243,7 @@ Route::resource('sections',SectionController::class);
 
 // team
 Route::post('/insertTeam',[Web3RecordController::class, 'insertTeam'])->name('insertTeam');
+Route::post('/insertProject',[Web3RecordController::class, 'insertProject'])->name('insertProject');
 
 
 

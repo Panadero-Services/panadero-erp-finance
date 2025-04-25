@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Team;
+use App\Models\Project;
 
 use App\Models\Web3Record;
 use App\Models\Web3Type;
@@ -68,6 +69,7 @@ class Web3RecordController extends Controller
         // check Valid Provider (model) calls
         $model = 'App\Models\\'.$provider;
         if ($provider == 'Team') $r = $model::select(['id', 'name', 'user_id'])->orderBy("id", "desc")->where('id','>' ,0)->get();
+        if ($provider == 'Project') $r = $model::select(['id', 'title', 'user_id'])->orderBy("id", "desc")->where('id','>' ,0)->get();
     
         return response()->json($r);
     }
@@ -343,7 +345,27 @@ class Web3RecordController extends Controller
             'personal_team' => $request->personal_team
         ]);
         return $request;
-
     }
 
+/**
+     * Create a new project.
+     * manually created for 
+     *
+     */
+    public function insertProject(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|min:6',
+            'title' => 'required|string|max:18'
+        ]);
+        $create = Project::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'json' => $request->json,
+            'user_id' => $request->user_id,
+            'is_active' => $request->is_active
+        ]);
+        return $request;
+
+    }
 }

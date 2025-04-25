@@ -15,6 +15,7 @@ import DeveloperSection from "@/sections/DeveloperSection.vue"
 
 // slideRightSections
 import SideRightSection from "@/sections/SideRightSection.vue"
+import RightProjectSection from "@/sections/RightProjectSection.vue"
 import RightTeamSection from "@/sections/RightTeamSection.vue"
 import RightUserSection from "@/sections/RightUserSection.vue"
 
@@ -27,13 +28,13 @@ const props = defineProps({
 });
 
 const _extended=ref(true);
-const mySideRight = ref(null);
+const myProjectRight = ref(null);
 const myTeamRight = ref(null);
 const myUserRight = ref(null);
 const myFooterSlide = ref(null);
 
 const _toggleFooter = async () => { myFooterSlide.value.open = !myFooterSlide.value.open; }
-const _toggleProject = async () => { mySideRight.value.open = !mySideRight.value.open; }
+const _toggleProject = async () => { myProjectRight.value.open = !myProjectRight.value.open; }
 const _toggleTeam = async () => { myTeamRight.value.open = !myTeamRight.value.open; }
 const _toggleExtended = async () => { _extended.value = !_extended.value; }
 const _toggleUser = async () => { myUserRight.value.open = !myUserRight.value.open; }
@@ -81,7 +82,7 @@ const _sideSpacing = "mx-3";
                     <HeaderSection v-if="section.file =='HeaderSection' && set.layout.header" :page="page" :set="set" :contract="contract" :section="section"/>
                     <SubHeaderSection v-if="section.file =='SubHeaderSection' && set.layout.subHeader" :page="page" :set="set" :contract="contract" :section="section"/>
                  </div>
-                 <SideRightSection ref="mySideRight" :set="set"/>
+                 <RightProjectSection ref="myProjectRight" :set="set"/>
                  <RightTeamSection ref="myTeamRight" :set="set"/>
                  <RightUserSection ref="myUserRight" :user="$page.props.auth.user"/>
                  <FooterSlideSection ref="myFooterSlide" :set="set"/>

@@ -214,7 +214,7 @@ const _redRing = computed(()=>{
 });
 
 const _activeLabel = 'ring-gray-500 text-indigo-700 dark:text-indigo-300';
-const _inActiveLabel = 'bg-slate-600/10 ring-gray-500/20 text-gray-800 dark:text-gray-400';
+const _inActiveLabel = 'bg-blue-600/10 ring-gray-500/20 text-gray-800 dark:text-gray-400';
 const _sectionTitle = "h-6 text-sm dark:text-gray-400 text-gray-600";
 
 </script>
@@ -343,9 +343,8 @@ const _sectionTitle = "h-6 text-sm dark:text-gray-400 text-gray-600";
       <!-- Footer -->
       <template #footer>
 
-         <div >
-            <div class="mt-2 ml-2" :class="_sectionTitle">Actions</div>
-
+         <div class="p-2 h-64 " :class="[_base, _main]"> 
+            <div :class="_sectionTitle">Actions</div>
             <div class="h-10" :class="_base"> 
                <div class="grid grid-cols-6 gap-2">
                   <div class="col-span-2"></div>
@@ -370,7 +369,7 @@ const _sectionTitle = "h-6 text-sm dark:text-gray-400 text-gray-600";
 
             </div>
       
-            <div class="mt-4 ml-2" :class="_sectionTitle">UserModes</div>
+            <div class="mt-4" :class="_sectionTitle">UserModes</div>
             <user-mode-section :set="_set" />
 
          </div>
