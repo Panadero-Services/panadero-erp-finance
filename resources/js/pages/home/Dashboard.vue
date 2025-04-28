@@ -199,9 +199,9 @@ const _functions = [
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
             ,"status":"scheduled"
      },
-    {"item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "options" : 
+    { "item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "options" : 
             [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Dashboard', url: route('erp/dashboard'),    route: 'home/dashboard' },
                 { name: 'Web3',    url: route('web3'),    route: 'web3' } ]
             ,"status":"upgrading"
      },

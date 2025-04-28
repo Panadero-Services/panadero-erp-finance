@@ -26,9 +26,6 @@ defineProps({
                     </div>
                     <div class="mt-4">
                         <div>
-                            <h2 class="mt-4 text-black dark:text-white text-xs">{{set.settings}}<span class="text-blue-700">Select your Project here!</span> </h2>
-                            <h2 class="mt-0 text-black dark:text-white text-xs">{{set.settings}}<span class="text-blue-700">Select your Project here!</span> </h2>
-                            <h2 class="mt-0 text-black dark:text-white text-xs">{{set.settings}}<span class="text-blue-700">Select your Project here!</span> </h2>
                             <h2 class="mt-0 text-black dark:text-white text-xs">{{set.settings}}<span class="text-blue-700">Select your Project here!</span> </h2>
                             <h2 class="mt-0 text-black dark:text-white text-xs">{{set.settings}}<span class="text-blue-700">Select your Project here!</span> </h2>
                         </div>
