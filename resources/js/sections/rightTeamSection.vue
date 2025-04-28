@@ -154,7 +154,7 @@ const _button = { active: "rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
                   inactive: "rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800" 
                };
 
-const _font = { title:"text-3xl", 
+const _font = { title:"text-2xl", 
                 subtitle:"text-sm", 
                 base:"text-xs" 
                };

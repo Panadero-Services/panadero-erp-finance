@@ -123,15 +123,37 @@ const _inputProject = computed(()=>{
    return _inputCss;
 });
 
-const callback = async (_parameter) => {
-   console.log('callback', _parameter);
-   open.value=false;
+
+
+// Call the function (note `.value` is needed)
+/*
+const callback = async (_fname, _arguments="") => {
+   console.log('callback', _fname);
+   function Default() {
+     console.log('Hello from Defaultgreet!');
+   }
+   function Cancel() {
+     console.log('Hello from Cancelgreet!');
+   }
+   function cancel() {
+     console.log('Hello from cancelgreet!');
+   }
+   const functionMap = {
+     cancel, Cancel, Default
+   };
+   const funcName =  _fname;
+   // Call the function using its name string
+   functionMap[funcName](); // Output: Hello from greet!
 }
+*/
+
+
+
 
 </script>
 
 <template>
-   <RightSectionLayout :set="_set" :open="open" @some-event="callback">
+   <RightSectionLayout :set="_set" :open="open">
 
       <!-- Header -->
       <template #header>

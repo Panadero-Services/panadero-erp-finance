@@ -18,12 +18,6 @@ const _theme = computed(() => {
   return props.set.dark ? "bg-slate-950" : "bg-slate-100";
 });
 
-
-
-
-
-
-
 const stats = computed(() => {
 return [
   { label: 'Founded', value: '2025' },
@@ -80,6 +74,7 @@ const _inValidRing = 'text-red-700';
                               <slot name="header"/>
                               <slot name="default"/>
                               <slot name="stats"/>
+
                               <slot name="footer">
 
                               <!-- Actions Section -->  
