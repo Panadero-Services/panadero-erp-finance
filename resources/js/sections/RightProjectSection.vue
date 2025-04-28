@@ -96,10 +96,6 @@ const _activeLabel = 'ring-gray-500 text-indigo-700 dark:text-indigo-300 bg-indi
 const _inActiveLabel = 'bg-blue-600/10 ring-gray-500/20 text-gray-800 dark:text-gray-400';
 const _icon = " w-4 h-4 mr-2 ";
 
-const _validRing = 'text-green-600';
-const _inValidRing = 'text-red-700';
-
-
 const _theme = computed(() => {
   return _set.dark ? "bg-indigo-950" : "bg-slate-100";
 });
@@ -115,40 +111,14 @@ const _validInputProject = computed(()=>{
          Boolean(newProjectName.value.match(/^[A-Za-z0-9]*$/)) ;
 });
 
-
+const _validRing = 'text-green-600';
+const _inValidRing = 'text-red-700';
 
 const _inputProject = computed(()=>{
    let _inputCss = "p-1 bg-slate-50 dark:bg-gray-900 border-0 ring-0 ";
    _inputCss +=  _validInputProject.value ?  _validRing : _inValidRing;
    return _inputCss;
 });
-
-
-
-// Call the function (note `.value` is needed)
-/*
-const callback = async (_fname, _arguments="") => {
-   console.log('callback', _fname);
-   function Default() {
-     console.log('Hello from Defaultgreet!');
-   }
-   function Cancel() {
-     console.log('Hello from Cancelgreet!');
-   }
-   function cancel() {
-     console.log('Hello from cancelgreet!');
-   }
-   const functionMap = {
-     cancel, Cancel, Default
-   };
-   const funcName =  _fname;
-   // Call the function using its name string
-   functionMap[funcName](); // Output: Hello from greet!
-}
-*/
-
-
-
 
 </script>
 
@@ -221,7 +191,7 @@ const callback = async (_fname, _arguments="") => {
          </div>
 
          <!-- Members Section -->  
-         <div class="p-2 h-8" :class="[_font.base, _color.active]"> 
+         <div class="p-2 h-80" :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Members</div>
       </div>
 
@@ -233,7 +203,39 @@ const callback = async (_fname, _arguments="") => {
       <!-- Footer -->
         <template #footer>
 
+         <!-- Actions Section -->  
+         <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
+            <div :class="[_font.subtitle, _color.inactive]">Actions</div>
 
+            <div class="h-10" :class="_font.sub"> 
+               <div class="grid grid-cols-6 gap-2">
+                  <div class="col-span-5"></div>
+                  <button @click="open=false" type="button" :class="_button.active">Cancel</button>
+               </div>
+            </div>
+
+            <div class="h-10" :class="_font.sub"> 
+               <div v-if="_set.mode.advanced && !_set.mode.noob" class="grid grid-cols-6 gap-2">
+                   <div class="col-span-6"></div>
+               </div>
+
+            </div>
+         <!-- UserModes -->  
+            <div class="mt-8" :class="[_font.subtitle, _color.inactive]">UserModes</div>
+            <user-mode-section :set="_set" />
+
+         </div>
+
+         <div class="mt-4">
+            <div class="mt-4" v-if="_set.mode.full">
+               <dl class="grid grid-cols-1 gap-x-4 sm:grid-cols-2 lg:grid-cols-4 mt-3">
+                  <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 gap-x-4 border-r border-gray-300 dark:border-gray-700">
+                     <dd class="text-center tracking-tight " :class="[_font.subtitle, _color.stats]">{{ stat.value }}</dd>
+                     <dt class="text-center" :class="_font.base, _color.active" >{{ stat.label }}</dt>
+                  </div>
+               </dl>
+            </div>
+         </div>
 
       </template>
 
