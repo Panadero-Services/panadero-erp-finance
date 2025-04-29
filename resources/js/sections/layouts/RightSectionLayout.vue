@@ -7,7 +7,8 @@ import UserModeSection from '@/sections/user-section/UserModeSection.vue';
 
 const props = defineProps({
     set: Object,
-    open: Boolean
+    open: Boolean,
+    buttons: Object
 });
 
 // css 
@@ -27,17 +28,14 @@ return [
 ]
 });
 
-
-
-
 // css
-const _button = { active: "rounded px-2 py-1 text-sm ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400", 
-                  inactive: "rounded px-2 py-1 text-sm ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800" 
+const _button = { active: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400", 
+                  inactive: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800" 
                };
 
-const _font = { title:"text-3xl", 
-                subtitle:"text-lg", 
-                base:"text-sm" 
+const _font = { title:"text-2xl", 
+                subtitle:"text-sm", 
+                base:"text-xs" 
                };
 
 const _color = { accent: "text-indigo-600 dark:text-indigo-300", 
@@ -79,16 +77,18 @@ const _inValidRing = 'text-red-700';
 
                               <!-- Actions Section -->  
                               <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
-                                 <div :class="[_font.subtitle, _color.inactive]">Actionsss</div>
+                                 <div :class="[_font.subtitle, _color.inactive]">Actions Footer</div>
 
-                                 <div class="h-10" :class="_font.sub"> 
+                                 <div class="h-10" :class="_font.subtitle"> 
                                     <div class="grid grid-cols-6 gap-2">
                                        <div class="col-span-5"></div>
-                                       <button @click="$emit('someEvent','cancel')" type="button" :class="_button.active">Cancel</button>
+                                          <div v-for="but in buttons" >
+                                             <button v-if="but.active" @click="$emit('pushButton',but.name)" type="button" :class="_button.active">{{but.name}}</button>
+                                          </div>
                                     </div>
                                  </div>
 
-                                 <div class="h-10" :class="_font.sub"> 
+                                 <div class="h-10" :class="_font.subtitle"> 
                                     <div v-if="set.mode.advanced && !set.mode.noob" class="grid grid-cols-6 gap-2">
                                         <div class="col-span-6"></div>
                                     </div>
@@ -103,7 +103,7 @@ const _inValidRing = 'text-red-700';
                                     <div class="mt-4" v-if="set.mode.full">
                                        <dl class="grid grid-cols-1 gap-x-4 sm:grid-cols-2 lg:grid-cols-4 mt-3">
                                           <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 gap-x-4 border-r border-gray-300 dark:border-gray-700">
-                                             <dd class="text-center tracking-tight " :class="[_font.subtitle, _color.stats]">{{ stat.value }}</dd>
+                                             <dd class="text-center tracking-tight" :class="[_font.subtitle, _color.stats]">{{ stat.value }}</dd>
                                              <dt class="text-center" :class="_font.base, _color.active" >{{ stat.label }}</dt>
                                           </div>
                                        </dl>
@@ -111,8 +111,6 @@ const _inValidRing = 'text-red-700';
                                  </div>
 
                               </slot>
-
-
 
                            </div>
                         </div>

@@ -210,10 +210,50 @@ const _inputMember = computed(()=>{
    return _inputCss;
 });
 
+
+
+
+// Call the function (note `.value` is needed)
+/*
+*/
+const _clear = () => {
+   _members.value=[];
+}
+const _default = () => {
+   _members.value=_defaultMembers;
+}
+
+const _pushButton = async (_fname, _arguments="") => {
+   console.log('_pushButton', _fname);
+
+   function Clear() { _clear(); }
+   function Default() { _default(); }
+   function Cancel() { _cancel(); }
+   function Shuffle() { _shuffle(); }
+   function Load() { _load(); }
+   function Save() { _save(); }
+   const functionMap = {
+     Cancel, Default, Clear, Shuffle, Load, Save
+   };
+   const funcName =  _fname;
+   // Call the function using its name string
+   functionMap[funcName](); // Output: Hello from greet!
+}
+
+const _buttons = computed( () => { return [
+   { active:_set.mode.dev, name:"Default", position:3 },
+   { active:1, name:"Clear", position:4 },
+   { active:_set.mode.dev, name:"Load", position:5 },
+   { active:1, name:"Cancel", position:6 },
+   { active:_set.mode.dev, name:"Shuffle", position:11 },
+   { active:_set.mode.dev, name:"Save", position:12 }
+]});
+
+
 </script>
 
 <template>
-   <RightSectionLayout :set="_set" :open="open">
+   <RightSectionLayout :set="_set" @pushButton="_pushButton" :open="open" :buttons="_buttons">
 
       <!-- Header -->
       <template #header>
@@ -244,8 +284,8 @@ const _inputMember = computed(()=>{
       <!-- Intro -->
       <template #default>
 
-         <!-- Teams Section -->  
-         <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
+         <!-- Teams Section h-64 -->  
+         <div class="p-2 h-40 " :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Teams</div>
 
             <!-- Teams Input Section -->
@@ -278,8 +318,8 @@ const _inputMember = computed(()=>{
 
          </div>
 
-         <!-- Members Section -->  
-         <div class="p-2 h-80" :class="[_font.base, _color.active]"> 
+         <!-- Members Section h-80-->  
+         <div class="p-2 h-40" :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Members</div>
 
 
@@ -335,16 +375,11 @@ const _inputMember = computed(()=>{
 
       <template #stats>
 
-      </template>
-
-      <!-- Footer -->
-      <template #footer>
-
          <!-- Actions Section -->  
          <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
-            <div :class="[_font.subtitle, _color.inactive]">Actions</div>
+            <div :class="[_font.subtitle, _color.inactive]">ActionsStats</div>
 
-            <div class="h-10" :class="_font.sub"> 
+            <div class="h-10" :class="_font.subtitle"> 
                <div class="grid grid-cols-6 gap-2">
                   <div class="col-span-2"></div>
                   <div v-if="!_set.mode.full" class="col-span-2"></div>
@@ -355,7 +390,7 @@ const _inputMember = computed(()=>{
                </div>
             </div>
 
-            <div class="h-10" :class="_font.sub"> 
+            <div class="h-10" :class="_font.subtitle"> 
                <div v-if="_set.mode.advanced && !_set.mode.noob" class="grid grid-cols-6 gap-2">
                   <div></div>
                   <button v-if="_set.project.id > 0" :disabled="_set.project.id<1" @click="_setProject" type="button" title="Assign current Team to active Project!" class="hover:bg-green-800 bg-indigo-800 text-white" :class="_button.active">Project</button>
@@ -383,6 +418,12 @@ const _inputMember = computed(()=>{
                </dl>
             </div>
          </div>
+
+      </template>
+
+      <!-- Footer -->
+      <template #footer>
+
 
       </template>
 
