@@ -17,6 +17,7 @@ import DeveloperSection from "@/sections/DeveloperSection.vue"
 import SideRightSection from "@/sections/SideRightSection.vue"
 import RightProjectSection from "@/sections/RightProjectSection.vue"
 import RightTeamSection from "@/sections/RightTeamSection.vue"
+import RightTeamzSection from "@/sections/RightTeamSection.vue"
 import RightUserSection from "@/sections/RightUserSection.vue"
 
 const props = defineProps({
@@ -30,12 +31,14 @@ const props = defineProps({
 const _extended=ref(true);
 const myProjectRight = ref(null);
 const myTeamRight = ref(null);
+const myTeamzRight = ref(null);
 const myUserRight = ref(null);
 const myFooterSlide = ref(null);
 
 const _toggleFooter = async () => { myFooterSlide.value.open = !myFooterSlide.value.open; }
 const _toggleProject = async () => { myProjectRight.value.open = !myProjectRight.value.open; }
 const _toggleTeam = async () => { myTeamRight.value.open = !myTeamRight.value.open; }
+const _toggleTeamz = async () => { myTeamzRight.value.open = !myTeamzRight.value.open; }
 const _toggleExtended = async () => { _extended.value = !_extended.value; }
 const _toggleUser = async () => { myUserRight.value.open = !myUserRight.value.open; }
 const whatever = async () => { console.log('whatever')}
@@ -56,6 +59,7 @@ const _toolbarItems = [
   { name: 'Manuals', icon: QuestionMarkCircleIcon, href: _toggleTeam, current: false },
   { name: 'Wrench', icon: WrenchIcon, href: _toggleTeam, current: false },
   { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false },
+  { name: 'Teamz', icon: UsersIcon, href: _toggleTeamz, current: false },
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
   { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false },
   { name: 'Developer', icon: WrenchIcon, href: _toggleFooter, current: false },
@@ -83,7 +87,8 @@ const _sideSpacing = "mx-3";
                     <SubHeaderSection v-if="section.file =='SubHeaderSection' && set.layout.subHeader" :page="page" :set="set" :contract="contract" :section="section"/>
                  </div>
                  <RightProjectSection ref="myProjectRight" :set="set"/>
-                 <RightTeamSection ref="myTeamRight" :set="set"/>
+                 <rightTeamSection ref="myTeamRight" :set="set"/>
+                 <rightTeamzSection ref="myTeamzRight" :set="set"/>
                  <RightUserSection ref="myUserRight" :user="$page.props.auth.user"/>
                  <FooterSlideSection ref="myFooterSlide" :set="set"/>
             </div>
