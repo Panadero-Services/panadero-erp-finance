@@ -30,7 +30,7 @@ const props = defineProps({
 });
 
 // globals
-const _title="Moodz";
+const _title="Mood";
 
 let board, bar;
 
