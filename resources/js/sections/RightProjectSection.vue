@@ -161,8 +161,12 @@ const _pushButton = async (_fname, _arguments="") => {
 }
 
 const _buttons = computed( () => { return [
-   { active:1, name:"Clear", position:4 },
-   { active:1, name:"Cancel", position:6 }
+   { active:0, name:""},   //1
+   { active:0, name:""},   //2
+   { active:0, name:""}, //3
+   { active:0, name:""}, //4
+   { active:0, name:""},  //5
+   { active:1, name:"Cancel", css:""},  //6
 ]});
 
 
@@ -170,7 +174,7 @@ const _buttons = computed( () => { return [
 </script>
 
 <template>
-   <RightSectionLayout :set="_set" @pushButton="_pushButton" :open="open" :buttons="_buttons">
+   <RightSectionLayout :set="_set" @pushButton="_pushButton" :open="open" :buttons="_buttons" :stats="stats">
 
       <!-- Header -->
       <template #header>
@@ -238,7 +242,7 @@ const _buttons = computed( () => { return [
          </div>
 
          <!-- Members Section -->  
-         <div class="p-2 h-8" :class="[_font.base, _color.active]"> 
+         <div class="p-2 h-80" :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Members</div>
       </div>
 

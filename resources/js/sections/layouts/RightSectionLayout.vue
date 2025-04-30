@@ -8,7 +8,8 @@ import UserModeSection from '@/sections/user-section/UserModeSection.vue';
 const props = defineProps({
     set: Object,
     open: Boolean,
-    buttons: Object
+    buttons: Object, 
+    stats: Object
 });
 
 // css 
@@ -17,15 +18,6 @@ const _hoverColor = 'hover:bg-indigo-500';
 
 const _theme = computed(() => {
   return props.set.dark ? "bg-slate-950" : "bg-slate-100";
-});
-
-const stats = computed(() => {
-return [
-  { label: 'Founded', value: '2025' },
-  { label: 'Members', value: 3133 },
-  { label: 'Projects', value: '12' },
-  { label: 'Teams', value: 9383}
-]
 });
 
 // css
@@ -81,9 +73,8 @@ const _inValidRing = 'text-red-700';
 
                                  <div class="h-10" :class="_font.subtitle"> 
                                     <div class="grid grid-cols-6 gap-2">
-                                       <div class="col-span-5"></div>
-                                          <div v-for="but in buttons" >
-                                             <button v-if="but.active" @click="$emit('pushButton',but.name)" type="button" :class="_button.active">{{but.name}}</button>
+                                          <div v-for="but in buttons">
+                                             <button v-if="but.active" @click="$emit('pushButton',but.name)" type="button" :class="[_button.active, but.css]">{{but.name}}</button>
                                           </div>
                                     </div>
                                  </div>

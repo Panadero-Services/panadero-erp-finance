@@ -210,9 +210,6 @@ const _inputMember = computed(()=>{
    return _inputCss;
 });
 
-
-
-
 // Call the function (note `.value` is needed)
 /*
 */
@@ -226,6 +223,7 @@ const _default = () => {
 const _pushButton = async (_fname, _arguments="") => {
    console.log('_pushButton', _fname);
 
+   function Project() { _setProject(); }
    function Clear() { _clear(); }
    function Default() { _default(); }
    function Cancel() { _cancel(); }
@@ -233,7 +231,7 @@ const _pushButton = async (_fname, _arguments="") => {
    function Load() { _load(); }
    function Save() { _save(); }
    const functionMap = {
-     Cancel, Default, Clear, Shuffle, Load, Save
+     Cancel, Default, Clear, Shuffle, Load, Save, Project
    };
    const funcName =  _fname;
    // Call the function using its name string
@@ -241,19 +239,24 @@ const _pushButton = async (_fname, _arguments="") => {
 }
 
 const _buttons = computed( () => { return [
-   { active:_set.mode.dev, name:"Default", position:3 },
-   { active:1, name:"Clear", position:4 },
-   { active:_set.mode.dev, name:"Load", position:5 },
-   { active:1, name:"Cancel", position:6 },
-   { active:_set.mode.dev, name:"Shuffle", position:11 },
-   { active:_set.mode.dev, name:"Save", position:12 }
+   { active:0, name:""},   //1
+   { active:0, name:""},   //2
+   { active:_set.mode.full, name:"Default", css:""}, //3
+   { active:_set.mode.full, name:"Clear", css:""}, //4
+   { active:1, name:"Load", css:""},  //5
+   { active:1, name:"Cancel", css:""},  //6
+   { active:0, name:""},   //7
+   { active:_set.project.id > 0, name:"Project", css:"bg-slate-200 dark:bg-slate-800"},   //8
+   { active:0, name:""},   //9
+   { active:0, name:""},   //10
+   { active:_set.mode.dev, name:"Shuffle", css:""},  //11
+   { active:_set.mode.advanced, name:"Save", css:"bg-slate-200 dark:bg-slate-800"}   //12
 ]});
-
 
 </script>
 
 <template>
-   <RightSectionLayout :set="_set" @pushButton="_pushButton" :open="open" :buttons="_buttons">
+   <RightSectionLayout :set="_set" @pushButton="_pushButton" :open="open" :buttons="_buttons" :stats="stats">
 
       <!-- Header -->
       <template #header>
@@ -285,7 +288,7 @@ const _buttons = computed( () => { return [
       <template #default>
 
          <!-- Teams Section h-64 -->  
-         <div class="p-2 h-40 " :class="[_font.base, _color.active]"> 
+         <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Teams</div>
 
             <!-- Teams Input Section -->
@@ -319,7 +322,7 @@ const _buttons = computed( () => { return [
          </div>
 
          <!-- Members Section h-80-->  
-         <div class="p-2 h-40" :class="[_font.base, _color.active]"> 
+         <div class="p-2 h-80" :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Members</div>
 
 
@@ -374,57 +377,10 @@ const _buttons = computed( () => { return [
       </template>
 
       <template #stats>
-
-         <!-- Actions Section -->  
-         <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
-            <div :class="[_font.subtitle, _color.inactive]">ActionsStats</div>
-
-            <div class="h-10" :class="_font.subtitle"> 
-               <div class="grid grid-cols-6 gap-2">
-                  <div class="col-span-2"></div>
-                  <div v-if="!_set.mode.full" class="col-span-2"></div>
-                  <button v-if="_set.mode.full" @click="_members=_defaultMembers" type="button" :class="_button.active">Default</button>
-                  <button v-if="_set.mode.full" @click="_members=[]" type="button" :class="_button.active">Clear</button>
-                  <button @click="_load" type="button" :class="_button.active">Load</button>
-                  <button @click="open=false" type="button" :class="_button.active">Cancel</button>
-               </div>
-            </div>
-
-            <div class="h-10" :class="_font.subtitle"> 
-               <div v-if="_set.mode.advanced && !_set.mode.noob" class="grid grid-cols-6 gap-2">
-                  <div></div>
-                  <button v-if="_set.project.id > 0" :disabled="_set.project.id<1" @click="_setProject" type="button" title="Assign current Team to active Project!" class="hover:bg-green-800 bg-indigo-800 text-white" :class="_button.active">Project</button>
-                  <div v-if="_set.project.id < 1"></div>
-                  <div class="col-span-2"></div>
-                  <button v-if="_set.mode.dev" @click="_shuffle" type="button" :class="_button.active">Shuffle</button>
-                  <div v-if="!_set.mode.dev"></div>
-                  <button @click="_save" type="button" :class="_button.active">Save</button>
-               </div>
-
-            </div>
-         <!-- UserModes -->  
-            <div class="mt-8" :class="[_font.subtitle, _color.inactive]">UserModes</div>
-            <user-mode-section :set="_set" />
-
-         </div>
-
-         <div class="mt-4">
-            <div class="mt-4" v-if="_set.mode.full">
-               <dl class="grid grid-cols-1 gap-x-4 sm:grid-cols-2 lg:grid-cols-4 mt-3">
-                  <div v-for="(stat, statIdx) in stats" :key="statIdx" class="flex flex-col-reverse gap-y-3 gap-x-4 border-r border-gray-300 dark:border-gray-700">
-                     <dd class="text-center tracking-tight " :class="[_font.subtitle, _color.stats]">{{ stat.value }}</dd>
-                     <dt class="text-center" :class="_font.base, _color.active" >{{ stat.label }}</dt>
-                  </div>
-               </dl>
-            </div>
-         </div>
-
       </template>
 
       <!-- Footer -->
       <template #footer>
-
-
       </template>
 
    </RightSectionLayout>
