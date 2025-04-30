@@ -152,9 +152,6 @@ const _modules = [
     }
 ];
 
-
-
-
 const _functions = [
     { "item":"Home", "title":"Home Page", "description": "This function is all about articles/ posts and other content", "options" : 
             [   
