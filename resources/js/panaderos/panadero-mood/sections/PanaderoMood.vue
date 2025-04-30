@@ -32,6 +32,7 @@ const props = defineProps({
 // globals
 const _title="Moodz";
 
+let board, bar;
 
 
 const _add = () => {}
@@ -185,7 +186,6 @@ const _loadGantt = async () => {
     ];
 
 
-let board, bar;
 
 // webhooks
 onMounted(async ()=> {
