@@ -43,7 +43,7 @@ provide(/* key */ 'pulse', /* value */ _pulse);
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="w-screen">
+         <div id="whatever" class="w-screen ">
             <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" :pulse="_pulse" />
          </div>
       </template>

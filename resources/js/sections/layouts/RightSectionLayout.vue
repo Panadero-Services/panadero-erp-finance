@@ -51,7 +51,7 @@ const _inValidRing = 'text-red-700';
 
 <template>
    <TransitionRoot as="template" :show="open">
-      <Dialog class="relative z-10" @close="open=false">
+      <Dialog class="relative z-50" @close="open=false">
          <div class="fixed inset-0 overflow-hidden ">
             <div class="absolute inset-0 overflow-hidden ">
                <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 sm:pl-16 ">

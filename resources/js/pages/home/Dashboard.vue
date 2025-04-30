@@ -111,7 +111,8 @@ const keyUpResolve = async (_selfResolve) => {
 const _modules = [
     { "item":"Grid", "title":"Grid feature", "description": "This module is all about relative content browsing", "options" : 
             [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
+                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Grid sample', url: route('grid'),    route: 'grid' }
             ]
             , "status":"featured"
     }, 

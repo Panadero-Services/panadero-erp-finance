@@ -155,7 +155,7 @@ defineExpose({
 <template>
   <div class="mr-16">   
       <div class="grid grid-cols-2 mt-4">     
-        <div class="bg-gray-100" id="toolbar">
+        <div class="bg-gray-100 " id="toolbar">
         </div>
       </div class="-pl-4">
     <div id="grid" class="" ></div>
