@@ -194,15 +194,15 @@ onMounted(async ()=> {
   await props.set.initialize();
   await props.set.setProjectType('mood');
 
-  const { columns, cards, cardShape } = getData();   
+  const { columns, cards, cardShape, users } = getData();   
 
 
     // override users from team settings
     const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
+    console.log(_teamPath);
     const _team = await props.db.getState("team", _teamPath, props.set.project.id);
-    const _oTeam = JSON.parse(_team.replaceAll("text","label"));
-    console.log(_oTeam);
-    cardShape.users.values = _oTeam;
+    if(!_team===undefined) users = JSON.parse(_team.replaceAll("text","label"));
+    cardShape.users.values = users;
 
   board = new Kanban("#root", 
     { columns, cards, cardShape, 
