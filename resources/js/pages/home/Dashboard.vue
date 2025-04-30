@@ -29,9 +29,7 @@ import UserCard from "@/layouts/cards/UserCard.vue";
 import BusinessFunctionCard from "@/pages/home/BusinessFunctionCard.vue";
 import ModuleCard from "@/pages/home/ModuleCard.vue";
 
-
 import ApplicationLogo from '@/components/logoSelf.vue';
-
 
 const selfVersion ="0.2.1";
 
@@ -179,7 +177,8 @@ const _functions = [
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'resoures' },
-                { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user }]
+                { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user },
+                { name: 'Sandbox',    url: route('erp/sandbox'),    route: 'erp/resoures' } ]
                 ,"status":"featured"
      },
     { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "options" : 

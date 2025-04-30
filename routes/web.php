@@ -94,6 +94,15 @@ Route::middleware([
         ]);
     })->name('erp/resources');
 
+    Route::get('erp/sandbox', function () {
+        return Inertia::render('Sandbox', [
+            'page'=> Page::with('sections')->where('title','Resources')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('erp/sandbox');
+
+
+
 });
 
     Route::get('home/tiers', function () {

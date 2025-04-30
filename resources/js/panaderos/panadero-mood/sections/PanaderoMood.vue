@@ -54,7 +54,6 @@ const _save = async () => {
   }
 }
 
-
 /// move this section also to store!!!
 const _load = async () => {
   if(props.set.project.id > 0){
