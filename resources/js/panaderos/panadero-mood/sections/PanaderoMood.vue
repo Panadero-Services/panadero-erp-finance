@@ -196,7 +196,6 @@ onMounted(async ()=> {
 
   const { columns, cards, cardShape, users } = getData();   
 
-
     // override users from team settings
     const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
     console.log(_teamPath);

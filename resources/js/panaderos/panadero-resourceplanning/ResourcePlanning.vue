@@ -34,6 +34,68 @@ const _mainCard = " relative flex items-center space-x-3 rounded-md border borde
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
 //let planning = new panaderoResourcePlanning("resource_id");
 
+
+
+var zoomConfig = {
+        levels: [
+            {
+                name:"day",
+                scale_height: 27,
+                min_column_width:80,
+                scales:[
+                    {unit: "day", step: 1, format: "%d %M"}
+                ]
+            },
+            {
+                name:"week",
+                scale_height: 50,
+                min_column_width:50,
+                scales:[
+                    {unit: "week", step: 1, format: function (date) {
+                        var dateToStr = gantt.date.date_to_str("%d %M");
+                        var endDate = gantt.date.add(date, 7 - date.getDay(), "day");
+                        var weekNum = gantt.date.date_to_str("%W")(date);
+                        return "#" + weekNum + ", " + dateToStr(date) + " - " + dateToStr(endDate);
+                    }},
+                    {unit: "day", step: 1, format: "%j %D"}
+                ]
+            },
+            {
+                name:"month",
+                scale_height: 50,
+                min_column_width:120,
+                scales:[
+                    {unit: "month", format: "%F, %Y"},
+                    {unit: "week", format: "Week #%W"}
+                ]
+            },
+            {
+                name:"quarter",
+                height: 50,
+                min_column_width:90,
+                scales:[
+                    {unit: "month", step: 1, format: "%M"},
+                    {
+                        unit: "quarter", step: 1, format: function (date) {
+                            var dateToStr = gantt.date.date_to_str("%M");
+                            var endDate = gantt.date.add(date, 2 - date.getMonth() % 3, "month");
+                            return dateToStr(date) + " - " + dateToStr(endDate);
+                        }
+                    }
+                ]
+            },
+            {
+                name:"year",
+                scale_height: 50,
+                min_column_width: 30,
+                scales:[
+                    {unit: "year", step: 1, format: "%Y"}
+                ]
+            }
+        ]
+    };
+
+
 const _init = async () => {
     gantt.init("resource_id");
     gantt.setSkin(props.set.dark ? "dark" : 'meadow');
@@ -339,8 +401,36 @@ const _load = async () => {
     await _parseResourcesStore();
     await _parse(_resPlan.data, _resPlan.links);
 //    await _parse(resourceData, links);
+
   }
 }
+
+const _year = async () => {
+    gantt.ext.zoom.init(zoomConfig);
+    gantt.ext.zoom.setLevel("year");
+}
+
+const _quarter = async () => {
+    gantt.ext.zoom.init(zoomConfig);
+    gantt.ext.zoom.setLevel("quarter");
+}
+
+const _month = async () => {
+    gantt.ext.zoom.init(zoomConfig);
+    gantt.ext.zoom.setLevel("month");
+}
+
+const _week = async () => {
+    gantt.ext.zoom.init(zoomConfig);
+    gantt.ext.zoom.setLevel("week");
+}
+
+const _day = async () => {
+    gantt.ext.zoom.init(zoomConfig);
+    gantt.ext.zoom.setLevel("day");
+}
+
+
 
 // button Save
 /// move this section to store!!!
@@ -477,6 +567,11 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
             <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
+            <button @click="_year" type="button" :class="_button">Year</button>
+            <button @click="_quarter" type="button" :class="_button">quarter</button>
+            <button @click="_month" type="button" :class="_button">Month</button>
+            <button @click="_week" type="button" :class="_button">Week</button>
+            <button @click="_day" type="button" :class="_button">Day</button>
         </div>    
         <div class="items-end text-right mr-6" id="toolbar">
             <div  class="col-span-1 text-xs mt-4 ">
