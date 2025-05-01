@@ -96,7 +96,7 @@ Route::middleware([
 
     Route::get('erp/sandbox', function () {
         return Inertia::render('Sandbox', [
-            'page'=> Page::with('sections')->where('title','Resources')->first(),
+            'page'=> Page::with('sections')->where('title','Sandbox')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('erp/sandbox');

@@ -10,7 +10,6 @@ const {resources, resourceData, links, colors, defaultColor, taskScaleColor, wee
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
 
-
 // Globals
 //const APP_NAME = process.env.APP_NAME;
 //console.log(`moduleName: ${moduleName}`);
@@ -31,25 +30,66 @@ const _counter=ref(0);
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
 
-let planning = new panaderoResourcePlanning("whateverz");
-
+let planning = new panaderoResourcePlanning("resource_id");
 
 onMounted(async ()=> {
-    await planning.init();
-    await planning.load(_resourceData, _ppl, _links);
+    await planning.config();
+    await planning.configColumns();
+    var _resource_columns = await planning.configResourceColumns();
+    await planning.cssMarker();
+    await planning.drawHourCircles();
+    await planning.lightBox();
+    await planning.configLayout(_resource_columns);
+
+    await props.set.setProjectType('resourcePlanning');
+
+    await planning.fullScreenPlugin();
+    await planning.init(props.set.dark);
+
+    //await planning.load(_resourceData, _ppl, _links);
 })
 
-const _init = async () => {
-   await planning.init();
+
+const _load = async () => {
+  if(props.set.project.id > 0) {
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+    const _type = props.set.projectType;
+    const _projectId = props.set.project.id;
+    //console.log(_path);
+    let _resourcePlanning = await props.db.getState(_type, _path, _projectId);
+    let _resPlan = await JSON.parse(_resourcePlanning);
+    //console.log(_resPlan.data, _resPlan.links);
+
+
+    const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
+    const _team = await props.db.getState("team", _teamPath, props.set.project.id);
+    console.log('_team');
+    console.log(_team);
+
+    const _resources = _team==null ? resources : JSON.parse(_team);
+
+    await planning.parseResourcesStore(_resources);
+    await planning.parse(_resPlan.data, _resPlan.links);
+    }
+}
+
+const _save = async () => {
 }
 
 
+// button Reset
+const _reset = async () => {
+    await planning.reset(props.set.dark);
 
+}
 
-
-
-
-
+// button Shuffle
+const _shuffle = async () => {
+    //shuffleArray(resourceData);
+    await planning.config();
+    await planning.configColumns();
+    await planning.init(props.set.dark);
+}
 
 const shuffleArray = async (array) => {
     for (let i = array.length - 1; i >= 0; i--) {
@@ -59,11 +99,17 @@ const shuffleArray = async (array) => {
 }
 
 
-const _load = async () => {
+// button FullScreen
+const _fullScreen = async () => {
+    await planning.fullscreen();
 }
 
-const _save = async () => {
-}
+
+
+
+
+
+
 
 
 // button Color
@@ -74,49 +120,20 @@ const _changeColor = async () => {
     color.value = colors[_colorCount.value];
 }
 
-const updateInfo = async () => {
-    var state = gantt.getState();
-    var tasks = gantt.getTaskByTime(state.min_date, state.max_date);
-    var types = gantt.config.types;
-    var result = {};
-    var html = "";
-    var active = false;
 
-    // get available types
-    result[types.task] = 0;
-    result[types.project] = 0;
-    result[types.milestone] = 0;
 
-    // sort tasks by type
-    for (var i = 0, l = tasks.length; i < l; i++) {
-        if (tasks[i].type && result[tasks[i].type] != "undefined")
-            result[tasks[i].type] += 1;
-        else
-            result[types.task] += 1;
-    }
-    // render list items for each type
-    for (var j in result) {
- 
-        // active = j == types.task ;
-        if (j == types.task)
-            active = true;
-        else
-            active = false;
-       
-        html += getListItemHTML(j, result[j], active);
-    }
 
-    document.getElementById("gantt_info").innerHTML = html;
-};
 
-defineExpose({
-  _load, _save
-});
+
+
 
 
 
 
 
+defineExpose({
+  _load, _save
+});
 
 const show = async () => {
     console.log('show');
@@ -138,21 +155,13 @@ watch(_pulse, (_new, _old) => {
         _doRefresh();
     };
 });
+
 const _doRefresh = async () => {
     _pulseCount.value=0;
     console.log("_doRefresh");
     //await _reset();
     await _load();
 }
-
-
-
-
-
-
-
-
-
 
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
@@ -165,7 +174,6 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_reset" type="button" :class="_button">Reset</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
-            <button @click="_parse" type="button" :class="_button">Parse</button>
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
             <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
