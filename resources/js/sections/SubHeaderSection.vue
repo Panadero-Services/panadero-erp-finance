@@ -231,7 +231,6 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
 
-                                                    <div >{{ team.name }}</div>
                                                 </div>
                                             </DropdownLink>
                                         </form>
@@ -256,7 +255,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                         <template #trigger>
 
                             <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border border-transparent rounded-md focus:outline-none border-indigo-100 focus:border-indigo-300 transition">
-                                <img class="h-7 w-5 rounded-md object-cover" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name">
+                                <img class="h-7 w-5 rounded-md object-cover text-xs mt-0.5" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name.substring(0, 8)">
                             </button>
 
                             <span v-else class="inline-flex rounded-md">

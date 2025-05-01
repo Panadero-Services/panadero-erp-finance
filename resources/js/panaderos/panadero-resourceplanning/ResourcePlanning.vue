@@ -177,8 +177,7 @@ const _getAssignments = (resourceId) => {
 
 const _configResourceColumns = async () => {
     var _resource_columns = {
-        columns: [
-            {
+        columns: [{
                 name: "name", label: "Name", tree:true, template: function (resource) {
                     return resource.text;
                 }
@@ -192,9 +191,9 @@ const _configResourceColumns = async () => {
                     } else {
                         var assignments = _getAssignments(resource.id);
                         assignments.forEach(function (assignment) {
-                        var task = gantt.getTask(assignment.task_id);
-                        totalDuration += Number(assignment.value) * task.duration;
-                    });
+                            var task = gantt.getTask(assignment.task_id);
+                            totalDuration += Number(assignment.value) * task.duration;
+                        });
                     }
                     return (totalDuration || 0) + "h";
                 }
@@ -313,9 +312,7 @@ onMounted(async ()=> {
 
     await _init();
 
-
     console.log(moduleName, moduleVersion);
-
 })
 
 const _parseResourcesStore = async () => {
@@ -366,9 +363,6 @@ const _parseResourcesStore = async () => {
     */
 
 }
-
-
-
 const _parse = async (_data, _links) => {
     gantt.parse({ data: _data, links: _links });
 }
@@ -429,7 +423,6 @@ const _day = async () => {
     gantt.ext.zoom.init(zoomConfig);
     gantt.ext.zoom.setLevel("day");
 }
-
 
 
 // button Save
@@ -508,10 +501,13 @@ const updateInfo = async () => {
     }
     // render list items for each type
     for (var j in result) {
+ 
+        // active = j == types.task ;
         if (j == types.task)
             active = true;
         else
             active = false;
+       
         html += getListItemHTML(j, result[j], active);
     }
 
