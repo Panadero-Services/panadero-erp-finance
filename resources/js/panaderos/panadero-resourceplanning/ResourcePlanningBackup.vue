@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
-import { moduleName, moduleVersion, panaderoResourcePlanning } from "panadero-resourceplanning";
+import { moduleName, moduleVersion, panaderoResourcePlanning, _resourceData, _ppl, _links } from "panadero-resourceplanning";
 
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 
@@ -26,81 +26,6 @@ const props = defineProps({
 const _title="ResourcePlanning";
 
 const _counter=ref(0);
-
-var _resourceData = [
-      {id: 1, text: "Infodatek Introductie2", type: "project", progress: 0.2, open: true, start_date: "30-10-2024 00:00", duration: 16, end_date: "10-11-2024 00:00", parent: 0},
-      {id: 2, text: "Presentatie", type: "project", progress: 0.2, open: true, start_date: "30-10-2024 00:00", duration: 3, end_date: "03-11-2024 00:00", parent: 1},
-      {id: 3, text: "IntroA", start_date: "30-10-2024 00:00", duration: 2, parent: 2, progress: 0.2, open: true, end_date: "31-10-2024 00:00", "owner": [{ "resource_id": "5", "value": 2 }] },
-      {id: 4, text: "Decide ", start_date: "31-10-2024 00:00", type: "milestone", parent: 2, progress: 0, open: true, end_date: "31-10-2024 00:00", duration: 2},
-      {id: 5, text: "IntroB", start_date: "01-11-2024 00:00", duration: 1, parent: 2, progress: 0, open: true, end_date: "02-11-2024 00:00"},
-      {id: 6, text: "CodeBase Study", type: "project", start_date: "08-11-2024 00:00", duration: 8, parent: 1, progress: 0, open: true, end_date: "19-11-2024 00:00"},
-      {id: 7, text: "DB Scheme", start_date: "04-11-2024 00:00", duration: 2, progress: 0, parent: 6, open: true, end_date: "06-11-2024 00:00"},
-      {id: 8, text: "Models", start_date: "07-11-2024 00:00", duration: 2, parent: 6, progress: 0, open: true, end_date: "09-11-2024 00:00", "owner": [{ "resource_id": "5", "value": 2 }]},
-      {id: 9, text: "App lLayout", start_date: "11-11-2024 00:00", duration: 2, parent: 6, progress: 0.1, open: true, end_date: "13-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 10, text: "App Logic", start_date: "14-11-2024 00:00", duration: 2, parent: 6, progress: 0, open: true, end_date: "16-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 11, text: "Frontend", start_date: "18-11-2024 00:00", duration: 2, parent: 6, progress: 0.1, open: true, end_date: "20-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 12, text: "Backend", start_date: "21-11-2024 00:00", duration: 2, parent: 6, progress: 0, open: true, end_date: "23-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 4 }]},
-      {id: 13, text: "Correctie Programn", type: "project", start_date: "01-11-2024 00:00", duration: 30, parent: 0, progress: 0.1, open: false, end_date: "30-11-2024 00:00"},
-      {id: 14, text: "Item #6 Beta Release",  start_date: "28-10-2024 00:00", duration: 5, parent: 13, progress: 0.5, open: true, end_date: "02-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 15, text: "Item #7 Integrate System",  start_date: "04-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "09-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 16, text: "Item #8 Interface setup",  start_date: "11-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "16-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 17, text: "Item #9 Structure redesign",  start_date: "18-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "23-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 18, text: "Item #10 Structure Modules",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 19, text: "Item #11 Structure Components",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 1, "value": 8 }]},
-      {id: 20, text: "Deployment 1.5", start_date: "27-11-2024 00:00", type: "milestone", parent: 13, progress: 0, open: true, end_date: "27-11-2024 00:00", duration: 1},
-      {id: 21, text: "Item #12 Deployments",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 2, "value": 8 }]},
-      {id: 22, text: "Item #13 Rebalance datasources",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 3, "value": 8 }]},
-      {id: 23, text: "Item #14 Training",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 4, "value": 8 }]},
-      {id: 24, text: "Item #15 Documentation",  start_date: "25-11-2024 00:00", duration: 5, parent: 13, progress: 0, open: true, end_date: "30-11-2024 00:00", "owner": [{ "resource_id": 5, "value": 8 }]},
-      {id: 25, text: "Final Deployment 2.0", start_date: "27-11-2024 00:00", type: "milestone", parent: 13, progress: 0, open: true, end_date: "27-11-2024 00:00", duration: 1},
-      {id: 31, text: "Custom Features", type: "project", start_date: "03-11-2024 00:00", duration: 5, parent: 0, progress: 0.2, open: false, end_date: "08-11-2024 00:00"},
-      {id: 32, text: "KlantA database", start_date: "01-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "08-11-2024 00:00"},
-      {id: 33, text: "KlantB Userbase", start_date: "04-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "11-11-2024 00:00"},
-      {id: 34, text: "Interface setup", start_date: "08-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "15-11-2024 00:00"},
-      {id: 35, text: "Documentation creation", start_date: "10-11-2024 00:00", duration: 7, parent: 31, progress: 0, open: true, end_date: "17-11-2024 00:00"},
-      {id: 36, text: "Release v1.0", start_date: "19-11-2024 00:00", type: "milestone", parent: 35, progress: 0, open: true, end_date: "19-11-2024 00:00", duration: 1}
-    ];
-
-var _ppl = [
- {id: 1, text: "R&D", parent:null},
- {id: 2, text: "Development", parent:null},
- {id: 3, text: "Mike", parent:1, unit: "hours/day" },
- {id: 4, text: "Lieuwe", parent:2, unit: "hours/day" },
- {id: 5, text: "Anna", parent:2, unit: "hours/day" },
- {id: 6, text: "Floe", parent:2, unit: "hours/day" },
- {id: 6, text: "Stuart", parent:2, unit: "hours/day" },
- {id: 6, text: "Phill", parent:2, unit: "hours/day" },
- {id: 7, text: "Unassigned", parent:2},
- ];
-
-var _links = [
-   {id: "1", source: "1", target: "2", type: "1"},
-   {id: "2", source: "2", target: "3", type: "0"},
-   {id: "3", source: "3", target: "4", type: "0"},
-   {id: "4", source: "4", target: "5", type: "0"},
-   {id: "5", source: "2", target: "6", type: "0"},
-   {id: "6", source: "5", target: "7", type: "0"},
-   {id: "7", source: "7", target: "8", type: "0"},
-   {id: "8", source: "8", target: "9", type: "0"},
-   {id: "9", source: "9", target: "10", type: "0"},
-   {id: "10", source: "10", target: "11", type: "0"},
-   {id: "11", source: "11", target: "12", type: "0"},
-   {id: "12", source: "14", target: "15", type: "0"},
-   {id: "13", source: "15", target: "16", type: "0"},
-   {id: "14", source: "16", target: "17", type: "0"},
-   {id: "15", source: "17", target: "18", type: "0"},
-   {id: "16", source: "18", target: "19", type: "0"},
-   {id: "17", source: "19", target: "20", type: "0"},
-   {id: "18", source: "20", target: "21", type: "0"},
-   {id: "19", source: "21", target: "22", type: "0"},
-   {id: "20", source: "22", target: "23", type: "0"},
-   {id: "20", source: "23", target: "24", type: "0"},
-   {id: "20", source: "24", target: "25", type: "0"},
-   {id: "21", source: "32", target: "33", type: "0"},
-   {id: "22", source: "33", target: "34", type: "0"},
-   {id: "23", source: "34", target: "35", type: "0"},
-   {id: "24", source: "35", target: "36", type: "0"},
-   ];
 
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";

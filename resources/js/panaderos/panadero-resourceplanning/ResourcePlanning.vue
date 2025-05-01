@@ -104,7 +104,7 @@ const _init = async () => {
 }
 
 const _config = async () => {
-    gantt.config.scale_height = 80;
+    gantt.config.scale_height = 120;
     //gantt.i18n.setLocale("nl");
     gantt.config.date_format = "%d-%m-%Y %H:%i";
    // gantt.config.date_format = "%Y-%m-%d %H:%i";

@@ -90,24 +90,16 @@ watch(pulse, async (_bool) => {
   }
 })
 
-
 const _categories = ['primera','segundo','tercera'];
 
 const switchCat = async (_a) => {
     props.set.project.category = _categories[_a];
 }
 
-
-
-
-
 const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
 
 const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300";
 const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:text-gray-500 dark:hover:ring-indigo-400 hover:ring-indigo-300 hover:text-gray-400";
-
-
-
 
 </script>
 
@@ -255,7 +247,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                         <template #trigger>
 
                             <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border border-transparent rounded-md focus:outline-none border-indigo-100 focus:border-indigo-300 transition">
-                                <img class="h-7 w-5 rounded-md object-cover text-xs mt-0.5" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name.substring(0, 12)">
+                                <img class="h-7 w-5 rounded-md object-cover text-xs mt-0.5" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name.substring(0, 14)">
                             </button>
 
                             <span v-else class="inline-flex rounded-md">

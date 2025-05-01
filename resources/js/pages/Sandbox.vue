@@ -45,7 +45,7 @@ _set.layout.footer=false;
       <template #intro />
 
       <template #default>
-         <div id="whateverz" class="w-screen">
+         <div id="whateverz" class="w-screen h-screen">
             <div class="">
                <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" />
             </div>
