@@ -60,7 +60,6 @@ const _load = async () => {
     let _resPlan = await JSON.parse(_resourcePlanning);
     //console.log(_resPlan.data, _resPlan.links);
 
-
     const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
     const _team = await props.db.getState("team", _teamPath, props.set.project.id);
     console.log('_team');
@@ -98,19 +97,10 @@ const shuffleArray = async (array) => {
     }
 }
 
-
 // button FullScreen
 const _fullScreen = async () => {
     await planning.fullscreen();
 }
-
-
-
-
-
-
-
-
 
 // button Color
 const color = ref(defaultColor);
@@ -119,16 +109,6 @@ const _changeColor = async () => {
     if (_colorCount.value >= colors.length) _colorCount.value=0;
     color.value = colors[_colorCount.value];
 }
-
-
-
-
-
-
-
-
-
-
 
 
 defineExpose({
