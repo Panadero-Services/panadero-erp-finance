@@ -44,6 +44,7 @@ onMounted(async ()=> {
     await props.set.setProjectType('resourcePlanning');
 
     await planning.fullScreenPlugin();
+    await planning.markerPlugin();
     await planning.init(props.set.dark);
 
     //await planning.load(_resourceData, _ppl, _links);
@@ -69,17 +70,20 @@ const _load = async () => {
 
     await planning.parseResourcesStore(_resources);
     await planning.parse(_resPlan.data, _resPlan.links);
+
+    await planning.today();
+
+
+
     }
 }
 
 const _save = async () => {
 }
 
-
 // button Reset
 const _reset = async () => {
     await planning.reset(props.set.dark);
-
 }
 
 // button Shuffle
@@ -109,7 +113,6 @@ const _changeColor = async () => {
     if (_colorCount.value >= colors.length) _colorCount.value=0;
     color.value = colors[_colorCount.value];
 }
-
 
 defineExpose({
   _load, _save
@@ -307,6 +310,10 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
       color: #6f6f6f;
       margin: 0 3px;
       font-weight: bold;
+    }
+
+    .gantt_marker.today{
+        background: #ffb121;
     }
 
 </style>
