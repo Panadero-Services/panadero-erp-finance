@@ -50,7 +50,6 @@ onMounted(async ()=> {
     //await planning.load(_resourceData, _ppl, _links);
 })
 
-
 const _load = async () => {
   if(props.set.project.id > 0) {
     const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
@@ -70,11 +69,7 @@ const _load = async () => {
 
     await planning.parseResourcesStore(_resources);
     await planning.parse(_resPlan.data, _resPlan.links);
-
     await planning.today();
-
-
-
     }
 }
 

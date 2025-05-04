@@ -162,6 +162,10 @@ const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font
                </div>
             </div>
 
+<div class="text-xxs">
+{{$page.props.auth.user.profile_photo_path}}
+
+</div>
 
    <user-profile-section  v-if="_set.mode.full && !_set.mode.noob" :db="_db" :set="_set" :user="user" />
    <user-other-section v-if="_set.mode.advanced && !_set.mode.noob" :form="form" />

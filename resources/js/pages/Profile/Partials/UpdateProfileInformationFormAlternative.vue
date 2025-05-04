@@ -97,6 +97,8 @@ const clearPhotoFileInput = () => {
                     />
                 </div>
                 <div class="flex -mt-1">
+
+
                 <SecondaryButton class="mt-8 me-1 w-24" type="button" @click.prevent="selectNewPhoto">
                     Select A New Photo
                 </SecondaryButton>
@@ -105,6 +107,7 @@ const clearPhotoFileInput = () => {
                     Remove Photo
                 </SecondaryButton>
                 </div>
+
 
                 <InputError :message="form.errors.photo" class="mt-2" />
             </div>

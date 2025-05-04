@@ -104,6 +104,23 @@ export const useDbStore = defineStore('db', () => {
         }
     }
 
+    async function setUser(_model, _payload) {
+        try {
+            const response = await axios.post('/updateuserprofile', _payload, {
+                headers: {
+                    'withCredentials': true,
+                    'content-type': 'application/json',
+                    'caller': 'useDbStore',
+                    'model': _model,
+                    'Sign': 'postSignature'
+                }
+            });
+            return response.data;
+        } catch (err) {
+            throw new Error(`store/db.js: set error: ${err}`);
+        }
+    }
+
     async function get(_model) {
         try {
             const response = await axios.get('/getrecords', {
@@ -141,6 +158,6 @@ export const useDbStore = defineStore('db', () => {
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 
-        insertTeam, insertProject
+        insertTeam, insertProject, setUser
     };
 });

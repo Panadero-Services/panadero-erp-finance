@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, inject } from 'vue'
+import { ref, onMounted,  watch, inject } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 import Dropdown from '@/components/Dropdown.vue';
@@ -8,6 +8,12 @@ import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
 
 import { HomeIcon, Bars3Icon, EllipsisVerticalIcon, WrenchIcon, H1Icon, H2Icon, BarsArrowDownIcon } from '@heroicons/vue/24/outline'
+
+import { useDbStore } from '@/stores/db';
+//import { useSettingsStore } from '@/stores/settings';
+
+const _db = useDbStore();
+//const _set = useSettingsStore();
 
 const props = defineProps({
     set: Object
@@ -28,13 +34,31 @@ const logout = () => {
     router.post(route('logout'));
 };
 
+onMounted(async ()=> {
+     if(props.set.project.title =='none') loadDefaultProject();
+});
+
+const loadDefaultProject = async () => {
+    const _type = "defaultProject";
+    const _path = props.set.domain+".userId."+usePage().props.auth.user.id;
+    const _projectId = 0;
+    let _projectPath = await _db.getState(_type, _path, _projectId);
+    if (_projectPath===undefined) return;
+    let _proj = await JSON.parse(_projectPath);
+    props.set.project.id = 1;
+    props.set.project.path = _projectPath;
+    props.set.project.title = _proj.project;
+    props.set.project.environment = _proj.environment;
+    props.set.project.category =  _proj.category;
+}
+
 // buttons ?
 const menu = [];
 
 let _animation= ref(true);
 
 //const _pulse = ref(false);
-const setProjectId = (_title) => {
+/*const setProjectId = (_title) => {
     if(!( usePage().props.auth.user == null)) {
         // toDo !! retrieve from db
         props.set.project.id = _title=='none' ? 0 : 1;
@@ -44,13 +68,13 @@ const setProjectId = (_title) => {
         props.set.project.category = "primera";
     }
 }
-
+*/
 const _subHeader=ref(true);
 
 // buttons
 const _buttons = ['primera', 'segundo', 'tercera'];
 const _changeCat = async (_cat) => { props.set.project.category = _cat; }
-
+const switchCat = async (_a) => { props.set.project.category = _categories[_a];}
 // css
 const _button ="rounded px-2 py-1 text-xs font-semibold text-gray-900 dark:text-gray-300 shadow-sm ring-1 ring-inset ring-indigo-300 dark:ring-gray-600 ";
 const _hover = "hover:bg-indigo-400 dark:hover:bg-indigo-600";
@@ -67,7 +91,6 @@ const _rnd1 = ref(Math.floor(Math.random() * 500));
 const _rnd2 = ref(Math.floor(Math.random() * 500));
 const _col1 = ref("bg-blue-500");
 const _col2 = ref("bg-blue-500");
-
 
 const _rnd =  (_mx=800) => {return Math.floor(Math.random() * _mx);};
 
@@ -91,13 +114,7 @@ watch(pulse, async (_bool) => {
 })
 
 const _categories = ['primera','segundo','tercera'];
-
-const switchCat = async (_a) => {
-    props.set.project.category = _categories[_a];
-}
-
 const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
-
 const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300";
 const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:text-gray-500 dark:hover:ring-indigo-400 hover:ring-indigo-300 hover:text-gray-400";
 
@@ -162,7 +179,6 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
             </div>
 
             <div class="">
-
             </div>
 
             <!-- Responsive Navigation Menu optional ... needs work-->
