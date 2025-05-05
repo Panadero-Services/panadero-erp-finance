@@ -33,7 +33,7 @@ let planning = new panaderoResourcePlanning("resource_id");
 
 onMounted(async ()=> {
     await planning.config();
-    await planning.configColumns();
+    //await planning.configColumns();
     var _resource_columns = await planning.configResourceColumns();
     await planning.cssMarker();
     await planning.drawHourCircles();
@@ -76,6 +76,10 @@ const _save = async () => {
 }
 
 // button Reset
+const _refresh = async () => {
+    await planning.refresh();
+}
+
 const _reset = async () => {
     await planning.reset(props.set.dark);
 }
@@ -149,6 +153,7 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
     <div class="grid grid-cols-4">     
         <div class="flex pl-2 col-span-3 mb-1 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
             <button @click="_reset" type="button" :class="_button">Reset</button>
+            <button @click="_refresh" type="button" :class="_button">Refresh</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
