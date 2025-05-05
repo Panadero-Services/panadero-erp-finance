@@ -34,8 +34,6 @@ const _mainCard = " relative flex items-center space-x-3 rounded-md border borde
 //const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
 //let planning = new panaderoResourcePlanning("resource_id");
 
-
-
 var zoomConfig = {
         levels: [
             {
@@ -94,7 +92,6 @@ var zoomConfig = {
             }
         ]
     };
-
 
 const _init = async () => {
     gantt.init("resource_id");
@@ -309,9 +306,7 @@ onMounted(async ()=> {
     await props.set.setProjectType('resourcePlanning');
 
     gantt.plugins({ fullscreen: true });
-
     await _init();
-
     console.log(moduleName, moduleVersion);
 })
 
@@ -328,6 +323,7 @@ const _parseResourcesStore = async () => {
     });
 
     resourcesStore.attachEvent("onParse", function() {
+        console.log("parse");
         var people = [];
         resourcesStore.eachItem(function(res) {
             if(!resourcesStore.hasChild(res.id)) {
