@@ -159,11 +159,14 @@ defineExpose({
 });
 
 
+const _themes = ['meadow', 'dark', 'skyblue', 'broadway', 'material', 'contrast-white', 'contrast-black'];
+const _theme = ref('meadow');
+
+
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 
-const _theme = ref('meadow');
 
 
 </script>
@@ -187,13 +190,7 @@ const _theme = ref('meadow');
          
             <select v-model="_theme" @change="_changeTheme"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
               <option disabled value="">select theme</option>
-              <option>meadow</option>
-              <option>dark</option>
-              <option>skyblue</option>
-              <option>broadway</option>
-              <option>material</option>
-              <option>contrast-white</option>
-              <option>contrast-dark</option>
+              <option v-for="_t in _themes">{{_t}}</option>
             </select>
 
 
