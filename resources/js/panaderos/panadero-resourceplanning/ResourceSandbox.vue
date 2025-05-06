@@ -42,8 +42,11 @@ onMounted(async ()=> {
 
     await props.set.setProjectType('resourcePlanning');
 
+    // plugins
     await planning.fullScreenPlugin();
     await planning.markerPlugin();
+    await planning.groupingTasksPlugin();
+    
     await planning.init(props.set.dark);
 
     //await planning.load(_resourceData, _ppl, _links);
