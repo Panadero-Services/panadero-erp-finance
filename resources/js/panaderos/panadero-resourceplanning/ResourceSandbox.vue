@@ -149,6 +149,10 @@ const _ChangeTimeFrame = async () => {
     planning.setLevel(_timeFrame.value);
 }
 
+const _ChangeTheme = async () =>{
+    planning.setSkin(_theme.value); 
+    props.set.dark = _darkThemes.includes(_theme.value);
+}
 
 // actions
 const _reset = async () => { await planning.reset(props.set.dark); }
@@ -157,24 +161,19 @@ const _load = async () => { await _Load() }
 const _save = async () => { await _Save() }
 const _shuffle = async () => { await _Shuffle() }
 const _changeColor = async () => { await _ChangeColor() }
-const _changeTheme = async () => { planning.setSkin(_theme.value); }
-
+const _changeTheme = async () => { await _ChangeTheme() }
 const _changeTimeFrame = async () => { _ChangeTimeFrame(); }
-
-
 
 defineExpose({
   _load, _save
 });
 
-
 const _themes = ['meadow', 'dark', 'skyblue', 'broadway', 'material', 'contrast-white', 'contrast-black', 'contrast-rm'];
+const _darkThemes = ['dark','contrast-black', 'contrast-rm'];
 const _theme = ref('meadow');
 
 const _timeFrame = ref('week');
 const _timeFrames = ['day', 'week', 'month', 'quarter', 'year'];
-
-
 
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
