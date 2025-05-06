@@ -159,6 +159,7 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_refresh" type="button" :class="_button">Refresh</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
+            <button @click="planning.setSkin('dark')" type="button" :class="_button">Dark</button>
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
             <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
@@ -182,140 +183,6 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
 </template>
 <style>
 
-:root {
-    --background-color: #ffffff;
-    --text-color: #000000;
-    --primary-color: #d2e8de;
-}
-[data-theme="dark"] {
-    --background-color: #090808;
-    --text-color: #efefef;
-    --primary-color: #374241;
-}
-[data-theme="grape"] {
-    --background-color: #9919c4;
-    --text-color: #8c64dc;
-    --primary-color: #490e81;
-}
-[data-theme="lemon"] {
-    --background-color: #be9523;
-    --text-color: #e5df6c;
-    --primary-color: #ea9e2c;
-}
 
-[data-theme="blueberry"] {
-    --background-color: #0d4fde;
-    --text-color: #0ec3e3;
-    --primary-color: #0c408d;
-}
-
-.gantt_task_scale{
-    background-color: v-bind(_task_scale);
-    font-size: 10px;
-    border-bottom: 1px solid #cecece;
-}
-
-.dark .gantt_task_scale {
-    background-color: v-bind(_dark_weekend);
-}
-
-.gantt_grid_scale .gantt_grid_head_cell {
-    background-color: v-bind(_task_scale);
-    font-size: 12px;
-    border-bottom: 1px solid #cecece;
-}
-
-.dark .gantt_grid_scale .gantt_grid_head_cell {
-    background-color: v-bind(_dark_weekend);
-}
-
-.gantt_grid_data{
-   margin: 2px;
-    font-size: 11px;
-    border-bottom: 1px solid #cecece;
-}
-
-.gantt_scale {
-    color: #aaa;
-    font-size: 12px;
-    border-bottom: 1px solid #cecece;
-}
-
-  /* background color of task bars*/
-  .gantt_task_line {
-    background:  v-bind(color[3]);  ;
-    border: 1px solid #2898b0;
-  }
-
-  /* text color */
-  .gantt_task_line .gantt_task_content {
-    color: v-bind(color[4]);
-    font-size: 11px;
-  }
-
-  /* progress fill */
-  .gantt_task_progress {
-    background-color:  v-bind(color[2]);
-  }
-
-  /* project */
-  /* background color of project bars*/
-  .gantt_task_line.gantt_bar_project {
-    background-color: v-bind(color[1]);
-    border: 1px solid #3c9445;
-    font-size: 11px;
-  }
-
-  /* progress of project bars */
-  .gantt_task_line.gantt_bar_project .gantt_task_progress {
-    background-color:  v-bind(color[0]);
-  }
-
-  .weekend{ background: v-bind(_weekend) !important;}
-  .dark .weekend{ background: v-bind(_dark_weekend) !important;}
-
-  .gantt_milestone {
-    background: #FFCC33 }
-
-    .resource_marker{
-      text-align: center;
-    }
-    .resource_marker div{
-      font-size: 10px;
-      width: 20px;
-      height: 20px;
-      border-radius: 12px;
-      color: #111;
-      margin: 3px;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .resource_marker.workday_ok div {
-      background: var(--dhx-gantt-base-colors-success);
-    }
-
-    .resource_marker.workday_over div{
-      background: var(--dhx-gantt-base-colors-error);
-    }
-
-    .owner-label {
-      width: 20px;
-      height: 20px;      
-      font-size: 12px;
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #cccccc;
-      border-radius: 25px;
-      background: #e6e6e6;
-      color: #6f6f6f;
-      margin: 0 3px;
-      font-weight: bold;
-    }
-
-    .gantt_marker.today{
-        background: #ffb121;
-    }
 
 </style>
