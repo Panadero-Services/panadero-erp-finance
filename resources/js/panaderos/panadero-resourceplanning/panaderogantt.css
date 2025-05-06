@@ -273,7 +273,9 @@
   --dhx-gantt-box-shadow-s: 0 3px 5px 0 rgba(0, 0, 0, 0.1);
   --dhx-gantt-box-shadow-m: 0px 4px 24px 0px rgba(44, 47, 60, 0.36);
   --dhx-gantt-box-shadow-l: 0px 4px 24px 0px rgba(44, 47, 60, 0.56);
-  --dhx-gantt-scale-background: #f4f2ea;
+  
+  --dhx-gantt-scale-background: #f1f1f1;
+
   --dhx-gantt-scale-color: #42464b;
   --dhx-gantt-task-color: #1e2022;
   --dhx-gantt-project-background: #c7d8f7;
