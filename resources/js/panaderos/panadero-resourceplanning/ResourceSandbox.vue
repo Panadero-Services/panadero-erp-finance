@@ -103,7 +103,6 @@ const _ChangeColor = async () => {
     color.value = colors[_colorCount.value];
 }
 
-
 const _Shuffle = async () => {
     //shuffleArray(resourceData);
     await planning.config();
@@ -146,24 +145,14 @@ const _Save = async () => {
 }
 
 
-
-
-
 // actions
 const _reset = async () => { await planning.reset(props.set.dark); }
 const _refresh = async () => { await planning.refresh(); }
 const _load = async () => { await _Load() }
 const _save = async () => { await _Save() }
-const _dark = async () => { planning.setSkin('dark') }
-const _meadow = async () => { planning.setSkin('meadow') }
-const _skyblue = async () => { planning.setSkin('skyblue') }
-const _broadway = async () => { planning.setSkin('broadway') }
-const _material = async () => { planning.setSkin('material') }
-const _contrast_white = async () => { planning.setSkin('contrast-white') }
-const _contrast_dark = async () => { planning.setSkin('contrast-dark') }
 const _shuffle = async () => { await _Shuffle() }
 const _changeColor = async () => { await _ChangeColor() }
-
+const _changeTheme = async () => { planning.setSkin(_theme.value); }
 
 defineExpose({
   _load, _save
@@ -172,6 +161,10 @@ defineExpose({
 
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+
+
+const _theme = ref('meadow');
+
 
 </script>
 
@@ -183,13 +176,6 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_refresh" type="button" :class="_button">Refresh</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
-            <button @click="_dark" type="button" :class="_button">Dark</button>
-            <button @click="_meadow" type="button" :class="_button">Meadow</button>
-            <button @click="_skyblue" type="button" :class="_button">Skyblue</button>
-            <button @click="_broadway" type="button" :class="_button">Broadway</button>
-            <button @click="_material" type="button" :class="_button">Material</button>
-            <button @click="_contrast_white" type="button" :class="_button">ContrastWhite</button>
-            <button @click="_contrast_dark" type="button" :class="_button">ContrastDark</button>
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
             <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
@@ -198,6 +184,20 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_month" type="button" :class="_button">Month</button>
             <button @click="_week" type="button" :class="_button">Week</button>
             <button @click="_day" type="button" :class="_button">Day</button>
+         
+            <select v-model="_theme" @change="_changeTheme"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
+              <option disabled value="">select theme</option>
+              <option>meadow</option>
+              <option>dark</option>
+              <option>skyblue</option>
+              <option>broadway</option>
+              <option>material</option>
+              <option>contrast-white</option>
+              <option>contrast-dark</option>
+            </select>
+
+
+
         </div>    
         <div class="items-end text-right mr-6" id="toolbar">
             <div  class="col-span-1 text-xs mt-4 ">
