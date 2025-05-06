@@ -52,72 +52,16 @@ onMounted(async ()=> {
     //await planning.load(_resourceData, _ppl, _links);
 })
 
-const _load = async () => {
-  if(props.set.project.id > 0) {
-    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
-    const _type = props.set.projectType;
-    const _projectId = props.set.project.id;
-    //console.log(_path);
-    let _resourcePlanning = await props.db.getState(_type, _path, _projectId);
-    let _resPlan = await JSON.parse(_resourcePlanning);
-    //console.log(_resPlan.data, _resPlan.links);
 
-    const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
-    const _team = await props.db.getState("team", _teamPath, props.set.project.id);
-    console.log('_team');
-    console.log(_team);
 
-    const _resources = _team==null ? resources : JSON.parse(_team);
 
-    await planning.parseResourcesStore(_resources);
-    await planning.parse(_resPlan.data, _resPlan.links);
-    await planning.today();
-    }
-}
 
-const _save = async () => {
-}
-
-// button Reset
-const _refresh = async () => {
-    await planning.refresh();
-}
-
-const _reset = async () => {
-    await planning.reset(props.set.dark);
-}
-
-// button Shuffle
-const _shuffle = async () => {
-    //shuffleArray(resourceData);
-    await planning.config();
-    await planning.configColumns();
-    await planning.init(props.set.dark);
-}
-
-const shuffleArray = async (array) => {
-    for (let i = array.length - 1; i >= 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
 
 // button FullScreen
 const _fullScreen = async () => {
     await planning.fullscreen();
 }
 
-// button Color
-const color = ref(defaultColor);
-const _changeColor = async () => {
-    _colorCount.value++;
-    if (_colorCount.value >= colors.length) _colorCount.value=0;
-    color.value = colors[_colorCount.value];
-}
-
-defineExpose({
-  _load, _save
-});
 
 const show = async () => {
     console.log('show');
@@ -147,6 +91,86 @@ const _doRefresh = async () => {
     await _load();
 }
 
+
+
+// routines
+
+const color = ref(defaultColor);
+const _ChangeColor = async () => {
+// button Color
+    _colorCount.value++;
+    if (_colorCount.value >= colors.length) _colorCount.value=0;
+    color.value = colors[_colorCount.value];
+}
+
+
+const _Shuffle = async () => {
+    //shuffleArray(resourceData);
+    await planning.config();
+    await planning.configColumns();
+    await planning.init(props.set.dark);
+}
+
+const shuffleArray = async (array) => {
+    for (let i = array.length - 1; i >= 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+const _Load = async () => {
+  if(props.set.project.id > 0) {
+    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+    const _type = props.set.projectType;
+    const _projectId = props.set.project.id;
+    //console.log(_path);
+    let _resourcePlanning = await props.db.getState(_type, _path, _projectId);
+    let _resPlan = await JSON.parse(_resourcePlanning);
+    //console.log(_resPlan.data, _resPlan.links);
+
+    const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
+    const _team = await props.db.getState("team", _teamPath, props.set.project.id);
+    console.log('_team');
+    console.log(_team);
+
+    const _resources = _team==null ? resources : JSON.parse(_team);
+
+    await planning.parseResourcesStore(_resources);
+    await planning.parse(_resPlan.data, _resPlan.links);
+    await planning.today();
+    }
+}
+
+const _Save = async () => {
+    console.log("Somehow Some1 Pushed _save Button");
+}
+
+
+
+
+
+// actions
+const _reset = async () => { await planning.reset(props.set.dark); }
+const _refresh = async () => { await planning.refresh(); }
+const _load = async () => { await _Load() }
+const _save = async () => { await _Save() }
+const _dark = async () => { planning.setSkin('dark') }
+const _meadow = async () => { planning.setSkin('meadow') }
+const _skyblue = async () => { planning.setSkin('skyblue') }
+const _broadway = async () => { planning.setSkin('broadway') }
+const _material = async () => { planning.setSkin('material') }
+const _contrast_white = async () => { planning.setSkin('contrast-white') }
+const _contrast_dark = async () => { planning.setSkin('contrast-dark') }
+const _shuffle = async () => { await _Shuffle() }
+const _changeColor = async () => { await _ChangeColor() }
+
+
+defineExpose({
+  _load, _save
+});
+
+
+// css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 </script>
@@ -159,7 +183,13 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
             <button @click="_refresh" type="button" :class="_button">Refresh</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
-            <button @click="planning.setSkin('dark')" type="button" :class="_button">Dark</button>
+            <button @click="_dark" type="button" :class="_button">Dark</button>
+            <button @click="_meadow" type="button" :class="_button">Meadow</button>
+            <button @click="_skyblue" type="button" :class="_button">Skyblue</button>
+            <button @click="_broadway" type="button" :class="_button">Broadway</button>
+            <button @click="_material" type="button" :class="_button">Material</button>
+            <button @click="_contrast_white" type="button" :class="_button">ContrastWhite</button>
+            <button @click="_contrast_dark" type="button" :class="_button">ContrastDark</button>
             <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
             <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
