@@ -145,6 +145,11 @@ const _Save = async () => {
 }
 
 
+const _ChangeTimeFrame = async () => {
+    planning.setLevel(_timeFrame.value);
+}
+
+
 // actions
 const _reset = async () => { await planning.reset(props.set.dark); }
 const _refresh = async () => { await planning.refresh(); }
@@ -154,20 +159,25 @@ const _shuffle = async () => { await _Shuffle() }
 const _changeColor = async () => { await _ChangeColor() }
 const _changeTheme = async () => { planning.setSkin(_theme.value); }
 
+const _changeTimeFrame = async () => { _ChangeTimeFrame(); }
+
+
+
 defineExpose({
   _load, _save
 });
 
 
-const _themes = ['meadow', 'dark', 'skyblue', 'broadway', 'material', 'contrast-white', 'contrast-black'];
+const _themes = ['meadow', 'dark', 'skyblue', 'broadway', 'material', 'contrast-white', 'contrast-black', 'contrast-rm'];
 const _theme = ref('meadow');
+
+const _timeFrame = ref('week');
+const _timeFrames = ['day', 'week', 'month', 'quarter', 'year'];
+
 
 
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
-
-
-
 
 </script>
 
@@ -176,25 +186,20 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
     <div class="grid grid-cols-4">     
         <div class="flex pl-2 col-span-3 mb-1 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
             <button @click="_reset" type="button" :class="_button">Reset</button>
-            <button @click="_refresh" type="button" :class="_button">Refresh</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
-            <button @click="_shuffle" type="button" :class="_button">Shuffle</button>
-            <button @click="_changeColor" type="button" :class="_button">Color</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
-            <button @click="_year" type="button" :class="_button">Year</button>
-            <button @click="_quarter" type="button" :class="_button">quarter</button>
-            <button @click="_month" type="button" :class="_button">Month</button>
-            <button @click="_week" type="button" :class="_button">Week</button>
-            <button @click="_day" type="button" :class="_button">Day</button>
-         
+       
+            <select v-model="_timeFrame" @change="_changeTimeFrame"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
+              <option disabled value="">select timeFrame</option>
+              <option v-for="_t in _timeFrames">{{_t}}</option>
+            </select>
+
+
             <select v-model="_theme" @change="_changeTheme"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
               <option disabled value="">select theme</option>
               <option v-for="_t in _themes">{{_t}}</option>
             </select>
-
-
-
         </div>    
         <div class="items-end text-right mr-6" id="toolbar">
             <div  class="col-span-1 text-xs mt-4 ">

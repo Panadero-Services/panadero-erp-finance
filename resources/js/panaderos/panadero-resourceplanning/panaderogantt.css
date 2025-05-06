@@ -500,7 +500,7 @@
   --dhx-gantt-task-border: 1px solid rgba(0, 0, 0, 0.1);
   --dhx-gantt-base-colors-warning: #FCBA2E;
   --dhx-gantt-base-colors-success: #77D257;
-  --dhx-gantt-base-colors-error: #ee3d31;
+  --dhx-gantt-base-colors-error: #fc827e;
   --dhx-gantt-base-colors-error-text: #141414;
   --dhx-gantt-btn-color: #FFFFFF;
   --dhx-gantt-btn-color-hover: #FFFFFF;
@@ -537,7 +537,7 @@
   --dhx-gantt-task-border: 1px solid rgba(0, 0, 0, 0.1);
   --dhx-gantt-base-colors-warning: #694E02;
   --dhx-gantt-base-colors-success: #115700;
-  --dhx-gantt-base-colors-error: #FFA7A0;
+  --dhx-gantt-base-colors-error: #800901;
   --dhx-gantt-base-colors-error-text: #141414;
   --dhx-gantt-base-colors-select: #2A2A2A;
   --dhx-gantt-base-colors-hover-color: #2A2A2A;
@@ -555,6 +555,46 @@
   --dhx-gantt-btn-outline-color-hover: var(--dhx-gantt-base-colors-text-light);
   --dhx-gantt-btn-outline-color-active: var(--dhx-gantt-base-colors-text-light);
 }
+
+:root[data-gantt-theme='contrast-rm'] {
+  --dhx-gantt-theme: contrast-black;
+  --dhx-gantt-base-colors-disabled: #3d3d3d;
+  --dhx-gantt-base-colors-text-light: #cfcfcf;
+  --dhx-gantt-base-colors-text-base: #e8eaeb;
+  --dhx-gantt-base-colors-background: #141414;
+  --dhx-gantt-base-colors-background-alt: #4f4f4f;
+  --dhx-gantt-base-colors-border: rgba(35, 35, 35, 0.8);
+  --dhx-gantt-base-colors-border-light: rgba(35, 35, 35, 0.8);
+  --dhx-gantt-base-colors-text-on-fill: #141414;
+  --dhx-gantt-base-colors-primary: #fab941;
+  --dhx-gantt-task-background: var(--dhx-gantt-base-colors-primary);
+  --dhx-gantt-project-background: #8a86f7;
+  --dhx-gantt-milestone-background: #e3dcf7;
+  --dhx-gantt-task-background: #fab941;
+  --dhx-gantt-task-border: 1px solid rgba(0, 0, 0, 0.1);
+  --dhx-gantt-base-colors-warning: #694E02;
+  --dhx-gantt-base-colors-success: #899184;
+  --dhx-gantt-base-colors-error: #d16200;
+  --dhx-gantt-base-colors-error-text: #141414;
+  --dhx-gantt-base-colors-select: #2A2A2A;
+  --dhx-gantt-base-colors-hover-color: #2A2A2A;
+  --dhx-gantt-base-colors-icons: #a88102;
+  --dhx-gantt-scale-color: var(--dhx-gantt-base-colors-text-light);
+  --dhx-gantt-popup-background: #1B1B1C;
+  --dhx-gantt-undo-delete-background: var(--dhx-gantt-popup-background);
+  --dhx-gantt-undo-delete-color: var(--dhx-gantt-base-colors-text-base);
+  --dhx-gantt-popup-border: 1px solid #4B4B4B;
+  --dhx-gantt-font-size: 14px;
+  --dhx-gantt-heading-font-size: 24px;
+  --dhx-gantt-important-font-size: 14px;
+  --dhx-gantt-regular-font-size: 14px;
+  --dhx-gantt-caption-font-size: 14px;
+  --dhx-gantt-btn-outline-color-hover: var(--dhx-gantt-base-colors-text-light);
+  --dhx-gantt-btn-outline-color-active: var(--dhx-gantt-base-colors-text-light);
+}
+
+
+
 .dhx_gantt_button--mixin {
   background: var(--dhx-gantt-btn-background);
   color: var(--dhx-gantt-btn-color);
