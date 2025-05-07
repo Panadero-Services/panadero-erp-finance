@@ -10,10 +10,6 @@ const {resources, resourceData, links, colors, defaultColor, taskScaleColor, wee
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
 
-// Globals
-//const APP_NAME = process.env.APP_NAME;
-//console.log(`moduleName: ${moduleName}`);
-
 // call parameters
 const props = defineProps({
     contract: Object,
@@ -23,11 +19,9 @@ const props = defineProps({
 });
 
 // globals
-const _title="ResourcePlanning";
+const _title="ResourcePlanningSandbox";
 
 const _counter=ref(0);
-const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
-//const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-2 md:p-3 lg:p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:border-gray-400";
 
 let planning = new panaderoResourcePlanning("resource_id");
 
@@ -46,22 +40,15 @@ onMounted(async ()=> {
     await planning.fullScreenPlugin();
     await planning.markerPlugin();
     await planning.groupingTasksPlugin();
-    
+
     await planning.init(props.set.dark);
 
-    //await planning.load(_resourceData, _ppl, _links);
 })
-
-
-
-
-
 
 // button FullScreen
 const _fullScreen = async () => {
     await planning.fullscreen();
 }
-
 
 const show = async () => {
     console.log('show');
@@ -91,10 +78,16 @@ const _doRefresh = async () => {
     await _load();
 }
 
+// themes
+const _themes = ['meadow', 'dark', 'skyblue', 'broadway', 'material', 'contrast-white', 'contrast-black', 'contrast-rm'];
+const _darkThemes = ['dark','contrast-black', 'contrast-rm'];
+const _theme = ref('meadow');
 
+// timeFrames
+const _timeFrame = ref('week');
+const _timeFrames = ['day', 'week', 'month', 'quarter', 'year'];
 
 // routines
-
 const color = ref(defaultColor);
 const _ChangeColor = async () => {
 // button Color
@@ -164,19 +157,12 @@ const _changeColor = async () => { await _ChangeColor() }
 const _changeTheme = async () => { await _ChangeTheme() }
 const _changeTimeFrame = async () => { _ChangeTimeFrame(); }
 
-defineExpose({
-  _load, _save
-});
-
-const _themes = ['meadow', 'dark', 'skyblue', 'broadway', 'material', 'contrast-white', 'contrast-black', 'contrast-rm'];
-const _darkThemes = ['dark','contrast-black', 'contrast-rm'];
-const _theme = ref('meadow');
-
-const _timeFrame = ref('week');
-const _timeFrames = ['day', 'week', 'month', 'quarter', 'year'];
+// external access
+defineExpose({ _load, _save });
 
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 
 </script>
 
@@ -193,7 +179,6 @@ const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray
               <option disabled value="">select timeFrame</option>
               <option v-for="_t in _timeFrames">{{_t}}</option>
             </select>
-
 
             <select v-model="_theme" @change="_changeTheme"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
               <option disabled value="">select theme</option>
