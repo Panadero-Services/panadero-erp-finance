@@ -5,6 +5,8 @@ import { moduleName, moduleVersion, panaderoResourcePlanning, _resourceData, _pp
 import { getData } from "@/panaderos/panadero-resourceplanning/constants/planning-data.js";
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 
+
+
 const {resources, resourceData, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } =getData();
 
 // define emits
@@ -42,6 +44,8 @@ onMounted(async ()=> {
     await planning.groupingTasksPlugin();
 
     await planning.init(props.set.dark);
+
+    await _calendarWrappers();
 
 })
 
@@ -156,6 +160,18 @@ const _shuffle = async () => { await _Shuffle() }
 const _changeColor = async () => { await _ChangeColor() }
 const _changeTheme = async () => { await _ChangeTheme() }
 const _changeTimeFrame = async () => { _ChangeTimeFrame(); }
+const _addMarker = async () => { 
+
+    console.log(_calendar.getValue(true));
+    console.log(_timepicker.getValue());
+    await planning.addMarker(_calendar.getValue(true)) 
+}
+const _popupShow = async () => {
+console.log("show Popup")
+ _popup.show("show"); 
+
+}
+
 
 // external access
 defineExpose({ _load, _save });
@@ -163,6 +179,22 @@ defineExpose({ _load, _save });
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
+
+
+// calendar 
+var _popup, _calendar, _timepicker ;
+
+const _calendarWrappers = async () =>{
+    _calendar = new dhx.Calendar();
+    _popup = new dhx.Popup({ css: "dhx_widget--bordered"});
+    _timepicker = new dhx.Timepicker();
+
+    _popup.attach(_timepicker);
+    _popup.attach(_calendar);
+
+}
+
+
 
 </script>
 
@@ -174,7 +206,11 @@ const _mainCard = " relative flex items-center space-x-3 rounded-md border borde
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
+            <button @click="_addMarker" type="button" :class="_button">AddMarker</button>
+            <button @click="_popupShow" type="button" :class="_button">Popup</button>
        
+
+
             <select v-model="_timeFrame" @change="_changeTimeFrame"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
               <option disabled value="">select timeFrame</option>
               <option v-for="_t in _timeFrames">{{_t}}</option>
@@ -184,6 +220,13 @@ const _mainCard = " relative flex items-center space-x-3 rounded-md border borde
               <option disabled value="">select theme</option>
               <option v-for="_t in _themes">{{_t}}</option>
             </select>
+
+            <button id="show" type="button" :class="_button">Show popup</button>
+        
+
+
+
+            
         </div>    
         <div class="items-end text-right mr-6" id="toolbar">
             <div  class="col-span-1 text-xs mt-4 ">
@@ -197,8 +240,12 @@ const _mainCard = " relative flex items-center space-x-3 rounded-md border borde
     </div>
 </div>
 </template>
-<style>
-
-
-
+<style scoped>
+.calendars-wrapper {
+  display: flex;
+  height: fit-content;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: space-between;
+}
 </style>

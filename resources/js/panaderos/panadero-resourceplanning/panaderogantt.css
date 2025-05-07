@@ -3287,4 +3287,11 @@ div.dhx_modal_cover {
 
     .gantt_marker.today{
         background: #ffb121;
+    
+    .gantt_marker.meeting{
+        background: #79E139;
+    }
+
+
+
     }
