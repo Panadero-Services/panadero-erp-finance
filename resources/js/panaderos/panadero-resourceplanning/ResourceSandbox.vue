@@ -211,8 +211,6 @@ const _calendarWrappers = async () =>{
 
 }
 
-
-
 </script>
 
 <template>
@@ -237,7 +235,6 @@ const _calendarWrappers = async () =>{
             <button @click="_popupShow" type="button" :class="_button">Date</button>
             <button @click="_addMarker" type="button" :class="_button">AddMeeting</button>
             <div id="show"></div>
-
 
         </div>    
         <div class="items-end text-right mr-6" id="toolbar">
