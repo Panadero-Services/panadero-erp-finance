@@ -114,13 +114,17 @@ const shuffleArray = async (array) => {
     }
 }
 
+
+
+const _path = () => { return props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category; }
+
 const _Load = async () => {
   if(props.set.project.id > 0) {
-    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+    //const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
     const _type = props.set.projectType;
     const _projectId = props.set.project.id;
     //console.log(_path);
-    let _resourcePlanning = await props.db.getState(_type, _path, _projectId);
+    let _resourcePlanning = await props.db.getState(_type, _path(), _projectId);
     let _resPlan = await JSON.parse(_resourcePlanning);
     //console.log(_resPlan.data, _resPlan.links);
 
@@ -138,7 +142,20 @@ const _Load = async () => {
 }
 
 const _Save = async () => {
-    console.log("Somehow Some1 Pushed _save Button");
+    if(props.set.project.id > 0) {
+        //const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+        let _resourcePlanning =  await planning.serialize();
+
+        let _payload = {  "model": "StateDataset",
+                          "type": props.set.projectType,
+                          "path": _path(),
+                          "projectId": props.set.project.id,
+                          "json" : JSON.stringify(_resourcePlanning),
+                          "isActive": 1
+                         };
+        await props.db.setState(_payload);
+        await planning.message({ text: "Saved Environment", expire: 0 });
+    }
 }
 
 
@@ -206,9 +223,6 @@ const _calendarWrappers = async () =>{
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>
             <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
-            <button @click="_addMarker" type="button" :class="_button">AddMarker</button>
-            <button @click="_popupShow" type="button" :class="_button">Popup</button>
-       
 
 
             <select v-model="_timeFrame" @change="_changeTimeFrame"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
@@ -220,13 +234,11 @@ const _calendarWrappers = async () =>{
               <option disabled value="">select theme</option>
               <option v-for="_t in _themes">{{_t}}</option>
             </select>
+            <button @click="_popupShow" type="button" :class="_button">Date</button>
+            <button @click="_addMarker" type="button" :class="_button">AddMeeting</button>
+            <div id="show"></div>
 
-            <button id="show" type="button" :class="_button">Show popup</button>
-        
 
-
-
-            
         </div>    
         <div class="items-end text-right mr-6" id="toolbar">
             <div  class="col-span-1 text-xs mt-4 ">

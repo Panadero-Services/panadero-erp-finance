@@ -4,7 +4,7 @@
 // *   Location /modules/panadero-resourceplanning  * * 
 // *   Modified :JaWsome.Orbit   *                 * 
 // *   Date:    07 may 2025             *          *
-// *   Version: v3.1.61            *        *      *
+// *   Version: v3.1.62            *        *      *
 // ** *     *       *   *       *   *   *   *     **
 // * *  *       *     *      *   *       *  *  * * *
 
@@ -14,11 +14,11 @@
 // ** 3. code modular ... make it reuseable 
 // ** 4. DO NOT REPEAT YOURSELF !!!!
 
-/** @license  v.3.1.61 Panaderos Professional */
+/** @license  v.3.1.62 Panaderos Professional */
 
 const moduleName = "Panadero-ResourcePlanning";
 const moduleGit = "https://github.com/lieuwebakker/panadero-resourceplanning";
-const moduleVersion = "3.1.61";
+const moduleVersion = "3.1.62";
 const moduleDate = "07 may 2025";
 const moduleAuthor = "JaWsome.Orbit";
 const moduleTitle = "Resource Planning Organized.! modular style!";
@@ -960,6 +960,7 @@ class panaderoResourcePlanning {
 
     async setSkin(_theme) { gantt.setSkin(_theme); }
     async serialize() { return gantt.serialize("json"); }
+    async message(_obj) { gantt.message(_obj); }
 
     async load(_resourceData, _links, _ppl) {
         var that = this;
@@ -967,6 +968,21 @@ class panaderoResourcePlanning {
         that.links = _links;
         that.ppl = _ppl;
         gantt.message({ text: "Panadero Resource Planning Module resourceData load", expire: 0 });
+    }
+
+    async save () {
+      const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+
+      let _resourcePlanning =  await gantt.serialize();
+      let _payload = {  "model": "StateDataset",
+                        "type": props.set.projectType,
+                        "path": _path,
+                        "projectId": props.set.project.id,
+                        "json" : JSON.stringify(_resourcePlanning),
+                        "isActive": 1
+                       };
+      await props.db.setState(_payload);
+      gantt.message({ text: "Saved Environment", expire: 0 });
     }
 
     async reset(_dark) {
