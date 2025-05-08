@@ -233,7 +233,7 @@ var _markers = ref([]);
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
 
-const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
+const _button1 = "mt-1 inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ring-1 ring-inset min-w-6";
 const _button2 = "mx-1 min-w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300";
 const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:text-gray-500 dark:hover:ring-gray-800 hover:ring-gray-300 hover:text-gray-400";
@@ -245,8 +245,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
     <div class="grid grid-cols-4">     
         <div class="flex pl-2 col-span-3 mb-1 space-x-8" :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
             
-            
-            <div :class= "[_button1, _switchUnSelected]" class=" flex">
+            <div :class= "[_button1, _switchUnSelected]" class="flex">
                 <button @click="_reset" type="button" :class="_button">Reset</button>
                 <button @click="_load" type="button" :class="_button">Load</button>
                 <select v-model="_timeFrame" @change="_changeTimeFrame"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
@@ -255,8 +254,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
                 </select>
             </div>
 
-
-            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class=" flex">
+            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class="flex">
                 <ellipsis-vertical-icon @click="set.mode.full= !set.mode.full " class="w-4  text-gray-400"  title="markers" />
                 <div v-if="set.mode.full" >
                     <button @click="_save" type="button" :class="_button2">Save</button>
@@ -272,7 +270,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
                 </div>
             </div>
 
-            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class=" flex">
+            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class="flex">
                 <ellipsis-vertical-icon @click="set.mode.advanced= !set.mode.advanced " class="w-4  text-gray-400"  title="markers" />
                 <div v-if="set.mode.advanced" >
                     <div v-if="set.mode.advanced" >
@@ -290,13 +288,11 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
 
         </div> 
 
-        <div class="text-right text-xs mt-4 mr-6 " id="toolbar">
-            <span class="ml-2" :class="_pulse? 'text-green-500' : ''">{{moduleName}}.{{moduleVersion}}</span>
+        <div class="text-left text-xs mt-4" id="toolbar">
+            <span v-if="set.mode.dev" class="" :class="_pulse? 'text-green-500' : ''">{{moduleName}}.{{moduleVersion}}</span>
         </div>
 
     </div>
-
-    
 
 
     <div class="grid grid-cols-2" :class="set.layout.sidebar ? 'pr-48' : 'pr-4'">     

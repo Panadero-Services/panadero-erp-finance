@@ -115,7 +115,7 @@ watch(pulse, async (_bool) => {
 
 const _categories = ['primera','segundo','tercera'];
 const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
-const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300";
+const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-50 dark:bg-indigo-950 dark:text-indigo-300";
 const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:text-gray-500 dark:hover:ring-indigo-400 hover:ring-indigo-300 hover:text-gray-400";
 
 </script>
@@ -138,7 +138,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                         {{set.dark ? '🌙' : '☀️'}}
                     </div>
 
-                    <div class="pt-2.5">
+                    <div v-if="set.mode.dev" class="pt-2.5">
                         <!-- Pulse Control -->
                         <p v-if="_animation">  
                           <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
@@ -154,7 +154,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
 
                     </div>
 
-                    <div class="pt-2.5">
+                    <div v-if="set.mode.dev" class="pt-2.5">
                         <!-- Pulse Control -->
                         <p v-if="_animation">  
                           <span v-if="set.animate" @click="set.animate = false" class="w-10 px-2.5">
@@ -183,15 +183,17 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
 
             <!-- Responsive Navigation Menu optional ... needs work-->
             <div class="flex justify-end sm:items-right align-right md:text-sm col-span-5 md:col-span-2">
+                
+                <div  v-if="set.project.id>0 && !set.mode.noob" class="flex space-x-0.5 mx-1">
+                    <div @click="switchCat(0)" :class="[_button1, _switchSelected]">{{set.domain}}.{{set.project.title}}.{{set.project.environment}}.</div>
+                    <div @click="switchCat(0)" :class="[_button1,set.project.category=='primera' ? _switchSelected : _switchUnSelected]">00</div>
+                    <div @click="switchCat(1)" :class="[_button1,set.project.category=='segundo' ? _switchSelected : _switchUnSelected]">01</div>
+                    <div @click="switchCat(2)" :class="[_button1,set.project.category=='tercera' ? _switchSelected : _switchUnSelected]">02</div>
+                </div>   
 
-            <div class="flex space-x-0.5 mx-1" v-if="set.project.id>0">
-                <div @click="switchCat(0)" :class="[_button1, _switchSelected]">{{set.domain}}.{{set.project.title}}.{{set.project.environment}}.</div>
-                <div @click="switchCat(0)" :class="[_button1,set.project.category=='primera' ? _switchSelected : _switchUnSelected]">00</div>
-                <div @click="switchCat(1)" :class="[_button1,set.project.category=='segundo' ? _switchSelected : _switchUnSelected]">01</div>
-                <div @click="switchCat(2)" :class="[_button1,set.project.category=='tercera' ? _switchSelected : _switchUnSelected]">02</div>
-            </div>   
+                
 
-                <div v-if="$page.props.auth.user" class="relative">
+                <div v-if="$page.props.auth.user && !set.mode.noob" class="relative">
                     <!-- Teams Dropdown -->
                     <Dropdown v-if="$page.props.jetstream.hasTeamFeatures" align="right" width="60">
                         <template #trigger>
@@ -208,23 +210,23 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                         </template>
 
                         <template #content>
-                            <div class="">
+                            <div v-if="set.mode.dev" class="">
                                 <!-- Team Management -->
-                                <div class="block px-4 py-2 text-xs text-gray-400">
+                                <div  v-if="set.mode.dev" class="block px-4 py-2 text-xs text-gray-400">
                                     Manage Team
                                 </div>
 
                                 <!-- Team Settings -->
-                                <DropdownLink :href="route('teams.show', $page.props.auth.user.current_team)">
+                                <DropdownLink  v-if="set.mode.dev" :href="route('teams.show', $page.props.auth.user.current_team)">
                                     Team Settings
                                 </DropdownLink>
 
-                                <DropdownLink v-if="$page.props.jetstream.canCreateTeams" :href="route('teams.create')">
+                                <DropdownLink v-if="$page.props.jetstream.canCreateTeams && set.mode.dev" :href="route('teams.create')">
                                     Create New Team
                                 </DropdownLink>
 
                                 <!-- Team Switcher -->
-                                <template v-if="$page.props.auth.user.all_teams.length > 1">
+                                <template v-if="$page.props.auth.user.all_teams.length > 1 && set.mode.dev">
                                     <div class="border-t border-gray-200 dark:border-gray-600" />
 
                                     <div class="block px-4 py-2 text-xs text-gray-400">
@@ -250,12 +252,15 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                 </div>
 
                 <div v-else class="text-xs mr-3">
-                    <Link :href="route('login')">
-                        Log in
-                    </Link>
+                    <div v-if="!set.mode.noob">
+                        <Link :href="route('login')">
+                            Log in
+                        </Link>
+                    </div>
                 </div>
 
-                <span class="m-1 inline-flex items-center rounded-md bg-purple-400/10 px-2 py-1 text-xs font-medium text-purple-400 ring-1 ring-inset ring-indigo-400/30 min-w-6">  {{_counter + _rnd(20)}}</span>
+
+                <span v-if="set.mode.dev" class="m-1 inline-flex items-center rounded-md bg-purple-400/10 px-2 py-1 text-xs font-medium text-purple-400 ring-1 ring-inset ring-indigo-400/30 min-w-6">  {{_counter + _rnd(20)}}</span>
 
                 <!-- Settings Dropdown -->
                 <div v-if="$page.props.auth.user" class="ms-2 relative mt-1.5 w-16">
@@ -283,11 +288,11 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                                 Manage Account
                             </div>
 
-                            <DropdownLink :href="route('profile.show')">
+                            <DropdownLink v-if="set.mode.dev" :href="route('profile.show')">
                                 Profile
                             </DropdownLink>
 
-                            <DropdownLink v-if="$page.props.jetstream.hasApiFeatures" :href="route('api-tokens.index')">
+                            <DropdownLink v-if="$page.props.jetstream.hasApiFeatures && set.mode.dev" :href="route('api-tokens.index')">
                                 API Tokens
                             </DropdownLink>
 
@@ -305,7 +310,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
 
 
             <!-- Hamburger -->
-            <div v-if="$page.props.auth.user"  class="sm:hidden">
+            <div v-if="$page.props.auth.user" class="sm:hidden">
                 <button class="inline-flex items-center justify-center p-2 mt-0.5 rounded-md text-gray-800 dark:text-gray-200 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out" @click="showingNavigationDropdown = ! showingNavigationDropdown">
                     <svg
                         class="h-5 w-5"
