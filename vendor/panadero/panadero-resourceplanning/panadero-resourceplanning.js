@@ -845,11 +845,18 @@ class panaderoResourcePlanning {
       //var dateToStr = gantt.date.date_to_str(_date);
       var markerId = gantt.addMarker({
           start_date: _date, //a Date object that sets the marker's date
-          css: "meeting", //a CSS class applied to the marker
+          css: "status_line", //a CSS class applied to the marker
           text: "Meeting", //the marker title
           title: "Title of this Meeting" // the marker's tooltip
       });
+      return markerId;
     }
+
+    async deleteMarker(_id) {
+      gantt.deleteMarker(_id);
+    }
+
+
 
 
     async cssMarker() {

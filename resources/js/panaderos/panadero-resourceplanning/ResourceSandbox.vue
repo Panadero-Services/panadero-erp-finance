@@ -177,26 +177,36 @@ const _shuffle = async () => { await _Shuffle() }
 const _changeColor = async () => { await _ChangeColor() }
 const _changeTheme = async () => { await _ChangeTheme() }
 const _changeTimeFrame = async () => { _ChangeTimeFrame(); }
-const _addMarker = async () => { 
+const _addMarker = async () => { await _AddMarker(); }
+const _deleteMarker = async () => { await _DeleteMarker(); }
+const _clearMarkers = async () => { await _ClearMarkers(); }
 
-    console.log(_calendar.getValue(true));
-    console.log(_timepicker.getValue());
-    await planning.addMarker(_calendar.getValue(true)) 
-}
+
 const _popupShow = async () => {
 console.log("show Popup")
  _popup.show("show"); 
 
 }
 
-
 // external access
 defineExpose({ _load, _save });
 
-// css
-const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
-const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
+// markers
+const _ClearMarkers = async () => {
+    _markers.value.forEach(m => { 
+        planning.deleteMarker(m);
+    });
+    _markers.value =[];
+}
 
+const _AddMarker = async () => {
+    const _id = await planning.addMarker(_calendar.getValue(true)) 
+    _markers.value.push(_id);
+}
+
+const _DeleteMarker = async () => {
+    planning.deleteMarker(_markers.value.pop());
+}
 
 // calendar 
 var _popup, _calendar, _timepicker ;
@@ -205,45 +215,90 @@ const _calendarWrappers = async () =>{
     _calendar = new dhx.Calendar();
     _popup = new dhx.Popup({ css: "dhx_widget--bordered"});
     _timepicker = new dhx.Timepicker();
-
     _popup.attach(_timepicker);
     _popup.attach(_calendar);
 
+    _calendar.events.on("change", function() {
+        console.log(_calendar.getValue());
+        _AddMarker();
+        _popup.hide();
+    });
+
+
 }
+
+var _markers = ref([]);
+
+// css
+const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _mainCard = " relative flex items-center space-x-3 rounded-md border border-gray-300 p-1 sm:p-1 md:p-3 lg:p-4 shadow-sm hover:border-gray-400";
+
+const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
+const _button2 = "mx-1 min-w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-100 dark:bg-indigo-950 dark:text-indigo-300";
+const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:text-gray-500 dark:hover:ring-gray-800 hover:ring-gray-300 hover:text-gray-400";
 
 </script>
 
 <template>
 <div class="m-0">   
     <div class="grid grid-cols-4">     
-        <div class="flex pl-2 col-span-3 mb-1 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
-            <button @click="_reset" type="button" :class="_button">Reset</button>
-            <button @click="_load" type="button" :class="_button">Load</button>
-            <button @click="_save" type="button" :class="_button">Save</button>
-            <button @click="_fullScreen" type="button" :class="_button">FullScreen</button>
-
-
-            <select v-model="_timeFrame" @change="_changeTimeFrame"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
-              <option disabled value="">select timeFrame</option>
-              <option v-for="_t in _timeFrames">{{_t}}</option>
-            </select>
-
-            <select v-model="_theme" @change="_changeTheme"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
-              <option disabled value="">select theme</option>
-              <option v-for="_t in _themes">{{_t}}</option>
-            </select>
-            <button @click="_popupShow" type="button" :class="_button">Date</button>
-            <button @click="_addMarker" type="button" :class="_button">AddMeeting</button>
-            <div id="show"></div>
-
-        </div>    
-        <div class="items-end text-right mr-6" id="toolbar">
-            <div  class="col-span-1 text-xs mt-4 ">
-                <span>{{moduleName}}</span>
-                <span class="ml-2" :class="_pulse? 'text-green-500' : ''">{{moduleVersion}}</span>
+        <div class="flex pl-2 col-span-3 mb-1 space-x-8" :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
+            
+            
+            <div :class= "[_button1, _switchUnSelected]" class=" flex">
+                <button @click="_reset" type="button" :class="_button">Reset</button>
+                <button @click="_load" type="button" :class="_button">Load</button>
+                <select v-model="_timeFrame" @change="_changeTimeFrame"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
+                    <option disabled value="">select timeFrame</option>
+                    <option v-for="_t in _timeFrames">{{_t}}</option>
+                </select>
             </div>
+
+
+            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class=" flex">
+                <ellipsis-vertical-icon @click="set.mode.full= !set.mode.full " class="w-4  text-gray-400"  title="markers" />
+                <div v-if="set.mode.full" >
+                    <button @click="_save" type="button" :class="_button2">Save</button>
+                    <button @click="_fullScreen" type="button" :class="_button2">FullScreen</button>
+
+                    <select v-model="_theme" @change="_changeTheme"  class="dark:bg-gray-900 bg-gray-100 border-0" :class="_button">
+                      <option disabled value="">select theme</option>
+                      <option v-for="_t in _themes">{{_t}}</option>
+                    </select>
+                </div >
+                <div v-else class="mr-2 text-xxs text-gray-400 dark:text-gray-700">
+                    FULL
+                </div>
+            </div>
+
+            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class=" flex">
+                <ellipsis-vertical-icon @click="set.mode.advanced= !set.mode.advanced " class="w-4  text-gray-400"  title="markers" />
+                <div v-if="set.mode.advanced" >
+                    <div v-if="set.mode.advanced" >
+                        <button @click="_popupShow" type="button" :class="_button2">Add Marker</button>
+                        <button v-if="_markers.length" @click="_deleteMarker" type="button" :class="_button2">Delete</button>
+                        <button v-if="_markers.length>1"@click="_clearMarkers" type="button" :class="_button2">Clear</button>
+                        <div id="show"></div>
+
+                    </div>
+                </div>
+                    <div v-else class="mr-2 text-xxs text-gray-400 dark:text-gray-700">
+                        MARKERS
+                    </div>
+            </div>
+
+        </div> 
+
+        <div class="text-right text-xs mt-4 mr-6 " id="toolbar">
+            <span class="ml-2" :class="_pulse? 'text-green-500' : ''">{{moduleName}}.{{moduleVersion}}</span>
         </div>
+
     </div>
+
+    
+
+
     <div class="grid grid-cols-2" :class="set.layout.sidebar ? 'pr-48' : 'pr-4'">     
         <div id="resource_id" class="col-span-2 h-screen"></div>
     </div>

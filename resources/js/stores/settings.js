@@ -19,7 +19,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const isMetaMask = ref(false);
     const isSelfAdmin = ref(false);
     const superSelfAdmins = ref(['henrimatisse', 'cleopatra']);
-    const mode = ref({ first: false, noob: true, full: false, advanced: false, dev: false });
+    const mode = ref({ first: false, noob: false, full: false, advanced: false, dev: false });
     const dark = ref(false);
     const projectVisible = ref(false);
     const cookiesAccepted = ref(false);

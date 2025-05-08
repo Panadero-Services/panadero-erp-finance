@@ -2661,7 +2661,9 @@ div.dhx_modal_cover {
   top: 0;
   position: absolute;
   text-align: center;
-  background-color: var(--dhx-gantt-base-colors-error);
+  font-size: 10px;
+    background-color: #5818fd;
+
 }
 .gantt_marker .gantt_marker_content {
   padding: 2px;
@@ -3289,7 +3291,14 @@ div.dhx_modal_cover {
         background: #ffb121;
     
     .gantt_marker.meeting{
-        background: #79E139;
+      color : #6f6f6f;
+      background: #7F54FA;
+      font-size: 10px;
+    }
+
+    .status_line {
+      background-color: #7F54FA;
+      font-size: 10px;
     }
 
 
