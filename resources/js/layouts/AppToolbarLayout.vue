@@ -41,25 +41,25 @@ const _toggleUser = async () => { myUserRight.value.open = !myUserRight.value.op
 const whatever = async () => { console.log('whatever')}
 
 const _toolbarItems = [
-  { name: 'Extended', icon: BarsArrowUpIcon, href: _toggleExtended, current: false },
-  { name: 'Documents', icon: ClipboardDocumentCheckIcon, href: _toggleTeam, current: false },
-  { name: 'Signals', icon: SignalIcon, href: _toggleTeam, current: false },
-  { name: 'Basetables', icon: CircleStackIcon, href: _toggleTeam, current: false },
-  { name: 'Play', icon: PlayIcon, href: _toggleTeam, current: false },
-  { name: 'Launch', icon: RocketLaunchIcon, href: _toggleTeam, current: false },
-  { name: 'Bell', icon: BellIcon, href: _toggleTeam, current: false },
-  { name: 'Swatch', icon: SwatchIcon, href: _toggleTeam, current: false },
-  { name: 'Users', icon: UsersIcon, href: _toggleTeam, current: false },
-  { name: 'Wallet', icon: WalletIcon, href: _toggleTeam, current: false },
-  { name: 'Tables', icon: TableCellsIcon, href: _toggleTeam, current: false },
-  { name: 'Serverstacks', icon: ServerStackIcon, href: _toggleTeam, current: false },
-  { name: 'Manuals', icon: QuestionMarkCircleIcon, href: _toggleTeam, current: false },
-  { name: 'Wrench', icon: WrenchIcon, href: _toggleTeam, current: false },
-  { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false },
-  { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
-  { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false },
-  { name: 'Developer', icon: WrenchIcon, href: _toggleFooter, current: false },
-  { name: 'User', icon: UserIcon, href: _toggleUser, current: false },
+  { name: 'Extended', icon: BarsArrowUpIcon, href: _toggleExtended, current: false, active: true },
+  { name: 'Documents', icon: ClipboardDocumentCheckIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Signals', icon: SignalIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Basetables', icon: CircleStackIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Play', icon: PlayIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Launch', icon: RocketLaunchIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Bell', icon: BellIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Swatch', icon: SwatchIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Users', icon: UsersIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Wallet', icon: WalletIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Tables', icon: TableCellsIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Serverstacks', icon: ServerStackIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Manuals', icon: QuestionMarkCircleIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Wrench', icon: WrenchIcon, href: _toggleTeam, current: false, active: false },
+  { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false, active: true },
+  { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false, active: false },
+  { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false, active: true },
+  { name: 'Developer', icon: WrenchIcon, href: _toggleFooter, current: false, active: true },
+  { name: 'User', icon: UserIcon, href: _toggleUser, current: false, active: true },
 ];
 
 // css
@@ -101,12 +101,21 @@ const _sideSpacing = "mx-3";
                         <ul role="list" class=" space-y-1 mt-1" :class="_extended?'w-32':'w-12'">
                             <h2-icon v-if="!set.layout.subHeader" @click="set.layout.subHeader=true" class="w-10 px-3 pb-3 mx-2" :class="_indigo"/>
                             <li v-for="item in _toolbarItems" :key="item.name" class="-ml-1">
-                                 <span @click="item.href" class="flex pt-3" :class="_indigo">
+                                 <span v-if="item.active" @click="item.href" class="flex pt-3" :class="_indigo">
                                     <component :is="item.icon" :set="set" class="w-10 px-3 mx-1"/>
                                     <span v-if="_extended" class="-ml-1 text-xs text-gray-800 dark:text-gray-300">
                                         {{item.name}}
                                     </span>
                                 </span>
+                                <!-- Main Content 
+                                 <span v-if="!item.active" @click="item.href" class="flex pt-3" :class="_indigo">
+                                    <component :is="item.icon" :set="set" class="w-10 px-3 mx-1 text-gray-300 dark:text-gray-600"/>
+                                    <span v-if="_extended" class="-ml-1 text-xs text-gray-300 dark:text-gray-600">
+                                        {{item.name}}
+                                    </span>
+                                </span>
+                                -->
+
                             </li>
                         </ul>
                       </nav>

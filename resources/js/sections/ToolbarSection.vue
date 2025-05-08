@@ -37,6 +37,7 @@ const navigation = [
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false },
   { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggle, current: false },
   { name: 'Developer', icon: WrenchIcon, href: _toggle, current: false },
+  { name: 'Developer', icon: WrenchIcon, href: _toggle, current: false },
   { name: 'User', icon: UserIcon, href: _toggle, current: false },
 ];
 
