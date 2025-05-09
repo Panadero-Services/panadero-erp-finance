@@ -31,7 +31,6 @@
         "internet-available": "^1.0.0",
         "mysql": "^2.18.1",
         "node-fetch": "^3.3.2",
-        "panadero-bridge": "github:lieuwebakker/panadero-bridge",
         "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
         "panadero-grid": "github:Panadero-Services/panadero-grid",
         "panadero-minigames": "github:lieuwebakker/panadero-minigames",
