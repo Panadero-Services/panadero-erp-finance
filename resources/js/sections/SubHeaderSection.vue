@@ -182,7 +182,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
             </div>
 
             <!-- Responsive Navigation Menu optional ... needs work-->
-            <div class="flex justify-end sm:items-right align-right md:text-sm col-span-5 md:col-span-2">
+            <div v-if="!(set.self=='nope')" class="flex justify-end sm:items-right align-right md:text-sm col-span-5 md:col-span-2">
                 
                 <div  v-if="set.project.id>0 && !set.mode.noob" class="flex space-x-0.5 mx-1">
                     <div @click="switchCat(0)" :class="[_button1, _switchSelected]">{{set.domain}}.{{set.project.title}}.{{set.project.environment}}.</div>

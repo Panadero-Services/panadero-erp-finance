@@ -254,7 +254,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
                 </select>
             </div>
 
-            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class="flex">
+            <div v-if="!set.mode.noob && !(set.self=='nope')" :class= "[_button1, _switchUnSelected]" class="flex">
                 <ellipsis-vertical-icon @click="set.mode.full= !set.mode.full " class="w-4  text-gray-400"  title="markers" />
                 <div v-if="set.mode.full" >
                     <button @click="_save" type="button" :class="_button2">Save</button>
@@ -270,7 +270,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
                 </div>
             </div>
 
-            <div v-if="!set.mode.noob" :class= "[_button1, _switchUnSelected]" class="flex">
+            <div v-if="!set.mode.noob && !(set.self=='nope')" :class= "[_button1, _switchUnSelected]" class="flex">
                 <ellipsis-vertical-icon @click="set.mode.advanced= !set.mode.advanced " class="w-4  text-gray-400"  title="markers" />
                 <div v-if="set.mode.advanced" >
                     <div v-if="set.mode.advanced" >
