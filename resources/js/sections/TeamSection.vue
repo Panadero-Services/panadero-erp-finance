@@ -288,7 +288,7 @@ const _buttons = computed( () => { return [
       <template #default>
 
          <!-- Teams Section h-64 -->  
-         <div class="p-2 h-64 " :class="[_font.base, _color.active]"> 
+         <div class="p-2 h-80 " :class="[_font.base, _color.active]"> 
             <div :class="[_font.subtitle, _color.inactive]">Teams</div>
 
             <!-- Teams Input Section -->
@@ -309,11 +309,11 @@ const _buttons = computed( () => { return [
             </div>
 
             <!-- Teams Select Active Team -->
-            <div class=" overflow-y-scroll h-32 mt-2">
+            <div class=" overflow-y-scroll h-64 mt-2">
                <div class="ml-2 flex flex-wrap ">
                   <div v-for="_team in _teams" class="">
                      <div>
-                        <button type="button" @click="_actualTeam=_team.name" class="mt-4" :class="[_actualTeam==_team.name ? _label.active : _label.inactive, _label.hover]">{{_team.name}}</button>
+                        <button type="button" @click="_actualTeam=_team.name" class="mt-1" :class="[_actualTeam==_team.name ? _label.active : _label.inactive, _label.hover]">{{_team.name}}</button>
                      </div>
                   </div>
                </div>

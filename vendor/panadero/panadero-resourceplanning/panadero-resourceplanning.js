@@ -856,9 +856,6 @@ class panaderoResourcePlanning {
       gantt.deleteMarker(_id);
     }
 
-
-
-
     async cssMarker() {
         gantt.templates.resource_cell_class = function(start_date, end_date, resource, tasks) {
             var css = [];
@@ -935,17 +932,6 @@ class panaderoResourcePlanning {
                 },
                 { view: "scrollbar", id: "scrollHor"}
             ]
-        };
-
-        gantt.templates.scale_cell_class = function(date) {
-            if(date.getDay()==0||date.getDay()==6) {
-               return "weekend";
-           }
-        };
-        gantt.templates.timeline_cell_class = function(task,date) {
-            if(date.getDay()==0||date.getDay()==6) { 
-                return "weekend" ;
-            }
         };
     }
 
@@ -1071,6 +1057,22 @@ class panaderoResourcePlanning {
                             ]}
             ]
         };
+
+
+    gantt.templates.scale_cell_class = function(date) {
+        if(date.getDay()==0||date.getDay()==6) {
+           return "weekend";
+       }
+    };
+    gantt.templates.timeline_cell_class = function(task,date) {
+        if(date.getDay()==0||date.getDay()==6) { 
+            return "weekend" ;
+        }
+    };
+
+
+
+
     }
 
     async setLevel (_timeFrame) {
@@ -1078,7 +1080,16 @@ class panaderoResourcePlanning {
         gantt.ext.zoom.init(this.zoomConfig);
         gantt.ext.zoom.setLevel(_timeFrame);
     }
+
+
+
+
+
 }
+
+
+
+
 
 export { moduleName, moduleVersion, moduleGit, panaderoResourcePlanning, _resourceData, _ppl, _links }
 /** @license  v.9.0.7 Professional */

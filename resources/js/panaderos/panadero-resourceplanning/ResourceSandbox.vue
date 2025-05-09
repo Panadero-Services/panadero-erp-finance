@@ -12,6 +12,8 @@ const {resources, resourceData, links, colors, defaultColor, taskScaleColor, wee
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
 
+
+
 // call parameters
 const props = defineProps({
     contract: Object,
@@ -34,7 +36,7 @@ onMounted(async ()=> {
     await planning.cssMarker();
     await planning.drawHourCircles();
     await planning.lightBox();
-    await planning.configLayout(_resource_columns);
+    await planning.configLayout(_resource_columns, weekendColor, darkWeekendColor);
 
     await props.set.setProjectType('resourcePlanning');
 
@@ -192,6 +194,7 @@ console.log("show Popup")
 defineExpose({ _load, _save });
 
 // markers
+var _markers = ref([]);
 const _ClearMarkers = async () => {
     _markers.value.forEach(m => { 
         planning.deleteMarker(m);
@@ -223,11 +226,8 @@ const _calendarWrappers = async () =>{
         _AddMarker();
         _popup.hide();
     });
-
-
 }
 
-var _markers = ref([]);
 
 // css
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
@@ -308,4 +308,9 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-900 text-gray-400 dark:t
   gap: 12px;
   justify-content: space-between;
 }
+
+
+
+
+
 </style>

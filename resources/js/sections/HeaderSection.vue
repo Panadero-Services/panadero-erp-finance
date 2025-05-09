@@ -43,6 +43,15 @@ menu.push( { name: 'Home',url: route('home/dashboard'),route: 'home/dashboard', 
 if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route('home/welcome'),route: 'home/welcome', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('home/tiers'),route: 'home/tiers', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'ERP',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'erp') menu.push( { name: 'Mood',url: route('erp/mood'),route: 'erp/mood', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'erp') menu.push( { name: 'Resources',url: route('erp/resources'),route: 'erp/resources', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'erp') menu.push( { name: 'Sandbox',url: route('erp/sandbox'),route: 'erp/sandbox', when:() => usePage().props.auth.user });
+
+
+
+
+
+
 
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },

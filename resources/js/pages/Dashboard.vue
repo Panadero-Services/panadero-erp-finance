@@ -20,6 +20,9 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
+
+_set.domainFunction = "home";
+
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 

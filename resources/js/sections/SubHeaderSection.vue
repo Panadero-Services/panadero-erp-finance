@@ -71,8 +71,9 @@ let _animation= ref(true);
 */
 const _subHeader=ref(true);
 
-// buttons
-const _buttons = ['primera', 'segundo', 'tercera'];
+// categories
+const userId = ref('uid'+usePage().props.auth.user.id);
+const _categories = ['primera','segundo','tercera', userId.value ];
 const _changeCat = async (_cat) => { props.set.project.category = _cat; }
 const switchCat = async (_a) => { props.set.project.category = _categories[_a];}
 // css
@@ -113,7 +114,6 @@ watch(pulse, async (_bool) => {
   }
 })
 
-const _categories = ['primera','segundo','tercera'];
 const _button1 = "m-1 inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset min-w-6";
 const _switchSelected = "ring-indigo-200 dark:ring-gray-600 text-indigo-400 dark:text-gray-300 bg-indigo-50 dark:bg-indigo-950 dark:text-indigo-300";
 const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:text-gray-500 dark:hover:ring-indigo-400 hover:ring-indigo-300 hover:text-gray-400";
@@ -189,6 +189,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                     <div @click="switchCat(0)" :class="[_button1,set.project.category=='primera' ? _switchSelected : _switchUnSelected]">00</div>
                     <div @click="switchCat(1)" :class="[_button1,set.project.category=='segundo' ? _switchSelected : _switchUnSelected]">01</div>
                     <div @click="switchCat(2)" :class="[_button1,set.project.category=='tercera' ? _switchSelected : _switchUnSelected]">02</div>
+                    <div @click="switchCat(3)" :class="[_button1,set.project.category==userId ? _switchSelected : _switchUnSelected]">{{userId}}</div>
                 </div>   
 
                 

@@ -27,6 +27,9 @@ const props = defineProps({
     page: Object,
     baseSections: Object
 });
+
+_set.domainFunction = "erp";
+
 const myChild = ref(null);
 const _pulse = ref(false);
 provide(/* key */ 'pulse', /* value */ _pulse);

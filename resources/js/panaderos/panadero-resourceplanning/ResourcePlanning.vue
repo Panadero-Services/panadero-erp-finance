@@ -295,6 +295,7 @@ const _configLayout = async (_resource_columns) => {
 }
 
 onMounted(async ()=> {
+    
     await _config();
     await _configColumns();
     var _resource_columns = await _configResourceColumns();

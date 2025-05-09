@@ -115,6 +115,8 @@ const callback = async (_fname, _arguments="") => {
 }
 */
 
+const userId = ref('uid'+usePage().props.auth.user.id);
+
 const _default = async () => {
    const _path = _set.domain+".userId."+usePage().props.auth.user.id;
 
@@ -161,7 +163,7 @@ const _buttons = computed( () => { return [
    { active:1, name:"Cancel", css:""},  //6
 ]});
 
-const _categories = ['primera','segundo','tercera'];
+const _categories = ['primera','segundo','tercera', userId.value ];
 
 const switchCat = async (_a) => { _set.project.category = _categories[_a];}
 
@@ -283,6 +285,7 @@ var _msgLine = ref({_txt: "", _css:""});
                    <div @click="switchCat(0)"  :class="[_button1,_set.project.category=='primera' ? _label.active  : _label.inactive,]">00</div>
                    <div @click="switchCat(1)" :class="[_button1,_set.project.category=='segundo' ? _label.active  : _label.inactive,]">01</div>
                    <div @click="switchCat(2)" :class="[_button1,_set.project.category=='tercera' ? _label.active  : _label.inactive,]">02</div>
+                   <div @click="switchCat(3)" :class="[_button1,_set.project.category==userId ? _label.active  : _label.inactive,]">{{userId}}</div>
                </div>   
 
                <!-- Path -->
