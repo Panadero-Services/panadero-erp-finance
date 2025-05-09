@@ -3,8 +3,8 @@
 // *   API : panadero-resourceplanning      * *       * 
 // *   Location /modules/panadero-resourceplanning  * * 
 // *   Modified :JaWsome.Orbit   *                 * 
-// *   Date:    07 may 2025             *          *
-// *   Version: v3.1.62            *        *      *
+// *   Date:    08 may 2025             *          *
+// *   Version: v3.1.63            *        *      *
 // ** *     *       *   *       *   *   *   *     **
 // * *  *       *     *      *   *       *  *  * * *
 
@@ -15,12 +15,12 @@
 // ** 4. update design ... make it maintainable 
 // ** 5. DO NOT REPEAT YOURSELF !!!!
 
-/** @license  v.3.1.62 Panaderos Professional */
+/** @license  v.3.1.63 Panaderos Professional */
 
 const moduleName = "Panadero-ResourcePlanning";
 const moduleGit = "https://github.com/lieuwebakker/panadero-resourceplanning";
-const moduleVersion = "3.1.62";
-const moduleDate = "07 may 2025";
+const moduleVersion = "3.1.63";
+const moduleDate = "08 may 2025";
 const moduleAuthor = "JaWsome.Orbit";
 const moduleTitle = "Resource Planning Organized.! modular style!";
 import "@/panaderos/panadero-resourceplanning/panaderogantt.css";
