@@ -265,7 +265,7 @@
   --dhx-gantt-task-text-font-weight: 500;
   --dhx-gantt-heading-font-size: 22px;
   --dhx-gantt-heading-font-weight: 300;
-  --dhx-gantt-caption-font-size: 14px;
+  --dhx-gantt-caption-font-size: 12px;
   --dhx-gantt-caption-font-weight: 400;
   --dhx-gantt-scale-color: #767676;
   --dhx-gantt-container-color: #3f3f3f;
@@ -300,7 +300,7 @@
   --dhx-gantt-task-text-font-weight: 500;
   --dhx-gantt-heading-font-size: 22px;
   --dhx-gantt-heading-font-weight: 300;
-  --dhx-gantt-caption-font-size: 14px;
+  --dhx-gantt-caption-font-size: 12px;
   --dhx-gantt-caption-font-weight: 400;
   --dhx-gantt-scale-color: #767676;
   --dhx-gantt-border-radius: 0;
@@ -337,7 +337,7 @@
   --dhx-gantt-task-text-font-weight: 500;
   --dhx-gantt-heading-font-size: 22px;
   --dhx-gantt-heading-font-weight: 300;
-  --dhx-gantt-caption-font-size: 14px;
+  --dhx-gantt-caption-font-size: 12px;
   --dhx-gantt-caption-font-weight: 400;
   --dhx-gantt-scale-color: #767676;
   --dhx-gantt-border-radius: 0;
@@ -517,7 +517,7 @@
   --dhx-gantt-heading-font-size: 24px;
   --dhx-gantt-important-font-size: 16px;
   --dhx-gantt-regular-font-size: 16px;
-  --dhx-gantt-caption-font-size: 16px;
+  --dhx-gantt-caption-font-size: 12px;
   --dhx-gantt-btn-outline-color-hover: #212121;
   --dhx-gantt-btn-outline-color-active: #FFFFFF;
 }
@@ -538,8 +538,8 @@
   --dhx-gantt-task-background: #A395FF;
   --dhx-gantt-task-border: 1px solid rgba(0, 0, 0, 0.1);
   --dhx-gantt-base-colors-warning: #694E02;
-  --dhx-gantt-base-colors-success: #115700;
-  --dhx-gantt-base-colors-error: #800901;
+  --dhx-gantt-base-colors-success: #77D257;
+  --dhx-gantt-base-colors-error: #FF5733 ;
   --dhx-gantt-base-colors-error-text: #141414;
   --dhx-gantt-base-colors-select: #2A2A2A;
   --dhx-gantt-base-colors-hover-color: #2A2A2A;
@@ -549,11 +549,11 @@
   --dhx-gantt-undo-delete-background: var(--dhx-gantt-popup-background);
   --dhx-gantt-undo-delete-color: var(--dhx-gantt-base-colors-text-base);
   --dhx-gantt-popup-border: 1px solid #4B4B4B;
-  --dhx-gantt-font-size: 16px;
+  --dhx-gantt-font-size: 10px;
   --dhx-gantt-heading-font-size: 24px;
-  --dhx-gantt-important-font-size: 16px;
-  --dhx-gantt-regular-font-size: 16px;
-  --dhx-gantt-caption-font-size: 16px;
+  --dhx-gantt-important-font-size: 10px;
+  --dhx-gantt-regular-font-size: 10px;
+  --dhx-gantt-caption-font-size: 12px;
   --dhx-gantt-btn-outline-color-hover: var(--dhx-gantt-base-colors-text-light);
   --dhx-gantt-btn-outline-color-active: var(--dhx-gantt-base-colors-text-light);
 }
@@ -590,7 +590,7 @@
   --dhx-gantt-heading-font-size: 24px;
   --dhx-gantt-important-font-size: 14px;
   --dhx-gantt-regular-font-size: 14px;
-  --dhx-gantt-caption-font-size: 14px;
+  --dhx-gantt-caption-font-size: 12px;
   --dhx-gantt-btn-outline-color-hover: var(--dhx-gantt-base-colors-text-light);
   --dhx-gantt-btn-outline-color-active: var(--dhx-gantt-base-colors-text-light);
 }
@@ -3289,17 +3289,19 @@ div.dhx_modal_cover {
 
     .gantt_marker.today{
         background: #ffb121;
-    
+    }
+
     .gantt_marker.meeting{
-      color : #6f6f6f;
       background: #7F54FA;
-      font-size: 10px;
     }
 
     .status_line {
-      background-color: #7F54FA;
-      font-size: 10px;
+      background-color: #6f6f6f;
     }
 
 
-    }
+
+
+
+
+
