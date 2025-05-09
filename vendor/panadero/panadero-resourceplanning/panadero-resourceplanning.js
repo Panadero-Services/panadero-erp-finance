@@ -12,7 +12,8 @@
 // ** 1  code fast ... make it work
 // ** 2. code good ... make it perfect
 // ** 3. code modular ... make it reuseable 
-// ** 4. DO NOT REPEAT YOURSELF !!!!
+// ** 4. update design ... make it maintainable 
+// ** 5. DO NOT REPEAT YOURSELF !!!!
 
 /** @license  v.3.1.62 Panaderos Professional */
 
