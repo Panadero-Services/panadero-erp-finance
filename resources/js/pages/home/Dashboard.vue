@@ -156,74 +156,74 @@ const _modules = [
 ];
 
 const _functions = [
-    { "item":"Home", "title":"Home Page", "description": "This function is all about articles/ posts and other content", "options" : 
+    { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework + dashboards, handles all business solutions", "version" : "v1.0.03", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Welcome', url: route('home/welcome'),    route: 'home/welcome' },
                 { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' }]
-                ,"status":"upgrading"
+                ,"status":"featured", "progress": 96
     }, 
 
-    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content", "options" : 
+    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content",  "version" : "v0.1.21", "options" : 
             [   
                 { name: 'Dashboard',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
                 { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user }]
-                ,"status":"featured"
+                ,"status":"upgrading", "progress": 10
 
     }, 
-    { "item":"ERP", "title":"Resource Planning", "description": "This function is all planning and control over time consuming resources", "options" : 
+    { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "version" : "v3.1.63", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'resoures' },
                 { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user },
                 { name: 'Sandbox',    url: route('erp/sandbox'),    route: 'erp/resoures' } ]
-                ,"status":"featured"
+                ,"status":"upgrading", "progress": 65
      },
-    { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "options" : 
+    { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "version" : "v1.1.04", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
-            ,"status":"scheduled"
+            ,"status":"scheduled", "progress": 10
      },
     { "item":"I3P", "title":"Production Control", "description": "This function controls your production processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
-            ,"status":"scheduled"
+            ,"status":"scheduled", "progress": 5
      },
     { "item":"Sales", "title":"Sales Manager", "description": "This function controls your sales processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
-            ,"status":"scheduled"
+            ,"status":"scheduled", "progress": 0
      },
     { "item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'home/dashboard' },
                 { name: 'Web3',    url: route('web3'),    route: 'web3' } ]
-            ,"status":"upgrading"
+            ,"status":"upgrading", "progress": 40
      },
 
     { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
-            ,"status":"upgrading"
+            ,"status":"upgrading", "progress": 10
      },
     { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
-            ,"status":"scheduled"
+            ,"status":"scheduled", "progress": 10
      },
     { "item":"DeFi", "title":"Decentralized Finance", "description": "This function takes care of your decentralized payment architecture", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' }
             ]
-            ,"status":"scheduled"
+            ,"status":"scheduled", "progress": 20
 
      },
 
@@ -232,14 +232,14 @@ const _functions = [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' }
             ]
-            ,"status":"deprecated"
+            ,"status":"deprecated", "progress": 10
 
      },
     { "item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resoures' } ]
-            ,"status":"deprecated"
+            ,"status":"deprecated", "progress": 10
      },
 ];
 
@@ -276,7 +276,7 @@ const filter = ref("");
             <div class="">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 5xl:grid-cols-6 xl:grid-cols-3 pt-12 gap-4 ">
-                    <template v-for="_f in _functions"><div v-if="_f.title.toLowerCase().includes(filter)" ><business-function-card :set="_set" :f="_f"   /></div></template>
+                    <template v-for="_f in _functions"><div v-if="_f.title.toLowerCase().includes(filter)" ><business-function-card :set="_set" :f="_f"  :progress="_f.progress" /></div></template>
                     <template v-for="_m in _modules"><div v-if="_m.title.toLowerCase().includes(filter)" ><module-card :set="_set" :f="_m"   /></div></template>
 
                 </div>
