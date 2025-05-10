@@ -55,8 +55,8 @@ const _icon = " w-4 h-4 mr-2 ";
                 </div>
 
             <div class="mt-4">
-                <div class="text-xs mt-4 ml-6 text-indigo-600 dark:text-indigo-400">
-                    <p>{{f.description}}</p>
+                <div class="text-xs mt-4 ml-1 text-indigo-600 dark:text-indigo-400">
+                    <p class="line-clamp-1">{{f.description}}</p>
                     <p>{{f.version || 'v0.0.00'}}</p>
 
                     <h2 class="mt-2 text-black dark:text-white text-xs">{{set.settings}}<span>Business Requirement dbStruct</span> </h2>
