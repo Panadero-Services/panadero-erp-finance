@@ -11,7 +11,7 @@ const props = defineProps({
     f: Object, 
     menu: Object, 
     featured: Boolean, 
-    progress: String
+    progress: Number
 });
 
 const _navigate = () =>  {

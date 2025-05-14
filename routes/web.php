@@ -102,6 +102,23 @@ Route::middleware([
     })->name('erp/sandbox');
 
 
+    Route::get('ecommerce/dashboard', function () {
+        return Inertia::render('ecommerce/EcommerceDashboard', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('ecommerce/dashboard');
+
+
+
+
+    Route::get('ecommerce/storefront', function () {
+        return Inertia::render('Storefront', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('ecommerce/storefront');
+
 
 });
 
