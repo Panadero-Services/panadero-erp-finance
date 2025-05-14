@@ -87,6 +87,17 @@ Route::middleware([
         ]);
     })->name('erp/mood')->middleware(RoleAccessMiddleware::class.':admin,author');
 
+
+    Route::get('erp/pert', function () { 
+        return Inertia::render('Pert', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('erp/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+
+
+
     Route::get('erp/resources', function () {
         return Inertia::render('Resources', [
             'page'=> Page::with('sections')->where('title','Resources')->first(),
@@ -109,16 +120,12 @@ Route::middleware([
         ]);
     })->name('ecommerce/dashboard');
 
-
-
-
     Route::get('ecommerce/storefront', function () {
         return Inertia::render('Storefront', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('ecommerce/storefront');
-
 
 });
 
@@ -160,8 +167,6 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('bots');
-
-
 
     Route::get('project', function () {
         return Inertia::render('Project', [

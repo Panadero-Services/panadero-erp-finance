@@ -178,6 +178,7 @@ const _functions = [
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'resources' },
                 { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user },
+                { name: 'Pert',    url: route('erp/pert'),    route: 'pert',     when:() => usePage().props.auth.user },
                 { name: 'Sandbox',    url: route('erp/sandbox'),    route: 'sandbox' } ]
                 ,"status":"upgrading", "progress": 65
      },
