@@ -20,9 +20,6 @@ const emit = defineEmits(['kill', 'wrench']);
 
 import { DiagramEditor }  from  '@dhx/diagram/codebase/diagram.js';
 
-
-
-
 // Globals
 const props = defineProps({
     //ref: Object, ref is a reserved property
