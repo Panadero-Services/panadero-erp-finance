@@ -18,7 +18,6 @@ const emit = defineEmits(['kill', 'wrench']);
 
 //import './codebase/diagram.js';
 
-
 import { DiagramEditor }  from  '@dhx/diagram/codebase/diagram.js';
 
 
