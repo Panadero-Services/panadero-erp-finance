@@ -19,7 +19,7 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
-        "@dhx/diagram": "file:vendor/dhx_diagram",
+        "@dhx/diagram": "file:vendor/dhx_diagram_6",
         "@dhx/kanban": "file:vendor/dhx_kanban",
         "@headlessui/vue": "^1.7.23",
         "@heroicons/vue": "^2.1.5",
