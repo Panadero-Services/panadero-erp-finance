@@ -1,6 +1,9 @@
 <script setup>
 import { ref, provide } from 'vue';
 
+import "@dhx/suite/codebase/suite.js?v=9.1.3";
+import "@dhx/suite/codebase/suite.css?v=9.1.3";
+
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 

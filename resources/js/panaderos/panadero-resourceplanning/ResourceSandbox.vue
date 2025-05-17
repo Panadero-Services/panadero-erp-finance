@@ -5,7 +5,8 @@ import { moduleName, moduleVersion, panaderoResourcePlanning, _resourceData, _pp
 import { getData } from "@/panaderos/panadero-resourceplanning/constants/planning-data.js";
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 
-
+import "/vendor/dhx_suite/codebase/suite.js?v=9.1.3";
+import "/vendor/dhx_suite/codebase/suite.css?v=9.1.3";
 
 const {resources, resourceData, links, colors, defaultColor, taskScaleColor, weekendColor, darkWeekendColor } =getData();
 

@@ -43,14 +43,11 @@ menu.push( { name: 'Home',url: route('home/dashboard'),route: 'home/dashboard', 
 if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route('home/welcome'),route: 'home/welcome', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('home/tiers'),route: 'home/tiers', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'ERP',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'erp') menu.push( { name: 'Mind',url: route('erp/mind'),route: 'erp/mind', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'erp') menu.push( { name: 'Plan',url: route('erp/plan'),route: 'erp/plan', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'Mood',url: route('erp/mood'),route: 'erp/mood', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'erp') menu.push( { name: 'Resources',url: route('erp/resources'),route: 'erp/resources', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'erp') menu.push( { name: 'Sandbox',url: route('erp/sandbox'),route: 'erp/sandbox', when:() => usePage().props.auth.user });
-
-
-
-
-
+if (props.set.domainFunction === 'erp') menu.push( { name: 'Lane',url: route('erp/lane'),route: 'erp/lane', when:() => usePage().props.auth.user });
+//if (props.set.domainFunction === 'erp') menu.push( { name: 'Sand',url: route('erp/sand'),route: 'erp/sand', when:() => usePage().props.auth.user });
 
 
 const menuz = [

@@ -176,10 +176,11 @@ const _functions = [
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "version" : "v3.1.63", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'resources' },
+                { name: 'Mind',    url: route('erp/mind'),    route: 'mind',     when:() => usePage().props.auth.user },
+                { name: 'Plan',    url: route('erp/plan'),    route: 'plan' },
                 { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user },
-                { name: 'Pert',    url: route('erp/pert'),    route: 'pert',     when:() => usePage().props.auth.user },
-                { name: 'Sandbox',    url: route('erp/sandbox'),    route: 'sandbox' } ]
+                { name: 'Lane',    url: route('erp/lane'),    route: 'lane',     when:() => usePage().props.auth.user },
+                { name: 'Sand',    url: route('erp/sand'),    route: 'sand' } ]
                 ,"status":"upgrading", "progress": 65
      },
     { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "version" : "v1.1.04", "options" : 
@@ -248,6 +249,8 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
 
 const filter = ref("");
 
+const refreshPage = () => { window.location.reload(); };
+
 </script>
 
 <template>
@@ -265,6 +268,7 @@ const filter = ref("");
             <div class="pl-2 " >
                 <button @click="_set.dark=false" type="button" :class="_button">Light</button>
                 <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
+                <button @click="refreshPage" type="button" :class="_button">Refresh</button>
             </div>      
             <div class="" id="toolbar">
                 <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" 

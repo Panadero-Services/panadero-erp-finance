@@ -5,6 +5,10 @@
 /storage/*.key
 /vendor/*
 !vendor/panadero/
+!vendor/dhx_diagram6/
+!vendor/dhx_gantt/
+!vendor/dhx_kanban/
+!vendor/dhx_suite/
 .env
 .env.backup
 .env.production

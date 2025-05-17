@@ -87,30 +87,33 @@ Route::middleware([
         ]);
     })->name('erp/mood')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-
-    Route::get('erp/pert', function () { 
-        return Inertia::render('Pert', [
+    Route::get('erp/mind', function () { 
+        return Inertia::render('Mind', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('erp/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('erp/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-
-
-
-    Route::get('erp/resources', function () {
+    Route::get('erp/plan', function () {
         return Inertia::render('Resources', [
             'page'=> Page::with('sections')->where('title','Resources')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('erp/resources');
+    })->name('erp/plan');
 
-    Route::get('erp/sandbox', function () {
+    Route::get('erp/lane', function () { 
+        return Inertia::render('Lane', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('erp/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('erp/sand', function () {
         return Inertia::render('Sandbox', [
             'page'=> Page::with('sections')->where('title','Sandbox')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('erp/sandbox');
+    })->name('erp/sand');
 
 
     Route::get('ecommerce/dashboard', function () {
@@ -119,6 +122,15 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('ecommerce/dashboard');
+
+    Route::get('erp/resources', function () {
+        return Inertia::render('Resources', [
+            'page'=> Page::with('sections')->where('title','Resources')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('erp/resources');
+
+
 
     Route::get('ecommerce/storefront', function () {
         return Inertia::render('Storefront', [

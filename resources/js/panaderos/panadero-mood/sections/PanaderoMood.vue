@@ -194,7 +194,7 @@ onMounted(async ()=> {
   await props.set.initialize();
   await props.set.setProjectType('mood');
 
-  const { columns, cards, cardShape, users } = getData();   
+  var { columns, cards, cardShape, users } = getData();   
 
     // override users from team settings
     const _teamPath = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment;
