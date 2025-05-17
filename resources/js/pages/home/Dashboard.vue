@@ -188,7 +188,7 @@ const _functions = [
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"scheduled", "progress": 10
     },
-    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "options" : 
+    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "version" : "v1.1.01", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Mind',    url: route('project/mind'),    route: 'project/mind',     when:() => usePage().props.auth.user },
