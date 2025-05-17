@@ -176,25 +176,26 @@ const _functions = [
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "version" : "v3.1.63", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
-                { name: 'Mind',    url: route('erp/mind'),    route: 'mind',     when:() => usePage().props.auth.user },
-                { name: 'Plan',    url: route('erp/plan'),    route: 'plan' },
+                { name: 'Resources',    url: route('erp/resources'),    route: 'resources' },
                 { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user },
                 { name: 'Lane',    url: route('erp/lane'),    route: 'lane',     when:() => usePage().props.auth.user },
-                { name: 'Sand',    url: route('erp/sand'),    route: 'sand' } ]
+                { name: 'Sand',    url: route('erp/sand'),    route: 'sand' }]
                 ,"status":"upgrading", "progress": 65
-     },
+    },
     { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "version" : "v1.1.04", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"scheduled", "progress": 10
-     },
-    { "item":"I3P", "title":"Production Control", "description": "This function controls your production processes", "options" : 
-            [   
+    },
+    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "options" : 
+            [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
-            ,"status":"scheduled", "progress": 5
-     },
+                { name: 'Mind',    url: route('project/mind'),    route: 'project/mind',     when:() => usePage().props.auth.user },
+                { name: 'Plan',    url: route('project/plan'),    route: 'project/plan' },
+                { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user }]
+            ,"status":"scheduled", "progress": 55
+    },
     { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "options" : 
             [   
                 { name: 'Dashboard', url: route('ecommerce/dashboard'),    route: 'ecommerce/dashboard' },
@@ -206,14 +207,14 @@ const _functions = [
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'home/dashboard' },
                 { name: 'Web3',    url: route('web3'),    route: 'web3' } ]
             ,"status":"upgrading", "progress": 40
-     },
+    },
 
     { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"upgrading", "progress": 10
-     },
+    },
     { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
@@ -227,7 +228,7 @@ const _functions = [
             ]
             ,"status":"scheduled", "progress": 20
 
-     },
+    },
 
     { "item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "options" : 
             [   
@@ -236,7 +237,7 @@ const _functions = [
             ]
             ,"status":"deprecated", "progress": 10
 
-     },
+    },
     { "item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },

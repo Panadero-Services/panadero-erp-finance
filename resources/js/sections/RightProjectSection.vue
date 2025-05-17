@@ -189,7 +189,7 @@ const _color = { accent: "text-indigo-600 dark:text-indigo-300",
                  stats: "text-green-600 dark:text-green-400"
                };
 
-const _label = {  active: "m-1 inline-flex items-center rounded-md bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-800 dark:text-indigo-400 ring-1 ring-inset ring-indigo-600/20", 
+const _label = {  active: "m-1 inline-flex items-center rounded-md bg-indigo-500/10 px-2 py-1 text-xs font-medium text-indigo-800 dark:text-indigo-400 ring-1 ring-inset ring-indigo-400", 
                   inactive: "m-1 inline-flex items-center rounded-md bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20",
                   hover: "hover:ring-indigo-600 "
                };

@@ -85,11 +85,8 @@ const _basic = async () => {
     editor.diagram.data.parse(_jsonBasic);
 }
 
-
-
-const _loadGantt = async () => {
+const _loadPlan = async () => {
   if(props.set.project.id > 0){
-
     const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
     //const _type = props.set.projectType;
     const _type = "resourcePlanning";
@@ -99,9 +96,7 @@ const _loadGantt = async () => {
 
 let editor, _state;
  
-
-
- const _data = [
+const _data = [
         {
             "id": "1",
             "text": "Initial Start",
@@ -119,7 +114,6 @@ onMounted(async ()=> {
     await props.set.initialize();
     await props.set.setProjectType('mind');
     // editor.parse(mindmapData);
-
 
             const defaults = {
                 start: {
@@ -179,7 +173,7 @@ const pulse = inject("pulse");
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_clear" type="button" :class="_button">Clear</button>
             <button @click="_basic" type="button" :class="_button">Basic</button>
-            <button @click="_loadGantt" type="button" :class="_button">loadGantt</button>
+            <button @click="_loadPlan" type="button" :class="_button">loadPlan</button>
         </div>      
     </div>
     

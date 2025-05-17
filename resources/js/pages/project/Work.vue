@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-diagram/sections/PanaderoMind.vue";
+import MainSection from "@/panaderos/panadero-mood/sections/PanaderoMood.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -50,7 +50,7 @@ _set.layout.footer=false;
       <template #default>
          <div id="" class="">
             <div class="">
-               <MainSection ref="myChild" :set="_set" :db="_db" />
+               <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" />
             </div>
          </div>
       </template>

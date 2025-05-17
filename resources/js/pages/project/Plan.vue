@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-diagram/sections/PanaderoMind.vue";
+import MainSection from "@/panaderos/panadero-resourceplanning/ResourcePlanning.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -23,13 +23,13 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-_set.domainFunction = "project";
-
-
 const props = defineProps({
     page: Object,
     baseSections: Object
 });
+
+_set.domainFunction = "project";
+
 const myChild = ref(null);
 const _pulse = ref(false);
 provide(/* key */ 'pulse', /* value */ _pulse);
@@ -48,9 +48,9 @@ _set.layout.footer=false;
       <template #intro />
 
       <template #default>
-         <div id="" class="">
+         <div id="whateverz" class="w-screen">
             <div class="">
-               <MainSection ref="myChild" :set="_set" :db="_db" />
+               <MainSection ref="myChild" :contract="_contract" :set="_set" :db="_db" />
             </div>
          </div>
       </template>

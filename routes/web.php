@@ -116,6 +116,29 @@ Route::middleware([
     })->name('erp/sand');
 
 
+    // Business Function : Poject Management Software
+    Route::get('project/mind', function () { 
+        return Inertia::render('Mind', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('project/plan', function () { 
+        return Inertia::render('project/Plan', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/plan')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+ Route::get('project/work', function () { 
+        return Inertia::render('project/Work', [
+            'page'=> Page::with('sections')->where('title','project/work')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/work')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+
     Route::get('ecommerce/dashboard', function () {
         return Inertia::render('ecommerce/EcommerceDashboard', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
