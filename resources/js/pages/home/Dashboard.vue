@@ -176,11 +176,10 @@ const _functions = [
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "version" : "v3.1.63", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'resources' },
-                { name: 'Mood',    url: route('erp/mood'),    route: 'mood',     when:() => usePage().props.auth.user },
-                { name: 'Lane',    url: route('erp/lane'),    route: 'lane',     when:() => usePage().props.auth.user },
-                { name: 'Sand',    url: route('erp/sand'),    route: 'sand' }]
-                ,"status":"upgrading", "progress": 65
+                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' },
+                { name: 'Mood',    url: route('erp/mood'),    route: 'erp/mood',     when:() => usePage().props.auth.user },
+                { name: 'Sand',    url: route('erp/sand'),    route: 'erp/sand' }]
+                ,"status":"upgrading", "progress": 60
     },
     { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "version" : "v1.1.04", "options" : 
             [   
@@ -192,9 +191,11 @@ const _functions = [
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Mind',    url: route('project/mind'),    route: 'project/mind',     when:() => usePage().props.auth.user },
-                { name: 'Plan',    url: route('project/plan'),    route: 'project/plan' },
+                { name: 'Pert',    url: route('project/pert'),    route: 'project/pert',     when:() => usePage().props.auth.user },
+                { name: 'Lane',    url: route('project/lane'),    route: 'project/lane',     when:() => usePage().props.auth.user },
+                { name: 'Plan',    url: route('project/plan'),    route: 'project/plan',     when:() => usePage().props.auth.user },
                 { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user }]
-            ,"status":"scheduled", "progress": 55
+            ,"status":"scheduled", "progress": 80
     },
     { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "options" : 
             [   

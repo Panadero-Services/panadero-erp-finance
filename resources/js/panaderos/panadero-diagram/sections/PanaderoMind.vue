@@ -178,7 +178,7 @@ const pulse = inject("pulse");
     </div>
     
         <div class="" id="editor"></div>
-        <div class="bg-red-400 h-screen w-screen" id="mindmap"></div>
+        <div class="h-screen w-screen" id="mindmap"></div>
 </div>
 
 </template>

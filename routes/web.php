@@ -81,32 +81,18 @@ Route::middleware([
     })->name('erp/dashboard');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('erp/mood', function () { 
-        return Inertia::render('Mood', [
+        return Inertia::render('erp/Mood', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('erp/mood')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    Route::get('erp/mind', function () { 
-        return Inertia::render('Mind', [
-            'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('erp/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
-
-    Route::get('erp/plan', function () {
-        return Inertia::render('Resources', [
+    Route::get('erp/resources', function () {
+        return Inertia::render('erp/Resources', [
             'page'=> Page::with('sections')->where('title','Resources')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('erp/plan');
-
-    Route::get('erp/lane', function () { 
-        return Inertia::render('Lane', [
-            'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('erp/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('erp/resources');
 
     Route::get('erp/sand', function () {
         return Inertia::render('Sandbox', [
@@ -115,14 +101,27 @@ Route::middleware([
         ]);
     })->name('erp/sand');
 
-
     // Business Function : Poject Management Software
     Route::get('project/mind', function () { 
-        return Inertia::render('Mind', [
+        return Inertia::render('project/Mind', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('project/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('project/pert', function () { 
+        return Inertia::render('project/Pert', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('project/lane', function () { 
+        return Inertia::render('project/Lane', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('project/plan', function () { 
         return Inertia::render('project/Plan', [
@@ -133,7 +132,7 @@ Route::middleware([
 
  Route::get('project/work', function () { 
         return Inertia::render('project/Work', [
-            'page'=> Page::with('sections')->where('title','project/work')->first(),
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('project/work')->middleware(RoleAccessMiddleware::class.':admin,author');
@@ -145,15 +144,6 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('ecommerce/dashboard');
-
-    Route::get('erp/resources', function () {
-        return Inertia::render('Resources', [
-            'page'=> Page::with('sections')->where('title','Resources')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('erp/resources');
-
-
 
     Route::get('ecommerce/storefront', function () {
         return Inertia::render('Storefront', [

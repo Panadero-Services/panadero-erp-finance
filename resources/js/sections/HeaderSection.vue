@@ -46,12 +46,13 @@ if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('
 if (props.set.domainFunction === 'erp') menu.push( { name: 'ERP',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'Resources',url: route('erp/resources'),route: 'erp/resources', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'Mood',url: route('erp/mood'),route: 'erp/mood', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'erp') menu.push( { name: 'Lane',url: route('erp/lane'),route: 'erp/lane', when:() => usePage().props.auth.user });
 //if (props.set.domainFunction === 'erp') menu.push( { name: 'Sand',url: route('erp/sand'),route: 'erp/sand', when:() => usePage().props.auth.user });
 
 
 if (props.set.domainFunction === 'project') menu.push( { name: 'Project',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Mind',url: route('project/mind'),route: 'project/mind', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'project') menu.push( { name: 'Pert',url: route('project/pert'),route: 'project/pert', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'project') menu.push( { name: 'Lane',url: route('project/lane'),route: 'project/lane', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Plan',url: route('project/plan'),route: 'project/plan', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Work',url: route('project/work'),route: 'project/work', when:() => usePage().props.auth.user });
 
