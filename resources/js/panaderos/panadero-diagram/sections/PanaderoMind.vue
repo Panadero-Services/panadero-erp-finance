@@ -8,10 +8,10 @@ const emit = defineEmits(['kill', 'wrench']);
 //import { DiagramEditor } from "@dhx/diagram";
 //import {  } from "@dhx/diagram";
 
-import '@dhx/diagram/samples/common/index.css?v=6.0.10';
-import '@dhx/diagram/codebase/diagramWithEditor.css?v=6.0.10';
-import '@dhx/diagram/codebase/diagramWithEditor.js?v=6.0.10';
-import { swimlaneData } from '@dhx/diagram/samples/common/data.js';
+import '../codebase/index.css?v=6.0.10';
+import '../codebase/diagramWithEditor.css?v=6.0.10';
+import '../codebase/diagramWithEditor.js?v=6.0.10';
+import { swimlaneData } from '../codebase/data.js';
 
 //import '@dhx/diagram/codebase/diagramWithEditor.js?v=6.0.10';
 //import '@dhx/diagram/codebase/diagram.css';

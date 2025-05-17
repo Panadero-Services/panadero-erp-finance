@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-mind/sections/PanaderoMind.vue";
+import MainSection from "@/panaderos/panadero-diagram/sections/PanaderoMind.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
