@@ -28,6 +28,8 @@ const props = defineProps({
 // globals
 const _title="Mind";
 
+console.log('swimlaneData');
+console.log(swimlaneData);
 
 const _add = () => {}
 const _delete = () => {}
