@@ -230,6 +230,13 @@ onMounted(async ()=> {
         },
     });
 
+
+
+
+
+
+    
+
     editor.parse(_basic0);
 
 

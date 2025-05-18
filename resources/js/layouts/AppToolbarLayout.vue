@@ -63,7 +63,7 @@ const _toolbarItems = [
 ];
 
 // css
-const _indigo = " text-gray-400 dark:text-gray-400 hover:text-black dark:hover:text-yellow-400 ";
+const _indigo = " text-gray-600 dark:text-gray-200 hover:text-black dark:hover:text-yellow-400 ";
 const _sideSpacing = "mx-3";
 
 </script>
