@@ -142,7 +142,7 @@ const pulse = inject("pulse");
     </div>
     
     <div class="h-screen w-screen">
-      <div class="h-4/5 w-4/5" id="spreadsheet"></div>
+      <div class="h-4/5 w-full" id="spreadsheet"></div>
     </div>
 </div>
 
