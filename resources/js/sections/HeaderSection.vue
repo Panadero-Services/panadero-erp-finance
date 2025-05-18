@@ -55,6 +55,7 @@ if (props.set.domainFunction === 'project') menu.push( { name: 'Pert',url: route
 if (props.set.domainFunction === 'project') menu.push( { name: 'Lane',url: route('project/lane'),route: 'project/lane', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Plan',url: route('project/plan'),route: 'project/plan', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Work',url: route('project/work'),route: 'project/work', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'project') menu.push( { name: 'Fund',url: route('project/fund'),route: 'project/fund', when:() => usePage().props.auth.user });
 
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },

@@ -22,6 +22,7 @@
         "@dhx/diagram": "file:vendor/dhx_diagram_6",
         "@dhx/kanban": "file:vendor/dhx_kanban",
         "@dhx/suite": "file:vendor/dhx_suite",
+        "@dhx/spreadsheet": "file:vendor/dhx_spreadsheet_5.1.8",
         "@headlessui/vue": "^1.7.23",
         "@heroicons/vue": "^2.1.5",
         "@metamask/detect-provider": "^2.0.0",

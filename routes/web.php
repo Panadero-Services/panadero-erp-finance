@@ -137,6 +137,16 @@ Route::middleware([
         ]);
     })->name('project/work')->middleware(RoleAccessMiddleware::class.':admin,author');
 
+ Route::get('project/fund', function () { 
+        return Inertia::render('project/Fund', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/fund')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+
+
+
 
     Route::get('ecommerce/dashboard', function () {
         return Inertia::render('ecommerce/EcommerceDashboard', [

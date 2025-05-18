@@ -9,6 +9,7 @@
 !vendor/dhx_gantt/
 !vendor/dhx_kanban/
 !vendor/dhx_suite/
+!vendor/dhx_spreadsheet_5.1.8/
 .env
 .env.backup
 .env.production

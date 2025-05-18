@@ -194,7 +194,8 @@ const _functions = [
                 { name: 'Pert',    url: route('project/pert'),    route: 'project/pert',     when:() => usePage().props.auth.user },
                 { name: 'Lane',    url: route('project/lane'),    route: 'project/lane',     when:() => usePage().props.auth.user },
                 { name: 'Plan',    url: route('project/plan'),    route: 'project/plan',     when:() => usePage().props.auth.user },
-                { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user }]
+                { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user },
+                { name: 'Fund',    url: route('project/fund'),    route: 'project/fund',     when:() => usePage().props.auth.user }]
             ,"status":"scheduled", "progress": 80
     },
     { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "options" : 
