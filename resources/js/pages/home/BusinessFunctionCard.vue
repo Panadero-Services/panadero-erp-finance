@@ -44,7 +44,7 @@ const _icon = " w-4 h-4 mr-2 ";
                     <div @click="_navigate" class="mt-4 pt-3 text-black dark:text-white text-2xl text-center"> {{f.title}}</div>
 
 
-                    <div class="text-gray-600 dark:text-gray-400 text-xxs text-center"> Business Function </div>
+                    <div class="text-gray-600 dark:text-gray-400 text-xxs text-center"> Business Service </div>
 
                     <!-- Navigation Links -->
                     <template v-for="item in f.options" :key="item.name">
