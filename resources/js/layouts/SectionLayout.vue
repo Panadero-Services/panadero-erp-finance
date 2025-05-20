@@ -79,8 +79,7 @@ const features_ = computed(()=>{
 
 // css
 const _icon = "w-4 h-4 text-indigo-800 dark:text-indigo-400 ";
-const _sectionIcon = "w-4 h-4 text-gray-800 dark:text-gray-400 ";
-const _hoverIcon = "hover:scale-[1.25] duration-300 hover:text-indigo-600 hover:dark:text-yellow-400 duration-100 ";
+const _hoverDevIcon = "w-3 h-3 text-purple-600 dark:text-purple-400 transition hover:-translate-y-1 hover:scale-[3] duration-300";
 const _feature = "h-5 w-5 sm:h-6 lg:w-6 text-white";
 const _app_logo = "m-1 w-10 h-10 sm:w-16 sm:h-16 lg:w-24 lg:h-24";
 //const _app_logo = "m-1 w-8 h-8 md:w-12 md:h-12 lg:w-16 lg:h-16 xl:w-24 xl:h-24";
@@ -94,8 +93,7 @@ const _form_field = "bg-indigo-100 focus:bg-white dark:bg-indigo-900 dark:focus:
         <div class="relative" :class="editMode ? 'lg:col-span-7' : ''" >
             <div :class="layout.main">
 
-            <PencilSquareIcon v-if="set.isSelfAdmin" @click="editMode=!editMode" class="absolute left-7 top-1" :class="_sectionIcon+_hoverIcon"  /> 
-            <PencilSquareIcon v-if="_selfSectionAdminAuth " @click="editMode=!editMode" class="absolute left-12 top-1" :class="_icon+_hoverIcon" title="sectionAdmin" /> 
+            <PencilSquareIcon v-if="set.isSelfAdmin || _selfSectionAdminAuth" @click="editMode=!editMode" class="absolute left-32 top-1" :class="_hoverDevIcon"  /> 
 
                 <!-- <header >-->
                 <div :class="layout.header">

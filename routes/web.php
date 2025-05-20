@@ -32,15 +32,17 @@ use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\RoleAccessMiddleware;
 
+use App\Http\Controllers\SectionController;
+
 
 
 // Route::get('{any}', function () {return view('app'); })->where('any', '.*');
 Route::get('/', function () {
-    return redirect()->route('home/welcome');
+    return redirect()->route('home/welkom');
 });
 
 Route::get('home', function () {
-    return redirect()->route('home/welcome');
+    return redirect()->route('home/welkom');
 });
 
 Route::get('home/welcome', function () {
@@ -52,6 +54,17 @@ Route::get('home/welcome', function () {
     ]);
 })->name('home/welcome');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
+
+Route::get('home/welkom', function () {
+    return Inertia::render('home/Welkom', [
+        'page'=> Page::with('sections')->where('title','home/Welkom')->first(),
+        'baseSections' => Section::where('page_id','0')->get(),
+        //'canLogin' => Route::has('login'),
+        //'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+})->name('home/welkom');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
 Route::middleware([
     'auth:sanctum',
@@ -288,9 +301,6 @@ Route::post('/setweb3recordline',[\App\Http\Controllers\Web3RecordController::cl
 
 Route::get('/getrecords',[\App\Http\Controllers\Web3RecordController::class, 'getrecords'])->name('getrecords');
 
-
-
-
 // web3RecordLine
 Route::resource('web3RecordLines',Web3RecordLineController::class);
 
@@ -311,9 +321,7 @@ Route::resource('sections',SectionController::class);
 Route::post('/insertTeam',[Web3RecordController::class, 'insertTeam'])->name('insertTeam');
 Route::post('/insertProject',[Web3RecordController::class, 'insertProject'])->name('insertProject');
 
-
-
-
+Route::resource('pages',PageController::class);
 
 /*
 plan

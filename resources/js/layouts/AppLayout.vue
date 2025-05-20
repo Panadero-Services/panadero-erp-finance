@@ -1,12 +1,18 @@
 <script setup>
 import { ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
-import Banner from '@/components/Banner.vue';
 
+//icons
 import ApplicationMark from '@/components/ApplicationMark.vue';
+
+// baseSections
+import HeaderSection from "@/sections/HeaderSection.vue"
+import SubHeaderSection from "@/sections/SubHeaderSection.vue"
+import Banner from '@/components/Banner.vue';
 
 const props = defineProps({
     title: String,
+    baseSections: Object,
     bgDark: Boolean
 });
 
@@ -19,7 +25,13 @@ const props = defineProps({
 
             <!-- Header Content -->
             <div v-if="$slots.header">
-                <slot name="header" />
+                <Banner />
+                <slot name="header"/>
+                 <!--   0 Basic Header Sections .... -->
+                 <div v-for="section in baseSections">
+                    <HeaderSection v-if="section.file =='HeaderSection' && set.layout.header" :page="page" :set="set" :contract="contract" :section="section"/>
+                    <SubHeaderSection v-if="section.file =='SubHeaderSection' && set.layout.subHeader" :page="page" :set="set" :contract="contract" :section="section"/>
+                 </div>
             </div>
 
             <!-- Intro Content -->

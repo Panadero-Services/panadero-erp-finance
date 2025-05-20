@@ -40,7 +40,7 @@ let menu = [];
 
 //if (props.set.domainFunction === 'home') 
 menu.push( { name: 'Home',url: route('home/dashboard'),route: 'home/dashboard', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route('home/welcome'),route: 'home/welcome', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route('home/welkom'),route: 'home/welkom', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('home/tiers'),route: 'home/tiers', when:() => usePage().props.auth.user });
 
 if (props.set.domainFunction === 'erp') menu.push( { name: 'ERP',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });

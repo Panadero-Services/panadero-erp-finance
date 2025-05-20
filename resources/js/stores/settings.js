@@ -30,6 +30,9 @@ export const useSettingsStore = defineStore('settings', () => {
     const project = ref({ id: 0, title: "none", validTitles: ['none', 'demo', 'learn', 'rentmagic', 'self', 'vince'], path: "none", environment: 'none', validEnvironments: [], category: 'none' });
     const colors = ref({ bg: " bg-gradient-to-b from-indigo-100/30 dark:from-gray-800/30 " });
 
+    const wrenchMode = ref(false); // native.. bcuz of i3v2-bots fork
+
+
     function setLanguage() {
         language.value = language.value === 'EN' ? 'NL' : 'EN';
     }
@@ -133,6 +136,6 @@ export const useSettingsStore = defineStore('settings', () => {
         banner, assets, projectType, layout, project, colors,
         setLanguage, web3Toggle, game3Toggle, darkToggle, setSelf, resetSelf, pageDetailToggle,
         _connect, _disconnect, _getNextSelf, initSettings, initMM, initialize, setProjectType,
-        setResetProject, reset, fill
+        setResetProject, reset, fill, wrenchMode
     };
 });

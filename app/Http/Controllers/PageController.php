@@ -180,7 +180,8 @@ class PageController extends Controller
      * @param  \App\Models\Page  $page
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePageRequest $request, Page $page)
+//    public function update(UpdatePageRequest $request, Page $page)
+    public function update(Request $request, Page $page)
     {
         //
         $request->validate([
