@@ -1,0 +1,51 @@
+import { Grid } from "../../../ts-grid";
+import { DataPage } from "../../../muon";
+import { ICell, ICellMeta, Id, ICopyData, IRange, IActionConfig, IExecuteConfig, ISpan, IMerged } from "./../types";
+import { Store } from "../Store";
+export declare function getLetterFromNumber(num: number): string;
+export declare function getNumberFromLetter(str: string): number;
+export declare function parseCellByRowAnColl(cell: string): {
+    col: string;
+    row: number;
+};
+export declare function getCellIds(cell: string): ICell | IRange | any;
+export declare function getCellNameByIndex(rowIndex: number, colIndex: number): string;
+export declare function getCellNameById(row: Id, col: Id): string;
+export declare function getCellInfo(cell: string, page: DataPage): ICellMeta;
+export declare function isRangeId(id: string): boolean;
+type rangeDir = "row" | "col";
+export declare function getRangeArray(range: string, dir?: rangeDir): string[];
+export declare function getRangeMatrix(range: string, store: Store, dir?: rangeDir): any[];
+export declare function getNextRangeCell(range: string, current: string, dir?: rangeDir): string;
+export declare function getPrevRangeCell(range: string, current: string, dir?: rangeDir): string;
+export declare function getCellsArray(cells: string): string[];
+export declare function extendConfig(target?: {}, source?: {}, deep?: boolean): any;
+export declare function cleanActionConfig(config: IExecuteConfig | IActionConfig): any;
+export declare function isWasmSupported(): boolean;
+export declare function fetchFile(url: string, method?: "GET", responseType?: XMLHttpRequestResponseType): Promise<any>;
+export declare function getSeparatorsFromMSO(html: string): {
+    decimal: string;
+    thousands: string;
+};
+export declare function analyzeMSOFormat(format: string, separators?: {
+    decimal: any;
+    thousands: any;
+}): string;
+export declare function parseHtmlTable(html: string): ICopyData;
+export declare function parseFromText(str: any): ICopyData;
+export declare function getTextHeight(text: any, width: number): number;
+export declare function convertStyles(styles: any): any;
+export declare function isMac(): boolean;
+export declare function getCellNode(cell: string, grid: Grid, store: Store, includeHidden?: boolean): HTMLElement;
+export declare function isURL(text: any): boolean;
+export declare function doesContainUrl(value: any): string | undefined;
+export declare function getStylesObject(claasName?: string): {};
+export declare function checkSpan({ cell, colspan, rowspan }: ISpan, freezedCol: any, freezedRow: any): boolean;
+export declare function checkSpanByNames(cell: string, freezedCol: any, freezedRow: any): boolean;
+export declare function isCellFixed(cell: string, freezedCol: string | number, freezedRow: any): {
+    isTopFixed: boolean;
+    isLeftFixed: boolean;
+};
+export declare function isCellSpaned(cell: ICellMeta, merged: IMerged): ISpan | undefined;
+export declare function showAlert(text: string): void;
+export {};
