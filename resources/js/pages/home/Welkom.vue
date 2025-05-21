@@ -27,8 +27,8 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-// constants
-const _hoverDevIcon = "w-3 h-3 text-purple-600 dark:text-purple-400 transition hover:-translate-y-1 hover:scale-[4] duration-300";
+// header
+_set.domainFunction = "public";
 
 // variables
 let _poolTimer; 
@@ -94,6 +94,9 @@ const _auth = computed(() => {
     return _user;
 });
 
+
+// css
+const _hoverDevIcon = "w-3 h-3 text-purple-600 dark:text-purple-400 transition hover:-translate-y-1 hover:scale-[4] duration-300";
 
 </script>
 

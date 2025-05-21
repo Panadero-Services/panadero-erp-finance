@@ -14,7 +14,7 @@ import silverLogo from "@/layouts/logos/panaderos-logo64-silver.svg";
 import { PencilSquareIcon } from '@heroicons/vue/24/outline';
 
 // logo optional
-import { ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon } from '@heroicons/vue/24/outline';
+import { ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon } from '@heroicons/vue/24/outline';
 //import { ChevronRightIcon } from '@heroicons/vue/20/solid';
 //import DarkButton from '@/components/DarkButton.vue';
 import self1 from "@/layouts/logos/self1.png";
@@ -160,10 +160,10 @@ const _editClass= computed(()=>{
     <div :class="_editClass" >
 
       <div class="relative isolate overflow-hidden col-span-2 md:col-span-1">
-        <div class=" mx-auto max-w-7xl pt-10 pb-24 lg:gap-x-8 lg:py-12 lg:px-8">
+        <div class=" mx-auto max-w-screen pt-10 pb-24 lg:gap-x-8 lg:py-12 lg:px-8 ">
           <div class="px-6 lg:px-0 lg:pt-4">
-            <div class="mx-auto max-w-2xl">
-              <div class="max-w-2xl lg:mt-6">
+            <div class="mx-auto max-w-2xl lg:max-w-4xl">
+              <div class=" max-w-2xl lg:max-w-4xl lg:mt-6">
 
 
                 <!-- Logo -->
@@ -224,7 +224,7 @@ const _editClass= computed(()=>{
                 <!-- section.subtitle 
                 -->
 
-                <div  class="my-2 sm:my-10 text-xs sm:text-sm lg:text-xl text-gray-700 dark:text-gray-300">
+                <div  class="my-2 my-4 sm:my-10 text-xs sm:text-sm lg:text-xl text-gray-700 dark:text-gray-300">
                   <div v-if="_selfAuth">
                     <div v-if="_selfAdminAuth && set.wrenchMode" @click="editMode=!editMode" title="edit this section">
                       <PencilSquareIcon :class="_hoverIcon"  />
@@ -234,13 +234,13 @@ const _editClass= computed(()=>{
                         <img :class="_hoverIcon" :src="_adminIcon" :title="'editMode : '+form.self_admin"/>
                       </div>
                     </div>
-                    <span v-html="form.subtitle"></span>
+                    <span v-html="form.subtitle" ></span>
                   </div>
                   <div v-else class="mt-16 lg:mt-24"></div>
                 </div>
 
                 <!-- section.features -->
-                <dl class="grid max-w-xl grid-cols-1 gap-y-6 sm:gap-y-8 lg:gap-y-12 gap-x-8  lg:max-w-none sm:grid-cols-2 lg:mb-16">
+                <dl class="grid max-w-xl grid-cols-1 gap-y-6 sm:gap-y-8 lg:gap-y-12 gap-x-8 lg:max-w-none sm:grid-cols-2 lg:grid-cols-3 lg:mb-16">
                   <div v-for="feature in features_" :key="feature.name" class="relative pl-12 sm:pl-16 ">
                     <dt class=" " :class="_sectionSubtitle">
                       <div class="absolute top-0 left-0 flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-lg " :class="'bg-'+feature.color+'-600'">
@@ -252,6 +252,7 @@ const _editClass= computed(()=>{
                           <Bars3Icon v-if="'Bars3Icon'==feature.icon" :class="_feature" aria-hidden="true" />                     
                           <LockClosedIcon v-if="'LockClosedIcon'==feature.icon" :class="_feature" aria-hidden="true" />
                           <WalletIcon v-if="'WalletIcon'==feature.icon" :class="_feature" aria-hidden="true" />
+                          <NewspaperIcon v-if="'ProjectIcon'==feature.icon" :class="_feature" aria-hidden="true" />
                           <!-- error created on aws <ChevronRightIcon v-if="'ChevronRightIcon'==feature.icon" :class="_feature" aria-hidden="true" />-->
 
                       </div>

@@ -8,10 +8,10 @@ const emit = defineEmits(['kill', 'wrench']);
 //import { DiagramEditor } from "@dhx/diagram";
 //import {  } from "@dhx/diagram";
 
-import '@dhx/spreadsheet/samples/common/index.css?v=5.1.8';
-import '@dhx/spreadsheet/codebase/spreadsheet.css?v=5.1.8';
-import '@dhx/spreadsheet/codebase/spreadsheet.js?v=5.1.8';
-import { dataset, short_dataset } from '@dhx/spreadsheet/samples/common/data.js?v=5.1.8';
+import '@dhx/spreadsheet/samples/common/index.css?v=5.2.0';
+import '@dhx/spreadsheet/codebase/spreadsheet.css?v=5.2.0';
+import '@dhx/spreadsheet/codebase/spreadsheet.js?v=5.2.0';
+import { dataset, short_dataset } from '@dhx/spreadsheet/samples/common/data.js?v=5.2.0';
 
 //import '@dhx/diagram/codebase/diagramWithEditor.js?v=6.0.10';
 //import '@dhx/diagram/codebase/diagram.css';

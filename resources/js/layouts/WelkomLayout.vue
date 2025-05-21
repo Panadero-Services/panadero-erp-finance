@@ -35,12 +35,13 @@ const _mainLayout = props.page.max_width ? "" : "container";
 
             <Banner v-if="set.banner" />
 
-            <div :class="_mainLayout" >
+            <!--:class="_mainLayout" -->
+            <div >
                 <slot />
             </div>
 
-            <!-- wrenchMode DeveloperSections             -->
-              <div v-if="set.wrenchMode && set.isSelfAdmin" class="bg-gray-900 dark:bg-gray-100 text-xs text-indigo-50 dark:text-indigo-900">
+            <!-- wrenchMode DeveloperSections            class="bg-gray-900 dark:bg-gray-100 text-xs text-indigo-50 dark:text-indigo-900" -->
+              <div v-if="set.wrenchMode && set.isSelfAdmin">
               </div>
 
              <!-- <Footer v-if="page.footer" :pages="filteredPages('footer')" />  

@@ -89,11 +89,11 @@ const _form_field = "bg-indigo-100 focus:bg-white dark:bg-indigo-900 dark:focus:
 
 <template>
 
-    <div :class="_main">
+    <div :class="[_main, section.css]">
         <div class="relative" :class="editMode ? 'lg:col-span-7' : ''" >
             <div :class="layout.main">
 
-            <PencilSquareIcon v-if="set.isSelfAdmin || _selfSectionAdminAuth" @click="editMode=!editMode" class="absolute left-32 top-1" :class="_hoverDevIcon"  /> 
+            <PencilSquareIcon v-if="set.wrenchMode && (set.isSelfAdmin || _selfSectionAdminAuth)" @click="editMode=!editMode" class="absolute left-32 top-1" :class="_hoverDevIcon"  /> 
 
                 <!-- <header >-->
                 <div :class="layout.header">
