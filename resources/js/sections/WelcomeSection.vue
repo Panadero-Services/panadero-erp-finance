@@ -11,10 +11,9 @@ import TemplateBgEffect from "@/layouts/effects/TemplateBgEffect.vue";
 import ApplicationLogo from '@/components/logos/ApplicationLogoSilver.vue';
 import logo from "@/layouts/logos/panaderos-logo64.svg";
 import silverLogo from "@/layouts/logos/panaderos-logo64-silver.svg";
-import { PencilSquareIcon } from '@heroicons/vue/24/outline';
 
 // logo optional
-import { ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon } from '@heroicons/vue/24/outline';
+import { EnvelopeIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon, RectangleGroupIcon, PencilSquareIcon, BarsArrowUpIcon, BuildingOfficeIcon, ClipboardDocumentCheckIcon, CubeTransparentIcon, CreditCardIcon, RocketLaunchIcon, LanguageIcon, DevicePhoneMobileIcon, TruckIcon, PuzzlePieceIcon } from '@heroicons/vue/24/outline';
 //import { ChevronRightIcon } from '@heroicons/vue/20/solid';
 //import DarkButton from '@/components/DarkButton.vue';
 import self1 from "@/layouts/logos/self1.png";
@@ -223,7 +222,6 @@ const _editClass= computed(()=>{
 
                 <!-- section.subtitle 
                 -->
-
                 <div  class="my-2 my-4 sm:my-10 text-xs sm:text-sm lg:text-xl text-gray-700 dark:text-gray-300">
                   <div v-if="_selfAuth">
                     <div v-if="_selfAdminAuth && set.wrenchMode" @click="editMode=!editMode" title="edit this section">
@@ -241,30 +239,37 @@ const _editClass= computed(()=>{
 
                 <!-- section.features -->
                 <dl class="grid max-w-xl grid-cols-1 gap-y-6 sm:gap-y-8 lg:gap-y-12 gap-x-8 lg:max-w-none sm:grid-cols-2 lg:grid-cols-3 lg:mb-16">
-                  <div v-for="feature in features_" :key="feature.name" class="relative pl-12 sm:pl-16 ">
+                  <div v-for="f in features_" :key="f.name" class="relative pl-12 sm:pl-16 ">
                     <dt class=" " :class="_sectionSubtitle">
-                      <div class="absolute top-0 left-0 flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-lg " :class="'bg-'+feature.color+'-600'">
-
-                           <!-- error created on aws -->
-                          <CloudArrowUpIcon v-if="'CloudArrowUpIcon'==feature.icon" :class="_feature" aria-hidden="true" />
-                          <ArrowPathIcon v-if="'ArrowPathIcon'==feature.icon" :class="_feature" aria-hidden="true" />
-                          <FingerPrintIcon v-if="'FingerPrintIcon'==feature.icon" :class="_feature" aria-hidden="true" />
-                          <Bars3Icon v-if="'Bars3Icon'==feature.icon" :class="_feature" aria-hidden="true" />                     
-                          <LockClosedIcon v-if="'LockClosedIcon'==feature.icon" :class="_feature" aria-hidden="true" />
-                          <WalletIcon v-if="'WalletIcon'==feature.icon" :class="_feature" aria-hidden="true" />
-                          <NewspaperIcon v-if="'ProjectIcon'==feature.icon" :class="_feature" aria-hidden="true" />
-                          <!-- error created on aws <ChevronRightIcon v-if="'ChevronRightIcon'==feature.icon" :class="_feature" aria-hidden="true" />-->
-
-                      </div>
-                      <Link v-if="feature.route"  :href="feature.route" :class="'pan-txt-'+feature.color+'-500'" >
-                        {{ feature.name }}
+                      <div class="absolute top-0 left-0 flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-lg " :class="'bg-'+f.color+'-600'">
+                          <RectangleGroupIcon v-if="'I3FrameworkIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <PencilSquareIcon v-if="'ContentManagementIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <BarsArrowUpIcon v-if="'ResourcePlanningIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <BuildingOfficeIcon v-if="'LogisticsIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <ClipboardDocumentCheckIcon v-if="'ProjectIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <CubeTransparentIcon v-if="'DesignIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <CreditCardIcon v-if="'EcommerceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <RocketLaunchIcon v-if="'Web3Icon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <LanguageIcon v-if="'AiIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <DevicePhoneMobileIcon v-if="'SocialMediaIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <PuzzlePieceIcon v-if="'PuzzlePieceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <TruckIcon v-if="'TruckIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <CloudArrowUpIcon v-if="'CloudArrowUpIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <ArrowPathIcon v-if="'ArrowPathIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <FingerPrintIcon v-if="'FingerPrintIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <Bars3Icon v-if="'Bars3Icon'==f.icon" :class="_feature" aria-hidden="true" />                     
+                          <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                        </div>
+                      <Link v-if="f.route"  :href="f.route" :class="'pan-txt-'+f.color+'-500'" >
+                        {{ f.name }}
                       </Link>
                       <span v-else>
-                        {{ feature.name }}
+                        {{ f.name }}
                       </span>
                            <!-- -->
                     </dt>
-                    <dd class="mt-1 sm:mt-2 " :class="_txt" >{{ feature.description }}</dd>
+                    <dd class="mt-1 sm:mt-2 " :class="_txt" >{{ f.description }}</dd>
                   </div>
                 </dl>
 
@@ -282,7 +287,6 @@ const _editClass= computed(()=>{
                     </div>
                   </span>
                 </div>
-
 
               </div>
             </div>

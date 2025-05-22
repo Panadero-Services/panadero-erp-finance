@@ -1,6 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/components/logoSelf.vue';
-import { EnvelopeIcon } from '@heroicons/vue/24/outline'
+import { EnvelopeIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon, RectangleGroupIcon, PencilSquareIcon, BarsArrowUpIcon, BuildingOfficeIcon, ClipboardDocumentCheckIcon, CubeTransparentIcon, CreditCardIcon, RocketLaunchIcon, LanguageIcon, DevicePhoneMobileIcon, TruckIcon, PuzzlePieceIcon } from '@heroicons/vue/24/outline';
 
 import { usePage } from '@inertiajs/vue3';
 import NavLink from '@/components/NavLink.vue';
@@ -25,8 +25,13 @@ const _indigo = " text-gray-700 dark:text-gray-400 hover:text-black dark:hover:t
 const _menu = " flex items-center  "+ _indigo + _basic;
 const _icon = " w-4 h-4 mr-2 ";
 
+const _feature = "h-5 w-5 m-2 text-gray-500 dark:text-white";
+
+
 
 </script>
+
+
 
 <template>
     <!-- SELF Stakepool 2 Card -->
@@ -34,14 +39,34 @@ const _icon = " w-4 h-4 mr-2 ";
         <div class="scale-100 py-4 px-3 h-[400px] bg-white opacity-90 dark:bg-gray-800/50 dark:bg-gradient-to-bl from-gray-700/50 via-transparent dark:ring-1 dark:ring-inset dark:ring-white/5 rounded-xs shadow-md shadow-gray-400 dark:shadow-none motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-purple-500">
 
             <div class="ml-2 mt-2 ">
-
             
                 <div>
                     <div class="-mt-12 absolute inline-flex items-center justify-center w-12 h-12 overflow-hidden bg-purple-500 rounded-full dark:bg-purple-700 divide-y ">
                         <span class="font-bold text-sm text-gray-50 dark:text-gray-300">{{f.item}}</span>
                     </div>
 
-                    <div @click="_navigate" class="mt-4 pt-3 text-black dark:text-white text-2xl text-center"> {{f.title}}</div>
+                    <div @click="_navigate" class="flex mt-4 pt-3 text-black dark:text-white text-2xl text-center"> 
+                          <RectangleGroupIcon v-if="'I3FrameworkIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <PencilSquareIcon v-if="'ContentManagementIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <BarsArrowUpIcon v-if="'ResourcePlanningIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <BuildingOfficeIcon v-if="'LogisticsIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <ClipboardDocumentCheckIcon v-if="'ProjectIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <CubeTransparentIcon v-if="'DesignIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <CreditCardIcon v-if="'EcommerceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <RocketLaunchIcon v-if="'Web3Icon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <LanguageIcon v-if="'AiIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <DevicePhoneMobileIcon v-if="'SocialMediaIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <PuzzlePieceIcon v-if="'PuzzlePieceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <TruckIcon v-if="'TruckIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <CloudArrowUpIcon v-if="'CloudArrowUpIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <ArrowPathIcon v-if="'ArrowPathIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <FingerPrintIcon v-if="'FingerPrintIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <Bars3Icon v-if="'Bars3Icon'==f.icon" :class="_feature" aria-hidden="true" />                     
+                          <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                            {{f.title}}
+                    </div>
+
 
 
                     <div class="text-gray-600 dark:text-gray-400 text-xxs text-center"> Business Service </div>
@@ -66,8 +91,6 @@ const _icon = " w-4 h-4 mr-2 ";
             </div>
 
 
-
-
                   <div>
                     <div class="mt-4" aria-hidden="true">
                         <div class="text-right text-xs" :class="progress>90 ? 'text-green-600 dark:text-green-400' : 'text-indigo-600 dark:text-indigo-400'">{{progress}} %</div>
@@ -84,8 +107,6 @@ const _icon = " w-4 h-4 mr-2 ";
                     </div>
                   </div>
 
-
-
             <div class="mt-6">
                 <div>
                     <div>
@@ -97,10 +118,6 @@ const _icon = " w-4 h-4 mr-2 ";
                             <span v-if="f.status=='scheduled'" class="ml-4 -mt-1 inline-flex items-center rounded-md bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-800 dark:text-gray-400 ring-1 ring-inset ring-gray-500/20">Scheduled</span>
                             <span v-if="f.status=='deprecated'" class="ml-4 -mt-1 inline-flex items-center rounded-md bg-red-500/10 px-2 py-1 text-xs font-medium text-red-800 dark:text-red-400 ring-1 ring-inset ring-red-500/20">Deprecated</span>
                         </span>
-
-
-
-
 
 
                     </div>

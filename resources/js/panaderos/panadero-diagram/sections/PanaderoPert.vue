@@ -259,6 +259,7 @@ const pulse = inject("pulse");
 
 <!-- custom styles -->
 <style>
+
     .dhx_diagram_template_c {
         --dhx-template-c-header-background: var(--dhx-background-primary);
         --dhx-template-c-header-color: var(--dhx-font-color-contrast);
