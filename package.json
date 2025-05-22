@@ -19,7 +19,7 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
-        "@dhx/diagram": "file:vendor/dhx_diagram_6",
+        "@dhx/diagram_6": "file:vendor/dhx_diagram_6",
         "@dhx/kanban": "file:vendor/dhx_kanban",
         "@dhx/suite": "file:vendor/dhx_suite",
         "@dhx/spreadsheet": "file:vendor/dhx_spreadsheet_5.2.0",

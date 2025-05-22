@@ -10,7 +10,11 @@ const emit = defineEmits(['kill', 'wrench']);
 
 import '../codebase/index.css?v=6.0.10';
 import '../codebase/diagramWithEditor.css?v=6.0.10';
-import '../codebase/diagramWithEditor.js?v=6.0.10';
+//import '../codebase/diagramWithEditor.js?v=6.0.10';
+
+import {  } from "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
+
+
 import { swimlaneData } from '../codebase/data.js';
 
 //import '@dhx/diagram/codebase/diagramWithEditor.js?v=6.0.10';
