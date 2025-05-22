@@ -59,8 +59,6 @@ const _load = async () => {
     const _type = props.set.projectType;
     const _projectId = props.set.project.id;
 
-
-
     const _lane = await props.db.getState(_type, _path, _projectId);
 
     if (_lane){
@@ -136,8 +134,6 @@ onMounted(async ()=> {
                 },
             };
 
-
-
             editor = new dhx.DiagramEditor("mindmap", {
                 type: "mindmap",
                 lineConfig: {
@@ -157,6 +153,7 @@ onMounted(async ()=> {
 
 onUnmounted(async ()=> {
   //await set.setProjectType('none');
+    editor = null;
 });
 
 // Theme Buttons

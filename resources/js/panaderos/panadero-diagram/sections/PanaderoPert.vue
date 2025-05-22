@@ -28,9 +28,6 @@ const props = defineProps({
 // globals
 const _title="Pert";
 
-console.log('swimlaneData');
-console.log(swimlaneData);
-
 const _add = () => {}
 const _delete = () => {}
 
@@ -131,12 +128,12 @@ const _basic1 = '[{"type":"pert","stage":"analysis","task":"Formalize specs","st
 
 // webhooks
 onMounted(async ()=> {
+    
     console.log(navigator.language);
     await props.set.initMM();
     await props.set.initialize();
     await props.set.setProjectType('pert');
     // editor.parse(mindmapData);
-
     editor = new dhx.DiagramEditor("editor", {
         type: "default",
         defaults: {
@@ -199,7 +196,6 @@ onMounted(async ()=> {
             }
         },
     });
-
     editor.diagram.addShape("pert", { 
         defaults: {
             width: 200,
@@ -230,16 +226,7 @@ onMounted(async ()=> {
         },
     });
 
-
-
-
-
-
-    
-
     editor.parse(_basic0);
-
-
 
 });
 
@@ -272,9 +259,6 @@ const pulse = inject("pulse");
 
 <!-- custom styles -->
 <style>
-    body {
-        overflow: hidden;
-    }
     .dhx_diagram_template_c {
         --dhx-template-c-header-background: var(--dhx-background-primary);
         --dhx-template-c-header-color: var(--dhx-font-color-contrast);

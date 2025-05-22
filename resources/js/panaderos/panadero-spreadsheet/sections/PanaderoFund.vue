@@ -83,7 +83,6 @@ const _basic = async () => {
   spreadsheet.parse(_jsonBasicData);
 }
 
-
 const _loadPlan = async () => {
   if(props.set.project.id > 0){
 
@@ -116,8 +115,15 @@ onMounted(async ()=> {
 
 });
 
+const _destruct = async () => {
+  spreadsheet.destroy();
+}
+
+
+
 onUnmounted(async ()=> {
   //await set.setProjectType('none');
+  //await spreadsheet.destructor();
 });
 
 // Theme Buttons
@@ -134,6 +140,7 @@ const pulse = inject("pulse");
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_clear" type="button" :class="_button">Clear</button>
             <button @click="_basic" type="button" :class="_button">Basic</button>
+            <button @click="_destruct" type="button" :class="_button">Destruct</button>
             <!-- custom buttons
               <button @click="_menu" type="button" :class="_button">Menu</button>
               <button @click="_loadPlan" type="button" :class="_button">loadPlan</button>

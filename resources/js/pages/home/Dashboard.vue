@@ -190,14 +190,21 @@ const _functions = [
     { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "version" : "v1.1.01", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Mind',    url: route('project/mind'),    route: 'project/mind',     when:() => usePage().props.auth.user },
-                { name: 'Pert',    url: route('project/pert'),    route: 'project/pert',     when:() => usePage().props.auth.user },
-                { name: 'Lane',    url: route('project/lane'),    route: 'project/lane',     when:() => usePage().props.auth.user },
                 { name: 'Plan',    url: route('project/plan'),    route: 'project/plan',     when:() => usePage().props.auth.user },
                 { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user },
-                { name: 'Fund',    url: route('project/fund'),    route: 'project/fund',     when:() => usePage().props.auth.user }]
-            ,"status":"scheduled", "progress": 80
+                { name: 'Budget',    url: route('project/budget'),    route: 'project/budget',     when:() => usePage().props.auth.user }]
+            ,"status":"upgrading", "progress": 50
     },
+
+    { "item":"design", "title":"Design Software", "description": "Diagrams for your business ideas, projects and others", "version" : "v1.0.02", "options" : 
+            [
+                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Mind',    url: route('design/mind'),    route: 'design/mind',     when:() => usePage().props.auth.user },
+                { name: 'Pert',    url: route('design/pert'),    route: 'design/pert',     when:() => usePage().props.auth.user },
+                { name: 'Lane',    url: route('design/lane'),    route: 'design/lane',     when:() => usePage().props.auth.user }]
+            ,"status":"upgrading", "progress": 80
+    },
+
     { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "options" : 
             [   
                 { name: 'Dashboard', url: route('ecommerce/dashboard'),    route: 'ecommerce/dashboard' },

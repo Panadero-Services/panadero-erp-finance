@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-diagram/sections/PanaderoLane.vue";
+import MainSection from "@/panaderos/panadero-diagram/sections/PanaderoPert.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -23,8 +23,7 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panaderos/shared/tools/Pulse.vue';
 
-_set.domainFunction = "project";
-
+_set.domainFunction = "design";
 
 const props = defineProps({
     page: Object,

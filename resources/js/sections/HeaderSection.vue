@@ -48,14 +48,17 @@ if (props.set.domainFunction === 'erp') menu.push( { name: 'Resources',url: rout
 if (props.set.domainFunction === 'erp') menu.push( { name: 'Mood',url: route('erp/mood'),route: 'erp/mood', when:() => usePage().props.auth.user });
 //if (props.set.domainFunction === 'erp') menu.push( { name: 'Sand',url: route('erp/sand'),route: 'erp/sand', when:() => usePage().props.auth.user });
 
-
+// project
 if (props.set.domainFunction === 'project') menu.push( { name: 'Project',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'project') menu.push( { name: 'Mind',url: route('project/mind'),route: 'project/mind', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'project') menu.push( { name: 'Pert',url: route('project/pert'),route: 'project/pert', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'project') menu.push( { name: 'Lane',url: route('project/lane'),route: 'project/lane', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Plan',url: route('project/plan'),route: 'project/plan', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Work',url: route('project/work'),route: 'project/work', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'project') menu.push( { name: 'Fund',url: route('project/fund'),route: 'project/fund', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'project') menu.push( { name: 'Budget',url: route('project/budget'),route: 'project/budget', when:() => usePage().props.auth.user });
+
+// design
+if (props.set.domainFunction === 'design') menu.push( { name: 'Design',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'design') menu.push( { name: 'Mind',url: route('design/mind'),route: 'design/mind', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'design') menu.push( { name: 'Pert',url: route('design/pert'),route: 'design/pert', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'design') menu.push( { name: 'Lane',url: route('design/lane'),route: 'design/lane', when:() => usePage().props.auth.user });
 
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },

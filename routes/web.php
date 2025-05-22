@@ -114,28 +114,9 @@ Route::middleware([
         ]);
     })->name('erp/sand');
 
+
     // Business Function : Poject Management Software
-    Route::get('project/mind', function () { 
-        return Inertia::render('project/Mind', [
-            'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('project/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
-
-    Route::get('project/pert', function () { 
-        return Inertia::render('project/Pert', [
-            'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('project/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
-
-    Route::get('project/lane', function () { 
-        return Inertia::render('project/Lane', [
-            'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('project/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
-
+    // project
     Route::get('project/plan', function () { 
         return Inertia::render('project/Plan', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
@@ -150,14 +131,35 @@ Route::middleware([
         ]);
     })->name('project/work')->middleware(RoleAccessMiddleware::class.':admin,author');
 
- Route::get('project/fund', function () { 
-        return Inertia::render('project/Fund', [
+ Route::get('project/budget', function () { 
+        return Inertia::render('project/Budget', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('project/fund')->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('project/budget')->middleware(RoleAccessMiddleware::class.':admin,author');
 
+    // Business Function : Design  Software
+    // design
+    Route::get('design/mind', function () { 
+        return Inertia::render('design/Mind', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('design/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
 
+    Route::get('design/pert', function () { 
+        return Inertia::render('design/Pert', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('design/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('design/lane', function () { 
+        return Inertia::render('design/Lane', [
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('design/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
 
 
 
