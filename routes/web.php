@@ -143,21 +143,24 @@ Route::middleware([
     Route::get('design/mind', function () { 
         return Inertia::render('design/Mind', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
+            'baseSections' => Section::where('page_id','0')->get(),
+            'item' => 'mind'
         ]);
     })->name('design/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('design/pert', function () { 
         return Inertia::render('design/Pert', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
+            'baseSections' => Section::where('page_id','0')->get(),
+            'item' => 'pert'
         ]);
     })->name('design/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('design/lane', function () { 
         return Inertia::render('design/Lane', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
+            'baseSections' => Section::where('page_id','0')->get(),
+            'item' => 'lane'
         ]);
     })->name('design/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
 

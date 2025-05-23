@@ -3,13 +3,16 @@ import { ref, provide } from 'vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
+import DiagramLayout from '@/panaderos/panadero-diagram/layouts/DiagramLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-diagram/sections/PanaderoPert.vue";
+import PertSection from "@/panaderos/panadero-diagram/sections/PanaderoPert.vue";
+import MindSection from "@/panaderos/panadero-diagram/sections/PanaderoMind.vue";
+import LaneSection from "@/panaderos/panadero-diagram/sections/PanaderoLane.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -27,7 +30,8 @@ _set.domainFunction = "design";
 
 const props = defineProps({
     page: Object,
-    baseSections: Object
+    baseSections: Object, 
+    item: String
 });
 const myChild = ref(null);
 const _pulse = ref(false);
@@ -49,7 +53,9 @@ _set.layout.footer=false;
       <template #default>
          <div id="" class="">
             <div class="">
-               <MainSection ref="myChild" :set="_set" :db="_db" />
+               <PertSection v-if="item=='pert'" ref="myChild" :set="_set" :db="_db" />
+               <MindSection v-if="item=='mind'" ref="myChild" :set="_set" :db="_db" />
+               <LaneSection v-if="item=='lane'" ref="myChild" :set="_set" :db="_db" />
             </div>
          </div>
       </template>

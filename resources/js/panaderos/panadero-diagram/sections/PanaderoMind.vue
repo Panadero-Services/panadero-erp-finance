@@ -1,6 +1,5 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, inject } from 'vue';
-import DiagramLayout from './DiagramLayout.vue';
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);

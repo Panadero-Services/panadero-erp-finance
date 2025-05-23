@@ -10,9 +10,9 @@ const emit = defineEmits(['kill', 'wrench']);
 //import {  } from "@dhx/diagram";
 //import '../codebase/diagramWithEditor.js?v=6.0.10';
 
-import "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
-import "@dhx/diagram_6/codebase/diagram.css?v=6.0.10";
-import "@dhx/diagram_6/codebase/diagramWithEditor.css?v=6.0.10";
+//import "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
+//import "@dhx/diagram_6/codebase/diagram.css?v=6.0.10";
+//import "@dhx/diagram_6/codebase/diagramWithEditor.css?v=6.0.10";
 
 
 
