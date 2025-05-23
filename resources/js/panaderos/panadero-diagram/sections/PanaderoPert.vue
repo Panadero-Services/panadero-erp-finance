@@ -14,6 +14,8 @@ const emit = defineEmits(['kill', 'wrench']);
 //import "@dhx/diagram_6/codebase/diagramWithEditor.css?v=6.0.10";
 
 import "@/panaderos/panadero-diagram/codebase/diagramWithEditor.js?v=6.0.10";
+import "@/panaderos/panadero-diagram/codebase/diagram.css?v=6.0.10";
+import "@/panaderos/panadero-diagram/codebase/diagramWithEditor.css?v=6.0.10";
 
 
 import { swimlaneData } from '../codebase/data.js';
