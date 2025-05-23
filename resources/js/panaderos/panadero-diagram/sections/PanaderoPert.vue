@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, inject } from 'vue';
-import DiagramLayout from './DiagramLayout.vue';
+//import DiagramLayout from './DiagramLayout.vue';
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -10,9 +10,9 @@ const emit = defineEmits(['kill', 'wrench']);
 //import {  } from "@dhx/diagram";
 //import '../codebase/diagramWithEditor.js?v=6.0.10';
 
-//import "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
-//import "@dhx/diagram_6/codebase/diagram.css?v=6.0.10";
-//import "@dhx/diagram_6/codebase/diagramWithEditor.css?v=6.0.10";
+import "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
+import "@dhx/diagram_6/codebase/diagram.css?v=6.0.10";
+import "@dhx/diagram_6/codebase/diagramWithEditor.css?v=6.0.10";
 
 
 
