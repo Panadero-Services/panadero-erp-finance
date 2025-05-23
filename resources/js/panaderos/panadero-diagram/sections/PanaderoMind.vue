@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, inject } from 'vue';
+import DiagramLayout from './DiagramLayout.vue';
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -7,11 +8,9 @@ const emit = defineEmits(['kill', 'wrench']);
 //import '@dhx/diagram/codebase/diagram.css';
 //import { DiagramEditor } from "@dhx/diagram";
 //import {  } from "@dhx/diagram";
-
-import '../codebase/index.css?v=6.0.10';
-import '../codebase/diagramWithEditor.css?v=6.0.10';
-
-import {  } from "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
+//import '../codebase/index.css?v=6.0.10';
+//import '../codebase/diagramWithEditor.css?v=6.0.10';
+//import {  } from "@dhx/diagram_6/codebase/diagramWithEditor.js?v=6.0.10";
 
 import { swimlaneData } from '../codebase/data.js';
 
