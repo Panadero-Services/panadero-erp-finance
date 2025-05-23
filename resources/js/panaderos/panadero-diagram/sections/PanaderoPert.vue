@@ -130,8 +130,10 @@ const _basic1 = '[{"type":"pert","stage":"analysis","task":"Formalize specs","st
 
 // webhooks
 onMounted(async ()=> {
-    
-    console.log(navigator.language);
+
+//    console.log(navigator.language);
+console.log(dhx);
+
     await props.set.initMM();
     await props.set.initialize();
     await props.set.setProjectType('pert');
