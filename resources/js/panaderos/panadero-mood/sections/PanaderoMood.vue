@@ -9,7 +9,8 @@ import { Kanban, Toolbar, defaultEditorShape } from "@dhx/kanban";
 import "@dhx/kanban/dist/kanban.css";
 
 //import { getData } from "@dhx/trial-kanban/demos/common/data.js";
-import { getData } from "@/panaderos/panadero-mood/constants/mood-data.js";
+import { getData, notFoundMood, defaultMood, defaultMood1, defaultMood2, emptyMoodSet } from "@/panaderos/panadero-mood/constants/mood-data.js";
+
 import "@dhx/kanban/assets/demos.css";
 
 // define emits
@@ -57,19 +58,31 @@ const _save = async () => {
 
 /// move this section also to store!!!
 const _load = async () => {
-  if(props.set.project.id > 0){
-    const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
-    const _type = props.set.projectType;
-    const _projectId = props.set.project.id;
+    if(props.set.project.id > 0) {
+        const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
+        const _type = props.set.projectType;
+        const _projectId = props.set.project.id;
 
-    const _board = await props.db.getState(_type, _path, _projectId);
-    const _jsonBoard = await JSON.parse(_board);
-    console.log(_jsonBoard);
-    board.parse(_jsonBoard);
-  }
+        const _board = await props.db.getState(_type, _path, _projectId);
+
+        if (_board){
+            const _jsonBoard = await JSON.parse(_board);
+            console.log(_jsonBoard);
+            board.parse(_jsonBoard);
+        } else {
+            console.log("notFound");
+            board.parse(notFoundMood); 
+        }
+    }
 }
 
-const _loadGantt = async () => {
+const _clear = async () => {  board.parse(emptyMoodSet); }
+const _sample1 = async () => {  board.parse(defaultMood); }
+const _sample2 = async () => {  board.parse(defaultMood1); }
+const _sample3 = async () => {  board.parse(defaultMood2); }
+
+
+const _loadPlan = async () => {
   if(props.set.project.id > 0){
 
     const _path = props.set.domain+"."+props.set.project.title+"."+props.set.project.environment+"."+props.set.project.category;
@@ -261,8 +274,12 @@ const pulse = inject("pulse");
             <button @click="_setPanaderos" type="button" :class="_button">Panaderos</button>
             <button @click="_save" type="button" :class="_button">Save</button>
             <button @click="_load" type="button" :class="_button">Load</button>
-            <button @click="_loadGantt" type="button" :class="_button">loadGantt</button>
-            <button @click="_load" type="button" :class="_button">{{pulse}}</button>
+            <button @click="_loadPlan" type="button" :class="_button">loadPlan</button>
+            <button @click="_clear" type="button" :class="_button">Clear</button>
+            <button @click="_sample1" type="button" :class="_button">F1</button>
+            <button @click="_sample2" type="button" :class="_button">F2</button>
+            <button @click="_sample3" type="button" :class="_button">F3</button>
+
         </div>      
         <div class="" id="toolbar"></div>
     </div>

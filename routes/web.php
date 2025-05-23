@@ -141,7 +141,7 @@ Route::middleware([
     // Business Function : Design  Software
     // design
     Route::get('design/mind', function () { 
-        return Inertia::render('design/Mind', [
+        return Inertia::render('design/Diagram', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get(),
             'item' => 'mind'
@@ -149,7 +149,7 @@ Route::middleware([
     })->name('design/mind')->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('design/pert', function () { 
-        return Inertia::render('design/Pert', [
+        return Inertia::render('design/Diagram', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get(),
             'item' => 'pert'
@@ -157,7 +157,7 @@ Route::middleware([
     })->name('design/pert')->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('design/lane', function () { 
-        return Inertia::render('design/Lane', [
+        return Inertia::render('design/Diagram', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get(),
             'item' => 'lane'
