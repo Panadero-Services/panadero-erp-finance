@@ -54,9 +54,7 @@ const _close = async (_nr) => {
     editRecordMode.value = false;
 }
 
-
 const _activeRecord = ref();
-
 
 const _whatever = async (_nr) => {
    console.log(_nr);
@@ -94,7 +92,7 @@ const table = 'posts';
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div v-for="post in posts.data" key="post.id" class="text-sm">
-                  <PostCard :post="post" @whatever="_whatever" />
+                  <PostCard :post="post" @whatever="_whatever" :db="_db"/>
               </div>
             </div>
             <Pagination :meta="posts.meta" />
@@ -106,6 +104,3 @@ const table = 'posts';
 
    </AppToolbarLayout>
 </template>
-
-
-

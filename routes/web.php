@@ -329,6 +329,10 @@ Route::post('/insertProject',[Web3RecordController::class, 'insertProject'])->na
 Route::resource('pages',PageController::class);
 Route::put('posts.update',[PostController::class, 'update'])->name('posts.update');
 
+Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'updateicon'])->name('postupdateicon');
+
+
+
 /*
 plan
 

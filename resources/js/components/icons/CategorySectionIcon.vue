@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref, onMounted} from 'vue'
-import { FireIcon, HeartIcon, TvIcon, UserIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, LockClosedIcon, PencilSquareIcon, WrenchIcon } from '@heroicons/vue/24/outline'
+import { FireIcon, HeartIcon, TvIcon, UserIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, LockClosedIcon, LockOpenIcon, PencilSquareIcon, WrenchIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   icon: String,
@@ -25,6 +25,7 @@ const _icon = computed(() => {
         <ArrowPathIcon v-if="icon=='ArrowPath'" :class="_icon" />
         <CloudArrowUpIcon v-if="icon=='CloudArrowUp'" :class="_icon" />
         <LockClosedIcon v-if="icon=='LockClosed'" :class="_icon" />
+        <LockOpenIcon v-if="icon=='LockOpen'" :class="_icon" />
         <UserIcon v-if="icon=='User'" :class="_icon" />
         <HeartIcon v-if="icon=='Heart'" :class="_icon" />
         <FireIcon v-if="icon=='Fire'" :class="_icon" />

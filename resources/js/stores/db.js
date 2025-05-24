@@ -155,9 +155,47 @@ export const useDbStore = defineStore('db', () => {
         }
     }
 
+    async function postUpdateIcon(_model, _payload) {
+        //console.log(_model);
+        return new Promise((resolve, reject) => {
+          const check = async () => {
+            try {
+                //this.DebugMode('set.payload', _payload);
+                const jsonPayload = JSON.stringify(_payload);
+               // const postSignature = crypto.createHmac('sha256', '31234KeyTestevnvornment')
+               //     .update(jsonPayload)
+               //     .digest('hex');
+                
+                console.log('db.postUpdateIcon');
+
+                axios
+                    .post(`/postupdateicon`,_payload, {
+                        headers: {
+                            'withCredentials': true,
+                            'content-type': 'application/json',
+                            'caller': 'useDbStore', 
+                            'model': _model, 
+                            'Sign': 'postSignature',
+                        }
+                    })
+                .then((response) => {
+                resolve(response);
+
+                })
+            } catch (err) {
+              reject(`store/db.js:post:: ${err}`);
+            }
+          }
+          check(); 
+            });
+        }
+
+
+
+
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 
-        insertTeam, insertProject, setUser
+        insertTeam, insertProject, setUser, postUpdateIcon
     };
 });

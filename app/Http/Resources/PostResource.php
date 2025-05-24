@@ -22,6 +22,12 @@ class PostResource extends JsonResource
             'body'=> $this->body,
             'created_at'=> $this->created_at,
             'updated_at'=> $this->updated_at,
+            'published'=> $this->published,
+            'public'=> $this->public,
+            'featured'=> $this->featured,
+            'locked'=> $this->locked,
+            'self'=> $this->self,
+            'smart'=> $this->smart,
         ];
 
     }

@@ -64,6 +64,25 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    public function updateicon(Request $request, Post $post)
+    {
+        //        $request->validate([
+        //            'title' => 'required|string|max:128',
+        //            'image' => 'required|string|max:255',
+        //            'href' => 'required|string|max:255',
+        //            'self' => 'required|string|max:255',
+        //        ]);
+        $_id = $request->id;
+        $_field = $request->field;
+        $_value = $request->value;
+        Post::where('id', $_id)->update([$_field=>$_value]);
+        sleep(1);
+        return 'PostController: updateicon passed: ' . $_id . ' set '.$_field. ' to :'.$_value ;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Post $post)
     {
         $newPost = Post::firstOrNew(['id' =>  request('id')]);
