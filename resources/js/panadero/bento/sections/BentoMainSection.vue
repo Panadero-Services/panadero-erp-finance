@@ -2,7 +2,7 @@
   import { ref, computed, watch } from 'vue';
   import i3Card from '@/panadero/shared/cards/i3Card.vue';
 
-  import { useDataLayerStore } from '@/panaderosbento/stores/BentoDataLayer';
+  import { useDataLayerStore } from '@/panadero/bento/stores/BentoDataLayer';
   let dataLayer = useDataLayerStore();
 
   const props = defineProps({
