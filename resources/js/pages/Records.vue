@@ -1,8 +1,8 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue'
 import { useForm } from "@inertiajs/vue3";
-import EditPageModal from "@/pages/modals/EditPageModal.vue";
-import EditRecordModal from "@/pages/modals/EditRecordModal.vue";
+import EditPageModal from "@/components/modals/EditPageModal.vue";
+import EditRecordModal from "@/components/modals/EditRecordModal.vue";
 import PublicLayout from '@/layouts/PublicLayout.vue';
 
 // sections
