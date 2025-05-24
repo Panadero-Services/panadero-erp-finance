@@ -327,6 +327,7 @@ Route::post('/insertTeam',[Web3RecordController::class, 'insertTeam'])->name('in
 Route::post('/insertProject',[Web3RecordController::class, 'insertProject'])->name('insertProject');
 
 Route::resource('pages',PageController::class);
+Route::put('posts.update',[PostController::class, 'update'])->name('posts.update');
 
 /*
 plan

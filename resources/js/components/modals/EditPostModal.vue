@@ -1,16 +1,16 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
-import TheButton from "@/panadero/buttons/TheButton.vue";
+import TheButton from "@/components/buttons/TheButton.vue";
 import { Switch } from '@headlessui/vue'
 
 const props = defineProps({
     page: Object,
+    post: Object,
     lng: String,
 });
-
 const form = useForm({
     id: props.page.id,
-    title: props.page.title,
+    title: props.post.title,
     file: props.page.file,
     icon: props.page.icon,
     image: props.page.image,
@@ -18,20 +18,20 @@ const form = useForm({
     type: props.page.type,
     settings: props.page.settings,
     
-    is_active: props.page.is_active,
-    header: props.page.header,
-    sidebar: props.page.sidebar,
-    footer: props.page.footer,
-    animate: props.page.animate,
-    public: props.page.public,
-    max_width: props.page.max_width
+    is_active: props.page.is_active==1,
+    header: props.page.header==1,
+    sidebar: props.page.sidebar==1,
+    footer: props.page.footer==1,
+    animate: props.page.animate==1,
+    public: props.page.public==1,
+    max_width: props.page.max_width==1
 });
 
 
 const emit = defineEmits(['close'])
 const submit = async () => {
     console.log('page update submitted');
-    await form.put(route("pages.update", props.page.id));
+   // await form.put(route("pages.update", props.page.id));
     emit('close');
 };
 
@@ -232,7 +232,6 @@ const _dashboard ={'title':'newPage','type':'dashboard'};
                         <span aria-hidden="true" :class="[form.max_width ? 'translate-x-5' : 'translate-x-0', 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out']" />
                       </Switch>
                     </div>
-
                     <div class="sm:col-span-3">
 
                     </div>

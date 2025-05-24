@@ -9,7 +9,7 @@ import HeaderSection from "@/sections/HeaderSection.vue";
 import WelcomeSection from "@/sections/WelcomeSection.vue";
 import FooterSection from "@/sections/FooterSection.vue";
 
-import WrenchMode from "@/panaderos/WrenchMode.vue";
+import WrenchMode from "@/panadero/WrenchMode.vue";
 
 // icons
 import { PencilSquareIcon, WrenchIcon } from '@heroicons/vue/24/outline';

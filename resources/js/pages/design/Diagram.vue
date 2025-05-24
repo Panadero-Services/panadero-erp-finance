@@ -3,16 +3,16 @@ import { ref, provide } from 'vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
-import DiagramLayout from '@/panaderos/panadero-diagram/layouts/DiagramLayout.vue';
+import DiagramLayout from '@/panadero/panadero-diagram/layouts/DiagramLayout.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import PertSection from "@/panaderos/panadero-diagram/sections/PanaderoPert.vue";
-import MindSection from "@/panaderos/panadero-diagram/sections/PanaderoMind.vue";
-import LaneSection from "@/panaderos/panadero-diagram/sections/PanaderoLane.vue";
+import PertSection from "@/panadero/panadero-diagram/sections/PanaderoPert.vue";
+import MindSection from "@/panadero/panadero-diagram/sections/PanaderoMind.vue";
+import LaneSection from "@/panadero/panadero-diagram/sections/PanaderoLane.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -24,7 +24,7 @@ const _contract = useContractStore();
 const _db = useDbStore();
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 _set.domainFunction = "design";
 

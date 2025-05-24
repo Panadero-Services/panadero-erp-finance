@@ -8,12 +8,12 @@ import { panaderoServer } from "panadero-server";
 const pServer = new panaderoServer('selfServer');
 
 // components
-import move from '@/panaderos/panadero-sim/move.vue';
-import ioServer from '@/panaderos/panadero-server/ioserver.vue';
-import spaceship from '@/panaderos/panadero-minigames/spaceship.vue';
-import othello from '@/panaderos/panadero-minigames/othello.vue';
-import breakout from '@/panaderos/panadero-minigames/breakout.vue';
-import candycrush from '@/panaderos/panadero-minigames/candycrush.vue';
+import move from '@/panadero/panadero-sim/move.vue';
+import ioServer from '@/panadero/panadero-server/ioserver.vue';
+import spaceship from '@/panadero/panadero-minigames/spaceship.vue';
+import othello from '@/panadero/panadero-minigames/othello.vue';
+import breakout from '@/panadero/panadero-minigames/breakout.vue';
+import candycrush from '@/panadero/panadero-minigames/candycrush.vue';
 
 // templates
 import Card from '@/layouts/cards/Card.vue';

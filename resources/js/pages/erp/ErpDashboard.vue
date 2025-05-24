@@ -21,7 +21,7 @@ const _contract = useContractStore();
 const _db = useDbStore();
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
@@ -45,8 +45,8 @@ import SelfGame1Card from "@/pages/dashboard1/cards/SelfGame1Card.vue";
 import SelfGame1Overlay from "@/pages/dashboard1/cards/SelfGame1Overlay.vue";
 import DashboardFooter from "@/pages/dashboard1/DashboardFooter.vue";
 
-import Stars from '@/panaderos/Stars.vue';
-import Game from '@/panaderos/Game.vue';
+import Stars from '@/panadero/Stars.vue';
+import Game from '@/panadero/Game.vue';
 import ApplicationLogo from '@/components/logoSelf.vue';
 
 

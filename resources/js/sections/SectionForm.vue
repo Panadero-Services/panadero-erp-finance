@@ -4,7 +4,7 @@ import {computed, ref, onMounted} from 'vue';
 import { ChevronRightIcon } from '@heroicons/vue/20/solid';
 import {  XMarkIcon, WrenchIcon, Bars3Icon, LockClosedIcon, WalletIcon } from '@heroicons/vue/24/outline';
 
-import TheButton from "@/panaderos/components/TheButton.vue";
+import TheButton from "@/panadero/components/TheButton.vue";
 import { Switch } from '@headlessui/vue'
 
 const props = defineProps({

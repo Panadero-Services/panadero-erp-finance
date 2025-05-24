@@ -11,7 +11,7 @@ const _usePage = usePage();
 // sections
 //import MainSection from "@/sections/Web3Section.vue";
 //import MainSection from "@/pages/dashboard1/cards/SelfIntro.vue";
-import MainSection from "@/panaderos/panadero-grid/PanaderoTable.vue";
+import MainSection from "@/panadero/panadero-grid/PanaderoTable.vue";
 
 //import BotsSection from "@/sections/BotsSection.vue"
 
@@ -25,7 +25,7 @@ const _contract = useContractStore();
 const _db = useDbStore();
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 const props = defineProps({
     page: Object,

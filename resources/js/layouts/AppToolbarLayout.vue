@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { Head } from '@inertiajs/vue3';
 
 //icons
-import { BarsArrowUpIcon, PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, UserIcon, TableCellsIcon, ServerStackIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
+import { BarsArrowUpIcon, PlayIcon, HomeIcon, RocketLaunchIcon, BellIcon, Bars3Icon, WalletIcon, CloudArrowDownIcon, WrenchIcon, UsersIcon, UserIcon, TableCellsIcon, ServerStackIcon, TagIcon, ClipboardDocumentCheckIcon, CircleStackIcon, SwatchIcon, QuestionMarkCircleIcon, SignalIcon, H2Icon} from '@heroicons/vue/24/outline'
 
 // baseSections
 import HeaderSection from "@/sections/HeaderSection.vue"
@@ -42,9 +42,16 @@ const whatever = async () => { console.log('whatever')}
 
 const _toolbarItems = [
   { name: 'Extended', icon: BarsArrowUpIcon, href: _toggleExtended, current: false, active: true },
+  //{ name: 'Domain', icon: ServerStackIcon, href: _toggleTeam, current: false, active: true },
+  { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false, active: true },
+  { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false, active: true },
+  //{ name: 'Tag', icon: TagIcon, href: _toggleTeam, current: false, active: true },
   { name: 'Documents', icon: ClipboardDocumentCheckIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Signals', icon: SignalIcon, href: _toggleTeam, current: false, active: false },
-  { name: 'Basetables', icon: CircleStackIcon, href: _toggleTeam, current: false, active: false },
+  //{ name: 'Tables', icon: CircleStackIcon, href: _toggleTeam, current: false, active: true },
+  // modules
+  // features
+  // nodes
   { name: 'Play', icon: PlayIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Launch', icon: RocketLaunchIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Bell', icon: BellIcon, href: _toggleTeam, current: false, active: false },
@@ -52,12 +59,9 @@ const _toolbarItems = [
   { name: 'Users', icon: UsersIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Wallet', icon: WalletIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Tables', icon: TableCellsIcon, href: _toggleTeam, current: false, active: false },
-  { name: 'Serverstacks', icon: ServerStackIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Manuals', icon: QuestionMarkCircleIcon, href: _toggleTeam, current: false, active: false },
   { name: 'Wrench', icon: WrenchIcon, href: _toggleTeam, current: false, active: false },
-  { name: 'Team', icon: UsersIcon, href: _toggleTeam, current: false, active: true },
   { name: 'Reports', icon: TableCellsIcon, href: whatever, current: false, active: false },
-  { name: 'Project', icon: ClipboardDocumentCheckIcon, href: _toggleProject, current: false, active: true },
   { name: 'Developer', icon: WrenchIcon, href: _toggleFooter, current: false, active: true },
   { name: 'User', icon: UserIcon, href: _toggleUser, current: false, active: true },
 ];

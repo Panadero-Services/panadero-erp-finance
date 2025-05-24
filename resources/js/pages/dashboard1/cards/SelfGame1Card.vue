@@ -1,8 +1,8 @@
 <script setup>
 import {ref, defineEmits} from 'vue';
 import ApplicationLogo from '@/components/logoSelf.vue';
-import Stars from '@/panaderos/Stars.vue';
-import Game from '@/panaderos/Game.vue';
+import Stars from '@/panadero/Stars.vue';
+import Game from '@/panadero/Game.vue';
 
 
 defineProps({

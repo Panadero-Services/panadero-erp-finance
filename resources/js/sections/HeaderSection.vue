@@ -34,6 +34,7 @@ const _disconnect = async () => { await props.set._disconnect(); }
 onMounted(async ()=> {
     // check user not  logged in and still project state active...
     if( usePage().props.auth.user == null) if(props.set.projectId > 0) await props.set.setResetProject();
+    if (!props.set.isMetaMask) await props.set.initMM();
 });
 
 let menu = [];

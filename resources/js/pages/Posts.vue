@@ -1,5 +1,6 @@
 <script setup>
-import { ref, provide } from 'vue';
+import { ref, provide, computed } from 'vue';
+import { useForm } from "@inertiajs/vue3";
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -7,6 +8,10 @@ import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 // usePage
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
+
+// modal
+import EditPostModal from "@/components/modals/EditPostModal.vue";
+import EditRecordModal from "@/components/modals/EditRecordModal.vue";
 
 // sections
 import PostCard from '@/layouts/cards/PostCard.vue';
@@ -22,7 +27,7 @@ const _contract = useContractStore();
 const _db = useDbStore();
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 const props = defineProps({
     page: Object,
@@ -30,17 +35,57 @@ const props = defineProps({
     posts: Object
 });
 
-const _pulse = ref(false);
+// variables
+let _poolTimer; 
+let _pulse = ref(false);
+let editRecordMode= ref(false);
+
 provide(/* key */ 'pulse', /* value */ _pulse);
 
+// functions
+const _loopTimer = async () => {
+    _poolTimer =
+    setInterval( () => {
+        _pulse.value = !_pulse.value;
+    }, 1000)
+}
+
+const _close = async (_nr) => {
+    editRecordMode.value = false;
+}
+
+
+const _activeRecord = ref();
+
+
+const _whatever = async (_nr) => {
+   console.log(_nr);
+   _activeRecord.value = props.posts.data.filter(x => x.id ==_nr)[0];
+   console.log(_activeRecord.value);
+   console.log(_nr);
+    editRecordMode.value = true;
+
+   //console.log(editRecordMode.value);
+   //editMode.value = true;
+}
+
+const _superSelfAdmin = computed(() => {
+  return _set.superSelfAdmins.includes(_set.self);
+});
+
+const table = 'posts';
 
 </script>
 
 <template>
    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
-
       <template #header>
-         <pulse  v-model="_pulse" :animation="_set.animate"/>
+         <pulse v-model="_pulse" :animation="_set.animate"/>
+
+         <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
+            <edit-record-modal lng='en' :record="_activeRecord" :table="table" @close="_close" :superSelfAdmin="_superSelfAdmin==1" />
+         </div>
+
       </template>
 
       <template #intro />
@@ -49,7 +94,7 @@ provide(/* key */ 'pulse', /* value */ _pulse);
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div v-for="post in posts.data" key="post.id" class="text-sm">
-                  <PostCard :post="post" />
+                  <PostCard :post="post" @whatever="_whatever" />
               </div>
             </div>
             <Pagination :meta="posts.meta" />

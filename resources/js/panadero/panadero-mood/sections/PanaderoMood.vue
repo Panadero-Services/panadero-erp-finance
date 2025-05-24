@@ -9,7 +9,7 @@ import { Kanban, Toolbar, defaultEditorShape } from "@dhx/kanban";
 import "@dhx/kanban/dist/kanban.css";
 
 //import { getData } from "@dhx/trial-kanban/demos/common/data.js";
-import { getData, notFoundMood, defaultMood, defaultMood1, defaultMood2, emptyMoodSet } from "@/panaderos/panadero-mood/constants/mood-data.js";
+import { getData, notFoundMood, defaultMood, defaultMood1, defaultMood2, emptyMoodSet } from "@/panadero/panadero-mood/constants/mood-data.js";
 
 import "@dhx/kanban/assets/demos.css";
 
@@ -262,12 +262,15 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
 
 const pulse = inject("pulse");
 
+const refreshPage = () => { window.location.reload(); };
+
 </script>
 <template>
 
 <div class="m-0">   
     <div class="grid grid-cols-2">     
         <div class="pl-2 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
+            <button @click="refreshPage" type="button" :class="_button">Refresh</button>
             <button @click="_setWillow" type="button" :class="_button">Light</button>
             <button @click="_setWillowDark" type="button" :class="_button">Dark</button>
             <button @click="_setMaterial" type="button" :class="_button">Material</button>

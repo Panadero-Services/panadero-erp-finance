@@ -4,8 +4,8 @@ import { panaderoMiniGames } from "panadero-minigames";
 
 
 
-import Stars from '@/panaderos/Stars.vue';
-import Game from '@/panaderos/Game.vue';
+import Stars from '@/panadero/Stars.vue';
+import Game from '@/panadero/Game.vue';
 
 
 const emit = defineEmits(['status'])

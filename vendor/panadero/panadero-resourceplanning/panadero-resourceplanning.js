@@ -23,7 +23,7 @@ const moduleVersion = "3.1.63";
 const moduleDate = "08 may 2025";
 const moduleAuthor = "JaWsome.Orbit";
 const moduleTitle = "Resource Planning Organized.! modular style!";
-import "@/panaderos/panadero-resourceplanning/panaderogantt.css";
+import "@/panadero/panadero-resourceplanning/panaderogantt.css";
 
 var _resourceData = [
       {id: 1, text: "Infodatek Introductie2", type: "project", progress: 0.2, open: true, start_date: "30-10-2024 00:00", duration: 16, end_date: "10-11-2024 00:00", parent: 0},

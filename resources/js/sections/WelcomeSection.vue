@@ -273,6 +273,10 @@ const _editClass= computed(()=>{
                   </div>
                 </dl>
 
+        <div v-if="_selfAuth" class="-mt-2 md:-mt-1 lg:mt-1 " :class= "_slogan">
+                  {{form.html}}
+                </div>
+
                 <!-- effect 
                   <template-bg-effect :effect="3" />
                 -->

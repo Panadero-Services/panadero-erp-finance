@@ -2,7 +2,7 @@
 import {computed, onMounted, onUnmounted, ref, inject, watch} from 'vue';
 import { moduleName, moduleVersion, panaderoResourcePlanning, _resourceData, _ppl, _links } from "panadero-resourceplanning";
 
-import { getData } from "@/panaderos/panadero-resourceplanning/constants/planning-data.js";
+import { getData } from "@/panadero/panadero-resourceplanning/constants/planning-data.js";
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid'
 
 import "/vendor/dhx_suite/codebase/suite.js?v=9.1.3";

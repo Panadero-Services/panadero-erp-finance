@@ -24,7 +24,7 @@ import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/20/solid'
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 //import "dhx-gridpack-package/codebase/gridpack.js";
 //import "dhtmlx-gridpack/codebase/gridpack.css";

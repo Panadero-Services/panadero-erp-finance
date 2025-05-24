@@ -20,10 +20,10 @@ import SubHeaderSection from "@/sections/SubHeaderSection.vue"
 import Banner from '@/components/Banner.vue';
 import FooterSection from "@/sections/FooterSection.vue"
 
-import PanaderoGrid from "@/panaderos/panadero-grid/PanaderoGrid.vue";
+import PanaderoGrid from "@/panadero/panadero-grid/PanaderoGrid.vue";
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 // webhooks
 onMounted(async ()=> {

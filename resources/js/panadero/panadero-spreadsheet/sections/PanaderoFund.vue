@@ -11,7 +11,7 @@ const emit = defineEmits(['kill', 'wrench']);
 import '@dhx/spreadsheet/samples/common/index.css?v=5.2.0';
 import '@dhx/spreadsheet/codebase/spreadsheet.css?v=5.2.0';
 import '@dhx/spreadsheet/codebase/spreadsheet.js?v=5.2.0';
-import { dataset, short_dataset, notFoundSheet, defaultProject } from '@/panaderos/panadero-spreadsheet/constants/data.js';
+import { dataset, short_dataset, notFoundSheet, defaultProject } from '@/panadero/panadero-spreadsheet/constants/data.js';
 
 
 //defaultSpreadsheet1

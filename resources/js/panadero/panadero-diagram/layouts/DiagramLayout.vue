@@ -1,7 +1,7 @@
 <script setup>
-import "@/panaderos/panadero-diagram/codebase/diagramWithEditor.js?v=6.0.10";
-import "@/panaderos/panadero-diagram/codebase/diagram.css?v=6.0.10";
-import "@/panaderos/panadero-diagram/codebase/diagramWithEditor.css?v=6.0.10";
+import "@/panadero/panadero-diagram/codebase/diagramWithEditor.js?v=6.0.10";
+import "@/panadero/panadero-diagram/codebase/diagram.css?v=6.0.10";
+import "@/panadero/panadero-diagram/codebase/diagramWithEditor.css?v=6.0.10";
 
 // layouts
 //import Footer from '@/layouts/Footer.vue';

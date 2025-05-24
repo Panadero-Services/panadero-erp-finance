@@ -1,6 +1,6 @@
 <script setup>
 import ApplicationLogo from '@/components/logoSelf.vue';
-import DemoTable from "@/panaderos/panadero-grid/DemoTable.vue";
+import DemoTable from "@/panadero/panadero-grid/DemoTable.vue";
 import {computed, onMounted, onUnmounted, ref} from 'vue';
 
 // gridpack

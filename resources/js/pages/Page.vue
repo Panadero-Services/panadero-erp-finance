@@ -10,8 +10,8 @@ const _usePage = usePage();
 import AppLayout from '@/layouts/AppLayout.vue';
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
-import PanaderoMood from "@/panaderos/panadero-mood/sections/PanaderoMood.vue";
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
+import PanaderoMood from "@/panadero/panadero-mood/sections/PanaderoMood.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';

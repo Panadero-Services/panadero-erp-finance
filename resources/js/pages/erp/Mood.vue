@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-mood/sections/PanaderoMood.vue";
+import MainSection from "@/panadero/panadero-mood/sections/PanaderoMood.vue";
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -21,7 +21,7 @@ const _contract = useContractStore();
 const _db = useDbStore();
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 _set.domainFunction = "erp";
 

@@ -17,15 +17,16 @@ class PostController extends Controller
     public function index()
     {
 
-      if (Gate::denies('admin-access')){
+        /*
+        if (Gate::denies('admin-access')){
             return response('UnAuthorized.',401);
         }
+*/
 
-
-        
         return inertia('Posts',[
             'posts'=> PostResource::collection(Post::with('user')->paginate()),
         ]);
+
     }
 
     /**
@@ -65,7 +66,12 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $newPost = Post::firstOrNew(['id' =>  request('id')]);
+
+        $newPost->title = $request->title;
+        $newPost->body = $request->body;
+        $newPost->save();
+        sleep(1);
     }
 
     /**

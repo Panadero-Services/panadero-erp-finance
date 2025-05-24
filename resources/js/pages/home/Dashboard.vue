@@ -28,7 +28,7 @@ _set.domainFunction = "home";
 
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
@@ -162,7 +162,7 @@ const _functions = [
     { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework + dashboards, handles all business solutions", "version" : "v1.0.03", "icon" : "I3FrameworkIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Welcome', url: route('home/welcome'),    route: 'home/welcome' },
+                { name: 'Welcome', url: route('home/welkom'),    route: 'home/welkom' },
                 { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' }]
                 ,"status":"featured", "progress": 96
     }, 
@@ -190,25 +190,25 @@ const _functions = [
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"scheduled", "progress": 10
     },
-    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "icon" : "ProjectIcon", "version" : "v1.1.01", "options" : 
+    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "icon" : "ProjectIcon", "version" : "v1.1.02", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Plan',    url: route('project/plan'),    route: 'project/plan',     when:() => usePage().props.auth.user },
                 { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user },
                 { name: 'Budget',    url: route('project/budget'),    route: 'project/budget',     when:() => usePage().props.auth.user }]
-            ,"status":"upgrading", "progress": 50
+            ,"status":"featured", "progress": 70
     },
 
-    { "item":"design", "title":"Design Software", "description": "Diagrams for your business ideas, projects and others", "icon": "DesignIcon", "version" : "v1.0.02", "options" : 
+    { "item":"design", "title":"Design Software", "description": "Diagrams for your business ideas, projects and others", "icon": "DesignIcon", "version" : "v1.1.02", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Mind',    url: route('design/mind'),    route: 'design/mind',     when:() => usePage().props.auth.user },
                 { name: 'Pert',    url: route('design/pert'),    route: 'design/pert',     when:() => usePage().props.auth.user },
                 { name: 'Lane',    url: route('design/lane'),    route: 'design/lane',     when:() => usePage().props.auth.user }]
-            ,"status":"upgrading", "progress": 80
+            ,"status":"featured", "progress": 80
     },
 
-    { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "icon" : "EcommerceIcon", "options" : 
+    { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "icon" : "EcommerceIcon", "version" : "v0.1.03", "options" : 
             [   
                 { name: 'Dashboard', url: route('ecommerce/dashboard'),    route: 'ecommerce/dashboard' },
                 { name: 'Storefront',    url: route('ecommerce/storefront'),    route: 'ecommerce/storefront' } ]
@@ -293,7 +293,7 @@ const refreshPage = () => { window.location.reload(); };
             <!--    <self-intro /> -->
             <div class="">
                 <!--    <ApplicationLogo class="block w-80 h-80" /> -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 5xl:grid-cols-6 xl:grid-cols-3 pt-12 gap-4 ">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 xl:grid-cols-3 pt-12 gap-4 ">
                     <template v-for="_f in _functions"><div v-if="_f.title.toLowerCase().includes(filter)" ><business-function-card :set="_set" :f="_f"  :progress="_f.progress" /></div></template>
                     <template v-for="_m in _modules"><div v-if="_m.title.toLowerCase().includes(filter)" ><module-card :set="_set" :f="_m"   /></div></template>
                 </div>

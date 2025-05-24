@@ -6,8 +6,8 @@ import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
 
 import { gantt } from "dhtmlx-gantt";
 
-import { getData } from "@/panaderos/panadero-resourceplanning/constants/planning-data.js";
-import "@/panaderos/panadero-resourceplanning/dhtmlxgantt.css";
+import { getData } from "@/panadero/panadero-resourceplanning/constants/planning-data.js";
+import "@/panadero/panadero-resourceplanning/dhtmlxgantt.css";
 
 // define emits
 const emit = defineEmits(['kill', 'wrench']);
@@ -547,12 +547,15 @@ const _doRefresh = async () => {
 const _button = "my-1 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 //const pulse = inject("pulse");
 
+const refreshPage = () => { window.location.reload(); };
+
 </script>
 
 <template>
 <div class="m-0">   
     <div class="grid grid-cols-4">     
         <div class="flex pl-2 col-span-3 mb-1 " :class="set.dark ? 'wx-willow-dark-theme' : 'wx-willow-theme'">
+            <button @click="refreshPage" type="button" :class="_button">Refresh</button>
             <button @click="_reset" type="button" :class="_button">Reset</button>
             <button @click="_load" type="button" :class="_button">Load</button>
             <button @click="_save" type="button" :class="_button">Save</button>

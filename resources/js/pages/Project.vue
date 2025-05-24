@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import MainSection from "@/panaderos/panadero-resourceplanning/ProjectPlanning.vue";
+import MainSection from "@/panadero/panadero-resourceplanning/ProjectPlanning.vue";
 //import BotsSection from "@/sections/BotsSection.vue"
 
 // stores
@@ -22,7 +22,7 @@ const _contract = useContractStore();
 const _db = useDbStore();
 
 // components
-import Pulse from '@/panaderos/shared/tools/Pulse.vue';
+import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 const props = defineProps({
     page: Object,

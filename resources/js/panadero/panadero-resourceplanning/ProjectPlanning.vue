@@ -1,12 +1,9 @@
 <script setup>
 import {computed, onMounted, onUnmounted, ref} from 'vue';
-import { moduleName, moduleVersion, panaderoResourcePlanning } from "panadero-resourceplanning";
+//import { moduleName, moduleVersion, panaderoResourcePlanning } from "panadero-resourceplanning";
 
 import { EllipsisVerticalIcon } from '@heroicons/vue/20/solid';
-import "@/panaderos/panadero-resourceplanning/dhtmlxgantt.css";
-
-
-
+import "@/panadero/panadero-resourceplanning/dhtmlxgantt.css";
 
 import { gantt } from "dhtmlx-gantt";
 // define emits
@@ -28,7 +25,7 @@ const props = defineProps({
 });
 
 // globals
-const _title="ResourcePlanning";
+const _title="ProjectPlanning";
 
 const _counter=ref(0);
 
@@ -127,7 +124,7 @@ onMounted(async ()=> {
         gantt.parse({
             tasks: [
                 { id: 11, text: "Project #1", type: "project", progress: 0.6, open: true },
-                { id: 12, text: "Task #1", start_date: "03-04-2023", duration: 5, parent: 11, progress: 1, open: true },
+                { id: 12, text: "ProjectTask #1", start_date: "03-04-2023", duration: 5, parent: 11, progress: 1, open: true },
                 { id: 13, text: "Task #2", start_date: "03-04-2023", type: "project", parent: 11, progress: 0.5, open: true },
                 { id: 14, text: "Task #3", start_date: "02-04-2023", duration: 6, parent: 11, progress: 0.8, open: true },
                 { id: 15, text: "Task #4", type: "project", parent: 11, progress: 0.2, open: true },
@@ -159,6 +156,15 @@ onMounted(async ()=> {
 
 ;
 })
+
+onUnmounted(async ()=> {
+    gantt.clearAll(); 
+
+    //gantt.destructor();
+})
+
+
+
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i >= 0; i--) {
@@ -210,8 +216,6 @@ let _weekend="#F2F2F2";
 //let _dark_weekend="#00001A";
 let _dark_weekend="#000000";
 
-
-
 /// remove this section to store!!!
 const _save = async () => {
   if(props.set.project.id > 0){
@@ -231,18 +235,12 @@ defineExpose({
   _load, _save
 });
 
-
-
 </script>
 
 <template>
-	<div class="mx-0.5">
-
-        
+    <div class="mx-0.5">
    <div class="grid grid-cols-12 text-xxs sm:text-xs md-text-sm dark:text-gray-200">
       <div @click="emit('switch')" class="col-span-2">
-       {{moduleName}}
-       {{moduleVersion}}
      </div>
      <div @click="_changeColor">COLOR_{{_counter}}</div>
      <div @click="_init">INIT</div>
@@ -250,16 +248,12 @@ defineExpose({
      <div @click="_shuffle">SHUFFLE</div>
      <div @click="_parse">PARSE</div>
    </div>
-
-
-
-
    <div id="whateverz" class="h-screen max-w-9xl bg-black"></div>
 
-	<div class=" mt-2 gap-2 lg:mt-3 lg:gap-3 grid grid-cols-12" :id="_counter">	
-	</div>
+    <div class=" mt-2 gap-2 lg:mt-3 lg:gap-3 grid grid-cols-12" :id="_counter"> 
+    </div>
 
-	</div>
+    </div>
 </template>
 <style>
 

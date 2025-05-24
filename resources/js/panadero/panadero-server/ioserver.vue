@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue';
 import { panaderoServer } from 'panadero-server';
 
-
 const emit = defineEmits(['status'])
 
 const props =defineProps({

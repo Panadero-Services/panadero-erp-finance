@@ -1,6 +1,6 @@
 <script setup>
 import { useForm } from "@inertiajs/vue3";
-import TheButton from "@/panaderos/buttons/TheButton.vue";
+import TheButton from "@/panadero/buttons/TheButton.vue";
 import { Switch } from '@headlessui/vue'
 
 const props = defineProps({
