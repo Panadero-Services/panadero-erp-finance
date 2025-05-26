@@ -36,6 +36,9 @@ const props = defineProps({
 });
 
 // variables
+const _module = "content";
+const _table = 'posts';
+
 let _poolTimer; 
 let _pulse = ref(false);
 let editRecordMode= ref(false);
@@ -71,7 +74,6 @@ const _superSelfAdmin = computed(() => {
   return _set.superSelfAdmins.includes(_set.self);
 });
 
-const table = 'posts';
 
 </script>
 
@@ -81,7 +83,7 @@ const table = 'posts';
          <pulse v-model="_pulse" :animation="_set.animate"/>
 
          <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
-            <edit-record-modal lng='en' :record="_activeRecord" :table="table" @close="_close" :superSelfAdmin="_superSelfAdmin==1" />
+            <edit-record-modal lng='en' :record="_activeRecord" :module="_module" :table="_table" @close="_close" :superSelfAdmin="_superSelfAdmin==1" :db="_db" />
          </div>
 
       </template>
@@ -92,7 +94,7 @@ const table = 'posts';
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div v-for="post in posts.data" key="post.id" class="text-sm">
-                  <PostCard :post="post" @whatever="_whatever" :db="_db"/>
+                  <PostCard :post="post" :module="_module" :table="_table" @whatever="_whatever" :db="_db"/>
               </div>
             </div>
             <Pagination :meta="posts.meta" />

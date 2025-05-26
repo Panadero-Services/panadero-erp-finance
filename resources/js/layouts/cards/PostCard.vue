@@ -1,12 +1,18 @@
 <script setup>
 import { ref } from 'vue';
+import { usePage } from '@inertiajs/vue3';
+
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
 
 const props = defineProps({
+    module: String,
+    table: String,
     post: Object,
     db: Object
 });
+
+// variables
 
 const _iconChangedField = ref('iconChanged');
 const _iconChangedId = ref(0);
@@ -16,7 +22,6 @@ const _false = false;
 
 let _updateIcon = async (_id, _field, _value) => {    
     console.log('_updateIcon');
-
     let i={};
     i.id = _id;
     i.field=_field;
@@ -24,15 +29,30 @@ let _updateIcon = async (_id, _field, _value) => {
     _iconChangedField.value = `${_field} updated`;
     _iconChangedId.value = _id;
     _iconChangedValue.value = _value;
-    
     let _response = await props.db.postUpdateIcon('Post', i);
     console.log(_response);
+
+    // logAction
+    const _logData = {
+        action: "postcard.updateicon",
+        user_id:  usePage().props.auth.user.id || 'no_uid',
+        module: props.module, 
+        node: 'none',
+        team: usePage().props.auth.user.current_team.name || 'no_team', 
+        project: 'none', 
+        content: _response.data,
+        json: '{}',
+        //json: JSON.stringify(_response),
+        tags: 'content, posts',
+    }
+      let _response2 = await props.db.logAction(_logData);
+      console.log(_response2);
    }
+
 
   // css
   const _title = "text-indigo-600 dark:text-indigo-300";
   const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
-
 
 </script>
 
@@ -42,13 +62,13 @@ let _updateIcon = async (_id, _field, _value) => {
 
    <div class="absolute inset-px rounded-sm bg-white dark:bg-gray-950 max-lg:rounded-t-[2rem]" :class="_shadow" />
    <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
-     <div class="px-8 pt-4 sm:px-10 sm:pt-6">
+     <div class="min-h-24 px-8 pt-4 sm:px-10 sm:pt-6">
        <p @click="$emit('whatever',post.id)" class="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-gray-50">{{post.id}} {{post.title}}</p>
        <p class="my-0 text-xxs font-medium tracking-tight text-gray-500 max-lg:text-center dark:text-gray-400"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
        <p class="mt-4 text-sm/6 text-gray-600 max-lg:text-center dark:text-gray-300 mb-3">{{post.body}}</p>
      </div>
 
-     <div class="grid grid-cols-2 border-t-2 dark:border-gray-700 my-3 mx-6">
+     <div class="grid grid-cols-2 border-t-2 dark:border-gray-700 my-3 mx-6 ">
        <div class="flex flex-1 justify-start text-gray-200">
          <div class=" flex flex-wrap items-center justify-between sm:flex-nowrap">
            <div class="ml-0 mt-4 ">

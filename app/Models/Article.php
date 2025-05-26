@@ -14,19 +14,16 @@ class Article extends Model
 {
     use HasFactory;
 
+    public function group() {
+        return $this->belongsTo(ArticleGroup::class, 'article_group_id');
+    }
 
+    public function saleDetails() {
+        return $this->hasOne(SaleDetail::class);
+    }
 
-public function group() {
-    return $this->belongsTo(ArticleGroup::class, 'article_group_id');
-}
-
-public function saleDetails() {
-    return $this->hasOne(SaleDetail::class);
-}
-
-public function rentalDetails() {
-    return $this->hasOne(RentalDetail::class);
-}
-
+    public function rentalDetails() {
+        return $this->hasOne(RentalDetail::class);
+    }
 
 }

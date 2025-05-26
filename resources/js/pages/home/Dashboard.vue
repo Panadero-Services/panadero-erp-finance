@@ -11,10 +11,6 @@ const _usePage = usePage();
 import {moduleName, moduleGit} from 'panadero-self';
 // sections
 
-
-
-
-
 // stores
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
@@ -158,22 +154,23 @@ const _modules = [
     }
 ];
 
+
 const _functions = [
-    { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework + dashboards, handles all business solutions", "version" : "v1.0.03", "icon" : "I3FrameworkIcon", "options" : 
+    { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework structure  provides a foundation for all business services", "version" : "v1.0.04", "icon" : "I3FrameworkIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Welcome', url: route('home/welkom'),    route: 'home/welkom' },
-                { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' }]
+                { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' },
+                { name: 'Sandbox', url: route('home/sandbox'),    route: 'home/sandbox' }]
                 ,"status":"featured", "progress": 96
     }, 
 
-    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.21", "options" : 
+    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.22", "options" : 
             [   
                 { name: 'Dashboard',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
-                { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
-                { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user }]
-                ,"status":"upgrading", "progress": 10
+                { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user }]
+                ,"status":"upgrading", "progress": 15
 
     }, 
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "version" : "v3.1.63", "options" : 
@@ -224,6 +221,7 @@ const _functions = [
     { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "icon": "AiIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"upgrading", "progress": 10
     },

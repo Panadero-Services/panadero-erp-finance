@@ -91,6 +91,7 @@ class PostController extends Controller
         $newPost->body = $request->body;
         $newPost->save();
         sleep(1);
+        //return 'PostController: update passed id:' . $request->id . ' title:'. $request->title;;
     }
 
     /**

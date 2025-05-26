@@ -20,6 +20,12 @@ Route::get('test_user', function (){
     return Post::take(5)->get();
 });
 
+Route::get('whatever', function (){
+    return Post::take(51)->get();
+});
+
+
+
 Route::get('u', function (Request $request){
     $response = $request;
     return $response;

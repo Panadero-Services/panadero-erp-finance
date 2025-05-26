@@ -155,6 +155,7 @@ export const useDbStore = defineStore('db', () => {
         }
     }
 
+    // posts.update
     async function postUpdateIcon(_model, _payload) {
         //console.log(_model);
         return new Promise((resolve, reject) => {
@@ -162,11 +163,6 @@ export const useDbStore = defineStore('db', () => {
             try {
                 //this.DebugMode('set.payload', _payload);
                 const jsonPayload = JSON.stringify(_payload);
-               // const postSignature = crypto.createHmac('sha256', '31234KeyTestevnvornment')
-               //     .update(jsonPayload)
-               //     .digest('hex');
-                
-                console.log('db.postUpdateIcon');
 
                 axios
                     .post(`/postupdateicon`,_payload, {
@@ -179,9 +175,9 @@ export const useDbStore = defineStore('db', () => {
                         }
                     })
                 .then((response) => {
-                resolve(response);
-
+                    resolve(response);
                 })
+
             } catch (err) {
               reject(`store/db.js:post:: ${err}`);
             }
@@ -191,11 +187,23 @@ export const useDbStore = defineStore('db', () => {
         }
 
 
+    // logs.store
+    async function logAction(_logData) {
+        console.log(_logData);
+        try {
+            await axios.post('/logs', _logData) // or route('logs.store') if using Ziggy
+            .then((response) => {
+                return response;
+            })
+        } catch (err) {
+            console.error('Error storing log:', err.response?.data || err.message);
+        }
+    }
 
 
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 
-        insertTeam, insertProject, setUser, postUpdateIcon
+        insertTeam, insertProject, setUser, postUpdateIcon, logAction
     };
 });

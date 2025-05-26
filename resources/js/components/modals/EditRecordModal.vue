@@ -1,6 +1,6 @@
 <script setup>
 import {computed, ref, onMounted} from 'vue'
-import { useForm } from "@inertiajs/vue3";
+import { useForm, usePage } from "@inertiajs/vue3";
 import TheButton from "@/panadero/components/TheButton.vue";
 import { Switch } from '@headlessui/vue'
 
@@ -8,13 +8,15 @@ const props = defineProps({
     //page: Object,
     lng: String,
     record: Object, 
+    module: String,
     table: String,
-    superSelfAdmin : Boolean
+    superSelfAdmin : Boolean, 
+    db: Object
 });
 
 const fields = ref([]);
 const readOnlyFields = ref(['id','created_at','updated_at']);
-const boolFields = ref(['is_active', 'animate', 'sidebar', 'header', 'footer', 'public', 'max_width', 'featured', 'blog', 'smart']);
+const boolFields = ref(['is_active', 'animate', 'sidebar', 'header', 'footer', 'public', 'max_width', 'featured', 'blog', 'smart', 'published', 'locked', 'self']);
 
 const form = useForm(
     props.record
@@ -48,9 +50,25 @@ const form = useForm({
 */
 
 const emit = defineEmits(['close'])
+
 const submit = async () => {
     console.log('section update submitted');
-    await form.put(route(props.table+".update", props.record.id));
+    const _response = await form.put(route(props.table+".update", props.record.id));
+
+    // logAction
+    const _logData = {
+        action: props.table+".update",
+        user_id:  usePage().props.auth.user.id || 'no_uid',
+        module: props.module, 
+        node: 'none',
+        team: usePage().props.auth.user.current_team.name || 'no_team', 
+        project: 'none', 
+        content: form.title || 'none',
+        json: JSON.stringify(form),
+        tags: 'content, posts',
+    }
+    await props.db.logAction( _logData );
+
     emit('close');
 };
 

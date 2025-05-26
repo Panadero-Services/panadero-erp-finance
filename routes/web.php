@@ -33,6 +33,7 @@ use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\RoleAccessMiddleware;
 
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\LogController;
 
 
 
@@ -78,6 +79,13 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('home/dashboard');//->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    Route::get('home/sandbox', function () {
+        return Inertia::render('home/Sandbox', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/sandbox');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('home/tiers', function () {
         return Inertia::render('home/Tiers', [
@@ -331,6 +339,9 @@ Route::put('posts.update',[PostController::class, 'update'])->name('posts.update
 
 Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'updateicon'])->name('postupdateicon');
 
+//Route::resource('logs',LogController::class);
+
+Route::get('/logs/criteria', [LogController::class, 'criteria']);
 
 
 /*
