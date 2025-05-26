@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Post;
 
 class PostResource extends JsonResource
 {
@@ -20,6 +21,7 @@ class PostResource extends JsonResource
             'user'=> $this->whenLoaded('user', fn () => UserResource::make($this->user)),
             'title'=> $this->title,
             'body'=> $this->body,
+            'json'=> $this->json,
             'created_at'=> $this->created_at,
             'updated_at'=> $this->updated_at,
             'published'=> $this->published,
@@ -28,6 +30,8 @@ class PostResource extends JsonResource
             'locked'=> $this->locked,
             'self'=> $this->self,
             'smart'=> $this->smart,
+            'validation_rules' => Post::validationRules(),
+            'form_fields' => Post::formFields()
         ];
 
     }

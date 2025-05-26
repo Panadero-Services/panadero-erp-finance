@@ -1,5 +1,5 @@
-<script setup>
-import { ref, provide, computed } from 'vue';
+<script setup lang="ts">
+import { ref, provide, computed, onMounted } from 'vue';
 import { useForm } from "@inertiajs/vue3";
 
 // layout
@@ -15,8 +15,10 @@ import EditRecordModal from "@/components/modals/EditRecordModal.vue";
 
 // sections
 import PostCard from '@/layouts/cards/PostCard.vue';
-import Pagination from "@/layouts/Pagination.vue"
+import Pagination from "@/layouts/Pagination.vue";
 
+// types
+//import { PostProps } from '@/types/post';
 // stores
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
@@ -34,6 +36,8 @@ const props = defineProps({
     baseSections: Object,
     posts: Object
 });
+
+
 
 // variables
 const _module = "content";
@@ -94,6 +98,7 @@ const _superSelfAdmin = computed(() => {
          <div id="whatever" class="w-full ... min-h-4 min-w-full ">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div v-for="post in posts.data" key="post.id" class="text-sm">
+
                   <PostCard :post="post" :module="_module" :table="_table" @whatever="_whatever" :db="_db"/>
               </div>
             </div>

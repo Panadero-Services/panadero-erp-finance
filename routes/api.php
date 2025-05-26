@@ -35,6 +35,10 @@ Route::get('u', function (Request $request){
 Route::post('/example', [SomethingController::class, 'justAnExample'])
 ->middleware(VerifyFastApiKey::class);
 
+// Model configuration
+Route::get('/model-config/{module}/{table}', [ModelConfigController::class, 'getModelConfig'])
+    ->middleware(['auth:sanctum', 'verified']);
+
 /*
 Route::get('/examplez', [SomethingController::class, 'justAnExample']);
 

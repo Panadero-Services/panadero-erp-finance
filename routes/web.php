@@ -305,6 +305,7 @@ Route::get('/defaultPages',[\App\Http\Controllers\PageController::class, 'defaul
 
 // web3Record
 Route::resource('web3Records',Web3RecordController::class);
+
 Route::get('/getrecord',[\App\Http\Controllers\Web3RecordController::class, 'getrecord'])->name('getrecord');
 Route::get('/getweb3recordline',[\App\Http\Controllers\Web3RecordController::class, 'getweb3recordline'])->name('getweb3recordline');
 Route::get('/getweb3records',[\App\Http\Controllers\Web3RecordController::class, 'getweb3records'])->name('getweb3records');

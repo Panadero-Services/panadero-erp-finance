@@ -21,10 +21,11 @@ class PostController extends Controller
         if (Gate::denies('admin-access')){
             return response('UnAuthorized.',401);
         }
-*/
-
+        */
         return inertia('Posts',[
-            'posts'=> PostResource::collection(Post::with('user')->paginate()),
+            'posts'=> PostResource::collection(Post::with('user')->paginate())
+            //'formFields' => Post::formFields(),
+            //'validationRules' => Post::validationRules()
         ]);
 
     }

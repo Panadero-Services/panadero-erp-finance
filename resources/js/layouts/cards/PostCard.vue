@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
@@ -53,6 +52,10 @@ let _updateIcon = async (_id, _field, _value) => {
   // css
   const _title = "text-indigo-600 dark:text-indigo-300";
   const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
+
+console.log('whateverPost');
+console.log(props.post.criteria);
+
 
 </script>
 
