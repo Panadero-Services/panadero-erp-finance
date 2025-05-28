@@ -54,7 +54,6 @@ let _updateIcon = async (_id, _field, _value) => {
   const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
 console.log('whateverPost');
-console.log(props.post.criteria);
 
 
 </script>
@@ -91,12 +90,12 @@ console.log(props.post.criteria);
        </div>
 
       <div class="flex space-x-2 mt-2 justify-end mr-3">  
-        <CategorySectionIcon @click="_updateIcon(post.id, 'self', post.self==0), post.self = post.self == 1 ? 0 : 1 " icon="FingerPrint" :activated="post.self==1" :error="_false" title="is self"/>
-        <CategorySectionIcon @click="_updateIcon(post.id, 'locked', post.locked==0), post.locked = post.locked == 1 ? 0 : 1 " icon="LockClosed" :activated="post.locked==1" :error="_false" title="is locked"/>
-        <CategorySectionIcon @click="_updateIcon(post.id, 'featured', post.featured==0), post.featured = post.featured == 1 ? 0 : 1 " icon="Fire" :activated="post.featured==1" :error="_false" title="is featured"/>
-        <CategorySectionIcon @click="_updateIcon(post.id, 'smart', post.smart==0), post.smart = post.smart == 1 ? 0 : 1 " icon="Heart" :activated="post.smart==1" :error="_false" title="is smart"/>
-        <CategorySectionIcon @click="_updateIcon(post.id, 'public', post.public==0), post.public = post.public == 1 ? 0 : 1 " icon="LockOpen" :activated="post.public==1" :error="_false" title="is public"/>
-        <CategorySectionIcon @click="_updateIcon(post.id, 'published', post.published==0), post.published = post.published == 1 ? 0 : 1 " icon="Tv" :activated="post.published==1" :error="_false" title="is published"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_self', post.is_self==0), post.is_self = post.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="post.is_self==1" :error="_false" title="is self"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_locked', post.is_locked==0), post.is_locked = post.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="post.is_locked==1" :error="_false" title="is locked"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_featured', post.is_featured==0), post.is_featured = post.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="post.is_featured==1" :error="_false" title="is featured"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_smart', post.is_smart==0), post.smart = post.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="post.is_smart==1" :error="_false" title="is smart"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_public', post.is_public==0), post.public = post.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="post.is_public==1" :error="_false" title="is public"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_published', post.is_published==0), post.is_published = post.is_published == 1 ? 0 : 1 " icon="Tv" :activated="post.is_published==1" :error="_false" title="is published"/>
       </div>
 
      </div>

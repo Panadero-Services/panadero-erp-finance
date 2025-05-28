@@ -38,6 +38,9 @@ use App\Http\Controllers\LogController;
 
 
 // Route::get('{any}', function () {return view('app'); })->where('any', '.*');
+Route::get('/getLabels', [\App\Http\Controllers\PostController::class, 'getLabels'])->name('getLabels');
+
+
 Route::get('/', function () {
     return redirect()->route('home/welkom');
 });
@@ -340,9 +343,9 @@ Route::put('posts.update',[PostController::class, 'update'])->name('posts.update
 
 Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'updateicon'])->name('postupdateicon');
 
-//Route::resource('logs',LogController::class);
+Route::resource('logs',LogController::class);
 
-Route::get('/logs/criteria', [LogController::class, 'criteria']);
+//Route::get('/logs/criteria', [LogController::class, 'criteria']);
 
 
 /*

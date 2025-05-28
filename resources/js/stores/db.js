@@ -49,6 +49,27 @@ export const useDbStore = defineStore('db', () => {
         }
     }
 
+    async function getLabels(model = 'Post', label = 'title', filter = '') {
+        try {
+            // Make direct Axios call to get label
+            const response = await axios.get('/getLabels', {
+                params: {
+                    model: model,
+                    label: label,
+                    filter: filter,
+                    caller: 'stores/db.js',
+                    user: 'jaWsome',
+                    key: '<hashedKey hash#31234KeyTestevnvornment />'
+                }
+            });
+            
+            return response.data;
+        } catch (error) {
+            console.error(`Error fetching ${model} label:`, error);
+            throw error;
+        }
+    }
+
     async function insertTeam(_model, _payload) {
        try {
                 console.log(_payload);
@@ -204,6 +225,6 @@ export const useDbStore = defineStore('db', () => {
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 
-        insertTeam, insertProject, setUser, postUpdateIcon, logAction
+        insertTeam, insertProject, setUser, postUpdateIcon, logAction, getLabels
     };
 });

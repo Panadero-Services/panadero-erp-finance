@@ -84,22 +84,82 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(Request $request)
     {
-        $newPost = Post::firstOrNew(['id' =>  request('id')]);
-
+        $newPost = Post::firstOrNew(['id' => $request->id]);
         $newPost->title = $request->title;
         $newPost->body = $request->body;
+        $newPost->json = $request->json;
+        $newPost->links = $request->links;
+        $newPost->is_published = $request->is_published;
+        $newPost->is_public = $request->is_public;
+        $newPost->is_featured = $request->is_featured;
+        $newPost->is_locked = $request->is_locked;
+        $newPost->is_self = $request->is_self;
+        $newPost->is_smart = $request->is_smart;
+        $newPost->is_active = $request->is_active;
+        $newPost->is_archived = $request->is_archived;
         $newPost->save();
-        sleep(1);
-        //return 'PostController: update passed id:' . $request->id . ' title:'. $request->title;;
-    }
 
+        //return 'PostController: update passed id:' . $request->id . ' title:'. $request->title;
+    }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Post $post)
     {
         //
+    }
+
+    /**
+     * Get labels from a model based on model, label and filter field
+     */
+    public function getLabels(Request $request)
+    {
+       
+        $model = $request->query('model', 'post');
+        $label = $request->query('label', 'title');
+        $filter = $request->query('filter', '');
+
+        try {
+            // Get the model class name
+            $modelClass = "App\\Models\\" . ucfirst($model);
+            
+            // Check if the class exists
+            if (!class_exists($modelClass)) {
+                return response()->json(['error' => 'Model not found'], 404);
+            }
+
+            // Get the model instance
+            $modelInstance = new $modelClass();
+
+            // Get searchable columns from model
+            $searchableColumns = $modelInstance->getSearchableColumns();
+            
+            // Build the query
+            $query = $modelInstance->newQuery();
+
+            // Add filters if provided
+            if ($filter) {
+                $query->where(function ($q) use ($filter, $searchableColumns) {
+                    foreach ($searchableColumns as $column) {
+                        if ($column === 'id') {
+                            $q->orWhere($column, $filter);
+                        } else {
+                            $q->orWhere($column, 'like', '%' . $filter . '%');
+                        }
+                    }
+                });
+            }
+
+            // Get the results with only the label field
+            $results = $query->get([$label]);
+
+            // Format results as array of label values
+            return response()->json($results->pluck($label)->toArray());
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching labels', 'message' => $e->getMessage()], 500);
+        }
     }
 }

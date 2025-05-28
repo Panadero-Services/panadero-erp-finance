@@ -36,15 +36,12 @@ class LogController extends Controller
     // NEEEDS WORK.. THIS IS THE AUTHENTICATED CALL
         // Bypass all auth just for testing
     // DO NOT USE IN PRODUCTION
-//    public function store(StorelogRequest $request)
-    public function store(Request $request)
+    public function store(StorelogRequest $request)
     {
-
         $validated = $request->validate(Log::criteria());
         $log = Log::create($validated);
         
         return response()->json($log, 201);
-        //
     }
 
     public function criteria()
