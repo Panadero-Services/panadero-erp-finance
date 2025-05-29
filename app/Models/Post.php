@@ -60,7 +60,7 @@ class Post extends Model
     }
 
     /**
-     * Get searchable columns for this model
+     * Get links table options for this model
      * @return array
      */
     public function linksTable(): array {

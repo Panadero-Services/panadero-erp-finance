@@ -35,7 +35,8 @@ class PostResource extends JsonResource
             'is_active'=> $this->is_active==1,
             'is_archived'=> $this->is_archived==1,
             'validation_rules' => Post::validationRules(),
-            'form_fields' => Post::formFields()
+            'form_fields' => Post::formFields(),
+            'links_table' => Post::linksTable()
         ];
 
     }
