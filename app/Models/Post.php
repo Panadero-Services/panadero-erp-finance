@@ -63,16 +63,16 @@ class Post extends Model
      * Get links table options for this model
      * @return array
      */
-    public function linksTable(): array {
+    public static function linksTable(): array {
         return [
-            'relates_to_record',
-            'previous_record',
-            'next_record',
+            'relates_to',
+            'previous',
+            'next',
             'duplicates',
-            'is_duplicated_by',
-            'is_parent_for',
-            'is_child_of',
-            'next_chain'
+            'duplicated_by',
+            'parent_for',
+            'child_of',
+            'chained_by'
         ];
     }
 
@@ -119,7 +119,7 @@ class Post extends Model
                 'label' => 'Content',
                 'col_span' => 5,
                 'sequence' => 7,
-                'rows' => 8,
+                'rows' => 5,
                 'required' => true
             ],
             'json' => [
@@ -127,7 +127,7 @@ class Post extends Model
                 'label' => 'json',
                 'col_span' => 3,
                 'sequence' => 8,
-                'rows' => 8,
+                'rows' => 5,
                 'help' => 'Use this to store unstructured data'
             ],
             'links' => [

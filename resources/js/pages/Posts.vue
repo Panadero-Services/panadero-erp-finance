@@ -37,8 +37,6 @@ const props = defineProps({
     posts: Object
 });
 
-
-
 // variables
 const _module = "content";
 const _table = 'posts';
@@ -92,7 +90,7 @@ const handleRecordChange = (recordData) => {
   loadRecord(recordData.type, recordData.id);
 };
 
-const _whatever = async (_nr) => {
+const _edit = async (_nr) => {
    console.log(_nr);
    _activeRecord.value = props.posts.data.filter(x => x.id ==_nr)[0];
    console.log(_activeRecord.value);
@@ -115,7 +113,7 @@ const _superSelfAdmin = computed(() => {
       <template #header>
          <pulse v-model="_pulse" :animation="_set.animate"/>
 
-         <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
+         <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8 dark:bg-gray-800">
             <edit-record-modal lng='en' 
                                 :key="keyIndex"
                                :record="_activeRecord" 
@@ -132,14 +130,13 @@ const _superSelfAdmin = computed(() => {
       <template #intro />
 
       <template #default>
-         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
+         <div id="whatever" class="w-full min-h-4 min-w-full dark:bg-black">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div v-for="post in posts.data" key="post.id" class="text-sm">
-
-                  <PostCard :post="post" :module="_module" :table="_table" @whatever="_whatever" :db="_db"/>
+              <div v-for="post in posts.data" key="post.id" class="text-sm dark:text-gray-200">
+                  <PostCard :post="post" :module="_module" :table="_table" @edit="_edit" :db="_db"/>
               </div>
             </div>
-            <Pagination :meta="posts.meta" />
+            <Pagination :meta="posts.meta" class="dark:text-gray-200"/>
          </div>
       </template>
 
