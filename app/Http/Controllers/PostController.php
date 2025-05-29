@@ -162,4 +162,23 @@ class PostController extends Controller
             return response()->json(['error' => 'Error fetching labels', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function getrecordbyid(Request $request)
+    {
+        // default API CALL
+        $caller =   $request->caller;       // this is the caller
+        $model = $request->model;     // this is the model
+        $id =    $request->id;        // this is the column
+        
+        $r=(object)NULL;
+        // check Valid Provider (model) calles
+        $model = 'App\Models\\'.$model;
+
+        $r = $model::where('id',$id)->get();
+
+        return response()->json($r);
+    }
+
+
+
 }

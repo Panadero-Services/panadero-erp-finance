@@ -19,7 +19,7 @@ const props = defineProps({
   logAction: Function
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'changeRecord']);
 
 const table = ref(props.table || 'posts')
 const titleColumn = ref(props.record.titleColumn || 'title')
@@ -156,6 +156,21 @@ const isFormValid = computed(() => {
 });
 let _switchSection = ".";
 
+
+
+// css
+const _button = { active: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400", 
+                  inactive: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800" 
+               };
+
+
+const _input = {
+  base: "w-full pl-3 pr-10 py-2 text-xs rounded-md focus:outline-none focus:ring-1",
+  light: "bg-white border-gray-300 text-gray-700 focus:ring-indigo-500",
+  dark: "dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-indigo-600"
+};
+
+
 </script>
 <template>
   <div>
@@ -228,7 +243,7 @@ let _switchSection = ".";
 
                   <div class="flex items-center space-x-2 block w-full mr-2">
                     
-                        <select v-model="link.type" class="border-gray-300 dark:border-gray-600 rounded-md text-xs">
+                        <select v-model="link.type" class="border-gray-300 dark:border-gray-600 rounded-md text-xs" :class="[_input.light, _input.dark]">
                           <option value="relates_to">Relates to record</option>
                           <option value="previous">Previous record</option>
                           <option value="next">Next record</option>
@@ -261,10 +276,7 @@ let _switchSection = ".";
                         />
 
                   </div>
-                  
-                  <button @click.prevent="addLink" class="text-indigo-500 hover:text-green-600 w-16 text-sm">add link
-           
-                  </button>
+                  <button @click="addLink" :class="[_button.active]" class="ml-2">Add_Link</button>
 
                 </div>
 
@@ -299,7 +311,8 @@ let _switchSection = ".";
                               {{ link?.post_id || 'N/A' }}
                             </span>
 
-                            <span class="text-xs text-blue-600 dark:text-gray-300 w-max hover:text-black">
+                            <span class="text-xs text-blue-600 dark:text-gray-300 w-max hover:text-black cursor-pointer" 
+                                  @click="emit('changeRecord', { type: link.type, id: link.post_id })">
                               {{ link?.post_title || 'N/B' }}
                             </span>
 
@@ -387,20 +400,8 @@ let _switchSection = ".";
 
         <!-- Buttons -->
         <div class="col-span-8 pt-2 border-t mt-2 flex justify-end space-x-4">
-          <button
-            type="button"
-            @click="$emit('close')"
-            class="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-100 dark:hover:bg-gray-600"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            v-if="superSelfAdmin"
-            class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 dark:bg-indigo-700 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 dark:hover:bg-indigo-800"
-          >
-            Save
-          </button>
+          <button @click="$emit('close')" type="button" :class="[_button.active]">Cancel</button>
+          <button v-if="superSelfAdmin" @click="submit" type="button" :class="[_button.active]">Save</button>
         </div>
 
 

@@ -42,6 +42,8 @@ const props = defineProps({
 // variables
 const _module = "content";
 const _table = 'posts';
+const _model = 'Post';
+const keyIndex = ref(0);
 
 let _poolTimer; 
 let _pulse = ref(false);
@@ -62,6 +64,33 @@ const _close = async (_nr) => {
 }
 
 const _activeRecord = ref();
+
+const loadRecord = async (recordType, recordId) => {
+  try {
+    const response = await _db.getRecordById(_model, recordId);
+    console.log(response.title)
+
+    if (response) {
+      // Clear existing record
+     // _activeRecord.value = {};
+      
+      // Copy all fields from response to active record
+      Object.keys(response).filter(key => (key !== 'user_id')).forEach(key => {
+        _activeRecord.value[key] = response[key];
+        console.log(key)
+      });
+      
+      // Increment keyIndex to trigger re-render
+      keyIndex.value++;
+    }
+  } catch (error) {
+    console.error('Error loading record:', error);
+  }
+};
+
+const handleRecordChange = (recordData) => {
+  loadRecord(recordData.type, recordData.id);
+};
 
 const _whatever = async (_nr) => {
    console.log(_nr);
@@ -87,7 +116,15 @@ const _superSelfAdmin = computed(() => {
          <pulse v-model="_pulse" :animation="_set.animate"/>
 
          <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
-            <edit-record-modal lng='en' :record="_activeRecord" :module="_module" :table="_table" @close="_close" :superSelfAdmin="_superSelfAdmin==1" :db="_db" />
+            <edit-record-modal lng='en' 
+                                :key="keyIndex"
+                               :record="_activeRecord" 
+                               :module="_module" 
+                               :table="_table" 
+                               @close="_close" 
+                               @changeRecord="handleRecordChange"
+                               :superSelfAdmin="_superSelfAdmin==1" 
+                               :db="_db" />
          </div>
 
       </template>

@@ -34,9 +34,7 @@ const props = defineProps({
   }
 })
 
-
 // titleColum and label are double defined!!
-
 
 const emit = defineEmits(['update:modelValue', 'update:postTitle'])
 
@@ -115,6 +113,36 @@ console.log(post)
   }
 }
 
+const _input = {
+  base: "w-full pl-3 pr-10 py-2 text-xs rounded-md focus:outline-none focus:ring-1",
+  light: "bg-white border-gray-300 text-gray-700 focus:ring-indigo-500",
+  dark: "dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-indigo-600"
+};
+
+const _container = {
+  base: "flex items-center",
+  light: "bg-white",
+  dark: "dark:bg-gray-700"
+};
+
+const _dropdown = {
+  base: "absolute z-10 w-max-w mt-0 rounded-md max-h-80 overflow-auto shadow-lg",
+  light: "bg-white",
+  dark: "dark:bg-gray-700"
+};
+
+const _item = {
+  base: "px-3 py-2 cursor-pointer text-xs",
+  hover: "hover:bg-gray-100 dark:hover:bg-gray-600",
+  selected: "bg-gray-100 dark:bg-gray-600"
+};
+
+const _button = {
+  base: "absolute right-2 top-1/2 -translate-y-1/2",
+  light: "text-gray-400 hover:text-gray-500",
+  dark: "dark:text-gray-500 dark:hover:text-gray-300"
+};
+
 const clearSelection = () => {
   console.log('clearSelection')
   selectedPost.value = null
@@ -134,11 +162,11 @@ const delayedHideDropdown = () => {
 
 <template>
   <div class="relative block w-full" >
-    <div class="flex items-center bg-white dark:bg-gray-700 rounded-md ">
+    <div :class="[_container.base, _container.light, _container.dark]">
       <input
          :value="selectedPost ? selectedPost[props.label] : searchQuery"
         :placeholder="`Search ${props.table}...`"
-        class=" w-full pl-3 pr-10 py-2 text-xs border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 "
+        :class="[_input.base, _input.light, _input.dark]"
         @focus="showDropdown = true"
         @blur="delayedHideDropdown"
         @input="handleInput"
@@ -147,7 +175,7 @@ const delayedHideDropdown = () => {
       <button
         v-if="selectedPost"
         @click="clearSelection"
-        class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500"
+        :class="[_button.base, _button.light, _button.dark]"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -157,17 +185,20 @@ const delayedHideDropdown = () => {
 
     <div
       v-if="showDropdown && filteredPosts.length > 0"
-      class="absolute z-10 w-max-w mt-0 bg-white dark:bg-gray-700 rounded-md max-h-80 overflow-auto"
+      :class="[_dropdown.base, _dropdown.light, _dropdown.dark]"
     >
 
       <div
         v-for="post in filteredPosts"
         :key="post.id"
         @click="selectPost(post)"
-        class="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-xs"
-        :class="{ 'bg-gray-100 dark:bg-gray-600': selectedPost?.id === post.id }"
+        :class="[
+          _item.base,
+          _item.hover,
+          { [_item.selected]: selectedPost?.id === post.id }
+        ]"
       >
-        {{ post[label] }}
+        {{ post[props.label] }}
       </div>
     </div>
   </div>

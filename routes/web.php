@@ -345,8 +345,9 @@ Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'upd
 
 Route::resource('logs',LogController::class);
 
-//Route::get('/logs/criteria', [LogController::class, 'criteria']);
+Route::get('/getrecordbyid',[\App\Http\Controllers\PostController::class, 'getrecordbyid'])->name('getrecordbyid');
 
+//Route::get('/logs/criteria', [LogController::class, 'criteria']);
 
 /*
 plan

@@ -221,10 +221,36 @@ export const useDbStore = defineStore('db', () => {
         }
     }
 
+    async function getRecordById (_model, _id) {
+            return new Promise((resolve, reject) => {
+              const check = async () => {
+                try {
+                    axios
+                        .get("/getrecordbyid", {
+                            params: { 
+                                caller: 'useDbStore', 
+                                model: _model, 
+                                id: _id, 
+                                user: 'jaWsome',
+                                key: 'hash#31234KeyTestevnvornment'
+                            }
+                        })
+                        .then((response) => {
+                            resolve(response.data[0]);
+                        })
+                } catch (err) {
+                  reject(`store/db.js:.getRecord:: ${err}`);
+                }
+              }
+              check(); 
+            });
+        }
+
 
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 
-        insertTeam, insertProject, setUser, postUpdateIcon, logAction, getLabels
+        insertTeam, insertProject, setUser, postUpdateIcon, logAction, getLabels,
+        getRecordById
     };
 });
