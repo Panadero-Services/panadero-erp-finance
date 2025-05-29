@@ -60,6 +60,23 @@ class Post extends Model
     }
 
     /**
+     * Get searchable columns for this model
+     * @return array
+     */
+    public function linksTable(): array {
+        return [
+            'relates_to_record',
+            'previous_record',
+            'next_record',
+            'duplicates',
+            'is_duplicated_by',
+            'is_parent_for',
+            'is_child_of',
+            'next_chain'
+        ];
+    }
+
+    /**
      * Form configuration for the post model
      * @return array
      */
