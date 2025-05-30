@@ -119,7 +119,7 @@ class Post extends Model
                 'label' => 'Content',
                 'col_span' => 5,
                 'sequence' => 7,
-                'rows' => 5,
+                'rows' => 6,
                 'required' => true
             ],
             'json' => [
@@ -127,7 +127,7 @@ class Post extends Model
                 'label' => 'json',
                 'col_span' => 3,
                 'sequence' => 8,
-                'rows' => 5,
+                'rows' => 6,
                 'help' => 'Use this to store unstructured data'
             ],
             'links' => [
@@ -135,7 +135,7 @@ class Post extends Model
                 'label' => 'Links',
                 'col_span' => 8,
                 'sequence' => 9,
-                'rows' => 2,
+                'rows' => 3,
                 'help' => 'Link this post to other posts with different relationships'
             ],
 

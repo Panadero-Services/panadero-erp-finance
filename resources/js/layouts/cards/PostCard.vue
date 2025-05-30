@@ -50,80 +50,57 @@ let _updateIcon = async (_id, _field, _value) => {
 
 
   // css
-const _container = {
-  base: "p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250  focus:outline focus:outline-2 focus:outline-purple-500",
-  light: "bg-white text-gray-600",
-  dark: "dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300"
-};
+  const _title = "text-indigo-600 dark:text-indigo-300";
+  const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
+console.log('whateverPost');
 
-
-const _card = {
-  base: "flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-6 tracking-tight leading-4 ",
-  body: "hover:text-xs transition-all duration-250",
-  flex: props.post.body.length > 800 ? "text-xxs pr-6" : "text-xs"
-};
-
-const _title = {
-  base: "text-lg/5 tracking-tight text-gray-950 max-lg:text-center dark:text-gray-50 ",
-};
-
-const _subtitle = {
-  base: "text-xxs font-medium tracking-tight text-gray-500 max-lg:text-center dark:text-green-400",
-}
-
-const _user = {
-  base: "text-base text-gray-900 dark:text-indigo-400",
-}
-
-const _footer = {
-  base: "mt-auto",
-};
 
 </script>
 
 <template>
 
-  <div class="relative block w-full" >
-    <div :class="[_container.base, _container.light, _container.dark]">
-      <div :class="_card.base">
-        <div class="flex flex-col flex-grow overflow-scroll">
-          <div id="headers" class="space-y-1">
-            <p @click="$emit('edit',post.id)" :class="[_title.base]" >{{post.id}} {{post.title}}</p>
-            <p :class="_subtitle.base"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
-          </div>
-          <div id="body" class="mt-2" :class="[_card.flex, _card.body]">
-            {{post.body}}
-          </div>
-        </div>
+ <div class="relative max-lg:row-start-1">
 
-        <div :class="_footer.base">
-          <div class="grid grid-cols-2 border-t-2 dark:border-gray-700 my-3 mx-6">
-            <div class="flex flex-1 justify-start ">
-              <div class=" flex flex-wrap items-center justify-between sm:flex-nowrap">
-                <div class="ml-0 mt-4 ">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                      <img class="h-12 w-12 rounded-full" :src="post.user.profile_photo_url" alt="" />
-                    </div>
-                    <div class="ml-2">
-                      <p :class="_user.base">{{post.user.name}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="flex space-x-2 mt-2 justify-end mr-3">  
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_self', post.is_self==0), post.is_self = post.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="post.is_self==1" :error="_false" title="is self"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_locked', post.is_locked==0), post.is_locked = post.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="post.is_locked==1" :error="_false" title="is locked"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_featured', post.is_featured==0), post.is_featured = post.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="post.is_featured==1" :error="_false" title="is featured"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_smart', post.is_smart==0), post.smart = post.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="post.is_smart==1" :error="_false" title="is smart"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_public', post.is_public==0), post.public = post.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="post.is_public==1" :error="_false" title="is public"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_published', post.is_published==0), post.is_published = post.is_published == 1 ? 0 : 1 " icon="Tv" :activated="post.is_published==1" :error="_false" title="is published"/>
-            </div>
-          </div>
-        </div>
+   <div class="absolute inset-px rounded-sm bg-white dark:bg-gray-950 max-lg:rounded-t-[2rem]" :class="_shadow" />
+   <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
+     <div class="min-h-24 px-8 pt-4 sm:px-10 sm:pt-6">
+       <p @click="$emit('whatever',post.id)" class="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center dark:text-gray-50">{{post.id}} {{post.title}}</p>
+       <p class="my-0 text-xxs font-medium tracking-tight text-gray-500 max-lg:text-center dark:text-gray-400"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
+       <p class="mt-4 text-sm/6 text-gray-600 max-lg:text-center dark:text-gray-300 mb-3">{{post.body}}</p>
+     </div>
+
+     <div class="grid grid-cols-2 border-t-2 dark:border-gray-700 my-3 mx-6 ">
+       <div class="flex flex-1 justify-start text-gray-200">
+         <div class=" flex flex-wrap items-center justify-between sm:flex-nowrap">
+           <div class="ml-0 mt-4 ">
+             <div class="flex items-center">
+               <div class="flex-shrink-0">
+                 <img class="h-12 w-12 rounded-full" :src="post.user.profile_photo_url" alt="" />
+               </div>
+               <div class="ml-2">
+                 <h3 class="text-base font-semibold text-gray-900 dark:text-indigo-400">{{post.user.name}}</h3>
+                 <p class="text-sm text-gray-500 dark:text-slate-300 dark:hover:text-yellow-400">
+  <!-- form                  <a href="#">@email:{{post.user.id}}</a>-->
+                 </p>
+               </div>
+             </div>
+           </div>
+           </div>
+       </div>
+
+      <div class="flex space-x-2 mt-2 justify-end mr-3">  
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_self', post.is_self==0), post.is_self = post.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="post.is_self==1" :error="_false" title="is self"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_locked', post.is_locked==0), post.is_locked = post.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="post.is_locked==1" :error="_false" title="is locked"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_featured', post.is_featured==0), post.is_featured = post.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="post.is_featured==1" :error="_false" title="is featured"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_smart', post.is_smart==0), post.smart = post.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="post.is_smart==1" :error="_false" title="is smart"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_public', post.is_public==0), post.public = post.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="post.is_public==1" :error="_false" title="is public"/>
+        <CategorySectionIcon @click="_updateIcon(post.id, 'is_published', post.is_published==0), post.is_published = post.is_published == 1 ? 0 : 1 " icon="Tv" :activated="post.is_published==1" :error="_false" title="is published"/>
       </div>
-    </div>
-  </div>
+
+     </div>
+   </div>
+   <div class="pointer-events-none absolute inset-px rounded-sm shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]" />
+ </div>
+   
 </template>
