@@ -55,7 +55,7 @@ if (!form.links) {
 }
 
 // Check for JSON errors
-const hasJsonError = computed(() => {
+const hasJsonLinkError = computed(() => {
   try {
     const links = JSON.parse(form.links);
     if (!Array.isArray(links)) return true;
@@ -64,6 +64,19 @@ const hasJsonError = computed(() => {
   } catch (error) {
     return true;
   }
+});
+
+// Check for JSON errors in any field
+const hasJsonError = computed(() => {
+  return (field) => {
+    if (!form[field]) return false;
+    try {
+      JSON.parse(form[field]);
+      return false;
+    } catch (e) {
+      return true;
+    }
+  };
 });
 
 // Get the last link object for editing
@@ -221,12 +234,26 @@ const _footer = {
                 'col-span-1': record.form_fields?.[f]?.col_span === 1 || !record.form_fields?.[f]?.col_span
               }"
             >
-              <!-- Label left.. -->
-              <label :for="f" class="block text-xs font-medium text-gray-700 dark:text-gray-200">
+<!-- label --> <!-- Label left.. -->
+              <label :for="f" class="block text-xs font-medium text-gray-700 dark:text-gray-200 ">
                   <span v-if="!(getRuleText(f) == 'boolean')">
                     {{ getRuleText(f) == 'boolean' ? f.replace('is_','') : f }}
                   </span>
-                <span v-if="getRuleText(f) && (getRuleText(f)!='boolean')" class="text-xs text-gray-400 ml-1">({{ getRuleText(f) }})</span>
+                <span v-if="getRuleText(f) && (getRuleText(f)!='boolean')" :class="isInvalid(f) ? 'text-red-500' : 'text-gray-500'">({{ getRuleText(f) }})</span>
+
+                  <!-- Validation message and character count -->
+                  <span v-if="isInvalid(f)" class="text-xxs text-red-600 ml-4 pt-4">
+                    <div v-if="typeof form[f] === 'string' && getRulesForField(f)">
+                      <span v-for="rule in getRulesForField(f)" :key="rule.name">
+                        <template v-if="['min', 'max'].includes(rule.name)">
+                          Length: {{ form[f]?.length || 0 }} /
+                          <span v-if="rule.name === 'min'">min {{ rule.param }}</span>
+                          <span v-if="rule.name === 'max'">max {{ rule.param }}</span>
+                        </template>
+                      </span>
+                    </div>
+                  </span>
+
               </label>
 
               <!-- Boolean Switch  moved to footer-->
@@ -250,13 +277,14 @@ const _footer = {
 
               <!-- Editable Input -->
               <div v-else-if="!readOnlyFields.includes(f) && superSelfAdmin">
+<!-- Links  -->
                 <!-- Links section for json field -->
                 <template v-if="f === 'links'">
 
-                  <div class="space-y-2  overflow-scroll z-30 ">
-                    <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-1.5 rounded-sm">
+                  <div class="space-y-2 overflow-scroll z-30 ">
+                    <div class="flex items-center justify-between p-1.5 rounded-sm">
                       <div class="flex items-center space-x-2 block w-full mr-2">
-                        <select v-model="link.type" class="border-gray-300 dark:border-gray-600 rounded-md text-xs" :class="[_input.light, _input.dark]">
+                        <select v-model="link.type" class="text-xs rounded-md" :class="[_input.light, _input.dark]">
                           <option v-for="_link in record.links_table" :value="_link">{{_link.replaceAll('_',' ')}}</option>
                         </select>
                         <PostSearch
@@ -281,12 +309,12 @@ const _footer = {
                     <!-- Show col-span-5 links items -->
 
        <!-- JSON Error Message -->
-                    <div v-if="hasJsonError" class="bg-red-100 dark:bg-red-800 text-black text-center p-2 rounded-sm col-span-5 h-12">
+                    <div v-if="hasJsonLinkError" class="bg-red-100 dark:bg-red-800 text-black text-center p-2 rounded-sm col-span-5 h-12">
                       JSON Error
                     </div>
 
 
-                      <div v-if="!hasJsonError && links" class="col-span-5">
+                      <div v-if="!hasJsonLinkError && links" class="col-span-5">
                         <div v-for="(link, index) in links" 
                             :key="index" 
                             v-if="index !== (links.length - 1)"
@@ -336,6 +364,14 @@ const _footer = {
 
                 <!-- Other fields -->
                 <template v-if="record.form_fields?.[f]?.type === 'textarea' && !(f=='links')">
+
+                   <!-- JSON Error Message -->
+                    <div v-if="f=='json'"> 
+                        <div v-if="hasJsonError(f)" class="bg-red-100 dark:bg-red-800 text-black text-center p-1 rounded-sm col-span-5 h-8">
+                          JSON Error
+                        </div>
+                    </div>
+
                   <textarea
                     v-if="record.form_fields?.[f]?.type === 'textarea' "
                     :rows="record.form_fields?.[f]?.rows || 3"
@@ -378,19 +414,7 @@ const _footer = {
                     ]"
                   />
 
-                  <!-- Validation message and character count -->
-                  <div v-if="isInvalid(f)" class="text-xs text-red-600 mt-1">
-                    Invalid value for {{ f }}.
-                    <div v-if="typeof form[f] === 'string' && getRulesForField(f)">
-                      <span v-for="rule in getRulesForField(f)" :key="rule.name">
-                        <template v-if="['min', 'max'].includes(rule.name)">
-                          Length: {{ form[f]?.length || 0 }} /
-                          <span v-if="rule.name === 'min'">min {{ rule.param }}</span>
-                          <span v-if="rule.name === 'max'">max {{ rule.param }}</span>
-                        </template>
-                      </span>
-                    </div>
-                  </div>
+
                 </template>
               </div>
 
@@ -401,9 +425,6 @@ const _footer = {
             </div>
           </form>
         </div>
-
-
-
 
         <!-- Fixed line for switches above footer -->
         <div class="grid grid-cols-8 " :class="[_footer.base, _footer.switches]">

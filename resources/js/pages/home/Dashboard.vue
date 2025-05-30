@@ -167,8 +167,8 @@ const _functions = [
 
     { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.22", "options" : 
             [   
-                { name: 'Dashboard',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
-                { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
+                { name: 'Dashboard',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
+                { name: 'Posts',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user }]
                 ,"status":"upgrading", "progress": 15
 

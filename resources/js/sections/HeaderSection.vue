@@ -63,7 +63,7 @@ if (props.set.domainFunction === 'design') menu.push( { name: 'Lane',url: route(
 
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },
-    { name: 'Posts',    url: route('posts'),    route: 'posts',     when:() => usePage().props.auth.user },
+    { name: 'Posts',    url: route('content/posts'),    route: 'content/posts',     when:() => usePage().props.auth.user },
     { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
     { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user },
    // { name: 'Planning', url: route('planning'), route: 'planning', when:() => usePage().props.auth.user },
