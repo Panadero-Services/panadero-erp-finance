@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,7 +29,7 @@ class Post extends Model
         return [
             'user_id' => 'nullable|integer',
             'title' => 'required|string|max:128|min:8',
-            'body' => 'required|string|max:1024',
+            'body' => 'required|string|min:24|max:2048',
             'json' => 'required|string|min:2',
             'links' => 'nullable|string',
             'created_at' => 'nullable|date',
@@ -70,8 +69,9 @@ class Post extends Model
             'next',
             'duplicates',
             'duplicated_by',
-            'parent_for',
             'child_of',
+            'parent_for',
+            'chains',
             'chained_by'
         ];
     }

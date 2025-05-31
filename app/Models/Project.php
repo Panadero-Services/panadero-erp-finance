@@ -104,8 +104,9 @@ class Project extends Model
             'next',
             'duplicates',
             'duplicated_by',
-            'parent_for',
             'child_of',
+            'parent_for',
+            'chains',
             'chained_by'
         ];
     }
@@ -149,7 +150,7 @@ class Project extends Model
                 'label' => 'Description',
                 'col_span' => 5,
                 'sequence' => 7,
-                'rows' => 6,
+                'rows' => 3,
                 'required' => true
             ],
             'json' => [
@@ -157,7 +158,7 @@ class Project extends Model
                 'label' => 'json',
                 'col_span' => 3,
                 'sequence' => 8,
-                'rows' => 6,
+                'rows' => 3,
                 'help' => 'Use this to store unstructured data'
             ],
             'links' => [
@@ -165,7 +166,7 @@ class Project extends Model
                 'label' => 'Links',
                 'col_span' => 8,
                 'sequence' => 9,
-                'rows' => 3,
+                'rows' => 6,
                 'help' => 'Link this project to other projects with different relationships'
             ],
 

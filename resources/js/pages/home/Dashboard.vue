@@ -165,12 +165,12 @@ const _functions = [
                 ,"status":"featured", "progress": 96
     }, 
 
-    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.22", "options" : 
+    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.23", "options" : 
             [   
                 { name: 'Dashboard',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user }]
-                ,"status":"upgrading", "progress": 15
+                ,"status":"upgrading", "progress": 25
 
     }, 
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "version" : "v3.1.63", "options" : 
