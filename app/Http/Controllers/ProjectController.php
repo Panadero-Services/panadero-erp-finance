@@ -204,7 +204,7 @@ class ProjectController extends Controller
                 $notFound =[
                     'id' => $id,
                     'title' => 'notfound', 
-                    'description' => 'this id is not found in the database', 
+                    'body' => 'this id is not found in the database', 
                     'json' => '{}', 
                     'is_active' => 0 ];
                 //Project::create($notFound);

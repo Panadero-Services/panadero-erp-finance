@@ -61,7 +61,7 @@ const _insertProject = async () => {
    const _model = "Project";
    const _payload = {   "model": "Project",
                         "title" : newProjectName.value, 
-                        "description" : "created by RightProjectSection.vue", 
+                        "body" : "created by RightProjectSection.vue", 
                         "json" : '{"key":"value", "user":"JaW"}',
                         "user_id" : 12, 
                         "is_active" : 1
