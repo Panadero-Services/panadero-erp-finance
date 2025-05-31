@@ -360,7 +360,7 @@ class Web3RecordController extends Controller
         ]);
         $create = Project::create([
             'title' => $request->title,
-            'description' => $request->description,
+            'body' => $request->description,
             'json' => $request->json,
             'user_id' => $request->user_id,
             'is_active' => $request->is_active
