@@ -7,7 +7,7 @@ import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
 const props = defineProps({
     module: String,
     table: String,
-    post: Object,
+    project: Object,
     db: Object
 });
 
@@ -27,12 +27,12 @@ let _updateIcon = async (_id, _field, _value) => {
     _iconChangedField.value = `${_field} updated`;
     _iconChangedId.value = _id;
     _iconChangedValue.value = _value;
-    let _response = await props.db.postUpdateIcon('Post', i);
+    let _response = await props.db.projectUpdateIcon('Project', i);
     console.log(_response);
 
     // logAction
     const _logData = {
-        action: "postcard.updateicon",
+        action: "projectcard.updateicon",
         user_id:  usePage().props.auth.user.id || 'no_uid',
         module: props.module, 
         node: 'none',
@@ -40,16 +40,15 @@ let _updateIcon = async (_id, _field, _value) => {
         project: 'none', 
         content: _response.data,
         json: '{}',
-        //json: JSON.stringify(_response),
-        tags: 'content, posts',
+        tags: 'project, projects',
     }
       let _response2 = await props.db.logAction(_logData);
       console.log(_response2);
-   }
+}
 
  // css
 const _container = {
-  base: "p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250  focus:outline focus:outline-2 focus:outline-purple-500",
+  base: "p-2 h-[240px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250  focus:outline focus:outline-2 focus:outline-purple-500",
   light: "bg-white text-gray-600",
   dark: "dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300"
 };
@@ -60,7 +59,7 @@ const _container = {
 const _card = {
   base: "flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-6 tracking-tight leading-4 ",
   body: "hover:text-xs transition-all duration-250",
-  flex: props.post.body.length > 800 ? "text-xxs pr-6" : "text-xs"
+  flex: props.project.body.length > 800 ? "text-xxs pr-6" : "text-xs"
 };
 
 const _title = {
@@ -88,11 +87,11 @@ const _footer = {
       <div :class="_card.base">
         <div class="flex flex-col flex-grow overflow-scroll">
           <div id="headers" class="space-y-1">
-            <p @click="$emit('edit',post.id)" :class="[_title.base]" >{{post.id}} {{post.title}}</p>
-            <p :class="_subtitle.base"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
+            <p @click="$emit('edit',project.id)" :class="[_title.base]" >{{project.id}} {{project.title}}</p>
+            <p :class="_subtitle.base"> updated: {{formatDistance(project.updated_at, new Date())}} ago </p>
           </div>
           <div id="body" class="mt-2" :class="[_card.flex, _card.body]">
-            {{post.body}}
+            {{project.body}}
           </div>
         </div>
 
@@ -103,22 +102,22 @@ const _footer = {
                 <div class="ml-0 mt-4 ">
                   <div class="flex items-center">
                     <div class="flex-shrink-0">
-                      <img class="h-12 w-12 rounded-full" :src="post.user.profile_photo_url" alt="" />
+                      <img class="h-12 w-12 rounded-full" :src="project.user.profile_photo_url" alt="" />
                     </div>
                     <div class="ml-2">
-                      <p :class="_user.base">{{post.user.name}}</p>
+                      <p :class="_user.base">{{project.user.name}}</p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             <div class="flex space-x-2 mt-2 justify-end mr-3">  
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_self', post.is_self==0), post.is_self = post.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="post.is_self==1" :error="_false" title="is self"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_locked', post.is_locked==0), post.is_locked = post.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="post.is_locked==1" :error="_false" title="is locked"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_featured', post.is_featured==0), post.is_featured = post.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="post.is_featured==1" :error="_false" title="is featured"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_smart', post.is_smart==0), post.smart = post.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="post.is_smart==1" :error="_false" title="is smart"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_public', post.is_public==0), post.public = post.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="post.is_public==1" :error="_false" title="is public"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_published', post.is_published==0), post.is_published = post.is_published == 1 ? 0 : 1 " icon="Tv" :activated="post.is_published==1" :error="_false" title="is published"/>
+              <CategorySectionIcon @click="_updateIcon(project.id, 'is_self', project.is_self==0), project.is_self = project.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="project.is_self==1" :error="_false" title="is self"/>
+              <CategorySectionIcon @click="_updateIcon(project.id, 'is_locked', project.is_locked==0), project.is_locked = project.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="project.is_locked==1" :error="_false" title="is locked"/>
+              <CategorySectionIcon @click="_updateIcon(project.id, 'is_featured', project.is_featured==0), project.is_featured = project.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="project.is_featured==1" :error="_false" title="is featured"/>
+              <CategorySectionIcon @click="_updateIcon(project.id, 'is_smart', project.is_smart==0), project.smart = project.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="project.is_smart==1" :error="_false" title="is smart"/>
+              <CategorySectionIcon @click="_updateIcon(project.id, 'is_public', project.is_public==0), project.public = project.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="project.is_public==1" :error="_false" title="is public"/>
+              <CategorySectionIcon @click="_updateIcon(project.id, 'is_published', project.is_published==0), project.is_published = project.is_published == 1 ? 0 : 1 " icon="Tv" :activated="project.is_published==1" :error="_false" title="is published"/>
             </div>
           </div>
         </div>

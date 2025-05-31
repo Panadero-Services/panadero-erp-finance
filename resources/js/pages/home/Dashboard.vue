@@ -190,6 +190,7 @@ const _functions = [
     { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "icon" : "ProjectIcon", "version" : "v1.1.02", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Projects',    url: route('project/projects'),    route: 'project/projects',     when:() => usePage().props.auth.user },
                 { name: 'Plan',    url: route('project/plan'),    route: 'project/plan',     when:() => usePage().props.auth.user },
                 { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user },
                 { name: 'Budget',    url: route('project/budget'),    route: 'project/budget',     when:() => usePage().props.auth.user }]

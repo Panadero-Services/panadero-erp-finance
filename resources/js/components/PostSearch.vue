@@ -36,7 +36,7 @@ const props = defineProps({
 
 // titleColum and label are double defined!!
 
-const emit = defineEmits(['update:modelValue', 'update:postTitle'])
+const emit = defineEmits(['update:modelValue', 'update:linkTitle'])
 
 const handleInput = (event) => {
   console.log('handleInput')

@@ -9,6 +9,10 @@ use App\Models\Post;
 use App\Http\Controllers\PostController;
 use App\Http\Resources\PostResource;
 
+use App\Models\Project;
+use App\Http\Controllers\ProjectController;
+use App\Http\Resources\ProjectResource;
+
 use App\Models\User;
 use App\Models\Comment;
 
@@ -21,7 +25,6 @@ use App\Models\Task;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\Web3RecordController;
 use App\Http\Controllers\Web3RecordLineController;
-use App\Http\Controllers\ProjectController;
 use App\Models\Section;
 use App\Models\Role;
 
@@ -134,6 +137,16 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('project/plan')->middleware(RoleAccessMiddleware::class.':admin,author');
+
+    // Business Function : Poject Management Software
+    // project
+    Route::get('project/projects', function () { 
+        return Inertia::render('project/Projects', [
+            'projects'=> ProjectResource::collection(Project::with('user')->paginate()),
+            'page'=> Page::with('sections')->where('title','Mood')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('project/projects')->middleware(RoleAccessMiddleware::class.':admin,author');
 
  Route::get('project/work', function () { 
         return Inertia::render('project/Work', [

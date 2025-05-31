@@ -51,6 +51,7 @@ if (props.set.domainFunction === 'erp') menu.push( { name: 'Mood',url: route('er
 
 // project
 if (props.set.domainFunction === 'project') menu.push( { name: 'Project',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'project') menu.push( { name: 'Projects',url: route('project/projects'),route: 'project/projects', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Plan',url: route('project/plan'),route: 'project/plan', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Work',url: route('project/work'),route: 'project/work', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Budget',url: route('project/budget'),route: 'project/budget', when:() => usePage().props.auth.user });

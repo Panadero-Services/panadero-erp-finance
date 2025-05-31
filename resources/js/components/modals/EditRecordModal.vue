@@ -59,7 +59,7 @@ const hasJsonLinkError = computed(() => {
   try {
     const links = JSON.parse(form.links);
     if (!Array.isArray(links)) return true;
-    if (links.some(link => typeof link !== 'object' || !link.post_id || !link.type)) return true;
+    if (links.some(link => typeof link !== 'object' || !link.link_id || !link.type)) return true;
     return false;
   } catch (error) {
     return true;
@@ -87,7 +87,7 @@ const links = computed(() => {
     return [];
   }
 });
-const link = ref({ post_id: '', type: 'relates_to', post_title: '' });
+const link = ref({ link_id: '', type: 'relates_to', link_title: '' });
 
 // Methods for managing links
 const addLink = () => {
@@ -288,16 +288,16 @@ const _footer = {
                           <option v-for="_link in record.links_table" :value="_link">{{_link.replaceAll('_',' ')}}</option>
                         </select>
                         <PostSearch
-                          :model-value="link.post_id==0"
+                          :model-value="link.link_id==0"
                           :table="table"
                           :title-column="titleColumn"
                           :label="titleColumn"
                           :id-column="idColumn"
                           @update:model-value="(value) => {
-                            link.post_id = value;
+                            link.link_id = value;
                           }"
-                          @update:post-title="(title) => {
-                            link.post_title = title;
+                          @update:link-title="(title) => {
+                            link.link_title = title;
                           }"
                         />
                       </div>
@@ -330,11 +330,11 @@ const _footer = {
                                 {{ link?.type?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'N/A' }}
                               </span>
                               <span class="text-xs text-blue-600 dark:text-gray-300 w-6">
-                                {{ link?.post_id || 'N/A' }}
+                                {{ link?.link_id || 'N/A' }}
                               </span>
                               <span class="text-xs text-blue-600 dark:text-gray-300 w-max hover:text-black cursor-pointer" 
-                                    @click="emit('changeRecord', { type: link.type, id: link.post_id })">
-                                {{ link?.post_title || 'N/B' }}
+                                    @click="emit('changeRecord', { type: link.type, id: link.link_id })">
+                                {{ link?.link_title || 'N/B' }}
                               </span>
                             </div>
                           </div>
