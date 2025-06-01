@@ -7,6 +7,8 @@ use Inertia\Middleware;
 
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Session;
+
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -42,6 +44,11 @@ class HandleInertiaRequests extends Middleware
             'auth.user.roles' => fn () => $request->user()
                  ? $request->user()->roles->pluck('name')
             : null,
+       'flash' => [
+            'success' => fn () => $request->session()->get('success'),
+            'error' => fn () => $request->session()->get('error'),
+        ],
+            
         ]);
     }
 }

@@ -13,7 +13,7 @@ const _successColor = 'bg-green-600';
 
 <!-- User Mode Buttons -->
 <!-- SubCategory Other Information -->
-<div  class="pt-3 pb-3">
+<div  class="pt-3 pb-3 text-sm">
 	Other Information
 
 	<!-- email_verified_at -->

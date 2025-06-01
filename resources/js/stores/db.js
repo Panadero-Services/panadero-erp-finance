@@ -126,6 +126,7 @@ export const useDbStore = defineStore('db', () => {
     }
 
     async function setUser(_model, _payload) {
+        console.log(_payload)
         try {
             const response = await axios.post('/updateuserprofile', _payload, {
                 headers: {

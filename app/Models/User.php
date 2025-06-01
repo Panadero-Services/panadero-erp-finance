@@ -59,6 +59,22 @@ class User extends Authenticatable //implements MustVerifyEmail
         'profile_photo_url',
     ];
 
+
+
+    /**
+     * The path to the profile photos storage directory.
+     *
+     * @var string
+     */
+    protected static $profilePhotoDisk = 'public';
+
+    /**
+     * The path to the profile photos storage directory.
+     *
+     * @var string
+     */
+    protected static $profilePhotoPath = 'profile-photos';
+
     /**
      * Get the attributes that should be cast.
      *
@@ -92,10 +108,5 @@ class User extends Authenticatable //implements MustVerifyEmail
     public function hasAnyRole(array $roles): bool {
         return $this->roles()->whereIn('name', $roles)->exists();
     }
-
-
-
-
-
 
 }

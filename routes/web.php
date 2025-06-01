@@ -1,8 +1,12 @@
 <?php
 namespace App\Http\Resources;
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+
+use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
 use App\Models\Post;
@@ -39,6 +43,50 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LogController;
 
 
+use App\Http\Controllers\TestPhotoUploadController;
+
+
+Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
+
+
+Route::get('/photo-test', function () {
+    return inertia('PhotoTest');
+});
+
+Route::post('/photo-test', function (Request $request) {
+    $request->validate([
+        'photo' => ['required', 'image', 'max:2048'],
+    ]);
+
+    $file = $request->file('photo');
+    $path = $file->store('test-photos', 'public');
+
+    Log::info('Upload success', [
+        'original_name' => $file->getClientOriginalName(),
+        'stored_path' => $path,
+    ]);
+
+    return back()->with('success', 'Upload gelukt: ' . $path);
+});
+
+
+
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    // Gebruikerslijst alleen voor admins
+    Route::get('/users', [UserController::class, 'index'])
+        ->name('users.index')
+        ->middleware('can:admin-access');
+
+    // Profiel bijwerken
+    Route::post('/updateuserprofile', [UserController::class, 'updateProfile'])
+        ->name('updateuserprofile');
+
+    // Profielfoto uploaden
+    Route::post('/photo-upload', [UserController::class, 'upload'])
+        ->name('photo.upload');
+});
+
+//Route::post('/photo-upload', [UserController::class, 'store'])->name('photo.upload');
 
 // Route::get('{any}', function () {return view('app'); })->where('any', '.*');
 Route::get('/getLabels', [\App\Http\Controllers\PostController::class, 'getLabels'])->name('getLabels');
