@@ -286,12 +286,35 @@ Route::middleware([
         ]);
     })->name('grid');
 
-    Route::get('bots', function () {
-        return Inertia::render('Bots', [
+    Route::get('ai/bots', function () {
+        return Inertia::render('ai/Bots', [
             'page'=> Page::with('sections')->where('title','Bots')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('bots');
+    })->name('ai/bots');
+
+    Route::get('ai/providers', function () {
+        return Inertia::render('ai/Providers', [
+            'page'=> Page::with('sections')->where('title','Bots')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('ai/providers');
+
+    Route::get('ai/processors', function () {
+        return Inertia::render('ai/Processors', [
+            'page'=> Page::with('sections')->where('title','Bots')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('ai/processors');
+
+    Route::get('ai/executors', function () {
+        return Inertia::render('ai/Executors', [
+            'page'=> Page::with('sections')->where('title','Bots')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('ai/executors');
+
+
 
     Route::get('project', function () {
         return Inertia::render('Project', [

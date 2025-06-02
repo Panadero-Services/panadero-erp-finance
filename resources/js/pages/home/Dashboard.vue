@@ -165,12 +165,12 @@ const _functions = [
                 ,"status":"featured", "progress": 96
     }, 
 
-    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.23", "options" : 
+    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.24", "options" : 
             [   
                 { name: 'Dashboard',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user }]
-                ,"status":"upgrading", "progress": 25
+                ,"status":"featured", "progress": 28
 
     }, 
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "version" : "v3.1.63", "options" : 
@@ -222,9 +222,11 @@ const _functions = [
     { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "icon": "AiIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
-            ,"status":"upgrading", "progress": 10
+                { name: 'Bots',     url: route('ai/bots'),     route: 'ai/bots',      when:() => usePage().props.auth.user },
+                { name: 'Providers',    url: route('ai/providers'),    route: 'ai/providers' } ,
+                { name: 'Processors',    url: route('ai/processors'),    route: 'ai/processors' } ,
+                { name: 'Executors',    url: route('ai/executors'),    route: 'ai/executors' } ]
+            ,"status":"upgrading", "progress": 12
     },
     { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "icon":"SocialMediaIcon", "options" : 
             [   

@@ -62,11 +62,16 @@ if (props.set.domainFunction === 'design') menu.push( { name: 'Mind',url: route(
 if (props.set.domainFunction === 'design') menu.push( { name: 'Pert',url: route('design/pert'),route: 'design/pert', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'design') menu.push( { name: 'Lane',url: route('design/lane'),route: 'design/lane', when:() => usePage().props.auth.user });
 
+if (props.set.domainFunction === 'ai') menu.push( { name: 'Bots',url: route('ai/bots'),route: 'ai/bots', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'ai') menu.push( { name: 'Providers',url: route('ai/providers'),route: 'ai/providers', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'ai') menu.push( { name: 'Processors',url: route('ai/processors'),route: 'ai/processors', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'ai') menu.push( { name: 'Executors',url: route('ai/executors'),route: 'ai/executors', when:() => usePage().props.auth.user });
+
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },
     { name: 'Posts',    url: route('content/posts'),    route: 'content/posts',     when:() => usePage().props.auth.user },
     { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
-    { name: 'Bots',     url: route('bots'),     route: 'bots',      when:() => usePage().props.auth.user },
+    { name: 'Bots',     url: route('ai/bots'),     route: 'ai/bots',      when:() => usePage().props.auth.user },
    // { name: 'Planning', url: route('planning'), route: 'planning', when:() => usePage().props.auth.user },
     { name: 'Project',url: route('project'),route: 'project', when:() => usePage().props.auth.user },
     { name: 'Resources',url: route('erp/resources'),route: 'erp/resources', when:() => usePage().props.auth.user },
