@@ -8,7 +8,8 @@ const props = defineProps({
     module: String,
     table: String,
     post: Object,
-    db: Object
+    db: Object,
+    set: Object
 });
 
 // variables
@@ -18,14 +19,11 @@ const _iconChangedValue = ref(false);
 const _true = true;
 const _false = false;
 
-
 const processHtml = (html) => {
   return html.replace(/<a data-inertia-link href="([^"]+)">([^<]+)<\/a>/g, '<inertia-link href="$1">$2 click on me</inertia-link>')
 }
 
 const _body = processHtml(props.post.body);
-
-
 
 let _updateIcon = async (_id, _field, _value) => {    
     console.log('_updateIcon');
@@ -70,7 +68,9 @@ const _card = {
 };
 
 const _title = {
-  base: "text-lg/5 tracking-tight text-gray-950 max-lg:text-center dark:text-gray-50 ",
+  base: "text-lg/5 tracking-tight max-lg:text-center0 ",
+  noaccess: "dark:text-gray-50 text-gray-800",
+  access: "dark:text-indigo-400 text-indigo-600 hover:text-black hover:dark:text-yellow-400"
 };
 
 const _subtitle = {
@@ -94,7 +94,8 @@ const _footer = {
       <div :class="_card.base">
         <div class="flex flex-col flex-grow overflow-scroll">
           <div id="headers" class="space-y-1">
-            <p @click="$emit('edit',post.id)" :class="[_title.base]" >{{post.id}} {{post.title}}</p>
+            <p v-if="!(set.self=='nope')" @click="$emit('edit',post.id)" :class="[_title.base, _title.access]" >{{post.id}} {{post.title}}</p>
+            <p v-else :class="[_title.base, _title.noaccess]" >{{post.id}} {{post.title}}</p>
             <p :class="_subtitle.base"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
           </div>
           <div id="body" v-html="_body.replaceAll('.','.<br>')"  class="mt-2" :class="[_card.flex, _card.body]">

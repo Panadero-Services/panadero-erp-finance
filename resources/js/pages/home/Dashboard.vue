@@ -170,7 +170,7 @@ const _functions = [
                 { name: 'Dashboard',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user }]
-                ,"status":"featured", "progress": 28
+                ,"status":"featured", "progress": 29
 
     }, 
     { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "version" : "v3.1.63", "options" : 

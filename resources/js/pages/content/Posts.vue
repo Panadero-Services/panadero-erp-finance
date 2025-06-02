@@ -106,6 +106,12 @@ const _superSelfAdmin = computed(() => {
 });
 
 
+const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+
+const filter = ref("");
+
+const refreshPage = () => { window.location.reload(); };
+
 </script>
 
 <template>
@@ -130,10 +136,25 @@ const _superSelfAdmin = computed(() => {
       <template #intro />
 
       <template #default>
+
+        <div class="grid grid-cols-2"> 
+            <div class="pl-2 h-12" >
+                <button @click="_set.dark=false" type="button" :class="_button">Light</button>
+                <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
+                <button @click="refreshPage" type="button" :class="_button">Refresh</button>
+            </div>      
+            <div class="" id="toolbar">
+                <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" 
+                class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
+            </div>
+        </div>
+
+
+
          <div id="whatever" class="w-full min-h-4 min-w-full dark:bg-black">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div v-for="post in posts.data" key="post.id" class="text-sm dark:text-gray-200">
-                  <PostCard :post="post" :module="_module" :table="_table" @edit="_edit" :db="_db"/>
+                  <PostCard :post="post" :module="_module" :table="_table" @edit="_edit" :db="_db" :set="_set"/>
               </div>
             </div>
             <Pagination :meta="posts.meta" class="dark:text-gray-200"/>

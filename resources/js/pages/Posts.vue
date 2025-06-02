@@ -109,39 +109,39 @@ const _superSelfAdmin = computed(() => {
 </script>
 
 <template>
-   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
-      <template #header>
-         <pulse v-model="_pulse" :animation="_set.animate"/>
+    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
+        <template #header>
+            <pulse v-model="_pulse" :animation="_set.animate"/>
 
-         <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
-            <edit-record-modal lng='en' 
+            <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
+                <edit-record-modal lng='en' 
                                 :key="keyIndex"
-                               :record="_activeRecord" 
-                               :module="_module" 
-                               :table="_table" 
-                               @close="_close" 
-                               @changeRecord="handleRecordChange"
-                               :superSelfAdmin="_superSelfAdmin==1" 
-                               :db="_db" />
-         </div>
-
-      </template>
-
-      <template #intro />
-
-      <template #default>
-         <div id="whatever" class="w-full ... min-h-4 min-w-full ">
-            <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div v-for="post in posts.data" key="post.id" class="text-sm">
-                  <PostCard :post="post" :module="_module" :table="_table" @whatever="_whatever" :db="_db"/>
-              </div>
+                                :record="_activeRecord" 
+                                :module="_module" 
+                                :table="_table" 
+                                @close="_close" 
+                                @changeRecord="handleRecordChange"
+                                :superSelfAdmin="_superSelfAdmin==1" 
+                                :db="_db" />
             </div>
-            <Pagination :meta="posts.meta" />
-         </div>
-      </template>
 
-      <template #footer>
-   </template>
+        </template>
+
+        <template #intro />
+
+        <template #default>
+            <div id="whatever" class="w-full ... min-h-4 min-w-full ">
+                <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div v-for="post in posts.data" key="post.id" class="text-sm">
+                        <PostCard :post="post" :module="_module" :table="_table" @whatever="_whatever" :db="_db" :set="_set"/>
+                    </div>
+                </div>
+            <Pagination :meta="posts.meta" />
+            </div>
+        </template>
+
+        <template #footer>
+    </template>
 
    </AppToolbarLayout>
 </template>

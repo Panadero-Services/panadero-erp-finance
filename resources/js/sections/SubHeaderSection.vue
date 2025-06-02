@@ -269,7 +269,7 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                         <template #trigger>
 
                             <button v-if="$page.props.jetstream.managesProfilePhotos" class="flex text-sm border border-transparent rounded-md focus:outline-none border-indigo-100 focus:border-indigo-300 transition">
-                                <img class="h-7 w-5 rounded-md object-cover text-xs mt-0.5" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name.substring(0, 14)">
+                                <img class="border border-gray-200 dark:border-gray-600 h-8 w-6 rounded-md object-cover text-xs -mt-0.5" :src="$page.props.auth.user.profile_photo_url" :alt="$page.props.auth.user.name.substring(0, 14)">
                             </button>
 
                             <span v-else class="inline-flex rounded-md">
