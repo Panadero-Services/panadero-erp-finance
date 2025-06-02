@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
@@ -17,6 +17,15 @@ const _iconChangedId = ref(0);
 const _iconChangedValue = ref(false);
 const _true = true;
 const _false = false;
+
+
+const processHtml = (html) => {
+  return html.replace(/<a data-inertia-link href="([^"]+)">([^<]+)<\/a>/g, '<inertia-link href="$1">$2 click on me</inertia-link>')
+}
+
+const _body = processHtml(props.post.body);
+
+
 
 let _updateIcon = async (_id, _field, _value) => {    
     console.log('_updateIcon');
@@ -54,9 +63,6 @@ const _container = {
   dark: "dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300"
 };
 
-
-
-
 const _card = {
   base: "flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-6 tracking-tight leading-4 ",
   body: "hover:text-xs transition-all duration-250",
@@ -91,8 +97,7 @@ const _footer = {
             <p @click="$emit('edit',post.id)" :class="[_title.base]" >{{post.id}} {{post.title}}</p>
             <p :class="_subtitle.base"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
           </div>
-          <div id="body" class="mt-2" :class="[_card.flex, _card.body]">
-            {{post.body}}
+          <div id="body" v-html="_body.replaceAll('.','.<br>')"  class="mt-2" :class="[_card.flex, _card.body]">
           </div>
         </div>
 
