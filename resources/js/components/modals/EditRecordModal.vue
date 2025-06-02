@@ -1,85 +1,76 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useForm, usePage } from "@inertiajs/vue3";
 import PostSearch from '@/components/PostSearch.vue';
+import { validateField, parseRules } from '@/utils/validators';
 import { Switch } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import TheButton from "@/panadero/components/TheButton.vue";
-import { validateField, parseRules } from '@/utils/validators';
 
+// Props
 const props = defineProps({
   lng: String,
   record: Object,
   module: String,
   table: String,
   superSelfAdmin: Boolean,
-  db: Object
-  //,form_fields: Object
-  //,validation_rules: Object
-  //,logAction: Function
+  db: Object,
 });
 
 const emit = defineEmits(['close', 'changeRecord']);
 
-const table = ref(props.table || 'posts')
-const titleColumn = ref(props.record.titleColumn || 'title')
-const idColumn = ref(props.record.idColumn || 'id')
-const fields = ref([]);
+// State & Refs
+const table = ref(props.table || 'posts');
+const titleColumn = ref(props.record.titleColumn || 'title');
+const idColumn = ref(props.record.idColumn || 'id');
+
+const fields = ref<string[]>([]);
 const readOnlyFields = ref(['id', 'created_at', 'updated_at']);
 const boolFields = ref([
   'is_active', 'animate', 'sidebar', 'header', 'footer', 'public',
   'max_width', 'featured', 'blog', 'smart', 'published', 'locked', 'self'
 ]);
 
+// Form setup
 interface FormFields {
   id?: number;
-  //title?: string;
-  //body?: string;
   links?: string;
   is_active: boolean;
-  //is_archived: boolean;
+  is_archived?: boolean;
   [key: string]: any;
 }
 
 const form = useForm<FormFields>({
   ...props.record,
-  is_active: props.record.is_active || true,
-  is_archived: props.record.is_archived || false,
-  links: props.record.links || '[]'
+  is_active: props.record.is_active ?? true,
+  is_archived: props.record.is_archived ?? false,
+  links: props.record.links || '[]',
 });
 
-// Initialize links array if json is empty
-// make a check if links is available
 if (!form.links) {
   form.links = JSON.stringify([]);
 }
 
-// Check for JSON errors
+// Computed: validation
 const hasJsonLinkError = computed(() => {
   try {
     const links = JSON.parse(form.links);
-    if (!Array.isArray(links)) return true;
-    if (links.some(link => typeof link !== 'object' || !link.link_id || !link.type)) return true;
-    return false;
-  } catch (error) {
+    return !Array.isArray(links) || links.some(link => typeof link !== 'object' || !link.link_id || !link.type);
+  } catch {
     return true;
   }
 });
 
-// Check for JSON errors in any field
-const hasJsonError = computed(() => {
-  return (field) => {
-    if (!form[field]) return false;
-    try {
-      JSON.parse(form[field]);
-      return false;
-    } catch (e) {
-      return true;
-    }
-  };
+const hasJsonError = computed(() => (field: string) => {
+  if (!form[field]) return false;
+  try {
+    JSON.parse(form[field]);
+    return false;
+  } catch {
+    return true;
+  }
 });
 
-// Get the last link object for editing
 const links = computed(() => {
   try {
     return JSON.parse(form.links);
@@ -87,118 +78,121 @@ const links = computed(() => {
     return [];
   }
 });
+
 const link = ref({ link_id: '', type: 'relates_to', link_title: '' });
 
-// Methods for managing links
+// Methods
 const addLink = () => {
   const newLinks = [...links.value, link.value];
   form.links = JSON.stringify(newLinks);
-};;
+};
 
-const removeLink = (index) => {
+const removeLink = (index: number) => {
   const newLinks = [...links.value];
   newLinks.splice(index, 1);
   form.links = JSON.stringify(newLinks);
 };
 
 onMounted(() => {
-  // Get all fields except validation_rules and form_fields
-  const allFields = Object.keys(props.record).filter(key => (key !== 'validation_rules' && key !== 'form_fields' && key !== 'links_table'));
+  const allFields = Object.keys(props.record).filter(
+    key => !['validation_rules', 'form_fields', 'links_table'].includes(key)
+  );
 
-  // Sort fields by sequence number from form_fields
   fields.value = allFields.sort((a, b) => {
     const seqA = props.record.form_fields?.[a]?.sequence || 0;
     const seqB = props.record.form_fields?.[b]?.sequence || 0;
     return seqA - seqB;
   });
-
-
 });
 
-const getRulesForField = (key) => {
-  return props.record.validation_rules[key] ? parseRules(props.record.validation_rules[key]) : null;
+const getRulesForField = (key: string) => {
+  return props.record.validation_rules?.[key]
+    ? parseRules(props.record.validation_rules[key])
+    : null;
 };
 
-const isInvalid = (key) => {
+const isInvalid = (key: string) => {
   const rules = getRulesForField(key);
   return !validateField(form[key], rules);
 };
 
-const getRuleText = (key) => props.record.validation_rules?.[key] || '';
+const getRuleText = (key: string) => props.record.validation_rules?.[key] || '';
+
+const isFormValid = computed(() =>
+  fields.value.every(field => {
+    const rules = getRulesForField(field);
+    return !rules || validateField(form[field], rules);
+  })
+);
 
 const submit = async () => {
-  if (!isFormValid.value) {
-    return;
-  }
+  if (!isFormValid.value) return;
 
-  // Prevent popup by handling response silently
   form.put(route(`${props.table}.update`, props.record.id), {
     preserveScroll: true,
     onSuccess: () => {
-      const _logData = {
+      const user = usePage().props.auth.user;
+
+      props.db.logAction({
         action: `${props.table}.update`,
-        user_id: usePage().props.auth.user.id || 'no_uid',
+        user_id: user.id || 'no_uid',
         module: props.module,
         node: 'none',
-        team: usePage().props.auth.user.current_team.name || 'no_team',
+        team: user.current_team.name || 'no_team',
         project: 'none',
         content: form.title || 'none',
         json: JSON.stringify(form),
         tags: 'content, posts',
-      };
+      });
 
-      props.db.logAction(_logData);
       emit('close');
     },
     onError: (errors) => {
-      // Log errors silently
       console.error('Form submission error:', errors);
     },
-    onFinish: () => {
-      // Prevent any default behavior
-      return false;
-    }
+    onFinish: () => false,
   });
 };
 
-const isFormValid = computed(() => {
-  return fields.value.every(field => {
-    const rules = getRulesForField(field);
-    return !rules || validateField(form[field], rules);
-  });
-});
-let _switchSection = ".";
+// Display states
 const advancedMode = ref(false);
+let _switchSection = ".";
 
-// css
-const _button = { active: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400", 
-                  inactive: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800" 
-               };
+// Style constants
+const _button = {
+  active: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400",
+  inactive: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800",
+};
+
 const _input = {
   base: "w-full pl-3 pr-10 py-2 text-xs rounded-md focus:outline-none focus:ring-1",
   light: "bg-white border-gray-300 text-gray-700 focus:ring-indigo-500",
   dark: "dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-indigo-600",
   label: "block text-sm text-gray-700 dark:text-gray-200 font-bold",
   info: "text-xxs text-gray-400 ml-1",
-  readOnly: " text-xxs text-gray-500 dark:text-gray-300"
+  readOnly: "text-xxs text-gray-500 dark:text-gray-300",
 };
+
 const _container = {
-  base: "fixed inset-0 z-20 bg-black opacity-20 dark:opacity-75"
-}
+  base: "fixed inset-0 z-20 bg-black opacity-20 dark:opacity-75",
+};
+
 const _window = {
   base: "z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500",
   padding: "p-6 pt-10",
   motion: "motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2",
   light: "bg-gray-100 text-gray-600 from-gray-200/50 via-transparent",
-  dark: "dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600" 
+  dark: "dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600",
 };
+
 const _footer = {
   base: "fixed left-1/2 transform -translate-x-1/2 w-full max-w-4xl p-4 bg-gray-100 dark:bg-gray-900 rounded-b-xl dark:border-gray-600",
   switches: "fixed bottom-12 bg-gray-100 dark:bg-gray-900  border-t dark:border-gray-600",
-  buttons: "flex bottom-0 justify-end space-x-4 border-b"
+  buttons: "flex bottom-0 justify-end space-x-4 border-b",
 };
-
 </script>
+
+
 <template>
   <div>
     <div :class="_container.base" @click="$emit('close')">
@@ -293,12 +287,8 @@ const _footer = {
                           :title-column="titleColumn"
                           :label="titleColumn"
                           :id-column="idColumn"
-                          @update:model-value="(value) => {
-                            link.link_id = value;
-                          }"
-                          @update:link-title="(title) => {
-                            link.link_title = title;
-                          }"
+                          @update:model-value="(_value) => { link.link_id = _value; }"
+                          @update:link-title="(_title) => { link.link_title = _title }"
                         />
                       </div>
                       <button @click.prevent="addLink" :class="[_button.active]" class="ml-2">Add_Link</button>
