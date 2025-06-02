@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { moduleName, moduleVersion, resolveName } from "panadero-self";
-import SmallLine from '@/dashboards/self/layouts/SmallLine.vue';
+import SmallLine from '@/components/SmallLine.vue';
 
 // call parameters
 const props = defineProps({
