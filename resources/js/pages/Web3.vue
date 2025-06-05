@@ -24,6 +24,8 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
+_set.domainFunction = "ai";
+
 const props = defineProps({
     page: Object,
     baseSections: Object

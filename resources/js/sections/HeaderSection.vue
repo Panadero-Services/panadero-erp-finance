@@ -62,6 +62,7 @@ if (props.set.domainFunction === 'design') menu.push( { name: 'Mind',url: route(
 if (props.set.domainFunction === 'design') menu.push( { name: 'Pert',url: route('design/pert'),route: 'design/pert', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'design') menu.push( { name: 'Lane',url: route('design/lane'),route: 'design/lane', when:() => usePage().props.auth.user });
 
+if (props.set.domainFunction === 'ai') menu.push( { name: 'Contracts',url: route('web3'),route: 'web3', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'ai') menu.push( { name: 'Bots',url: route('ai/bots'),route: 'ai/bots', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'ai') menu.push( { name: 'Providers',url: route('ai/providers'),route: 'ai/providers', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'ai') menu.push( { name: 'Processors',url: route('ai/processors'),route: 'ai/processors', when:() => usePage().props.auth.user });

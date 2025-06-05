@@ -25,6 +25,12 @@ import { CheckIcon } from '@heroicons/vue/20/solid'
 // components
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
+
+import pricingPlans from '@/constants/plans.js'
+import PricingPlans from '@/panadero/PricingPlans.vue'
+
+
+
 const props = defineProps({
     page: Object,
     baseSections: Object
@@ -93,6 +99,21 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
 </script>
 
+
+
+
+<!-- pages/Pricing.vue or App.vue -->
+<template>
+</template>
+
+<script setup>
+
+</script>
+
+
+
+
+
 <template>
    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
 
@@ -148,7 +169,9 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
          </div>
       </template>
 
-      <template #footer />
+      <template #footer>
+        <PricingPlans :plans="pricingPlans" />
+      </template>
 
    </AppToolbarLayout>
 </template>

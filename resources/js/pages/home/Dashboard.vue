@@ -197,7 +197,7 @@ const _functions = [
             ,"status":"featured", "progress": 70
     },
 
-    { "item":"design", "title":"Design Software", "description": "Diagrams for your business ideas, projects and others", "icon": "DesignIcon", "version" : "v1.1.02", "options" : 
+    { "item":"design", "title":"Design Tool", "description": "Diagrams for your business ideas, projects and others", "icon": "DesignIcon", "version" : "v1.1.02", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Mind',    url: route('design/mind'),    route: 'design/mind',     when:() => usePage().props.auth.user },
@@ -222,6 +222,7 @@ const _functions = [
     { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "icon": "AiIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Contracts',    url: route('web3'),    route: 'web3' },
                 { name: 'Bots',     url: route('ai/bots'),     route: 'ai/bots',      when:() => usePage().props.auth.user },
                 { name: 'Providers',    url: route('ai/providers'),    route: 'ai/providers' } ,
                 { name: 'Processors',    url: route('ai/processors'),    route: 'ai/processors' } ,

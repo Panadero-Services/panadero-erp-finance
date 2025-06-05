@@ -7,6 +7,27 @@ use App\Http\Controllers\SomethingController;
 use App\Http\Middleware\VerifyFastApiKey;
 use App\Http\Middleware\EnsureTokenIsValid;
 
+use App\Http\Controllers\BotController;
+use App\Http\Controllers\ProviderController;
+
+Route::apiResource('providers', ProviderController::class);
+
+// Assuming you have a ProviderController
+Route::get('/providers/{provider}/balance', [ProviderController::class, 'getContractBalance'])->name('providers.balance');
+
+// ... other routes ...
+Route::post('/providers/{provider}/test', [ProviderController::class, 'test'])->name('providers.test');
+
+Route::prefix('bots')->group(function () {
+    Route::get('/', [BotController::class, 'index']);
+    Route::post('/', [BotController::class, 'store']);
+    Route::put('/{id}', [BotController::class, 'update']);
+    Route::delete('/{id}', [BotController::class, 'destroy']);
+    Route::post('/{id}/start', [BotController::class, 'start']);
+    Route::post('/{id}/stop', [BotController::class, 'stop']);
+    Route::get('/{id}/status', [BotController::class, 'status']);
+});
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');

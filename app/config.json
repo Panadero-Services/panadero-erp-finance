@@ -1,0 +1,23 @@
+{
+  "rpc_url": "https://bsc-dataseed.binance.org/",
+  "contract_address": "0xYourSmartContractAddressHere",
+  "event_topic0": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+  "event_abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {"indexed": true, "internalType": "address", "name": "buyer", "type": "address"},
+        {"indexed": true, "internalType": "address", "name": "seller", "type": "address"},
+        {"indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256"},
+        {"indexed": false, "internalType": "uint256", "name": "price", "type": "uint256"}
+      ],
+      "name": "TokensPurchased",
+      "type": "event"
+    }
+  ],
+  "start_block": 20000000,
+  "blocks_per_request": 1000,
+  "cache_key_prefix": "bsc_buy_event_web3p_0x123",
+  "cache_ttl_minutes": 1440,
+  "rpc_timeout": 30
+}
