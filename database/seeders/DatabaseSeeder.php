@@ -6,9 +6,9 @@ use App\Models\User;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Role;
+use Illuminate\Database\Seeder;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -85,6 +85,7 @@ class DatabaseSeeder extends Seeder
     $posts = Post::factory(10)->recycle($editorUser)->create();
     $posts = Post::factory(10)->recycle($memberEditorUser)->create();
 
-
+    // Add the ProviderSeeder
+    $this->call(ProviderSeeder::class);
     }
 }
