@@ -93,10 +93,10 @@ const emit = defineEmits(['edit', 'delete']);
          <div class="text-blue-600 dark:text-blue-300 font-bold text-base absolute top-2  ">{{ initials }}</div>
        </div>
       <div class="flex-1 text-center sm:text-lg ">
-        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class=" font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
+        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class="line-clamp-1 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
           {{ post.title }}
         </h3>
-        <h3 v-else class="font-semibold text-gray-900 dark:text-white">
+        <h3 v-else class="font-semibold text-gray-900 dark:text-white line-clamp-1">
           {{ post.title }}
         </h3>
         <p class="text-xxxs sm:text-xxs text-gray-500 dark:text-gray-500"> Updated {{ formatDistance(post.updated_at, new Date()) }} ago</p>
@@ -229,7 +229,6 @@ const emit = defineEmits(['edit', 'delete']);
              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(post.user.created_at || Date.now()), new Date()) }} ago</p>
            </div>
               
-                 <img class="h-14 w-14 rounded-full mr-0 absolute  top-3 -mt-8 right-1" :src="post.user.profile_photo_url"/>
          
 
          </div>
@@ -247,6 +246,13 @@ const emit = defineEmits(['edit', 'delete']);
              </div>
            </div>
          </div>
+         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700 col-span-2">
+                 <img class="h-12 w-12 rounded-full mr-0 " :src="post.user.profile_photo_url"/>
+                 <span class="text-xxs ml-2 -mt-2">{{post.user.profile_photo_url}}</span>
+       </div>
+
+
+
 
        </div>
     </div>
