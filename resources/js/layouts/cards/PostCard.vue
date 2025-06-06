@@ -86,20 +86,20 @@ const emit = defineEmits(['edit', 'delete']);
 <template>
   <div class="relative block w-full">
     <div class="p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-purple-500 bg-white text-gray-600 dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300">
-      <div class="flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-3 tracking-tight leading-4">
+      <div class="flex flex-col h-full min-h-24 p-1 sm:px-6 sm:pt-3 tracking-tight leading-4">
       <!-- Header section -->
     <div class="flex items-center mb-1 w-full">
         <div class="h-12 w-12 bg-blue-200 dark:bg-blue-900 flex items-center justify-center rounded-full mr-4 flex-shrink-0 absolute top-3 -mt-8 left-1">
          <div class="text-blue-600 dark:text-blue-300 font-bold text-base absolute top-2  ">{{ initials }}</div>
        </div>
-      <div class="flex-1 text-center">
-        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
+      <div class="flex-1 text-center sm:text-lg ">
+        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class=" font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
           {{ post.title }}
         </h3>
-        <h3 v-else class="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3 v-else class="font-semibold text-gray-900 dark:text-white">
           {{ post.title }}
         </h3>
-        <p class="text-xs text-gray-500 dark:text-gray-500"> Updated {{ formatDistance(post.updated_at, new Date()) }} ago</p>
+        <p class="text-xxxs sm:text-xxs text-gray-500 dark:text-gray-500"> Updated {{ formatDistance(post.updated_at, new Date()) }} ago</p>
       </div>
     </div>
 
@@ -195,17 +195,17 @@ const emit = defineEmits(['edit', 'delete']);
     <div class="flex-1 w-full overflow-auto">
       <!-- Content Tab -->
       <div v-if="activeTab === 'content'" class="space-y-2">
-        <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-600 overflow-auto text-xxs" 
+        <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto text-xs" 
              v-html="formattedBody">
         </div>
       </div>
 
       <!-- Status Tab -->
       <div v-else-if="activeTab === 'status'" class="space-y-2">
-        <div class="grid grid-cols-2 gap-2">
+        <div class="grid sm:grid-cols-2 gap-2">
           <div v-for="(flag, idx) in statusFlags" 
                :key="idx" 
-               class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+               class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
             <span class="font-medium text-blue-700 dark:text-blue-400 text-xs">{{ flag.label }}:</span>
             <span :class="[
               'text-xs px-2 py-1 rounded',
@@ -220,16 +220,18 @@ const emit = defineEmits(['edit', 'delete']);
       </div>
 
              <!-- Author Tab -->
-       <div v-else-if="activeTab === 'author'" class="space-y-3">
-         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
-           <img class="h-16 w-16 rounded-full mr-4" :src="post.user.profile_photo_url" :alt="post.user.name" />
+       <div v-else-if="activeTab === 'author'" class=" grid grid-cols-2 gap-2">
+         
+         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
            <div class="flex-1">
-             <p class="font-medium text-blue-700 dark:text-blue-400 text-sm">{{ post.user.name }}</p>
+             <p class="font-medium text-blue-700 dark:text-blue-400 text-xs -mt-4">{{ post.user.name }}</p>
              <p class="text-xs text-gray-500 dark:text-gray-400">Author</p>
              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(post.user.created_at || Date.now()), new Date()) }} ago</p>
            </div>
+                 <img class="h-12 w-12 rounded-full mr-4" :src="post.user.profile_photo_url"/>
          </div>
-         <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+
+         <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
            <h4 class="font-medium text-blue-700 dark:text-blue-400 text-xs mb-2">Author Stats</h4>
            <div class="grid grid-cols-2 gap-2 text-xs">
              <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
@@ -242,6 +244,7 @@ const emit = defineEmits(['edit', 'delete']);
              </div>
            </div>
          </div>
+
        </div>
     </div>
 
