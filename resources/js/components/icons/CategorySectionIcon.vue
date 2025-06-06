@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const _icon = computed(() => {
-  let __icon = "transition hover:-translate-y-0.5 duration-300 h-3.5 w-3.5 hover:text-green-500 dark:hover:text-green-400 ";
+  let __icon = "transition hover:-translate-y-0.5 duration-300 h-3 w-3 hover:text-green-500 dark:hover:text-green-400 ";
   if(props.error) {
     __icon += "text-red-700 dark:text-red-400 ";
     return __icon;

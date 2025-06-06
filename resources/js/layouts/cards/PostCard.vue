@@ -1,8 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue';
-
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     module: String,
@@ -18,6 +18,7 @@ const _iconChangedId = ref(0);
 const _iconChangedValue = ref(false);
 const _true = true;
 const _false = false;
+const activeTab = ref('content');
 
 const processHtml = (html) => {
   return html.replace(/<a data-inertia-link href="([^"]+)">([^<]+)<\/a>/g, '<inertia-link href="$1">$2 click on me</inertia-link>')
@@ -54,85 +55,205 @@ let _updateIcon = async (_id, _field, _value) => {
       console.log(_response2);
    }
 
- // css
-const _container = {
-  base: "p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250  focus:outline focus:outline-2 focus:outline-purple-500",
-  light: "bg-white text-gray-600",
-  dark: "dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300"
-};
+// Computed for formatted body
+const formattedBody = computed(() => {
+  return _body.replaceAll('.','.<br>');
+});
 
-const _card = {
-  base: "flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-6 tracking-tight leading-4 ",
-  body: "hover:text-xs transition-all duration-250",
-  flex: props.post.body.length > 800 ? "text-xxs pr-6" : "text-xs"
-};
+// Computed for initials (Author initials - First and Last name)
+const initials = computed(() => {
+  if (!props.post.user.name) return 'U';
+  const names = props.post.user.name.trim().split(' ');
+  if (names.length >= 2) {
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+  }
+  return names[0].charAt(0).toUpperCase();
+});
 
-const _title = {
-  base: "text-lg/5 tracking-tight max-lg:text-center0 ",
-  noaccess: "dark:text-gray-50 text-gray-800",
-  access: "dark:text-indigo-400 text-indigo-600 hover:text-black hover:dark:text-yellow-400"
-};
+// Computed for status flags
+const statusFlags = computed(() => [
+  { key: 'is_self', label: 'Self', icon: 'FingerPrint', active: props.post.is_self == 1 },
+  { key: 'is_locked', label: 'Locked', icon: 'LockClosed', active: props.post.is_locked == 1 },
+  { key: 'is_featured', label: 'Featured', icon: 'Fire', active: props.post.is_featured == 1 },
+  { key: 'is_smart', label: 'Smart', icon: 'Heart', active: props.post.is_smart == 1 },
+  { key: 'is_public', label: 'Public', icon: 'LockOpen', active: props.post.is_public == 1 },
+  { key: 'is_published', label: 'Published', icon: 'Tv', active: props.post.is_published == 1 }
+]);
 
-const _subtitle = {
-  base: "text-xxs font-medium tracking-tight text-gray-500 max-lg:text-center dark:text-green-400",
-}
-
-const _user = {
-  base: "text-base text-gray-900 dark:text-indigo-400",
-}
-
-const _footer = {
-  base: "mt-auto",
-};
-
+const emit = defineEmits(['edit', 'delete']);
 </script>
 
 <template>
+  <div class="relative block w-full">
+    <div class="p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-purple-500 bg-white text-gray-600 dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300">
+      <div class="flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-6 tracking-tight leading-4">
+      <!-- Header section -->
+    <div class="flex items-center mb-1 w-full">
+             <div class="h-12 w-12 bg-blue-100 dark:bg-blue-900 flex items-center justify-center rounded-full mr-4 flex-shrink-0">
+         <span class="text-blue-600 dark:text-blue-300 font-bold text-base">{{ initials }}</span>
+       </div>
+      <div class="flex-1">
+        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+          {{ post.title }}
+        </h3>
+        <h3 v-else class="text-lg font-semibold text-gray-900 dark:text-white">
+          {{ post.title }}
+        </h3>
+        <p class="text-xs text-gray-500 dark:text-gray-500">ID: {{ post.id }} • Updated {{ formatDistance(post.updated_at, new Date()) }} ago</p>
+      </div>
+    </div>
 
-  <div class="relative block w-full" >
-    <div :class="[_container.base, _container.light, _container.dark]">
-      <div :class="_card.base">
-        <div class="flex flex-col flex-grow overflow-scroll">
-          <div id="headers" class="space-y-1">
-            <p v-if="!(set.self=='nope')" @click="$emit('edit',post.id)" :class="[_title.base, _title.access]" >{{post.id}} {{post.title}}</p>
-            <p v-else :class="[_title.base, _title.noaccess]" >{{post.id}} {{post.title}}</p>
-            <p :class="_subtitle.base"> updated: {{formatDistance(post.updated_at, new Date())}} ago </p>
-          </div>
-          <div id="body" v-html="_body.replaceAll('.','.<br>')"  class="mt-2" :class="[_card.flex, _card.body]">
-          </div>
+    <!-- Tabs -->
+    <div class="flex mb-2 w-full border-b border-gray-200 dark:border-gray-700 grid grid-cols-2">
+     <div>
+      <button 
+        @click="activeTab = 'content'"
+        :class="[
+          'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+          activeTab === 'content' 
+            ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
+            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+        ]"
+      >
+        Content
+      </button>
+      <button 
+        @click="activeTab = 'status'"
+        :class="[
+          'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+          activeTab === 'status' 
+            ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
+            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+        ]"
+      >
+        Status
+      </button>
+      <button 
+        @click="activeTab = 'author'"
+        :class="[
+          'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+          activeTab === 'author' 
+            ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
+            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+        ]"
+      >
+        Author
+      </button>
+</div>
+      <div class="justify-end text-right">
+            <div class="flex space-x-2 justify-end mt-3 ">
+              <CategorySectionIcon 
+                @click="_updateIcon(post.id, 'is_self', post.is_self==0), post.is_self = post.is_self == 1 ? 0 : 1" 
+                icon="FingerPrint" 
+                :activated="post.is_self==1" 
+                :error="_false" 
+                title="is self"
+              />
+              <CategorySectionIcon 
+                @click="_updateIcon(post.id, 'is_locked', post.is_locked==0), post.is_locked = post.is_locked == 1 ? 0 : 1" 
+                icon="LockClosed" 
+                :activated="post.is_locked==1" 
+                :error="_false" 
+                title="is locked"
+              />
+              <CategorySectionIcon 
+                @click="_updateIcon(post.id, 'is_featured', post.is_featured==0), post.is_featured = post.is_featured == 1 ? 0 : 1" 
+                icon="Fire" 
+                :activated="post.is_featured==1" 
+                :error="_false" 
+                title="is featured"
+              />
+              <CategorySectionIcon 
+                @click="_updateIcon(post.id, 'is_smart', post.is_smart==0), post.is_smart = post.is_smart == 1 ? 0 : 1" 
+                icon="Heart" 
+                :activated="post.is_smart==1" 
+                :error="_false" 
+                title="is smart"
+              />
+              <CategorySectionIcon 
+                @click="_updateIcon(post.id, 'is_public', post.is_public==0), post.is_public = post.is_public == 1 ? 0 : 1" 
+                icon="LockOpen" 
+                :activated="post.is_public==1" 
+                :error="_false" 
+                title="is public"
+              />
+              <CategorySectionIcon 
+                @click="_updateIcon(post.id, 'is_published', post.is_published==0), post.is_published = post.is_published == 1 ? 0 : 1" 
+                icon="Tv" 
+                :activated="post.is_published==1" 
+                :error="_false" 
+                title="is published"
+              />
+            </div>
+
+      </div>
+
+
+    </div>
+
+    <!-- Content area -->
+    <div class="flex-1 w-full overflow-auto">
+      <!-- Content Tab -->
+      <div v-if="activeTab === 'content'" class="space-y-2">
+        <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-600 overflow-auto text-xxs" 
+             v-html="formattedBody">
         </div>
+      </div>
 
-        <div :class="_footer.base">
-          <div class="grid grid-cols-2 border-t-2 dark:border-gray-700 my-3 mx-6">
-            <div class="flex flex-1 justify-start ">
-              <div class=" flex flex-wrap items-center justify-between sm:flex-nowrap">
-                <div class="ml-0 mt-4 ">
-                  <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                      <img class="h-12 w-12 rounded-full" :src="post.user.profile_photo_url" alt="" />
-                    </div>
-                    <div class="ml-2">
-                      <p :class="_user.base">{{post.user.name}}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="flex space-x-2 mt-2 justify-end mr-3">  
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_self', post.is_self==0), post.is_self = post.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="post.is_self==1" :error="_false" title="is self"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_locked', post.is_locked==0), post.is_locked = post.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="post.is_locked==1" :error="_false" title="is locked"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_featured', post.is_featured==0), post.is_featured = post.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="post.is_featured==1" :error="_false" title="is featured"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_smart', post.is_smart==0), post.smart = post.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="post.is_smart==1" :error="_false" title="is smart"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_public', post.is_public==0), post.public = post.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="post.is_public==1" :error="_false" title="is public"/>
-              <CategorySectionIcon @click="_updateIcon(post.id, 'is_published', post.is_published==0), post.is_published = post.is_published == 1 ? 0 : 1 " icon="Tv" :activated="post.is_published==1" :error="_false" title="is published"/>
-            </div>
+      <!-- Status Tab -->
+      <div v-else-if="activeTab === 'status'" class="space-y-2">
+        <div v-for="(flag, idx) in statusFlags" 
+             :key="idx" 
+             class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+          <span class="font-medium text-blue-700 dark:text-blue-400 text-xs">{{ flag.label }}:</span>
+          <span :class="[
+            'text-xs px-2 py-1 rounded',
+            flag.active 
+              ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+              : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+          ]">
+            {{ flag.active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      </div>
+
+             <!-- Author Tab -->
+       <div v-else-if="activeTab === 'author'" class="space-y-3">
+         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+           <img class="h-16 w-16 rounded-full mr-4" :src="post.user.profile_photo_url" :alt="post.user.name" />
+           <div class="flex-1">
+             <p class="font-medium text-blue-700 dark:text-blue-400 text-sm">{{ post.user.name }}</p>
+             <p class="text-xs text-gray-500 dark:text-gray-400">Author</p>
+             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(post.user.created_at || Date.now()), new Date()) }} ago</p>
+           </div>
+         </div>
+         <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+           <h4 class="font-medium text-blue-700 dark:text-blue-400 text-xs mb-2">Author Stats</h4>
+           <div class="grid grid-cols-2 gap-2 text-xs">
+             <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
+               <div class="font-bold text-blue-600 dark:text-blue-400">{{ post.user.posts_count || 0 }}</div>
+               <div class="text-gray-500 dark:text-gray-400">Posts</div>
+             </div>
+             <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
+               <div class="font-bold text-blue-600 dark:text-blue-400">{{ post.user.id }}</div>
+               <div class="text-gray-500 dark:text-gray-400">User ID</div>
+             </div>
+           </div>
+         </div>
+       </div>
+    </div>
+
+        <!-- Footer -->
+        <div class="mt-auto">
+
+          
+          <!-- Action buttons exactly like ProviderCard -->
+          <div class="flex space-x-1 w-full justify-end mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
+            <button v-if="!(set.self=='nope')" class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('edit', post.id)">Edit</button>
+            <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('delete', post.id)">Delete</button>
           </div>
         </div>
       </div>
     </div>
   </div>
-
-
-
-
 </template>
