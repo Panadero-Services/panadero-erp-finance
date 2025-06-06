@@ -47,12 +47,15 @@ provide(/* key */ 'pulse', /* value */ _pulse);
 const providers = ref([]);
 const showModal = ref(false);
 const editingProvider = ref(null); // Holds the provider object being edited
+const activeModalTab = ref('basic');
 const currentProvider = ref({
   name: '',
   type: '',
   config: '{}', // Store config as string for textarea, parse/stringify on save/load
+  parameters: '{}', // Store parameters as string for textarea, parse/stringify on save/load
 });
 const configError = ref('');
+const parametersError = ref('');
 
 // Add view mode state
 const isCompactView = ref(false);
@@ -63,7 +66,8 @@ async function fetchProviders() {
     const response = await axios.get('/api/providers');
     providers.value = response.data.map(p => ({
       ...p,
-      config: typeof p.config === 'string' ? p.config : JSON.stringify(p.config, null, 2) // Ensure config is string for display
+      config: typeof p.config === 'string' ? p.config : JSON.stringify(p.config, null, 2), // Ensure config is string for display
+      parameters: typeof p.parameters === 'string' ? p.parameters : JSON.stringify(p.parameters || {}, null, 2) // Ensure parameters is string for display
     }));
   } catch (error) {
     console.error('Error fetching providers:', error);
@@ -73,15 +77,18 @@ async function fetchProviders() {
 
 function openModal(provider = null) {
   configError.value = '';
+  parametersError.value = '';
+  activeModalTab.value = 'basic'; // Reset to basic tab when opening modal
   if (provider) {
     editingProvider.value = { ...provider }; // Clone to avoid direct mutation
     currentProvider.value = {
       ...provider,
       config: typeof provider.config === 'object' ? JSON.stringify(provider.config, null, 2) : provider.config,
+      parameters: typeof provider.parameters === 'object' ? JSON.stringify(provider.parameters, null, 2) : (provider.parameters || '{}'),
      };
   } else {
     editingProvider.value = null;
-    currentProvider.value = { name: '', type: '', config: '{}' };
+    currentProvider.value = { name: '', type: '', config: '{}', parameters: '{}' };
   }
   showModal.value = true;
 }
@@ -106,13 +113,24 @@ async function saveProvider() {
     configError.value = 'Configuration must be valid JSON.';
     return;
   }
+  if (!isValidJson(currentProvider.value.parameters)) {
+    parametersError.value = 'Parameters must be valid JSON.';
+    return;
+  }
   configError.value = '';
+  parametersError.value = '';
 
-  let parsedConfig;
+  let parsedConfig, parsedParameters;
   try {
     parsedConfig = JSON.parse(currentProvider.value.config);
+    parsedParameters = JSON.parse(currentProvider.value.parameters);
   } catch (e) {
-    configError.value = 'Configuration is not valid JSON. Please correct it.';
+    if (currentProvider.value.config && !isValidJson(currentProvider.value.config)) {
+      configError.value = 'Configuration is not valid JSON. Please correct it.';
+    }
+    if (currentProvider.value.parameters && !isValidJson(currentProvider.value.parameters)) {
+      parametersError.value = 'Parameters is not valid JSON. Please correct it.';
+    }
     return; // Should not happen if isValidJson passed, but good for safety
   }
 
@@ -120,6 +138,7 @@ async function saveProvider() {
     name: currentProvider.value.name,
     type: currentProvider.value.type,
     config: parsedConfig, // Send the PARSED OBJECT
+    parameters: parsedParameters, // Send the PARSED PARAMETERS OBJECT
   is_active: 1,
 
 };
@@ -171,9 +190,6 @@ async function deleteProvider(id) {
     // Handle error
   }
 }
-
-
-
 
 // New refs for Balance Modal
 const showBalanceModal = ref(false);
@@ -271,6 +287,7 @@ const testingProviderName = ref('');
 
 // Add these methods after the existing methods
 async function testProvider(provider) {
+  console.log(provider);
   const cardRef = providerCards.value[provider.id];
   if (!cardRef) {
     console.error('Card reference not found for provider:', provider.id);
@@ -321,24 +338,14 @@ const providerCards = ref({});
                     </button>
                 </div>
             </div>
-            <div>
-                <div v-for="provider in providers" :key="provider.id" class="mb-8 space-y-4">
-                    <ProviderCard
-                        :provider="provider"
-                        module="ai"
-                        table="providers"
-                        :db="_db"
-                        :set="_set"
-                        :isCompact="isCompactView"
-                        @edit="openModal"
-                        @delete="deleteProvider"
-                        @test="testProvider"
-                        :ref="el => { if (el) providerCards[provider.id] = el }"
-                    />
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 p-4">
+                <div v-for="provider in providers" :key="provider.id">
                     <ProviderCardAlternative
+                        :provider="provider"
                         :name="provider.name"
                         :type="provider.type"
                         :description="provider.config"
+                        :parameters="provider.parameters || '{}'"
                         :initials="provider.name ? provider.name.charAt(0).toUpperCase() : '?'"
                         @edit="openModal"
                         @delete="deleteProvider"
@@ -353,45 +360,105 @@ const providerCards = ref({});
             <!-- Modals -->
             <!-- Add/Edit Provider Modal -->
             <div v-if="showModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                <div class="rounded-lg p-6 max-w-lg w-full mx-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
-                    <form @submit.prevent="saveProvider">
-                        <div class="mb-4">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                                {{ editingProvider ? 'Edit Provider' : 'Add New Provider' }}
-                            </h3>
+                <div class="rounded-lg shadow-md px-4 py-3 bg-white dark:bg-slate-900 flex flex-col h-[600px] w-[500px] transition-all duration-200 hover:shadow-lg">
+                    <!-- Header section -->
+                    <div class="flex items-center mb-1 w-full">
+                        <div class="h-12 w-12 bg-green-100 dark:bg-green-900 flex items-center justify-center rounded-full -ml-2 mr-2 -mt-12">
+                            <span class="text-green-600 dark:text-green-300 font-bold text-base">{{ currentProvider.name ? currentProvider.name.charAt(0).toUpperCase() : '+' }}</span>
                         </div>
-                        <div class="space-y-4">
-                            <div>
-                                <label for="providerName" class="block text-sm font-medium">Name</label>
-                                <input type="text" v-model="currentProvider.name" id="providerName" required 
-                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 dark:bg-gray-600">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ editingProvider ? 'Edit Provider' : 'Add New Provider' }}</h3>
+                            <p class="text-xs text-gray-500 dark:text-gray-500">{{ currentProvider.type || 'Provider Configuration' }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="flex mb-2 w-full border-b border-gray-200 dark:border-gray-700">
+                        <button 
+                            @click="activeModalTab = 'basic'"
+                            :class="[
+                                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                                activeModalTab === 'basic' 
+                                    ? 'border-b-2 border-green-600 text-green-600 dark:text-green-400 dark:border-green-400' 
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+                            ]"
+                        >
+                            Basic
+                        </button>
+                        <button 
+                            @click="activeModalTab = 'config'"
+                            :class="[
+                                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                                activeModalTab === 'config' 
+                                    ? 'border-b-2 border-green-600 text-green-600 dark:text-green-400 dark:border-green-400' 
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+                            ]"
+                        >
+                            Config
+                        </button>
+                        <button 
+                            @click="activeModalTab = 'parameters'"
+                            :class="[
+                                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                                activeModalTab === 'parameters' 
+                                    ? 'border-b-2 border-green-600 text-green-600 dark:text-green-400 dark:border-green-400' 
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+                            ]"
+                        >
+                            Parameters
+                        </button>
+                    </div>
+
+                    <!-- Content area -->
+                    <form @submit.prevent="saveProvider" class="flex-1 flex flex-col overflow-hidden">
+                        <div class="flex-1 overflow-auto">
+                            <!-- Basic Tab -->
+                            <div v-if="activeModalTab === 'basic'" class="space-y-4">
+                                <div>
+                                    <label for="providerName" class="block text-xs font-medium text-gray-700 dark:text-gray-200">Name</label>
+                                    <input type="text" v-model="currentProvider.name" id="providerName" required 
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700/50 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 text-xs p-2">
+                                </div>
+                                <div>
+                                    <label for="providerType" class="block text-xs font-medium text-gray-700 dark:text-gray-200">Type</label>
+                                    <input type="text" v-model="currentProvider.type" id="providerType" required 
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700/50 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 text-xs p-2">
+                                </div>
+                                <div>
+                                    <label for="providerIsActive" class="flex items-center">
+                                        <input type="checkbox" v-model="currentProvider.is_active" id="providerIsActive" 
+                                            class="h-4 w-4 text-green-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700/50 rounded focus:ring-green-500">
+                                        <span class="ml-2 text-xs text-gray-700 dark:text-gray-200">Is Active</span>
+                                    </label>
+                                </div>
                             </div>
-                            <div>
-                                <label for="providerType" class="block text-sm font-medium">Type</label>
-                                <input type="text" v-model="currentProvider.type" id="providerType" required 
-                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 dark:bg-gray-600">
+
+                            <!-- Config Tab -->
+                            <div v-else-if="activeModalTab === 'config'" class="space-y-2">
+                                <label for="providerConfig" class="block text-xs font-medium text-gray-700 dark:text-gray-200">Configuration (JSON)</label>
+                                <textarea v-model="currentProvider.config" id="providerConfig" rows="18" required 
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700/50 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 text-xxs p-3 font-mono"></textarea>
+                                <p v-if="configError" class="text-red-500 dark:text-red-400 text-xs">{{ configError }}</p>
                             </div>
-                            <div>
-                                <label for="providerConfig" class="block text-sm font-medium">Config (JSON)</label>
-                                <textarea v-model="currentProvider.config" id="providerConfig" rows="10" required 
-                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 font-mono dark:bg-gray-600"></textarea>
-                                <p v-if="configError" class="text-red-500 text-xs mt-1">{{ configError }}</p>
-                            </div>
-                            <div>
-                                <label for="providerIsActive" class="flex items-center">
-                                    <input type="checkbox" v-model="currentProvider.is_active" id="providerIsActive" 
-                                        class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                                    <span class="ml-2 text-sm">Is Active</span>
-                                </label>
+
+                            <!-- Parameters Tab -->
+                            <div v-else-if="activeModalTab === 'parameters'" class="space-y-2">
+                                <label for="providerParameters" class="block text-xs font-medium text-gray-700 dark:text-gray-200">Parameters (JSON) - API Keys & Secrets</label>
+                                <textarea v-model="currentProvider.parameters" id="providerParameters" rows="18" required 
+                                    class="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700/50 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 text-xxs p-3 font-mono"></textarea>
+                                <p v-if="parametersError" class="text-red-500 dark:text-red-400 text-xs">{{ parametersError }}</p>
+                                <p class="text-gray-500 dark:text-gray-400 text-xs">Store sensitive information like API keys here</p>
                             </div>
                         </div>
-                        <div class="mt-6 flex justify-end space-x-3">
+
+                        <!-- Action buttons -->
+                        <div class="flex space-x-1 w-full justify-end mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
                             <button type="submit" 
-                                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                                class="mt-2.5 mx-1 rounded p-2 w-16 text-[10px] ring-1 ring-inset text-green-600 ring-green-300 dark:text-green-300 dark:ring-green-600 hover:ring-green-600 hover:text-green-700 dark:hover:ring-green-400">
                                 Save
                             </button>
                             <button @click="closeModal" type="button" 
-                                class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                class="mt-2.5 mx-1 rounded p-2 w-16 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400">
                                 Cancel
                             </button>
                         </div>
