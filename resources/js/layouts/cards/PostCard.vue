@@ -228,7 +228,10 @@ const emit = defineEmits(['edit', 'delete']);
              <p class="text-xs text-gray-500 dark:text-gray-400">Author</p>
              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(post.user.created_at || Date.now()), new Date()) }} ago</p>
            </div>
-                 <img class="h-12 w-12 rounded-full mr-4" :src="post.user.profile_photo_url"/>
+              
+                 <img class="h-14 w-14 rounded-full mr-0 absolute  top-3 -mt-8 right-1" :src="post.user.profile_photo_url"/>
+         
+
          </div>
 
          <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
