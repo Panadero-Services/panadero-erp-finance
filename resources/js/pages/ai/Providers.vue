@@ -24,8 +24,11 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
 import ProviderCard from '@/layouts/cards/ProviderCard.vue';
+import ProviderCardAlternative from '@/layouts/cards/ProviderCardAlternative.vue';
 
 _set.domainFunction = "ai";
+
+const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 const props = defineProps({
     page: Object,
@@ -269,7 +272,10 @@ const testingProviderName = ref('');
 // Add these methods after the existing methods
 async function testProvider(provider) {
   const cardRef = providerCards.value[provider.id];
-  if (!cardRef) return;
+  if (!cardRef) {
+    console.error('Card reference not found for provider:', provider.id);
+    return;
+  }
 
   try {
     const response = await axios.post(`/api/providers/${provider.id}/test`);
@@ -299,169 +305,131 @@ const providerCards = ref({});
 </script>
 
 <template>
-  <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
-    <template #header>
-      <pulse v-model="_pulse" :animation="_set.animate"/>
-    </template>
+    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
+        <template #header>
+            <div class="flex justify-between items-center">
+                <pulse v-model="_pulse" :animation="_set.animate"/>
+            </div>
+        </template>
 
-    <template #intro>
-      <div class="flex justify-between items-center mb-4">
-        <div class="flex items-center space-x-4">
-          <button @click="openModal()" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-            Add New Provider
-          </button>
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="text-sm text-gray-600 dark:text-gray-400">View Mode:</span>
-          <button 
-            @click="isCompactView = !isCompactView" 
-            class="px-3 py-1 text-sm rounded-md transition-colors duration-200"
-            :class="isCompactView ? 'bg-indigo-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'"
-          >
-            {{ isCompactView ? 'Compact' : 'Full' }}
-          </button>
-        </div>
-      </div>
-    </template>
+        <template #default>
+            <div class="grid grid-cols-2 mb-2 ">
+                <div class="pl-2">
+                    <button @click="openModal()" :class="_button">Add New Provider</button>
+                    <button @click="isCompactView = !isCompactView" :class="_button">
+                        {{ isCompactView ? 'Full View' : 'Compact View' }}
+                    </button>
+                </div>
+            </div>
+            <div>
+                <div v-for="provider in providers" :key="provider.id" class="mb-8 space-y-4">
+                    <ProviderCard
+                        :provider="provider"
+                        module="ai"
+                        table="providers"
+                        :db="_db"
+                        :set="_set"
+                        :isCompact="isCompactView"
+                        @edit="openModal"
+                        @delete="deleteProvider"
+                        @test="testProvider"
+                        :ref="el => { if (el) providerCards[provider.id] = el }"
+                    />
+                    <ProviderCardAlternative
+                        :name="provider.name"
+                        :type="provider.type"
+                        :description="provider.config"
+                        :initials="provider.name ? provider.name.charAt(0).toUpperCase() : '?'"
+                        @edit="openModal"
+                        @delete="deleteProvider"
+                        @test="testProvider"
+                        :ref="el => { if (el) providerCards[provider.id] = el }" 
+                    />
+                </div>
+            </div>
+        </template>
 
-    <template #default>
-      <div :class="[
-        'grid gap-2',
-        isCompactView ? 'grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8' : 'md:grid-cols-2 xl:grid-cols-3'
-      ]">
-        <div v-for="provider in providers" :key="provider.id" class="text-sm dark:text-gray-200">
-          <ProviderCard 
-            :provider="provider"
-            :module="'ai'"
-            :table="'providers'"
-            :db="_db"
-            :set="_set"
-            :is-compact="isCompactView"
-            @edit="openModal"
-            @delete="deleteProvider"
-            @balance="openBalanceModal"
-            @test="testProvider"
-            :ref="el => { if (el) providerCards[provider.id] = el }"
-          />
-        </div>
-      </div>
-    </template>
+        <template #footer>
+            <!-- Modals -->
+            <!-- Add/Edit Provider Modal -->
+            <div v-if="showModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                <div class="rounded-lg p-6 max-w-lg w-full mx-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                    <form @submit.prevent="saveProvider">
+                        <div class="mb-4">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                {{ editingProvider ? 'Edit Provider' : 'Add New Provider' }}
+                            </h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label for="providerName" class="block text-sm font-medium">Name</label>
+                                <input type="text" v-model="currentProvider.name" id="providerName" required 
+                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 dark:bg-gray-600">
+                            </div>
+                            <div>
+                                <label for="providerType" class="block text-sm font-medium">Type</label>
+                                <input type="text" v-model="currentProvider.type" id="providerType" required 
+                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 dark:bg-gray-600">
+                            </div>
+                            <div>
+                                <label for="providerConfig" class="block text-sm font-medium">Config (JSON)</label>
+                                <textarea v-model="currentProvider.config" id="providerConfig" rows="10" required 
+                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 font-mono dark:bg-gray-600"></textarea>
+                                <p v-if="configError" class="text-red-500 text-xs mt-1">{{ configError }}</p>
+                            </div>
+                            <div>
+                                <label for="providerIsActive" class="flex items-center">
+                                    <input type="checkbox" v-model="currentProvider.is_active" id="providerIsActive" 
+                                        class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                    <span class="ml-2 text-sm">Is Active</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="mt-6 flex justify-end space-x-3">
+                            <button type="submit" 
+                                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
+                                Save
+                            </button>
+                            <button @click="closeModal" type="button" 
+                                class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-    <template #footer>
-      <!-- Modals -->
-      <!-- Add/Edit Provider Modal -->
-      <div v-if="showModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-        <div class=" rounded-lg p-6 max-w-lg w-full mx-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 ">
-          <form @submit.prevent="saveProvider">
-            <div class="mb-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ editingProvider ? 'Edit Provider' : 'Add New Provider' }}
-              </h3>
+            <!-- Test Result Modal -->
+            <div v-if="showTestResultModal" class="inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+                <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+                    <div class="mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">
+                            Test Result: {{ testingProviderName }}
+                        </h3>
+                    </div>
+                    <div class="mt-2">
+                        <div v-if="isTestingProvider" class="text-sm text-gray-500">
+                            Testing provider...
+                        </div>
+                        <div v-if="testResultError" class="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            <p class="font-bold">Error:</p>
+                            <pre class="whitespace-pre-wrap text-sm">{{ testResultError }}</pre>
+                        </div>
+                        <div v-if="testResultData && !isTestingProvider && !testResultError" class="mt-3">
+                            <p class="text-sm font-medium text-gray-700">Test Succeeded. Data:</p>
+                            <pre class="mt-1 p-2 bg-gray-100 rounded text-xs text-gray-600 whitespace-pre-wrap">{{ JSON.stringify(testResultData, null, 2) }}</pre>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex justify-end">
+                        <button @click="closeTestResultModal" type="button" 
+                            class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="space-y-4">
-              <div>
-                <label for="providerName" class="block text-sm font-medium ">Name</label>
-                <input type="text" v-model="currentProvider.name" id="providerName" required 
-                  class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 dark:bg-gray-600">
-              </div>
-              <div>
-                <label for="providerType" class="block text-sm font-medium ">Type</label>
-                <input type="text" v-model="currentProvider.type" id="providerType" required 
-                  class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 dark:bg-gray-600">
-              </div>
-              <div>
-                <label for="providerConfig" class="block text-sm font-medium">Config (JSON)</label>
-                <textarea v-model="currentProvider.config" id="providerConfig" rows="10" required 
-                  class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md p-2 font-mono dark:bg-gray-600"></textarea>
-                <p v-if="configError" class="text-red-500 text-xs mt-1">{{ configError }}</p>
-              </div>
-              <div>
-                <label for="providerIsActive" class="flex items-center">
-                  <input type="checkbox" v-model="currentProvider.is_active" id="providerIsActive" 
-                    class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
-                  <span class="ml-2 text-sm ">Is Active</span>
-                </label>
-              </div>
-            </div>
-            <div class="mt-6 flex justify-end space-x-3">
-              <button type="submit" 
-                class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm">
-                Save
-              </button>
-              <button @click="closeModal" type="button" 
-                class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Balance Modal -->
-      <div v-if="showBalanceModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
-          <div class="mb-4">
-            <h3 class="text-lg font-medium text-gray-900">
-              Contract Balance: {{ selectedProviderForBalance?.name }}
-            </h3>
-          </div>
-          <div class="mt-2">
-            <div v-if="isFetchingBalance" class="text-sm text-gray-500">
-              Fetching balance...
-            </div>
-            <div v-if="balanceError" class="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              <p class="font-bold">Error:</p>
-              <p>{{ balanceError }}</p>
-            </div>
-            <div v-if="balanceData && !isFetchingBalance && !balanceError" class="mt-3 text-sm text-gray-700">
-              <p><strong>Contract Address:</strong> {{ balanceData.contract_address }}</p>
-              <p><strong>Balance:</strong> {{ balanceData.balance_ether }} {{ balanceData.unit }}</p>
-              <p class="text-xs text-gray-500">(Raw: {{ balanceData.balance_wei }} Wei)</p>
-            </div>
-            <div v-if="!isFetchingBalance && !balanceData && !balanceError" class="text-sm text-gray-500">
-              No balance data to display. Ensure provider config has 'rpc_url' and 'contract_address'.
-            </div>
-          </div>
-          <div class="mt-6 flex justify-end">
-            <button @click="closeBalanceModal" type="button" 
-              class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Test Result Modal -->
-      <div v-if="showTestResultModal" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
-          <div class="mb-4">
-            <h3 class="text-lg font-medium text-gray-900">
-              Test Result: {{ testingProviderName }}
-            </h3>
-          </div>
-          <div class="mt-2">
-            <div v-if="isTestingProvider" class="text-sm text-gray-500">
-              Testing provider...
-            </div>
-            <div v-if="testResultError" class="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-              <p class="font-bold">Error:</p>
-              <pre class="whitespace-pre-wrap text-sm">{{ testResultError }}</pre>
-            </div>
-            <div v-if="testResultData && !isTestingProvider && !testResultError" class="mt-3">
-              <p class="text-sm font-medium text-gray-700">Test Succeeded. Data:</p>
-              <pre class="mt-1 p-2 bg-gray-100 rounded text-xs text-gray-600 whitespace-pre-wrap">{{ JSON.stringify(testResultData, null, 2) }}</pre>
-            </div>
-          </div>
-          <div class="mt-6 flex justify-end">
-            <button @click="closeTestResultModal" type="button" 
-              class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </template>
-  </AppToolbarLayout>
+        </template>
+    </AppToolbarLayout>
 </template>
 
 

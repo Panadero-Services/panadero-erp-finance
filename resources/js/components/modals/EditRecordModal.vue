@@ -282,7 +282,7 @@ const _footer = {
                           <option v-for="_link in record.links_table" :value="_link">{{_link.replaceAll('_',' ')}}</option>
                         </select>
                         <PostSearch
-                          :model-value="link.link_id==0"
+                          :model-value="link.link_id"
                           :table="table"
                           :title-column="titleColumn"
                           :label="titleColumn"
