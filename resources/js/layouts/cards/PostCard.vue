@@ -86,20 +86,20 @@ const emit = defineEmits(['edit', 'delete']);
 <template>
   <div class="relative block w-full">
     <div class="p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-purple-500 bg-white text-gray-600 dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300">
-      <div class="flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-6 tracking-tight leading-4">
+      <div class="flex flex-col h-full min-h-24 px-8 pt-4 sm:px-6 sm:pt-3 tracking-tight leading-4">
       <!-- Header section -->
     <div class="flex items-center mb-1 w-full">
-             <div class="h-12 w-12 bg-blue-100 dark:bg-blue-900 flex items-center justify-center rounded-full mr-4 flex-shrink-0">
-         <span class="text-blue-600 dark:text-blue-300 font-bold text-base">{{ initials }}</span>
+        <div class="h-12 w-12 bg-blue-200 dark:bg-blue-900 flex items-center justify-center rounded-full mr-4 flex-shrink-0 absolute top-3 -mt-8 left-1">
+         <div class="text-blue-600 dark:text-blue-300 font-bold text-base absolute top-2  ">{{ initials }}</div>
        </div>
-      <div class="flex-1">
-        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+      <div class="flex-1 text-center">
+        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
           {{ post.title }}
         </h3>
         <h3 v-else class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ post.title }}
         </h3>
-        <p class="text-xs text-gray-500 dark:text-gray-500">ID: {{ post.id }} • Updated {{ formatDistance(post.updated_at, new Date()) }} ago</p>
+        <p class="text-xs text-gray-500 dark:text-gray-500"> Updated {{ formatDistance(post.updated_at, new Date()) }} ago</p>
       </div>
     </div>
 
@@ -202,18 +202,20 @@ const emit = defineEmits(['edit', 'delete']);
 
       <!-- Status Tab -->
       <div v-else-if="activeTab === 'status'" class="space-y-2">
-        <div v-for="(flag, idx) in statusFlags" 
-             :key="idx" 
-             class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
-          <span class="font-medium text-blue-700 dark:text-blue-400 text-xs">{{ flag.label }}:</span>
-          <span :class="[
-            'text-xs px-2 py-1 rounded',
-            flag.active 
-              ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-              : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-          ]">
-            {{ flag.active ? 'Active' : 'Inactive' }}
-          </span>
+        <div class="grid grid-cols-2 gap-2">
+          <div v-for="(flag, idx) in statusFlags" 
+               :key="idx" 
+               class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-600">
+            <span class="font-medium text-blue-700 dark:text-blue-400 text-xs">{{ flag.label }}:</span>
+            <span :class="[
+              'text-xs px-2 py-1 rounded',
+              flag.active 
+                ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+            ]">
+              {{ flag.active ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -246,11 +248,15 @@ const emit = defineEmits(['edit', 'delete']);
         <!-- Footer -->
         <div class="mt-auto">
 
-          
           <!-- Action buttons exactly like ProviderCard -->
-          <div class="flex space-x-1 w-full justify-end mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
-            <button v-if="!(set.self=='nope')" class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('edit', post.id)">Edit</button>
-            <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('delete', post.id)">Delete</button>
+          <div class="flex space-x-1 w-full justify-between mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
+            <div class="mt-3 text-xs text-xs text-gray-500 dark:text-gray-500">
+                id: {{ post.id }}         
+            </div>
+            <div>
+              <button v-if="!(set.self=='nope')" class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('edit', post.id)">Edit</button>
+              <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('delete', post.id)">Delete</button>
+            </div>
           </div>
         </div>
       </div>
