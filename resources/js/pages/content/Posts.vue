@@ -133,8 +133,8 @@ watch(selectedFields, () => {
 
 // Keyboard shortcuts
 const handleKeydown = (event) => {
-  // Ctrl/Cmd + K to focus search
-  if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+  // Cmd + Ctrl + K to focus search
+  if (event.metaKey && event.ctrlKey && event.key === 'k') {
     event.preventDefault();
     const searchInput = document.querySelector('input[name="search"]');
     if (searchInput) {
@@ -146,6 +146,36 @@ const handleKeydown = (event) => {
   if (event.key === 'Escape' && searchQuery.value) {
     searchQuery.value = '';
     performSearch();
+  }
+  // Cmd + Ctrl + T to toggle Title field
+  if (event.metaKey && event.ctrlKey && event.key === 't') {
+    event.preventDefault();
+    const titleIndex = selectedFields.value.indexOf('title');
+    if (titleIndex > -1) {
+      selectedFields.value.splice(titleIndex, 1);
+    } else {
+      selectedFields.value.push('title');
+    }
+  }
+  // Cmd + Ctrl + C to toggle Content field
+  if (event.metaKey && event.ctrlKey && event.key === 'c') {
+    event.preventDefault();
+    const contentIndex = selectedFields.value.indexOf('content');
+    if (contentIndex > -1) {
+      selectedFields.value.splice(contentIndex, 1);
+    } else {
+      selectedFields.value.push('content');
+    }
+  }
+  // Cmd + Ctrl + A to toggle Author field
+  if (event.metaKey && event.ctrlKey && event.key === 'a') {
+    event.preventDefault();
+    const authorIndex = selectedFields.value.indexOf('author');
+    if (authorIndex > -1) {
+      selectedFields.value.splice(authorIndex, 1);
+    } else {
+      selectedFields.value.push('author');
+    }
   }
 };
 
@@ -285,7 +315,7 @@ const refreshPage = () => { window.location.reload(); };
       <template #intro />
 
       <template #default>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4"> 
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4"> 
             <div class="pl-2 h-12" >
                 <button @click="_set.dark=false" type="button" :class="_button">Light</button>
                 <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
@@ -313,11 +343,12 @@ const refreshPage = () => { window.location.reload(); };
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
-                        Press <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘K</kbd> to focus, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Esc</kbd> to clear
+                        Press <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃K</kbd> to focus, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Esc</kbd> to clear
                     </p>
+       
                 </div>
                 <div class="flex-1">
-                    <div class="flex flex-wrap gap-4 mt-1">
+                    <div class="flex flex-wrap gap-4 mt-2">
                         <div v-for="field in searchFields" :key="field.value" class="flex items-center">
                             <input 
                                 :id="`field-${field.value}`"
@@ -335,11 +366,13 @@ const refreshPage = () => { window.location.reload(); };
                             </label>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Searching in: <span class="font-medium text-gray-700 dark:text-gray-300">
-                            {{ selectedFields.length > 0 ? selectedFields.map(f => searchFields.find(sf => sf.value === f)?.label).join(', ') : 'None selected' }}
-                        </span>
+
+
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block mt-2">
+                        Toggle fields: <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃T</kbd> Title, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃C</kbd> Content, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃A</kbd> Author
                     </p>
+
+
                 </div>
             </div>
         </div>
