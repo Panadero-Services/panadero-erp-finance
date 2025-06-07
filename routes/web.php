@@ -96,6 +96,15 @@ Route::get('/', function () {
     return redirect()->route('home/welkom');
 });
 
+
+
+Route::get('home/landing', function () {
+    return Inertia::render('home/Landing', [
+        'page'=> Page::with('sections')->where('title','Tiers')->first(),
+        'baseSections' => Section::where('page_id','0')->get()
+    ]);
+})->name('home/landing');
+
 Route::get('home', function () {
     return redirect()->route('home/welkom');
 });
