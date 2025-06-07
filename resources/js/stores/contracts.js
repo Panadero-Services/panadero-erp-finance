@@ -28,6 +28,7 @@ export const useContractStore = defineStore('contract', () => {
             case 80001: _endPoint = Providers.POLYGON_Testnet_1.node; break;
             case 62621: _endPoint = Providers.MTV_1.node; break;
             case 11155111: _endPoint = Providers.SEPOLIA.node; break;
+            case 146: _endPoint = Providers.SONIC1.node; break;
             default: _endPoint = "";
         }
         return new ethers.JsonRpcProvider(_endPoint);

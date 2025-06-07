@@ -22,5 +22,8 @@
 	"MTV_1":{ "chain_id": 62621, "node": "https://rpc-eu.mtv.ac /"},
 	"GOERLI_1":{ "chain_id": 5, "node": "https://eth-goerli.g.alchemy.com/v2/wAV5BTngKoGvvw8xMV9crv4mvkjnQJc6"},
 	"POLYGON_1":{ "chain_id": 137, "node": "https://polygon-rpc.com/"},
-	"POLYGON_Testnet_1":{ "chain_id": 80001, "node": "https://polygon-mumbai.g.alchemy.com/v2/cKx4rGHRImhW4QmJjKsSoSNvr4V-V_wJ"}
+	"POLYGON_Testnet_1":{ "chain_id": 80001, "node": "https://polygon-mumbai.g.alchemy.com/v2/cKx4rGHRImhW4QmJjKsSoSNvr4V-V_wJ"},
+	"SONIC1":{ "chain_id": 146, "node": "https://sonic-rpc.publicnode.com:443"}
+
+
 }

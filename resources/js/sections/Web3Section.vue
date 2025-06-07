@@ -146,9 +146,6 @@ onMounted(async () => {
     }
   }
 
-
-
-
   // load line from db or create new record 
   const resolveLineFromButton = async(_web3Record, _nr, _f,  _x, _push) => {
 
