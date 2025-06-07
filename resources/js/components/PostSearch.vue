@@ -33,15 +33,24 @@ const handleInput = async (event) => {
   searchQuery.value = event.target.value;
   selectedPost.value = null;
   showDropdown.value = true;
+  
+  // Only search if there's a query
+  if (searchQuery.value.trim()) {
+    await searchPosts();
+  }
 };
 
 const clickInput = () => {
   showDropdown.value = true;
+  // Trigger search if we have a query but no results
+  if (searchQuery.value.trim() && searchResults.value.length === 0) {
+    searchPosts();
+  }
 };
 
 const selectPost = (post) => {
   selectedPost.value = post;
-  emit('update:modelValue', post.id);
+  emit('update:modelValue', post.id.toString());
   emit('update:linkTitle', post[props.label]);
   searchQuery.value = post[props.label];
   showDropdown.value = false;
@@ -55,13 +64,13 @@ const clearSelection = () => {
   emit('update:modelValue', '');
   emit('update:linkTitle', '');
   searchQuery.value = '';
-  showDropdown.value = true;
+  showDropdown.value = false; // Changed to false to avoid immediate re-opening
 };
 
 const delayedHideDropdown = () => {
   setTimeout(() => {
     showDropdown.value = false;
-  }, 100);
+  }, 200); // Increased delay to prevent conflicts with click events
 };
 
 const searchPosts = async () => {
@@ -76,17 +85,43 @@ const searchPosts = async () => {
   }
 };
 
+// Initialize component if modelValue is provided
+const initializeFromModelValue = async () => {
+  if (props.modelValue) {
+    try {
+      // Search for the post with the given ID
+      await searchPosts();
+      const foundPost = searchResults.value.find(post => post.id.toString() === props.modelValue.toString());
+      if (foundPost) {
+        selectedPost.value = foundPost;
+        searchQuery.value = foundPost[props.label];
+      }
+    } catch (error) {
+      console.error('Error initializing PostSearch:', error);
+    }
+  }
+};
+
 // -------------------- Watchers --------------------
-watch(searchQuery, async (newQuery) => {
-  if (newQuery) await searchPosts();
-});
+// Removed the automatic search on query change since we handle it in handleInput
 
 watch(selectedPost, (newPost) => {
   if (newPost) {
-    emit('update:modelValue', newPost.id);
+    emit('update:modelValue', newPost.id.toString());
     emit('update:linkTitle', newPost[props.label]);
   }
 });
+
+// Watch for external changes to modelValue
+watch(() => props.modelValue, (newValue) => {
+  if (newValue && (!selectedPost.value || selectedPost.value.id.toString() !== newValue.toString())) {
+    initializeFromModelValue();
+  } else if (!newValue) {
+    // Clear selection if modelValue becomes empty
+    selectedPost.value = null;
+    searchQuery.value = '';
+  }
+}, { immediate: true });
 
 // -------------------- Classes --------------------
 const inputClasses = "w-full pl-3 pr-10 py-2 text-xs rounded-md border focus:outline-none focus:ring-1 bg-white border-gray-300 text-gray-700 focus:ring-indigo-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-indigo-600";
@@ -103,7 +138,7 @@ const itemClasses = (isSelected) =>
   <div class="relative block w-full">
     <div class="flex items-center bg-white dark:bg-gray-700 rounded-md">
       <input
-        :value="selectedPost ? selectedPost[props.label] : searchQuery"
+        v-model="searchQuery"
         :placeholder="`Search ${props.table}...`"
         :class="inputClasses"
         @input="handleInput"
@@ -121,7 +156,7 @@ const itemClasses = (isSelected) =>
       <div
         v-for="post in filteredPosts"
         :key="post.id"
-        @click="selectPost(post)"
+        @mousedown.prevent="selectPost(post)"
         :class="itemClasses(selectedPost?.id === post.id)"
       >
         {{ post[props.label] }}

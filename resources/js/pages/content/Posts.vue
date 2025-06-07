@@ -175,12 +175,10 @@ const refreshPage = () => { window.location.reload(); };
       <template #intro />
 
       <template #default>
-
         <div class="grid grid-cols-2"> 
             <div class="pl-2 h-12" >
                 <button @click="_set.dark=false" type="button" :class="_button">Light</button>
                 <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-                <button @click="refreshPage" type="button" :class="_button">Refresh</button>
                 <button @click="refreshPage" type="button" :class="_button">Refresh</button>
             </div>      
             <div class="" id="toolbar">
@@ -189,9 +187,7 @@ const refreshPage = () => { window.location.reload(); };
             </div>
         </div>
 
-
-
-         <div id="whatever" class="w-full min-h-4 min-w-full dark:bg-black">
+        <div id="whatever" class="w-full min-h-4 min-w-full dark:bg-black">
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
               <div v-for="post in posts.data" key="post.id" class="text-sm dark:text-gray-200">
                   <PostCard :post="post" :module="_module" :table="_table" @edit="_edit" @show="_show" :db="_db" :set="_set"/>
