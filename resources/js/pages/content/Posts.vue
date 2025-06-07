@@ -10,8 +10,8 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // modal
-import EditPostModal from "@/components/modals/EditPostModal.vue";
-import EditRecordModal from "@/components/modals/EditRecordModal.vue";
+//import EditPostModal from "@/components/modals/EditPostModal.vue";
+import ShowRecordModal from "@/components/modals/ShowRecordModal.vue";
 
 // sections
 import PostCard from '@/layouts/cards/PostCard.vue';
@@ -120,7 +120,7 @@ const refreshPage = () => { window.location.reload(); };
          <pulse v-model="_pulse" :animation="_set.animate"/>
 
          <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8 dark:bg-gray-800">
-            <edit-record-modal lng='en' 
+            <show-record-modal lng='en' 
                                 :key="keyIndex"
                                :record="_activeRecord" 
                                :module="_module" 
