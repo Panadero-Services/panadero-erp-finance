@@ -80,7 +80,7 @@ const statusFlags = computed(() => [
   { key: 'is_published', label: 'Published', icon: 'Tv', active: props.post.is_published == 1 }
 ]);
 
-const emit = defineEmits(['edit', 'delete']);
+const emit = defineEmits(['edit','show', 'delete']);
 </script>
 
 <template>
@@ -93,7 +93,7 @@ const emit = defineEmits(['edit', 'delete']);
          <div class="text-blue-600 dark:text-blue-300 font-bold text-base absolute top-2  ">{{ initials }}</div>
        </div>
       <div class="flex-1 text-center sm:text-lg ">
-        <h3 v-if="!(set.self=='nope')" @click="$emit('edit', post.id)" class="line-clamp-1 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
+        <h3 v-if="!(set.self=='nope')" @click="$emit('show', post.id)" class="line-clamp-1 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer ">
           {{ post.title }}
         </h3>
         <h3 v-else class="font-semibold text-gray-900 dark:text-white line-clamp-1">
@@ -266,6 +266,7 @@ const emit = defineEmits(['edit', 'delete']);
                 id: {{ post.id }}         
             </div>
             <div>
+              <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('show', post.id)">Show</button>
               <button v-if="!(set.self=='nope')" class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('edit', post.id)">Edit</button>
               <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('delete', post.id)">Delete</button>
             </div>
