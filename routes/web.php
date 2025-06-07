@@ -270,13 +270,9 @@ Route::middleware([
 
 //  Gate function
 //  Route::middleware('can:admin-access')->get('posts', function () {
-    Route::get('content/posts', function () {
-        return Inertia::render('content/Posts', [
-             'posts'=> PostResource::collection(Post::with('user')->paginate()),
-            'page'=> Page::with('sections')->where('title','Posts')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('content/posts')->middleware(RoleAccessMiddleware::class.':admin,member');
+    Route::get('content/posts', [PostController::class, 'index'])
+         ->name('content/posts')
+         ->middleware(RoleAccessMiddleware::class.':admin,member');
 
 
     Route::get('grid', function () {

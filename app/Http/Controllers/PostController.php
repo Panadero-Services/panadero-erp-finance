@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Page;
+use App\Models\Section;
 use App\Http\Resources\PostResource;
 
 use Illuminate\Http\Request;
@@ -14,7 +16,7 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
 
         /*
@@ -22,8 +24,41 @@ class PostController extends Controller
             return response('UnAuthorized.',401);
         }
         */
-        return inertia('Posts',[
-            'posts'=> PostResource::collection(Post::with('user')->paginate())
+        
+        $query = Post::with('user');
+        
+        // Handle search functionality
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $searchFields = $request->get('search_fields', 'title');
+            $fieldsArray = explode(',', $searchFields);
+            
+            $query->where(function ($q) use ($searchTerm, $fieldsArray) {
+                foreach ($fieldsArray as $field) {
+                    switch (trim($field)) {
+                        case 'title':
+                            $q->orWhere('title', 'like', '%' . $searchTerm . '%');
+                            break;
+                        case 'content':
+                            $q->orWhere('body', 'like', '%' . $searchTerm . '%');
+                            break;
+                        case 'author':
+                            $q->orWhereHas('user', function ($subQ) use ($searchTerm) {
+                                $subQ->where('name', 'like', '%' . $searchTerm . '%');
+                            });
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // Order by most recent first
+        $query->orderBy('created_at', 'desc');
+        
+        return inertia('content/Posts',[
+            'posts'=> PostResource::collection($query->paginate(12)->appends($request->query())),
+            'page'=> Page::with('sections')->where('title','Posts')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
             //'formFields' => Post::formFields(),
             //'validationRules' => Post::validationRules()
         ]);
