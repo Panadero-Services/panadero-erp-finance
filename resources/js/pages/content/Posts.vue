@@ -181,6 +181,7 @@ const refreshPage = () => { window.location.reload(); };
                 <button @click="_set.dark=false" type="button" :class="_button">Light</button>
                 <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
                 <button @click="refreshPage" type="button" :class="_button">Refresh</button>
+                <button @click="refreshPage" type="button" :class="_button">Refresh</button>
             </div>      
             <div class="" id="toolbar">
                 <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" 
