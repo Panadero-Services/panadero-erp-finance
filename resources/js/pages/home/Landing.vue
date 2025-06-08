@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
+import axios from 'axios';
+import { router } from '@inertiajs/vue3';
 
 const _set = useSettingsStore();
 const _contract = useContractStore();
@@ -217,52 +219,184 @@ const enterpriseModules = [
     features: ['AI-driven lead scoring', 'Dynamic pricing models', 'Predictive analytics']
   }
 ];
+
+// Add business functions data
+const businessFunctions = [
+  { name: 'Accounting', icon: 'fas fa-calculator' },
+  { name: 'CMS', icon: 'fas fa-file-alt' },
+  { name: 'Ecommerce', icon: 'fas fa-shopping-cart' },
+  { name: 'Inventory', icon: 'fas fa-boxes' },
+  { name: 'Communication', icon: 'fas fa-comments' },
+  { name: 'Social Media', icon: 'fas fa-share-alt' },
+  { name: 'Project Management', icon: 'fas fa-tasks' },
+  { name: 'AI Agents', icon: 'fas fa-robot' },
+  { name: 'ERP', icon: 'fas fa-cogs' },
+  { name: 'Team Collaboration', icon: 'fas fa-users' }
+];
+
+// Add AI agent related data
+const aiMessages = ref([
+  { type: 'ai', content: 'Hello! I\'m your AI assistant. I can help you with:\n• Business process automation\n• Data analysis and insights\n• Software recommendations\n• Technical support\n\nI can also search through our knowledge base to find relevant information for you.\n\nHow can I assist you today?' }
+]);
+const userInput = ref('');
+const isAiTyping = ref(false);
+const relevantPosts = ref([]);
+const selectedCategory = ref(null);
+const selectedTags = ref([]);
+
+// Computed properties for filtered posts
+const availableCategories = computed(() => {
+  const categories = new Set();
+  relevantPosts.value.forEach(post => {
+    if (post.category) categories.add(post.category);
+  });
+  return Array.from(categories);
+});
+
+const availableTags = computed(() => {
+  const tags = new Set();
+  relevantPosts.value.forEach(post => {
+    post.tags.forEach(tag => tags.add(tag));
+  });
+  return Array.from(tags);
+});
+
+const filteredPosts = computed(() => {
+  return relevantPosts.value.filter(post => {
+    const matchesCategory = !selectedCategory.value || 
+      (post.category && post.category.id === selectedCategory.value.id);
+    const matchesTags = selectedTags.value.length === 0 || 
+      post.tags.some(tag => selectedTags.value.includes(tag.id));
+    return matchesCategory && matchesTags;
+  });
+});
+
+// Methods for post interaction
+const viewFullPost = (post) => {
+  router.visit(`/posts/${post.slug}`);
+};
+
+const toggleTag = (tagId) => {
+  const index = selectedTags.value.indexOf(tagId);
+  if (index === -1) {
+    selectedTags.value.push(tagId);
+  } else {
+    selectedTags.value.splice(index, 1);
+  }
+};
+
+const clearFilters = () => {
+  selectedCategory.value = null;
+  selectedTags.value = [];
+};
+
+const aiCapabilities = [
+  { title: 'Natural Language Processing', icon: 'fas fa-comments', description: 'Advanced understanding and processing of human language' },
+  { title: 'Smart Automation', icon: 'fas fa-robot', description: 'Automate repetitive tasks and workflows' },
+  { title: 'Data Analysis', icon: 'fas fa-chart-line', description: 'Real-time insights and predictive analytics' },
+  { title: '24/7 Support', icon: 'fas fa-clock', description: 'Round-the-clock assistance and monitoring' }
+];
+
+// AI Response Generation
+const generateAIResponse = async (userMessage) => {
+  try {
+    const response = await axios.post('/api/ai/chat', {
+      message: userMessage,
+      context: aiMessages.value.slice(-5).map(m => ({
+        role: m.type === 'user' ? 'user' : 'assistant',
+        content: m.content
+      }))
+    });
+
+    // Update relevant posts if available
+    if (response.data.relevant_posts) {
+      relevantPosts.value = response.data.relevant_posts;
+    }
+
+    return response.data.message;
+  } catch (error) {
+    console.error('AI Response Error:', error);
+    return "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.";
+  }
+};
+
+const sendMessage = async () => {
+  if (!userInput.value.trim()) return;
+  
+  // Add user message
+  aiMessages.value.push({ type: 'user', content: userInput.value });
+  const currentInput = userInput.value;
+  userInput.value = '';
+  
+  // Show typing indicator
+  isAiTyping.value = true;
+  
+  try {
+    // Generate AI response
+    const aiResponse = await generateAIResponse(currentInput);
+    
+    // Add AI response to messages
+    aiMessages.value.push({ 
+      type: 'ai', 
+      content: aiResponse
+    });
+  } catch (error) {
+    console.error('Error in sendMessage:', error);
+    aiMessages.value.push({ 
+      type: 'ai', 
+      content: "I apologize, but I encountered an error. Please try again."
+    });
+  } finally {
+    isAiTyping.value = false;
+  }
+};
 </script>
 
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
-    <!-- Hero Section with Animated Background -->
+    <!-- Hero Section -->
     <div id="hero" class="relative overflow-hidden" :class="{ 'animate-fade-in': isVisible.hero }">
-      <!-- Animated Background -->
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <div class="absolute inset-0 opacity-30 dark:opacity-20">
-          <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-          <div class="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-          <div class="absolute inset-0 bg-[radial-gradient(circle_at_100%_0%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"></div>
-        </div>
-        <!-- Animated Mesh -->
-        <div class="absolute inset-0 opacity-20 dark:opacity-10">
-          <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        </div>
-        <!-- Floating Elements -->
-        <div class="absolute inset-0 overflow-hidden">
-          <div class="absolute -top-40 -left-40 w-80 h-80 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-          <div class="absolute -bottom-40 -right-40 w-80 h-80 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-        </div>
-      </div>
-
-      <div class="max-w-7xl mx-auto relative">
-        <div class="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+      <div class="max-w-7xl mx-auto">
+        <div class="relative z-10 pb-8 bg-white dark:bg-gray-900 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
           <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-            <div class="sm:text-center lg:text-left">
-              <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
-                <span class="block transform transition-all duration-500 hover:scale-105">Types of Business Software</span>
-                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 transform transition-all duration-500 hover:scale-105">Every Company Needs</span>
-              </h1>
-              <p class="mt-3 text-base text-gray-500 dark:text-gray-300 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                From small-scale start-up organisations through to global corporates, software is a vital part of day-to-day operations. When implemented correctly, software allows for increased collaboration and oversight, minimises repetitive tasks, streamlines operations and ensures accountability across the board.
-              </p>
-              <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                <div class="rounded-md shadow">
-                  <a href="#features" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                    Explore Solutions
-                  </a>
+            <!-- Two Column Layout -->
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+              <!-- Left Column: Title and Description -->
+              <div class="lg:pr-8">
+                <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                  <span class="block">Types of Business Software</span>
+                  <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Every Company Needs</span>
+                </h1>
+                <p class="mt-6 text-base text-gray-500 dark:text-gray-300 sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl">
+                  From small-scale start-up organisations through to global corporates, software is a vital part of day-to-day operations. When implemented correctly, software allows for increased collaboration and oversight, minimises repetitive tasks, streamlines operations and ensures accountability across the board.
+                </p>
+                <div class="mt-5 sm:mt-8 sm:flex lg:justify-start">
+                  <div class="rounded-md shadow">
+                    <a href="#features" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105">
+                      Explore Solutions
+                    </a>
+                  </div>
+                  <div class="mt-3 sm:mt-0 sm:ml-3">
+                    <a href="#contact" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105">
+                      Contact Us
+                    </a>
+                  </div>
                 </div>
-                <div class="mt-3 sm:mt-0 sm:ml-3">
-                  <a href="#contact" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-                    Contact Us
-                  </a>
+              </div>
+
+              <!-- Right Column: Business Functions Grid -->
+              <div class="mt-8 lg:mt-0">
+                <div class="grid grid-cols-2 gap-3">
+                  <div v-for="(function_, index) in businessFunctions" :key="index" 
+                       class="group relative bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="flex items-center space-x-2">
+                      <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
+                        <i :class="function_.icon" class="text-lg"></i>
+                      </div>
+                      <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ function_.name }}</span>
+                    </div>
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-blue-500/10 rounded-lg transition-all duration-300"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -432,112 +566,339 @@ const enterpriseModules = [
       </div>
     </div>
 
-    <!-- Contact Form Section -->
-    <div id="contact" class="py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" :class="{ 'animate-fade-in': isVisible.contact }">
+    <!-- AI Agent Section (Moved to second layer) -->
+    <div class="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center mb-12">
-          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Contact Us</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Get in touch
-          </p>
-          <p class="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 lg:mx-auto">
-            Ready to transform your business? Let's talk about your needs.
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+            <span class="block">Meet Your AI Assistant</span>
+            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Powered by Advanced AI</span>
+          </h2>
+          <p class="mt-4 text-lg text-gray-500 dark:text-gray-300">
+            Experience the future of business automation with our intelligent AI agent
           </p>
         </div>
 
-        <div class="mt-12 max-w-lg mx-auto">
-          <form @submit.prevent="handleSubmit" class="grid grid-cols-1 gap-6">
-            <div>
-              <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-              <input type="text" id="name" v-model="formData.name" required
-                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-
-            <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-              <input type="email" id="email" v-model="formData.email" required
-                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-
-            <div>
-              <label for="company" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Company</label>
-              <input type="text" id="company" v-model="formData.company"
-                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </div>
-
-            <div>
-              <label for="service" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service Interested In</label>
-              <select id="service" v-model="formData.service" required
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                <option value="">Select a service</option>
-                <option v-for="option in serviceOptions" :key="option.value" :value="option.value">
-                  {{ option.label }}
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Message</label>
-              <textarea id="message" v-model="formData.message" rows="4" required
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
-            </div>
-
-            <div>
-              <button type="submit" 
-                      :disabled="isSubmitting"
-                      class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105">
-                <span v-if="isSubmitting">Sending...</span>
-                <span v-else>Send Message</span>
-              </button>
-            </div>
-
-            <div v-if="formSuccess" class="rounded-md bg-green-50 p-4">
-              <div class="flex">
-                <div class="flex-shrink-0">
-                  <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
+        <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-start">
+          <!-- Left Column: AI Chat Interface -->
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+              <div class="flex items-center space-x-3">
+                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                  <i class="fas fa-robot text-white"></i>
                 </div>
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-green-800">
-                    Thank you for your message! We'll get back to you soon.
-                  </p>
+                <div>
+                  <h3 class="text-lg font-medium text-gray-900 dark:text-white">AI Assistant</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Online and ready to help</p>
                 </div>
               </div>
             </div>
 
-            <div v-if="formError" class="rounded-md bg-red-50 p-4">
-              <div class="flex">
-                <div class="flex-shrink-0">
-                  <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                  </svg>
+            <!-- Chat Messages -->
+            <div class="h-96 overflow-y-auto p-6 space-y-4" ref="chatContainer">
+              <div v-for="(message, index) in aiMessages" :key="index" 
+                   :class="[
+                     'flex',
+                     message.type === 'user' ? 'justify-end' : 'justify-start'
+                   ]">
+                <div :class="[
+                  'max-w-[80%] rounded-2xl px-4 py-2',
+                  message.type === 'user' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                ]">
+                  <div class="whitespace-pre-line">{{ message.content }}</div>
                 </div>
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-red-800">
-                    {{ formError }}
-                  </p>
+              </div>
+              <div v-if="isAiTyping" class="flex justify-start">
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-2xl px-4 py-2">
+                  <div class="flex space-x-2">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Relevant Posts Section -->
+              <div v-if="relevantPosts.length > 0" class="mt-4">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Relevant Information
+                  </div>
+                  <button @click="clearFilters" 
+                          class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                    Clear Filters
+                  </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="mb-4 space-y-3">
+                  <!-- Category Filter -->
+                  <div v-if="availableCategories.length > 0">
+                    <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Categories</label>
+                    <div class="flex flex-wrap gap-2">
+                      <button v-for="category in availableCategories" 
+                              :key="category.id"
+                              @click="selectedCategory = selectedCategory?.id === category.id ? null : category"
+                              :class="[
+                                'px-2 py-1 rounded-full text-xs',
+                                selectedCategory?.id === category.id
+                                  ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
+                                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                              ]">
+                        {{ category.name }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Tags Filter -->
+                  <div v-if="availableTags.length > 0">
+                    <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Tags</label>
+                    <div class="flex flex-wrap gap-2">
+                      <button v-for="tag in availableTags" 
+                              :key="tag.id"
+                              @click="toggleTag(tag.id)"
+                              :class="[
+                                'px-2 py-1 rounded-full text-xs',
+                                selectedTags.includes(tag.id)
+                                  ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200'
+                                  : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                              ]">
+                        {{ tag.name }}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Posts List -->
+                <div class="space-y-3">
+                  <div v-for="post in filteredPosts" 
+                       :key="post.id"
+                       class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-1">{{ post.title }}</h4>
+                        <div class="flex items-center space-x-2 mb-2">
+                          <span v-if="post.category" 
+                                class="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            {{ post.category.name }}
+                          </span>
+                          <span v-for="tag in post.tags" 
+                                :key="tag.id"
+                                class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+                            {{ tag.name }}
+                          </span>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{{ post.content }}</p>
+                      </div>
+                      <button @click="viewFullPost(post)"
+                              class="ml-4 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                        <i class="fas fa-external-link-alt"></i>
+                      </button>
+                    </div>
+                    <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      {{ new Date(post.created_at).toLocaleDateString() }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </form>
+
+            <!-- Input Area -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+              <form @submit.prevent="sendMessage" class="flex space-x-4">
+                <input type="text" 
+                       v-model="userInput"
+                       placeholder="Type your message..."
+                       class="flex-1 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                >
+                <button type="submit" 
+                        :disabled="isAiTyping"
+                        class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i class="fas fa-paper-plane mr-2"></i>
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Right Column: AI Capabilities -->
+          <div class="mt-8 lg:mt-0">
+            <div class="grid grid-cols-1 gap-6">
+              <div v-for="(capability, index) in aiCapabilities" :key="index"
+                   class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-start space-x-4">
+                  <div class="flex-shrink-0">
+                    <div class="h-12 w-12 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center">
+                      <i :class="[capability.icon, 'text-white text-xl']"></i>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ capability.title }}</h3>
+                    <p class="mt-2 text-gray-500 dark:text-gray-400">{{ capability.description }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Stats -->
+            <div class="mt-8 grid grid-cols-2 gap-4">
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg">
+                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">99.9%</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Uptime</div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg">
+                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">24/7</div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Availability</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- CTA Section -->
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600">
-      <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
-        <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
-          <span class="block">Ready to get started?</span>
-          <span class="block">Start your free trial today.</span>
-        </h2>
-        <p class="mt-4 text-lg leading-6 text-blue-100">
-          Join thousands of businesses that trust our software solutions.
-        </p>
-        <a href="#contact" class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 sm:w-auto transition-all duration-300 transform hover:scale-105">
-          Sign up for free
-        </a>
+    <div id="cta" class="bg-white dark:bg-gray-900">
+      <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+        <div class="lg:grid lg:grid-cols-2 lg:gap-12 items-start">
+          <!-- Left Column: CTA -->
+          <div class="lg:pr-8">
+            <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              <span class="block">Ready to get started?</span>
+              <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Start your free trial today.</span>
+            </h2>
+            <p class="mt-4 text-lg leading-6 text-gray-500 dark:text-gray-300">
+              Join thousands of companies that trust our software solutions to power their business operations.
+            </p>
+            <div class="mt-8 flex">
+              <div class="inline-flex rounded-md shadow">
+                <a href="#" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                  Get started
+                </a>
+              </div>
+              <div class="ml-3 inline-flex">
+                <a href="#" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105">
+                  Learn more
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Contact Form -->
+          <div class="mt-8 lg:mt-0">
+            <div class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+              <!-- Decorative elements -->
+              <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 opacity-50"></div>
+              <div class="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-blue-500 opacity-10 blur-2xl"></div>
+              <div class="absolute bottom-0 left-0 -mb-4 -ml-4 h-24 w-24 rounded-full bg-indigo-500 opacity-10 blur-2xl"></div>
+              
+              <!-- Form content -->
+              <div class="relative p-8">
+                <div class="flex items-center justify-between mb-8">
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Contact Us</h3>
+                  <div class="flex space-x-2">
+                    <div class="h-3 w-3 rounded-full bg-blue-500"></div>
+                    <div class="h-3 w-3 rounded-full bg-indigo-500"></div>
+                    <div class="h-3 w-3 rounded-full bg-purple-500"></div>
+                  </div>
+                </div>
+
+                <form @submit.prevent="handleSubmit" class="space-y-6">
+                  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div class="relative">
+                      <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                      <input type="text" id="name" v-model="formData.name" required
+                             class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-user text-gray-400"></i>
+                      </div>
+                    </div>
+
+                    <div class="relative">
+                      <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                      <input type="email" id="email" v-model="formData.email" required
+                             class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                      <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <i class="fas fa-envelope text-gray-400"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="relative">
+                    <label for="company" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company</label>
+                    <input type="text" id="company" v-model="formData.company"
+                           class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <i class="fas fa-building text-gray-400"></i>
+                    </div>
+                  </div>
+
+                  <div class="relative">
+                    <label for="service" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Service Interested In</label>
+                    <select id="service" v-model="formData.service" required
+                            class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200">
+                      <option value="">Select a service</option>
+                      <option v-for="option in serviceOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                      </option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <i class="fas fa-chevron-down text-gray-400"></i>
+                    </div>
+                  </div>
+
+                  <div class="relative">
+                    <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Message</label>
+                    <textarea id="message" v-model="formData.message" rows="3" required
+                              class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white transition-all duration-200"></textarea>
+                  </div>
+
+                  <div>
+                    <button type="submit" 
+                            :disabled="isSubmitting"
+                            class="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-[1.02]">
+                      <span v-if="isSubmitting" class="flex items-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending...
+                      </span>
+                      <span v-else>Send Message</span>
+                    </button>
+                  </div>
+
+                  <div v-if="formSuccess" class="rounded-lg bg-green-50 dark:bg-green-900/20 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-green-400"></i>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-green-800 dark:text-green-200">
+                          {{ formSuccess }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-if="formError" class="rounded-lg bg-red-50 dark:bg-red-900/20 p-4">
+                    <div class="flex">
+                      <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-red-800 dark:text-red-200">
+                          {{ formError }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -668,5 +1029,47 @@ a, button {
   100% {
     background-position: 200% 0;
   }
+}
+
+/* Add new styles for business functions */
+.group:hover .group-hover\:from-blue-500\/5 {
+  --tw-gradient-from: rgb(59 130 246 / 0.05);
+  --tw-gradient-to: rgb(59 130 246 / 0.1);
+}
+
+.group:hover .group-hover\:to-blue-500\/10 {
+  --tw-gradient-to: rgb(59 130 246 / 0.1);
+}
+
+/* Add new styles for AI section */
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-25%);
+  }
+}
+
+/* Add smooth scrolling to chat container */
+.overflow-y-auto {
+  scroll-behavior: smooth;
+}
+
+/* Add styles for relevant posts */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Add transition for hover effects */
+.transition-shadow {
+  transition: box-shadow 0.2s ease-in-out;
 }
 </style> 
