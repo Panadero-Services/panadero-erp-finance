@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('web3_chains', function (Blueprint $table) {
         $table->bigIncrements('id');
-        $table->string('title');
-        $table->integer('chain_nr');
-        $table->string('icon',64);
-        $table->timestamps();
+        $table->string('title')->unique();
+        $table->integer('chain_nr')->unique();
+        $table->string('icon',64)->nullable();
+        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+        $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
+        $table->boolean('is_active')->default(true);
         });
     }
 

@@ -18,7 +18,9 @@ return new class extends Migration
         $table->string('title');
         $table->text('content');
         $table->string('color',16);
-        $table->timestamps();
+        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+        $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
+        $table->boolean('is_active')->default(true);
         });
     }
 

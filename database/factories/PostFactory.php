@@ -20,10 +20,12 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
+        $title = str(fake()->sentence)->beforeLast('.')->title();
         return [
             'user_id' => User::factory(),
-            'title' => str(fake()->sentence)->beforeLast('.')->title(),
+            'title' => $title,
             'body' => fake()->realText(600),
+            'slug' => \Illuminate\Support\Str::slug($title) . '-' . fake()->unique()->numberBetween(1, 100000),
         ];
     }
 }

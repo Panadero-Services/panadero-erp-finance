@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('web3_projects', function (Blueprint $table) {
         $table->bigIncrements('id');
-        $table->string('title');
+        $table->string('title')->unique();
         $table->text('content');
-        $table->string('color',16);
-        $table->timestamps();
+        $table->string('color',16)->nullable();
+        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+        $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
+        $table->boolean('is_active')->default(true);
         });
     }
 

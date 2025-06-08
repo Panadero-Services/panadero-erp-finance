@@ -187,16 +187,16 @@ const aiFeatures = [
     ]
   },
   {
-    title: 'Cloud-Native & Edge',
-    description: 'Scalable, serverless architecture with real-time data syncing and offline-first capabilities.',
+    title: 'Cloud-Native Bots',
+    description: 'Automated Workflows that live in the cloud with real-time data syncing and offline-first capabilities.',
     icon: 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z',
     gradient: 'from-green-500 to-emerald-600',
     items: [
-      'Serverless architecture',
+      'API-Providers for inputs',
+      'Processors with continuous improvements',
+      'Executors for outputs',
       'Real-time data syncing',
-      'Offline-first functionality',
       'Microservices architecture',
-      'API-first design'
     ]
   }
 ];
@@ -225,8 +225,8 @@ const businessFunctions = [
   { name: 'Accounting', icon: 'fas fa-calculator' },
   { name: 'CMS', icon: 'fas fa-file-alt' },
   { name: 'Ecommerce', icon: 'fas fa-shopping-cart' },
-  { name: 'Inventory', icon: 'fas fa-boxes' },
-  { name: 'Communication', icon: 'fas fa-comments' },
+  { name: 'Inventory Forecasting', icon: 'fas fa-boxes' },
+  { name: 'Process Management', icon: 'fas fa-comments' },
   { name: 'Social Media', icon: 'fas fa-share-alt' },
   { name: 'Project Management', icon: 'fas fa-tasks' },
   { name: 'AI Agents', icon: 'fas fa-robot' },
@@ -243,6 +243,7 @@ const isAiTyping = ref(false);
 const relevantPosts = ref([]);
 const selectedCategory = ref(null);
 const selectedTags = ref([]);
+const errorMessage = ref('');
 
 // Computed properties for filtered posts
 const availableCategories = computed(() => {
@@ -300,6 +301,7 @@ const aiCapabilities = [
 // AI Response Generation
 const generateAIResponse = async (userMessage) => {
   try {
+    errorMessage.value = ''; // Clear any previous errors
     const response = await axios.post('/api/ai/chat', {
       message: userMessage,
       context: aiMessages.value.slice(-5).map(m => ({
@@ -316,6 +318,7 @@ const generateAIResponse = async (userMessage) => {
     return response.data.message;
   } catch (error) {
     console.error('AI Response Error:', error);
+    errorMessage.value = error.response?.data?.message || 'Failed to get response from AI. Please try again.';
     return "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.";
   }
 };
@@ -405,80 +408,14 @@ const sendMessage = async () => {
       </div>
     </div>
 
-    <!-- Stats Section -->
-    <div id="stats" class="bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 pt-12 sm:pt-16" :class="{ 'animate-fade-in': isVisible.stats }">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="max-w-4xl mx-auto text-center">
-          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
-            Trusted by businesses worldwidezzz
-          </h2>
-        </div>
-      </div>
-      <div class="mt-10 pb-12 sm:pb-16">
-        <div class="relative">
-          <div class="absolute inset-0 h-1/2 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900"></div>
-          <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="max-w-4xl mx-auto">
-              <dl class="rounded-lg bg-white dark:bg-gray-800 shadow-lg sm:grid sm:grid-cols-4 transform transition-all duration-500 hover:scale-105">
-                <div v-for="stat in stats" :key="stat.label" class="flex flex-col border-b border-gray-100 dark:border-gray-700 p-6 text-center sm:border-0 sm:border-r">
-                  <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500 dark:text-gray-400">
-                    {{ stat.label }}
-                  </dt>
-                  <dd class="order-1 text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-                    {{ stat.value }}
-                  </dd>
-                  <div class="mt-4">
-                    <svg class="h-8 w-8 mx-auto text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon" />
-                    </svg>
-                  </div>
-                </div>
-              </dl>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Features Section -->
-    <div id="features" class="py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" :class="{ 'animate-fade-in': isVisible.features }">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center">
-          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Features</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            A better way to manage your business
-          </p>
-          <p class="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 lg:mx-auto">
-            Everything you need to take your business to the next level.
-          </p>
-        </div>
-
-        <div class="mt-10">
-          <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-            <div v-for="feature in features" :key="feature.title" 
-                 class="relative transform transition-all duration-500 hover:scale-105">
-              <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-gradient-to-r" :class="feature.gradient">
-                <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="feature.icon" />
-                </svg>
-              </div>
-              <div class="ml-16">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">{{ feature.title }}</h3>
-                <p class="mt-2 text-base text-gray-500 dark:text-gray-300">{{ feature.description }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AI Features Section -->
+   <!-- AI Features Section -->
     <div id="ai-features" class="py-12 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900" :class="{ 'animate-fade-in': isVisible.aiFeatures }">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="lg:text-center">
           <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Next-Gen Features</h2>
           <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            AI-Powered Enterprise Solutionszz
+            AI-Powered Enterprise Solutionsz
           </p>
           <p class="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 lg:mx-auto">
             Harness the power of artificial intelligence and blockchain technology
@@ -512,61 +449,9 @@ const sendMessage = async () => {
       </div>
     </div>
 
-    <!-- Enterprise Modules Section -->
-    <div id="enterprise-modules" class="py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" :class="{ 'animate-fade-in': isVisible.enterpriseModules }">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center">
-          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Enterprise Modules</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            Smart Enterprise Solutions
-          </p>
-        </div>
 
-        <div class="mt-10">
-          <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div v-for="module in enterpriseModules" :key="module.title" 
-                 class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ module.title }}</h3>
-              <ul class="space-y-3">
-                <li v-for="feature in module.features" :key="feature" class="flex items-start">
-                  <svg class="h-5 w-5 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                  </svg>
-                  <span class="text-sm text-gray-600 dark:text-gray-400">{{ feature }}</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Testimonials Section -->
-    <div id="testimonials" class="py-12 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900" :class="{ 'animate-fade-in': isVisible.testimonials }">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="lg:text-center mb-12">
-          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Testimonials</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
-            What our clients say
-          </p>
-        </div>
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div v-for="testimonial in testimonials" :key="testimonial.author" 
-               class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
-            <div class="flex items-center mb-4">
-              <img class="h-12 w-12 rounded-full" :src="testimonial.image" :alt="testimonial.author">
-              <div class="ml-4">
-                <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ testimonial.author }}</h4>
-                <p class="text-sm text-gray-500 dark:text-gray-400">{{ testimonial.role }}</p>
-              </div>
-            </div>
-            <p class="text-gray-600 dark:text-gray-300">{{ testimonial.content }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AI Agent Section (Moved to second layer) -->
+<!-- AI Agent Section (Moved to second layer) -->
     <div class="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -616,6 +501,17 @@ const sendMessage = async () => {
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                     <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Error Message -->
+              <div v-if="errorMessage" 
+                   class="flex justify-start">
+                <div class="max-w-[80%] rounded-2xl px-4 py-2 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                  <div class="flex items-center space-x-2">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ errorMessage }}</span>
                   </div>
                 </div>
               </div>
@@ -717,7 +613,7 @@ const sendMessage = async () => {
                         :disabled="isAiTyping"
                         class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
                   <i class="fas fa-paper-plane mr-2"></i>
-                  Send
+                  Sendd
                 </button>
               </form>
             </div>
@@ -758,6 +654,135 @@ const sendMessage = async () => {
       </div>
     </div>
 
+
+
+
+
+
+    <!-- Stats Section -->
+    <div id="stats" class="bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 pt-12 sm:pt-16" :class="{ 'animate-fade-in': isVisible.stats }">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+            Trusted by businesses worldwidez
+          </h2>
+        </div>
+      </div>
+      <div class="mt-10 pb-12 sm:pb-16">
+        <div class="relative">
+          <div class="absolute inset-0 h-1/2 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900"></div>
+          <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl mx-auto">
+              <dl class="rounded-lg bg-white dark:bg-gray-800 shadow-lg sm:grid sm:grid-cols-4 transform transition-all duration-500 hover:scale-105">
+                <div v-for="stat in stats" :key="stat.label" class="flex flex-col border-b border-gray-100 dark:border-gray-700 p-6 text-center sm:border-0 sm:border-r">
+                  <dt class="order-2 mt-2 text-lg leading-6 font-medium text-gray-500 dark:text-gray-400">
+                    {{ stat.label }}
+                  </dt>
+                  <dd class="order-1 text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                    {{ stat.value }}
+                  </dd>
+                  <div class="mt-4">
+                    <svg class="h-8 w-8 mx-auto text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="stat.icon" />
+                    </svg>
+                  </div>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div id="features" class="py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" :class="{ 'animate-fade-in': isVisible.features }">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center">
+          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Features</h2>
+          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            A better way to manage your business
+          </p>
+          <p class="mt-4 max-w-2xl text-xl text-gray-500 dark:text-gray-300 lg:mx-auto">
+            Everything you need to take your business to the next level.
+          </p>
+        </div>
+
+        <div class="mt-10">
+          <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
+            <div v-for="feature in features" :key="feature.title" 
+                 class="relative transform transition-all duration-500 hover:scale-105">
+              <div class="absolute flex items-center justify-center h-12 w-12 rounded-md bg-gradient-to-r" :class="feature.gradient">
+                <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="feature.icon" />
+                </svg>
+              </div>
+              <div class="ml-16">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">{{ feature.title }}</h3>
+                <p class="mt-2 text-base text-gray-500 dark:text-gray-300">{{ feature.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+ 
+
+    <!-- Enterprise Modules Section -->
+    <div id="enterprise-modules" class="py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" :class="{ 'animate-fade-in': isVisible.enterpriseModules }">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center">
+          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Enterprise Modules</h2>
+          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            Smart Enterprise Solutions
+          </p>
+        </div>
+
+        <div class="mt-10">
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div v-for="module in enterpriseModules" :key="module.title" 
+                 class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ module.title }}</h3>
+              <ul class="space-y-3">
+                <li v-for="feature in module.features" :key="feature" class="flex items-start">
+                  <svg class="h-5 w-5 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">{{ feature }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Testimonials Section -->
+    <div id="testimonials" class="py-12 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900" :class="{ 'animate-fade-in': isVisible.testimonials }">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center mb-12">
+          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Testimonials</h2>
+          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            What our clients say
+          </p>
+        </div>
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div v-for="testimonial in testimonials" :key="testimonial.author" 
+               class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
+            <div class="flex items-center mb-4">
+              <img class="h-12 w-12 rounded-full" :src="testimonial.image" :alt="testimonial.author">
+              <div class="ml-4">
+                <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ testimonial.author }}</h4>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ testimonial.role }}</p>
+              </div>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300">{{ testimonial.content }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
     <!-- CTA Section -->
     <div id="cta" class="bg-white dark:bg-gray-900">
       <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">

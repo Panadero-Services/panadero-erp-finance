@@ -14,7 +14,7 @@ class Page extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'title', 'file', 'icon', 'image', 'slogan', 'type', 'settings', 'user_id', 'project_id', 'is_active', 'sidebar', 'header', 'footer', 'public', 'animate', 'max_width'
+        'title', 'file', 'icon', 'image', 'slogan', 'type', 'settings', 'user_id', 'project_id', 'is_active', 'sidebar', 'header', 'footer', 'public', 'animate', 'max_width'
     ];
 
     public function sections(): hasMany {

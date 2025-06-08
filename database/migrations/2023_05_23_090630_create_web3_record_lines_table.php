@@ -22,7 +22,8 @@ return new class extends Migration
             $table->text('parameters');
             $table->text('value');
             $table->integer('int_value');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
             $table->string('columns',40);
             $table->string('style',80);
             $table->string('type',40);

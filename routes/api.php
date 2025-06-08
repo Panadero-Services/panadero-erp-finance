@@ -74,36 +74,49 @@ Route::group([
 */
 
 Route::post('/ai/chat', function (Request $request) {
-    $message = $request->input('message');
-    $context = $request->input('context', []);
-
     try {
-        // Semantic search for relevant posts using full-text search
-        $relevantPosts = \App\Models\Post::where(function($query) use ($message) {
-            $query->whereFullText(['title', 'content'], $message)
-                  ->orWhere('title', 'like', '%' . $message . '%')
-                  ->orWhere('content', 'like', '%' . $message . '%');
-        })
-        ->with(['category', 'tags']) // Eager load relationships
-        ->select('id', 'title', 'content', 'category_id', 'created_at', 'slug')
-        ->orderByRaw('MATCH(title, content) AGAINST(? IN BOOLEAN MODE) DESC', [$message])
-        ->limit(5)
-        ->get();
-
-        // Format posts for context with categories and tags
-        $postsContext = $relevantPosts->map(function($post) {
-            $categories = $post->category ? "Category: {$post->category->name}\n" : "";
-            $tags = $post->tags->isNotEmpty() 
-                ? "Tags: " . $post->tags->pluck('name')->join(', ') . "\n" 
-                : "";
-            return "Post ID: {$post->id}\nTitle: {$post->title}\n{$categories}{$tags}Content: {$post->content}";
-        })->join("\n\n");
+        // Get the user's message
+        $message = $request->input('message');
+        
+        // Search for relevant posts
+        $searchTerms = explode(' ', $message);
+        $query = Post::query();
+        
+        foreach ($searchTerms as $term) {
+            if (strlen($term) > 2) {
+                $query->orWhere(function($q) use ($term) {
+                    $q->where('title', 'like', '%' . $term . '%')
+                      ->orWhere('body', 'like', '%' . $term . '%');
+                });
+            }
+        }
+        
+        // Get relevant posts with their relationships
+        $relevantPosts = $query->with(['user'])
+            ->select(['id', 'title', 'body', 'created_at', 'user_id'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+        
+        // Format posts for context
+        $context = '';
+        if ($relevantPosts->isNotEmpty()) {
+            $context = "Here are some relevant posts from our knowledge base:\n\n";
+            foreach ($relevantPosts as $post) {
+                $context .= "Title: {$post->title}\n";
+                $context .= "Content: {$post->body}\n";
+                if ($post->user) {
+                    $context .= "Author: {$post->user->name}\n";
+                }
+                $context .= "\n";
+            }
+        }
 
         $client = OpenAI::client(config('services.openai.api_key'));
         
         // Enhanced system prompt with post context
         $systemPrompt = "You are a helpful AI assistant for a business software platform. You can help with business process automation, data analysis, software recommendations, and technical support. Be concise but informative in your responses.\n\n";
-        $systemPrompt .= "Here are some relevant posts from our knowledge base that might help you provide better answers. When referencing these posts, mention their titles and categories:\n\n{$postsContext}";
+        $systemPrompt .= "Here are some relevant posts from our knowledge base that might help you provide better answers. When referencing these posts, mention their titles and categories:\n\n{$context}";
 
         // Prepare the conversation history with relevant posts
         $messages = array_merge([
@@ -127,25 +140,20 @@ Route::post('/ai/chat', function (Request $request) {
                 return [
                     'id' => $post->id,
                     'title' => $post->title,
-                    'content' => $post->content,
-                    'category' => $post->category ? [
-                        'id' => $post->category->id,
-                        'name' => $post->category->name
+                    'content' => $post->body,
+                    'author' => $post->user ? [
+                        'id' => $post->user->id,
+                        'name' => $post->user->name
                     ] : null,
-                    'tags' => $post->tags->map(function($tag) {
-                        return [
-                            'id' => $tag->id,
-                            'name' => $tag->name
-                        ];
-                    }),
-                    'created_at' => $post->created_at,
-                    'slug' => $post->slug
+                    'created_at' => $post->created_at
                 ];
             })
         ]);
     } catch (\Exception $e) {
+        \Log::error('AI Chat Error: ' . $e->getMessage());
         return response()->json([
-            'error' => 'Failed to generate AI response'
+            'error' => 'Failed to generate AI response',
+            'message' => $e->getMessage()
         ], 500);
     }
 });

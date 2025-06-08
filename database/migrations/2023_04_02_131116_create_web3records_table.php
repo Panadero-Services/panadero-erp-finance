@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('web3_records', function (Blueprint $table) {
         $table->bigIncrements('id');
-        $table->string('title',80);
+        $table->string('title',80)->unique();
         $table->integer('web3type_id');
         $table->integer('web3project_id');
         $table->integer('web3chain_id');
@@ -25,9 +25,10 @@ return new class extends Migration
         $table->text('abi');
         $table->text('description');
         $table->text('json');
-        $table->timestamps();
-        $table->boolean('completed');
-        $table->boolean('archived');
+        $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+        $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
+        $table->boolean('completed')->default(false);
+        $table->boolean('archived')->default(false);
         });
     }
 

@@ -46,46 +46,72 @@ class DatabaseSeeder extends Seeder
     $developerRole = Role::create(['name'=> 'developer']);
     $masterRole = Role::create(['name'=> 'master']);
 
-    $memberUser = User::factory()
-                ->create([
-                    'name' => 'Member',
-                    'email' => 'member@example.com'
-                ]);
+    // Comment out user creation to avoid duplicates
+    // $memberUser = User::factory()
+    //             ->create([
+    //                 'name' => 'Member',
+    //                 'email' => 'member@example.com'
+    //             ]);
 
-    $memberUser->roles()->attach($memberRole);
+    // $memberUser->roles()->attach($memberRole);
 
-
-    $editorUser = User::factory()
-                ->create([
-                    'name' => 'Editor',
-                    'email' => 'editor@example.com'
-                ]);
+    // $editorUser = User::factory()
+    //             ->create([
+    //                 'name' => 'Editor',
+    //                 'email' => 'editor@example.com'
+    //             ]);
                 
-    $editorUser->roles()->attach($editorRole);
+    // $editorUser->roles()->attach($editorRole);
 
-    $adminUser = User::factory()
-                ->create([
-                    'name' => 'Admin',
-                    'email' => 'admin@example.com'
-                ]);
+//    $user = User::factory()->create(['id' => 1, 'name' => 'Admin', 'email' => 'admin@example.com']);
                 
-    $adminUser->roles()->attach($adminRole);
+    // $adminUser->roles()->attach($adminRole);
 
-
-    // this user is assigned both 2 roles
-    $memberEditorUser = User::factory()
-                ->create([
-                    'name' => 'Member/Editor',
-                    'email' => 'me@example.com'
-                ]);
+    // $memberEditorUser = User::factory()
+    //             ->create([
+    //                 'name' => 'Member/Editor',
+    //                 'email' => 'me@example.com'
+    //             ]);
                 
-    $memberEditorUser->roles()->attach($memberRole);
-    $memberEditorUser->roles()->attach($editorRole);
+    // $memberEditorUser->roles()->attach($memberRole);
+    // $memberEditorUser->roles()->attach($editorRole);
 
-    $posts = Post::factory(10)->recycle($editorUser)->create();
-    $posts = Post::factory(10)->recycle($memberEditorUser)->create();
+    // Comment out post creation to avoid using undefined variables
+    // $posts = Post::factory(10)->recycle($editorUser)->create();
+    // $posts = Post::factory(10)->recycle($memberEditorUser)->create();
 
     // Add the ProviderSeeder
     $this->call(ProviderSeeder::class);
+
+    $this->call([
+        // Comment out the UserSeeder to avoid duplicate users
+        UserSeeder::class,
+        CategorySeeder::class,
+        PostTypeSeeder::class,
+        PostSeeder::class,
+        Web3ChainSeeder::class,
+        Web3ProjectSeeder::class,
+        Web3TypeSeeder::class,
+        Web3RecordSeeder::class,
+        ProjectSeeder::class,
+        PageSeeder::class,
+        UpdatePagesSeeder::class,
+        SectionsSeeder::class,
+        StateDatasetSeeder::class,
+    ]);
+
+    $users = User::all();
+    $roles = Role::all();
+
+    foreach ($users as $user) {
+        $user->roles()->attach($roles);
+    }
+
+    $demoTeam = \App\Models\Team::create(['name' => 'demo', 'id' => 1, 'user_id' => 1, 'personal_team' => 1]);
+
+    $users = User::all();
+    foreach ($users as $user) {
+        $user->update(['current_team_id' => 1]);
+    }
     }
 }

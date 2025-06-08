@@ -16,10 +16,10 @@ return new class extends Migration
         $table->string('title',128);
         $table->foreignId('page_id')->index();
         $table->string('file',128);
-        $table->string('subtitle',256);
+        $table->text('subtitle');
         $table->string('icon',128);
         $table->string('image',128);
-        $table->string('slogan',256);
+        $table->text('slogan');
         $table->text('html');
         $table->text('css');
         $table->text('features');
@@ -30,7 +30,8 @@ return new class extends Migration
         $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
         $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         $table->boolean('is_active');
-        $table->boolean('self_auth ');
+        $table->boolean('self_auth');
+        $table->boolean('animate')->default(false);
         });
     }
 

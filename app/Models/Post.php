@@ -13,12 +13,55 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'title',
+        'body',
+        'json',
+        'links',
+        'category_id',
+        'slug',
+        'is_published',
+        'is_public',
+        'is_featured',
+        'is_locked',
+        'is_self',
+        'is_smart',
+        'is_active',
+        'is_archived'
+    ];
+
+    protected $casts = [
+        'json' => 'array',
+        'links' => 'array',
+        'is_published' => 'boolean',
+        'is_public' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_locked' => 'boolean',
+        'is_self' => 'boolean',
+        'is_smart' => 'boolean',
+        'is_active' => 'boolean',
+        'is_archived' => 'boolean'
+    ];
+
     public function user(): BelongsTo {
         return $this->belongsTo(User::class);
     }
 
     public function comments(): HasMany {
         return $this->hasMany(Comment::class);
+    }
+
+    public function category(): BelongsTo {
+        return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the post type that owns the post.
+     */
+    public function postType(): BelongsTo
+    {
+        return $this->belongsTo(PostType::class);
     }
 
     /**
@@ -30,10 +73,10 @@ class Post extends Model
             'user_id' => 'nullable|integer',
             'title' => 'required|string|max:128|min:8',
             'body' => 'required|string|min:24|max:2048',
-            'json' => 'required|string|min:2',
-            'links' => 'nullable|string',
-            'created_at' => 'nullable|date',
-            'updated_at' => 'nullable|date',
+            'json' => 'nullable|array',
+            'links' => 'nullable|array',
+            'category_id' => 'nullable|integer|exists:categories,id',
+            'slug' => 'required|string|unique:posts,slug',
             'is_published' => 'boolean',
             'is_public' => 'boolean',
             'is_featured' => 'boolean',
