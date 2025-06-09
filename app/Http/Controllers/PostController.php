@@ -214,6 +214,18 @@ class PostController extends Controller
         return response()->json($r);
     }
 
+    public function getFeaturedPosts()
+    {
+        $featuredPosts = Post::with(['user', 'category'])
+            ->where('is_featured', true)
+            ->where('is_public', true)
+            ->where('post_type_id', 1)
+            ->where('is_published', true)
+            ->orderBy('created_at', 'desc')
+            ->take(1)
+            ->get();
 
+        return PostResource::collection($featuredPosts);
+    }
 
 }

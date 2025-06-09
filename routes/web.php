@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
@@ -42,12 +41,9 @@ use App\Http\Middleware\RoleAccessMiddleware;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LogController;
 
-
 use App\Http\Controllers\TestPhotoUploadController;
 
-
 Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
-
 
 Route::get('/photo-test', function () {
     return inertia('PhotoTest');
@@ -96,12 +92,11 @@ Route::get('/', function () {
     return redirect()->route('home/welkom');
 });
 
-
-
 Route::get('home/landing', function () {
     return Inertia::render('home/Landing', [
         'page'=> Page::with('sections')->where('title','Tiers')->first(),
-        'baseSections' => Section::where('page_id','0')->get()
+        'baseSections' => Section::where('page_id','0')->get(),
+        'featuredPosts' => app(\App\Http\Controllers\PostController::class)->getFeaturedPosts()
     ]);
 })->name('home/landing');
 
@@ -391,7 +386,6 @@ Route::post('/setstate',[\App\Http\Controllers\StateDatasetController::class, 's
 Route::get('/getstate',[\App\Http\Controllers\StateDatasetController::class, 'getstate'])->name('getstate');
 
 Route::get('/gettables',[\App\Http\Controllers\StateDatasetController::class, 'gettables'])->name('gettables');
-
 
 Route::get('/defaultPages',[\App\Http\Controllers\PageController::class, 'defaultPages'])->name('defaultPages');
 

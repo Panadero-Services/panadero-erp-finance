@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\Tag;
 
 class PostSeeder extends Seeder
 {
@@ -139,10 +140,12 @@ class PostSeeder extends Seeder
         DB::beginTransaction();
         try {
             foreach ($this->posts as $post) {
-                Post::updateOrCreate(
+                $post = Post::updateOrCreate(
                     ['id' => $post['id']],
                     $post
                 );
+                $tags = Tag::inRandomOrder()->take(2)->get();
+                $post->tags()->attach($tags);
             }
             DB::commit();
         } catch (\Exception $e) {

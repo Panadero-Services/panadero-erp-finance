@@ -5,8 +5,62 @@ import { useContractStore } from '@/stores/contracts';
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Tag {
+  id: number;
+  name: string;
+}
+
+interface Post {
+  id: number;
+  title: string;
+  body: string;
+  content: string;
+  slug: string;
+  created_at: string;
+  category?: Category;
+  tags: Tag[];
+  user: {
+    name: string;
+  };
+}
+
+interface Props {
+  page: any;
+  baseSections: any[];
+  featuredPosts: Post[];
+}
+
+const props = defineProps<Props>();
+
 const _set = useSettingsStore();
 const _contract = useContractStore();
+
+type VisibilityState = {
+  [key: string]: boolean;
+  hero: boolean;
+  stats: boolean;
+  features: boolean;
+  testimonials: boolean;
+  contact: boolean;
+  aiFeatures: boolean;
+  enterpriseModules: boolean;
+};
+
+// Animation states
+const isVisible = ref<VisibilityState>({
+  hero: false,
+  stats: false,
+  features: false,
+  testimonials: false,
+  contact: false,
+  aiFeatures: false,
+  enterpriseModules: false
+});
 
 // Form state
 const formData = ref({
@@ -20,6 +74,15 @@ const formData = ref({
 const isSubmitting = ref(false);
 const formSuccess = ref(false);
 const formError = ref('');
+
+// AI chat state
+const aiMessages = ref<Array<{ type: 'user' | 'ai'; content: string }>>([]);
+const userInput = ref('');
+const isAiTyping = ref(false);
+const relevantPosts = ref<Post[]>([]);
+const selectedCategory = ref<Category | null>(null);
+const selectedTags = ref<number[]>([]);
+const errorMessage = ref('');
 
 // Features data
 const features = [
@@ -96,17 +159,6 @@ const testimonials = [
     image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
   }
 ];
-
-// Animation states
-const isVisible = ref({
-  hero: false,
-  stats: false,
-  features: false,
-  testimonials: false,
-  contact: false,
-  aiFeatures: false,
-  enterpriseModules: false
-});
 
 // Intersection Observer setup
 onMounted(() => {
@@ -234,20 +286,9 @@ const businessFunctions = [
   { name: 'Team Collaboration', icon: 'fas fa-users' }
 ];
 
-// Add AI agent related data
-const aiMessages = ref([
-  { type: 'ai', content: 'Hello! I\'m your AI assistant. I can help you with:\n• Business process automation\n• Data analysis and insights\n• Software recommendations\n• Technical support\n\nI can also search through our knowledge base to find relevant information for you.\n\nHow can I assist you today?' }
-]);
-const userInput = ref('');
-const isAiTyping = ref(false);
-const relevantPosts = ref([]);
-const selectedCategory = ref(null);
-const selectedTags = ref([]);
-const errorMessage = ref('');
-
 // Computed properties for filtered posts
 const availableCategories = computed(() => {
-  const categories = new Set();
+  const categories = new Set<Category>();
   relevantPosts.value.forEach(post => {
     if (post.category) categories.add(post.category);
   });
@@ -255,7 +296,7 @@ const availableCategories = computed(() => {
 });
 
 const availableTags = computed(() => {
-  const tags = new Set();
+  const tags = new Set<Tag>();
   relevantPosts.value.forEach(post => {
     post.tags.forEach(tag => tags.add(tag));
   });
@@ -273,11 +314,11 @@ const filteredPosts = computed(() => {
 });
 
 // Methods for post interaction
-const viewFullPost = (post) => {
+const viewFullPost = (post: Post) => {
   router.visit(`/posts/${post.slug}`);
 };
 
-const toggleTag = (tagId) => {
+const toggleTag = (tagId: number) => {
   const index = selectedTags.value.indexOf(tagId);
   if (index === -1) {
     selectedTags.value.push(tagId);
@@ -299,7 +340,7 @@ const aiCapabilities = [
 ];
 
 // AI Response Generation
-const generateAIResponse = async (userMessage) => {
+const generateAIResponse = async (userMessage: string) => {
   try {
     errorMessage.value = ''; // Clear any previous errors
     const response = await axios.post('/api/ai/chat', {
@@ -316,7 +357,7 @@ const generateAIResponse = async (userMessage) => {
     }
 
     return response.data.message;
-  } catch (error) {
+  } catch (error: any) {
     console.error('AI Response Error:', error);
     errorMessage.value = error.response?.data?.message || 'Failed to get response from AI. Please try again.';
     return "I apologize, but I'm having trouble processing your request right now. Please try again in a moment.";
@@ -358,58 +399,92 @@ const sendMessage = async () => {
 <template>
   <div class="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
     <!-- Hero Section -->
-    <div id="hero" class="relative overflow-hidden" :class="{ 'animate-fade-in': isVisible.hero }">
+    <div class="relative bg-white dark:bg-gray-900 overflow-hidden">
       <div class="max-w-7xl mx-auto">
-        <div class="relative z-10 pb-8 bg-white dark:bg-gray-900 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32">
+        <div class="relative z-10 pb-8 bg-white dark:bg-gray-900 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
           <main class="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-            <!-- Two Column Layout -->
-            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
-              <!-- Left Column: Title and Description -->
-              <div class="lg:pr-8">
-                <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
-                  <span class="block">Types of Business Software</span>
-                  <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">Every Company Needs</span>
-                </h1>
-                <p class="mt-6 text-base text-gray-500 dark:text-gray-300 sm:mt-5 sm:text-lg sm:max-w-xl md:mt-5 md:text-xl">
-                  From small-scale start-up organisations through to global corporates, software is a vital part of day-to-day operations. When implemented correctly, software allows for increased collaboration and oversight, minimises repetitive tasks, streamlines operations and ensures accountability across the board.
-                </p>
-                <div class="mt-5 sm:mt-8 sm:flex lg:justify-start">
-                  <div class="rounded-md shadow">
-                    <a href="#features" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105">
-                      Explore Solutions
-                    </a>
-                  </div>
-                  <div class="mt-3 sm:mt-0 sm:ml-3">
-                    <a href="#contact" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 md:py-4 md:text-lg md:px-10 transition-all duration-300 transform hover:scale-105">
-                      Contact Us
-                    </a>
-                  </div>
+            <div class="sm:text-center lg:text-left">
+              <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                <span class="block xl:inline">Transform Your Business with</span>
+                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 xl:inline"> AI-Powered Solutions</span>
+              </h1>
+              <p class="mt-3 text-base text-gray-500 dark:text-gray-300 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                Streamline operations, enhance productivity, and drive growth with our comprehensive suite of AI and blockchain-powered tools.
+              </p>
+              <div class="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
+                <div class="rounded-md shadow">
+                  <a href="#features" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 md:py-4 md:text-lg md:px-10">
+                    Get Started
+                  </a>
                 </div>
-              </div>
-
-              <!-- Right Column: Business Functions Grid -->
-              <div class="mt-8 lg:mt-0">
-                <div class="grid grid-cols-2 gap-3">
-                  <div v-for="(function_, index) in businessFunctions" :key="index" 
-                       class="group relative bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-                    <div class="flex items-center space-x-2">
-                      <div class="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-300">
-                        <i :class="function_.icon" class="text-lg"></i>
-                      </div>
-                      <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ function_.name }}</span>
-                    </div>
-                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/5 group-hover:to-blue-500/10 rounded-lg transition-all duration-300"></div>
-                  </div>
+                <div class="mt-3 sm:mt-0 sm:ml-3">
+                  <a href="#contact" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 dark:text-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 md:py-4 md:text-lg md:px-10">
+                    Contact Us
+                  </a>
                 </div>
               </div>
             </div>
           </main>
         </div>
       </div>
+      <div class="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+        <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="/images/hero-image.jpg" alt="AI and Blockchain Technology">
+      </div>
+    </div>
+           {{featuredPosts.data}}
+
+    <!-- Featured Posts Section -->
+    <div v-if="featuredPosts && featuredPosts.length > 0" class="py-12 bg-white dark:bg-gray-900">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="lg:text-center mb-8">
+          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Featured</h2>
+          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+            Latest Updates            
+          </p>
+        </div>
+
+        <div class="mt-10">
+          <div v-for="post in featuredPosts.data" :key="post.id" 
+               class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-105">
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                  <span v-if="post.category" 
+                        class="px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    {{ post.category.name }}
+                  </span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ new Date(post.created_at).toLocaleDateString() }}
+                  </span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">
+                    By {{ post.user.name }}
+                  </span>
+                </div>
+              </div>
+              <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                {{ post.title }}
+              </h3>
+              <p class="text-gray-600 dark:text-gray-300 line-clamp-3">
+                {{ post.body }}
+              </p>
+              <div class="mt-4">
+                <button @click="router.visit(`/posts/${post.slug}`)"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  Read More
+                  <svg class="ml-2 -mr-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-
-   <!-- AI Features Section -->
+    <!-- AI Features Section -->
     <div id="ai-features" class="py-12 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900" :class="{ 'animate-fade-in': isVisible.aiFeatures }">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="lg:text-center">
@@ -449,9 +524,7 @@ const sendMessage = async () => {
       </div>
     </div>
 
-
-
-<!-- AI Agent Section (Moved to second layer) -->
+    <!-- AI Agent Section (Moved to second layer) -->
     <div class="bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -654,11 +727,6 @@ const sendMessage = async () => {
       </div>
     </div>
 
-
-
-
-
-
     <!-- Stats Section -->
     <div id="stats" class="bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 pt-12 sm:pt-16" :class="{ 'animate-fade-in': isVisible.stats }">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -726,8 +794,6 @@ const sendMessage = async () => {
       </div>
     </div>
 
- 
-
     <!-- Enterprise Modules Section -->
     <div id="enterprise-modules" class="py-12 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800" :class="{ 'animate-fade-in': isVisible.enterpriseModules }">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -782,7 +848,6 @@ const sendMessage = async () => {
       </div>
     </div>
 
-    
     <!-- CTA Section -->
     <div id="cta" class="bg-white dark:bg-gray-900">
       <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
@@ -958,7 +1023,7 @@ a, button {
 /* Add gradient text effect */
 .gradient-text {
   background: linear-gradient(to right, #3B82F6, #6366F1);
-  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -1088,7 +1153,7 @@ a, button {
 /* Add styles for relevant posts */
 .line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

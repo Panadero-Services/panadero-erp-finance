@@ -4,10 +4,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Tag;
 use App\Models\User;
 use App\Models\Comment;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
@@ -62,6 +64,10 @@ class Post extends Model
     public function postType(): BelongsTo
     {
         return $this->belongsTo(PostType::class);
+    }
+
+    public function tags(): BelongsToMany {
+        return $this->belongsToMany(Tag::class);
     }
 
     /**

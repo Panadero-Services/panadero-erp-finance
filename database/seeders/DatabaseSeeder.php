@@ -88,6 +88,7 @@ class DatabaseSeeder extends Seeder
         UserSeeder::class,
         CategorySeeder::class,
         PostTypeSeeder::class,
+        TagSeeder::class,
         PostSeeder::class,
         Web3ChainSeeder::class,
         Web3ProjectSeeder::class,

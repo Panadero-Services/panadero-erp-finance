@@ -264,6 +264,9 @@ const emit = defineEmits(['edit','show', 'delete']);
           <div class="flex space-x-1 w-full justify-between mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
             <div class="mt-3 text-xs text-xs text-gray-500 dark:text-gray-500">
                 id: {{ post.id }}         
+
+<span v-for="tag in post.tags" class="text-xxs bg-indigo-100 dark:text-indigo-200 dark:bg-indigo-900 dark:border-indigo-600 py-0.5 px-2 m-1 rounded-2xl border border-indigo-300 ">{{tag.name}}</span>
+
             </div>
             <div>
               <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" @click="$emit('show', post.id)">Show</button>

@@ -50,10 +50,10 @@ class TagController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:80',
+            'name' => 'required|string|max:80',
         ]);
         Tag::create([
-            'title' => $request->title,
+            'name' => $request->name,
             'content' => $request->content
         ]);
         sleep(1);
@@ -64,9 +64,9 @@ class TagController extends Controller
 
     public function defaultTags(Request $request)
     {
-        Tag::create(['title' => "sandbox",'content' => "tryouts"]);
-        Tag::create(['title' => "about",'content' => "general overhead content"]);
-        Tag::create(['title' => "version",'content' => "version management"]);
+        Tag::create(['name' => "sandbox",'content' => "tryouts"]);
+        Tag::create(['name' => "about",'content' => "general overhead content"]);
+        Tag::create(['name' => "version",'content' => "version management"]);
   
         sleep(1);
 

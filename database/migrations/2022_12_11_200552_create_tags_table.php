@@ -15,10 +15,11 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
         $table->bigIncrements('id');
-        $table->string('title');
-        $table->text('content');
-        $table->timestamps();
-        });
+        $table->string('name');
+        $table->text('content')->nullable();
+        $table->timestamp('created_at')->useCurrent();
+        $table->timestamp('updated_at')->useCurrentOnUpdate()->useCurrent();
+    });
     }
 
     /**
