@@ -1,0 +1,234 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\BusinessService;
+
+class BusinessServiceSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $services = [
+            [
+                'item' => 'Home',
+                'title' => 'i3-Framework',
+                'description' => 'A robust framework designed to streamline and enhance business operations through integrated services.',
+                'color' => 'indigo',
+                'version' => 'v1.0.04',
+                'icon' => 'I3FrameworkIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Administration', 'url' => '/home/administration', 'route' => 'home/administration'],
+                    ['name' => 'Welcome', 'url' => '/home/welkom', 'route' => 'home/welkom'],
+                    ['name' => 'Tiers', 'url' => '/home/tiers', 'route' => 'home/tiers'],
+                    ['name' => 'Landing', 'url' => '/home/landing', 'route' => 'home/landing'],
+                    ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home/sandbox']
+                ]),
+                'status' => 'featured',
+                'progress' => 96,
+                'path' => '/'
+            ],
+            [
+                'item' => 'CMS',
+                'title' => 'Content Management',
+                'description' => 'Efficiently manage and organize your content, from articles to posts, with an intuitive interface.',
+                'color' => 'green',
+                'version' => 'v0.1.24',
+                'icon' => 'ContentManagementIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/content/posts', 'route' => 'posts'],
+                    ['name' => 'Posts', 'url' => '/content/posts', 'route' => 'posts'],
+                    ['name' => 'Bento', 'url' => '/bento', 'route' => 'bento']
+                ]),
+                'status' => 'featured',
+                'progress' => 29,
+                'path' => '/'
+            ],
+            [
+                'item' => 'ERP',
+                'title' => 'Resource Planning',
+                'description' => 'Optimize resource allocation and management to enhance productivity and efficiency.',
+                'color' => 'red',
+                'version' => 'v3.1.63',
+                'icon' => 'ResourcePlanningIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/erp/dashboard', 'route' => 'erp/dashboard'],
+                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources'],
+                    ['name' => 'Mood', 'url' => '/erp/mood', 'route' => 'erp/mood'],
+                    ['name' => 'Sand', 'url' => '/erp/sand', 'route' => 'erp/sand']
+                ]),
+                'status' => 'upgrading',
+                'progress' => 60,
+                'path' => '/'
+            ],
+            [
+                'item' => 'I3L',
+                'title' => 'Logistic Management',
+                'description' => 'Streamline your logistics processes to ensure smooth and efficient operations.',
+                'color' => 'blue',
+                'version' => 'v1.1.04',
+                'icon' => 'LogisticsIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
+                ]),
+                'status' => 'scheduled',
+                'progress' => 10,
+                'path' => '/'
+            ],
+            [
+                'item' => 'I3P',
+                'title' => 'Project Management',
+                'description' => 'Manage your projects effectively with tools designed to track progress and allocate resources.',
+                'color' => 'pink',
+                'version' => 'v1.1.02',
+                'icon' => 'ProjectIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Projects', 'url' => '/project/projects', 'route' => 'project/projects'],
+                    ['name' => 'Plan', 'url' => '/project/plan', 'route' => 'project/plan'],
+                    ['name' => 'Work', 'url' => '/project/work', 'route' => 'project/work'],
+                    ['name' => 'Budget', 'url' => '/project/budget', 'route' => 'project/budget']
+                ]),
+                'status' => 'featured',
+                'progress' => 70,
+                'path' => '/'
+            ],
+            [
+                'item' => 'design',
+                'title' => 'Design Tool',
+                'description' => 'Create and manage diagrams for your business ideas and projects with ease.',
+                'color' => 'violet',
+                'version' => 'v1.1.02',
+                'icon' => 'DesignIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Mind', 'url' => '/design/mind', 'route' => 'design/mind'],
+                    ['name' => 'Pert', 'url' => '/design/pert', 'route' => 'design/pert'],
+                    ['name' => 'Lane', 'url' => '/design/lane', 'route' => 'design/lane']
+                ]),
+                'status' => 'featured',
+                'progress' => 80,
+                'path' => '/'
+            ],
+            [
+                'item' => 'Sales',
+                'title' => 'Ecommerce',
+                'description' => 'Control and manage your e-commerce business with integrated tools and analytics.',
+                'color' => 'purple',
+                'version' => 'v0.1.03',
+                'icon' => 'EcommerceIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/ecommerce/dashboard', 'route' => 'ecommerce/dashboard'],
+                    ['name' => 'Storefront', 'url' => '/ecommerce/storefront', 'route' => 'ecommerce/storefront']
+                ]),
+                'status' => 'upgrading',
+                'progress' => 5,
+                'path' => '/'
+            ],
+            [
+                'item' => 'Web3',
+                'title' => 'Web3 Innovations',
+                'description' => 'Leverage decentralized applications to enhance your business operations.',
+                'color' => 'teal',
+                'version' => 'v1.0.00',
+                'icon' => 'Web3Icon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/erp/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Web3', 'url' => '/web3', 'route' => 'web3']
+                ]),
+                'status' => 'upgrading',
+                'progress' => 40,
+                'path' => '/'
+            ],
+            [
+                'item' => 'AI',
+                'title' => 'AI Agents',
+                'description' => 'Utilize AI agents to automate and enhance your business processes.',
+                'color' => 'purple',
+                'version' => 'v1.0.00',
+                'icon' => 'AiIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Contracts', 'url' => '/web3', 'route' => 'web3'],
+                    ['name' => 'Bots', 'url' => '/ai/bots', 'route' => 'ai/bots'],
+                    ['name' => 'Providers', 'url' => '/ai/providers', 'route' => 'ai/providers'],
+                    ['name' => 'Processors', 'url' => '/ai/processors', 'route' => 'ai/processors'],
+                    ['name' => 'Executors', 'url' => '/ai/executors', 'route' => 'ai/executors']
+                ]),
+                'status' => 'upgrading',
+                'progress' => 12,
+                'path' => '/'
+            ],
+            [
+                'item' => 'SMedia',
+                'title' => 'Social Media',
+                'description' => 'Manage your social media interactions and enhance your online presence.',
+                'color' => 'yellow',
+                'version' => 'v1.0.00',
+                'icon' => 'SocialMediaIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
+                ]),
+                'status' => 'scheduled',
+                'progress' => 10,
+                'path' => '/'
+            ],
+            [
+                'item' => 'Bots',
+                'title' => 'Automated Scripts',
+                'description' => 'This function takes care of your decentralized payment architecture.',
+                'color' => 'indigo',
+                'version' => 'v1.0.00',
+                'icon' => 'WalletIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
+                ]),
+                'status' => 'scheduled',
+                'progress' => 20,
+                'path' => '/'
+            ],
+            [
+                'item' => 'I1',
+                'title' => 'Indigo1 Legacy Mode',
+                'description' => 'Handle backward compatible Indigo1 business processes with ease.',
+                'color' => 'indigo',
+                'version' => 'v1.0.00',
+                'icon' => 'TruckIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
+                ]),
+                'status' => 'deprecated',
+                'progress' => 10,
+                'path' => '/'
+            ],
+            [
+                'item' => 'I2',
+                'title' => 'Indigo2 Legacy Mode',
+                'description' => 'Manage backward compatible Indigo2 business processes efficiently.',
+                'color' => 'indigo',
+                'version' => 'v1.0.00',
+                'icon' => 'PuzzlePieceIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
+                ]),
+                'status' => 'deprecated',
+                'progress' => 10,
+                'path' => '/'
+            ]
+        ];
+
+        foreach ($services as $service) {
+            BusinessService::create($service);
+        }
+    }
+}; 

@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { Head } from '@inertiajs/vue3'
+import { ref, onMounted } from 'vue'
+import { Head, usePage } from '@inertiajs/vue3'
 
 // Icons
 import {
@@ -75,6 +75,22 @@ const _toolbarItems = [
 // CSS Utility Classes
 const _indigo = "text-gray-600 dark:text-gray-200 hover:text-black dark:hover:text-yellow-400"
 const _sideSpacing = "mx-3"
+
+const page = usePage();
+
+onMounted(() => {
+  if (!page.props.auth.user) {
+    const currentPath = window.location.pathname;
+    sessionStorage.setItem('intendedDestination', currentPath);
+    window.location.href = '/login';
+  } else {
+    const intendedDestination = sessionStorage.getItem('intendedDestination');
+    if (intendedDestination) {
+      sessionStorage.removeItem('intendedDestination');
+      window.location.href = intendedDestination;
+    }
+  }
+});
 </script>
 
 <template>

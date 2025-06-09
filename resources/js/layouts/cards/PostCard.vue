@@ -265,7 +265,7 @@ const emit = defineEmits(['edit','show', 'delete']);
             <div class="mt-3 text-xs text-xs text-gray-500 dark:text-gray-500">
                 id: {{ post.id }}         
 
-<span v-for="tag in post.tags" class="text-xxs bg-indigo-100 dark:text-indigo-200 dark:bg-indigo-900 dark:border-indigo-600 py-0.5 px-2 m-1 rounded-2xl border border-indigo-300 ">{{tag.name}}</span>
+<span v-for="tag in post.tags" class="text-xxs bg-indigo-50  text-indigo-700 dark:text-indigo-200 dark:bg-indigo-900 dark:border-indigo-600 py-0.5 px-2 m-1 rounded-2xl border border-indigo-300 ">{{tag.name}}</span>
 
             </div>
             <div>

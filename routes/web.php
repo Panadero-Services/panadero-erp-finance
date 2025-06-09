@@ -42,6 +42,8 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LogController;
 
 use App\Http\Controllers\TestPhotoUploadController;
+use App\Http\Controllers\BusinessServiceController;
+use App\Http\Controllers\FeatureController;
 
 Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
 
@@ -256,6 +258,10 @@ Route::middleware([
         ]);
     })->name('ecommerce/storefront');
 
+    Route::get('content/posts', [PostController::class, 'index'])
+         ->name('content/posts')
+         ->middleware(RoleAccessMiddleware::class.':admin,member');
+
 });
 
     Route::get('home/tiers', function () {
@@ -274,11 +280,6 @@ Route::middleware([
 
 //  Gate function
 //  Route::middleware('can:admin-access')->get('posts', function () {
-    Route::get('content/posts', [PostController::class, 'index'])
-         ->name('content/posts')
-         ->middleware(RoleAccessMiddleware::class.':admin,member');
-
-
     Route::get('grid', function () {
         return Inertia::render('Grid', [
             'page'=> Page::with('sections')->where('title','Grid')->first(),
@@ -493,4 +494,14 @@ Modules
 7 
 
 */
+
+Route::get('home/administration', function () {
+    return Inertia::render('home/Administration', [
+        'page'=> Page::with('sections')->where('title','home/Administration')->first(),
+        'baseSections' => Section::where('page_id','0')->get()
+    ]);
+})->name('home/administration');
+
+Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
+Route::get('/features', [FeatureController::class, 'index'])->name('features.index');
 

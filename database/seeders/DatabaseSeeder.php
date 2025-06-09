@@ -99,6 +99,8 @@ class DatabaseSeeder extends Seeder
         UpdatePagesSeeder::class,
         SectionsSeeder::class,
         StateDatasetSeeder::class,
+        BusinessServiceSeeder::class,
+        FeatureSeeder::class,
     ]);
 
     $users = User::all();

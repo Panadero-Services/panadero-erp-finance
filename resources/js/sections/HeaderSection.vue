@@ -41,8 +41,10 @@ let menu = [];
 
 //if (props.set.domainFunction === 'home') 
 menu.push( { name: 'Home',url: route('home/dashboard'),route: 'home/dashboard', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'home') menu.push( { name: 'Administration',url: route('home/administration'),route: 'home/administration', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route('home/welkom'),route: 'home/welkom', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('home/tiers'),route: 'home/tiers', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'home') menu.push( { name: 'Landing',url: route('home/landing'),route: 'home/landing'});
 
 if (props.set.domainFunction === 'erp') menu.push( { name: 'ERP',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'Resources',url: route('erp/resources'),route: 'erp/resources', when:() => usePage().props.auth.user });

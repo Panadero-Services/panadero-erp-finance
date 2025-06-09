@@ -1,6 +1,7 @@
 <script setup>
 //home/dashboard
 import {computed, onMounted, onUnmounted, ref, provide} from 'vue';
+import axios from 'axios';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -22,13 +23,12 @@ const _db = useDbStore();
 
 _set.domainFunction = "home";
 
-
 // components
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
-import BusinessFunctionCard from "@/pages/home/BusinessFunctionCard.vue";
+import BusinessFunctionCard from "@/pages/home/BusinessFunctionCardSmall.vue";
 import ModuleCard from "@/pages/home/ModuleCard.vue";
 
 import ApplicationLogo from '@/components/logoSelf.vue';
@@ -108,7 +108,7 @@ const keyUpResolve = async (_selfResolve) => {
 }
 
 
-const _modules = [
+const _features = [
     { "item":"Grid", "title":"Grid feature", "description": "This module is all about relative content browsing", "options" : 
             [   
                 { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' },
@@ -155,17 +155,22 @@ const _modules = [
 ];
 
 
+
+
+
+
 const _functions = [
-    { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework structure  provides a foundation for all business services", "version" : "v1.0.04", "icon" : "I3FrameworkIcon", "options" : 
+    { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework structure  provides a foundation for all business services", "color": "indigo", "version" : "v1.0.04", "icon" : "I3FrameworkIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
+                { name: 'Administration', url: route('home/administration'),    route: 'home/administration' },
                 { name: 'Welcome', url: route('home/welkom'),    route: 'home/welkom' },
                 { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' },
                 { name: 'Sandbox', url: route('home/sandbox'),    route: 'home/sandbox' }]
                 ,"status":"featured", "progress": 96
     }, 
 
-    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",   "version" : "v0.1.24", "options" : 
+    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",  "color": "green",  "version" : "v0.1.24", "options" : 
             [   
                 { name: 'Dashboard',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
                 { name: 'Posts',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
@@ -173,7 +178,7 @@ const _functions = [
                 ,"status":"featured", "progress": 29
 
     }, 
-    { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "version" : "v3.1.63", "options" : 
+    { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "color": "red", "version" : "v3.1.63", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' },
@@ -181,13 +186,13 @@ const _functions = [
                 { name: 'Sand',    url: route('erp/sand'),    route: 'erp/sand' }]
                 ,"status":"upgrading", "progress": 60
     },
-    { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "icon": "LogisticsIcon", "version" : "v1.1.04", "options" : 
+    { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "color": "blue", "icon": "LogisticsIcon", "version" : "v1.1.04", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"scheduled", "progress": 10
     },
-    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "icon" : "ProjectIcon", "version" : "v1.1.02", "options" : 
+    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "icon" : "ProjectIcon", "version" : "v1.1.02", "color": "pink", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Projects',    url: route('project/projects'),    route: 'project/projects',     when:() => usePage().props.auth.user },
@@ -197,7 +202,7 @@ const _functions = [
             ,"status":"featured", "progress": 70
     },
 
-    { "item":"design", "title":"Design Tool", "description": "Diagrams for your business ideas, projects and others", "icon": "DesignIcon", "version" : "v1.1.02", "options" : 
+    { "item":"design", "title":"Design Tool", "description": "Diagrams for your business ideas, projects and others", "color": "violet", "icon": "DesignIcon", "version" : "v1.1.02", "options" : 
             [
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Mind',    url: route('design/mind'),    route: 'design/mind',     when:() => usePage().props.auth.user },
@@ -206,20 +211,20 @@ const _functions = [
             ,"status":"featured", "progress": 80
     },
 
-    { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business", "icon" : "EcommerceIcon", "version" : "v0.1.03", "options" : 
+    { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business","color": "purple",  "icon" : "EcommerceIcon", "version" : "v0.1.03", "options" : 
             [   
                 { name: 'Dashboard', url: route('ecommerce/dashboard'),    route: 'ecommerce/dashboard' },
                 { name: 'Storefront',    url: route('ecommerce/storefront'),    route: 'ecommerce/storefront' } ]
             ,"status":"upgrading", "progress": 5
      },
-    { "item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "icon" : "Web3Icon", "options" : 
+    { "item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "color": "teal", "icon" : "Web3Icon", "options" : 
             [   
                 { name: 'Dashboard', url: route('erp/dashboard'),    route: 'home/dashboard' },
                 { name: 'Web3',    url: route('web3'),    route: 'web3' } ]
             ,"status":"upgrading", "progress": 40
     },
 
-    { "item":"Bots", "title":"AI Agents", "description": "This function handles your AI requirements", "icon": "AiIcon", "options" : 
+    { "item":"AI", "title":"AI Agents", "description": "This function handles your AI requirements","color": "purple",  "icon": "AiIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Contracts',    url: route('web3'),    route: 'web3' },
@@ -229,13 +234,13 @@ const _functions = [
                 { name: 'Executors',    url: route('ai/executors'),    route: 'ai/executors' } ]
             ,"status":"upgrading", "progress": 12
     },
-    { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions", "icon":"SocialMediaIcon", "options" : 
+    { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions",  "color": "yellow", "icon":"SocialMediaIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
             ,"status":"scheduled", "progress": 10
      },
-    { "item":"DeFi", "title":"Decentralized Finance", "description": "This function takes care of your decentralized payment architecture", "icon": "WalletIcon", "options" : 
+    { "item":"Bots", "title":"Automated Scripts", "description": "This function takes care of your decentralized payment architecture", "color": "indigo", "icon": "WalletIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' }
@@ -244,7 +249,7 @@ const _functions = [
 
     },
 
-    { "item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "icon": "TruckIcon", "options" : 
+    { "item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "color": "indigo", "icon": "TruckIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' }
@@ -252,7 +257,7 @@ const _functions = [
             ,"status":"deprecated", "progress": 10
 
     },
-    { "item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "icon": "PuzzlePieceIcon", "options" : 
+    { "item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "color": "indigo", "icon": "PuzzlePieceIcon", "options" : 
             [   
                 { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
                 { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
@@ -262,57 +267,79 @@ const _functions = [
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
-const filter = ref("");
+const services = ref([]);
+const features = ref([]);
+const filter = ref('');
 
 const refreshPage = () => { window.location.reload(); };
 
-
-
-
-
+onMounted(async () => {
+  try {
+    const [servicesResponse, featuresResponse] = await Promise.all([
+      axios.get('/business-services'),
+      axios.get('/features')
+    ]);
+    services.value = servicesResponse.data;
+    features.value = featuresResponse.data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+});
 
 </script>
 
+
+
+
 <template>
-   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
+  <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
+    <template #header>
+      <pulse v-model="_pulse" :animation="_set.animate" />
+    </template>
 
-      <template #header>
-         <pulse  v-model="_pulse" :animation="_set.animate"/>
-      </template>
+    <template #intro />
 
-      <template #intro />
+    <template #default>
+      <div class="grid grid-cols-3 m-6 text-3xl font-semibold text-black dark:text-white">
+        <p>Business Services</p>
+      </div>
 
-      <template #default>
-
-        <div class="grid grid-cols-2"> 
-            <div class="pl-2 " >
-                <button @click="_set.dark=false" type="button" :class="_button">Light</button>
-                <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-                <button @click="refreshPage" type="button" :class="_button">Refresh</button>
-            </div>      
-            <div class="" id="toolbar">
-                <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" 
-                class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
-            </div>
+      <div id="whatever" class="ml-6">
+        <div class="">
+          <div class="flex flex-wrap gap-2">
+            <template v-for="service in services">
+              <div v-if="service.title.toLowerCase().includes(filter)" class="flex-shrink-0">
+                <business-function-card :set="_set" :f="service" :progress="service.progress" />
+              </div>
+            </template>
+          </div>
         </div>
+      </div>
 
-         <div id="whatever" class="">{{filter}}
-            <!--    <self-intro /> -->
-            <div class="">
-                <!--    <ApplicationLogo class="block w-80 h-80" /> -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 xl:grid-cols-3 pt-12 gap-4 ">
-                    <template v-for="_f in _functions"><div v-if="_f.title.toLowerCase().includes(filter)" ><business-function-card :set="_set" :f="_f"  :progress="_f.progress" /></div></template>
-                    <template v-for="_m in _modules"><div v-if="_m.title.toLowerCase().includes(filter)" ><module-card :set="_set" :f="_m"   /></div></template>
-                </div>
-            </div>
+      <div class=" m-6 mt-16 text-3xl font-semibold text-black dark:text-white text-right ">
+        <p>Features</p>
+      </div>
 
-         </div>
-      </template>
+      <div id="features" class="ml-6">
+        <div class="">
+          <div class="flex flex-wrap gap-2 justify-end">
+            <template v-for="feature in features">
+              <div v-if="feature.title.toLowerCase().includes(filter)" class="flex-shrink-0">
+                <business-function-card :set="_set" :f="feature" :progress="feature.progress" />
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
 
-      <template #footer />
+    </template>
 
-   </AppToolbarLayout>
-
+    <template #footer>
+      <div class="" id="toolbar">
+        <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
+      </div>
+    </template>
+  </AppToolbarLayout>
 </template>
 
 <style>

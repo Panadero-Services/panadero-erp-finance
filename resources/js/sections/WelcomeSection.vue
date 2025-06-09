@@ -260,7 +260,7 @@ const _editClass= computed(()=>{
                           <Bars3Icon v-if="'Bars3Icon'==f.icon" :class="_feature" aria-hidden="true" />                     
                           <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
                           <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
-                        </div>
+                      </div>
                       <Link v-if="f.route"  :href="f.route" :class="'pan-txt-'+f.color+'-500'" >
                         {{ f.name }}
                       </Link>
