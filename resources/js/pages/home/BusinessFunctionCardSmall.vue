@@ -15,6 +15,15 @@ const props = defineProps({
     progress: Number
 });
 
+const emit = defineEmits(['edit']);
+
+const handleEdit = (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  showPopup.value = false;
+  emit('edit', props.f);
+};
+
 const _navigate = () =>  {
     router.push(props.f.url); 
 }
@@ -90,9 +99,18 @@ const _color = computed(()=> {
       <button @click="togglePopup" class="text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:scale-125">
         <EllipsisVerticalIcon class="h-4 w-4" />
       </button>
-      <div v-if="showPopup" @mouseleave="showPopup = false" class="absolute right-0 mt-2 w-48  shadow-lg rounded-md z-10 border dark:border-gray-600">
-        <div v-for="option in f.options" :key="option.name" class="p-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-900">
-          <a @click.prevent="navigateTo(option.url)" class="text-xs text-gray-700 dark:text-gray-300 h-10 cursor-pointer ">{{ option.name }}</a>
+
+      <div v-if="showPopup" @mouseleave="showPopup = false" class="absolute right-0 mt-2 w-48 shadow-lg rounded-md z-10 border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
+        <div v-for="option in f.options" :key="option.name" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+          <a @click.prevent="navigateTo(option.url)" class="text-sm text-gray-700 dark:text-gray-300 h-10 cursor-pointer flex items-center hover:text-indigo-600 dark:hover:text-indigo-400">
+            {{ option.name }}
+          </a>
+        </div>
+        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-100 dark:border-gray-700">
+          <a @click="handleEdit" class="text-sm text-gray-700 dark:text-gray-300 h-10 cursor-pointer flex items-center gap-2 hover:text-indigo-600 dark:hover:text-indigo-400">
+            <PencilSquareIcon class="h-4 w-4" />
+            Edit Card
+          </a>
         </div>
       </div>
     </div>

@@ -3,6 +3,6 @@ declare module '@/stores/contracts' {
     // Add your contracts store properties and methods here
     [key: string]: any;
   }
-
+ 
   export function useContractStore(): ContractStore;
 } 

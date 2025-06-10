@@ -28,10 +28,11 @@ import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
 // cards
 import UserCard from "@/layouts/cards/UserCard.vue";
-import BusinessFunctionCard from "@/pages/home/BusinessFunctionCardSmall.vue";
+import BusinessFunctionCardSmall from "@/pages/home/BusinessFunctionCardSmall.vue";
 import ModuleCard from "@/pages/home/ModuleCard.vue";
 
 import ApplicationLogo from '@/components/logoSelf.vue';
+import EditRecordModal from '@/components/modals/EditRecordModal.vue';
 
 const selfVersion ="0.2.1";
 
@@ -270,6 +271,27 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
 const services = ref([]);
 const features = ref([]);
 const filter = ref('');
+const showEditModal = ref(false);
+const selectedRecord = ref(null);
+
+const handleEdit = (record) => {
+  selectedRecord.value = record;
+  showEditModal.value = true;
+};
+
+const handleSave = async (updatedRecord) => {
+  try {
+    await axios.put(`/features/${updatedRecord.id}`, updatedRecord);
+    // Update the features list with the edited record
+    const index = features.value.findIndex(f => f.id === updatedRecord.id);
+    if (index !== -1) {
+      features.value[index] = updatedRecord;
+    }
+    showEditModal.value = false;
+  } catch (error) {
+    console.error('Error updating record:', error);
+  }
+};
 
 const refreshPage = () => { window.location.reload(); };
 
@@ -295,37 +317,50 @@ onMounted(async () => {
   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
     <template #header>
       <pulse v-model="_pulse" :animation="_set.animate" />
+
+
     </template>
 
     <template #intro />
 
     <template #default>
-      <div class="grid grid-cols-3 m-6 text-3xl font-semibold text-black dark:text-white">
+
+      <div class="text-center" id="toolbar">
+        <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
+      </div>
+
+
+      <div class="grid grid-cols-2 m-6 text-3xl font-semibold text-black dark:text-white sm:ml-24">
         <p>Business Services</p>
       </div>
 
-      <div id="whatever" class="ml-6">
+      <div id="whatever" class="ml-6 min-h-[280px]">
         <div class="">
           <div class="flex flex-wrap gap-2">
             <template v-for="service in services">
               <div v-if="service.title.toLowerCase().includes(filter)" class="flex-shrink-0">
-                <business-function-card :set="_set" :f="service" :progress="service.progress" />
+                <business-function-card-small :set="_set" :f="service" :progress="service.progress" />
               </div>
             </template>
           </div>
         </div>
       </div>
 
-      <div class=" m-6 mt-16 text-3xl font-semibold text-black dark:text-white text-right ">
+      <div class=" m-6 mt-16 text-3xl font-semibold text-black dark:text-white text-right sm:mr-32">
         <p>Features</p>
       </div>
 
-      <div id="features" class="ml-6">
+      <div id="features" class="ml-6  min-h-[280px]">
         <div class="">
           <div class="flex flex-wrap gap-2 justify-end">
             <template v-for="feature in features">
               <div v-if="feature.title.toLowerCase().includes(filter)" class="flex-shrink-0">
-                <business-function-card :set="_set" :f="feature" :progress="feature.progress" />
+                <business-function-card-small 
+                  :set="_set" 
+                  :f="feature" 
+                  :progress="feature.progress"
+                  @edit="handleEdit"
+                />
               </div>
             </template>
           </div>
@@ -335,11 +370,17 @@ onMounted(async () => {
     </template>
 
     <template #footer>
-      <div class="" id="toolbar">
-        <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
-      </div>
+
     </template>
   </AppToolbarLayout>
+
+  <EditRecordModal
+    v-if="showEditModal"
+    :show="showEditModal"
+    :record="selectedRecord"
+    @close="showEditModal = false"
+    @save="handleSave"
+  />
 </template>
 
 <style>
