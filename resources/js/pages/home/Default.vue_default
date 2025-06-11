@@ -9,6 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
+// import defaultSection
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
@@ -19,14 +20,8 @@ const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
 
-import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
-import { CheckIcon } from '@heroicons/vue/20/solid'
-
 // components
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
-
-import pricingPlans from '@/constants/plans.js'
-import PricingPlans from '@/panadero/PricingPlans.vue'
 
 const props = defineProps({
     page: Object,
@@ -35,18 +30,6 @@ const props = defineProps({
 
 const _pulse = ref(false);
 provide(/* key */ 'pulse', /* value */ _pulse);
-
-
-const frequencies = [
-  { value: 'monthly', label: 'Monthly', priceSuffix: '/month' },
-  { value: 'annually', label: 'Annually', priceSuffix: '/year' },
-]
-
-const frequency = ref(frequencies[0])
-
-// css
-const _title = "text-indigo-600 dark:text-indigo-300";
-const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
 
 </script>
 
@@ -62,7 +45,7 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
       <template #default>
          <div id="mainDiv" class="w-full ... min-h-[640px] min-w-full ">
 
-          <PricingPlans :plans="pricingPlans" />
+          --Put your sections here --
 
          </div>
       </template>

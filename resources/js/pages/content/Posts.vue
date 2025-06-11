@@ -309,7 +309,6 @@ const refreshPage = () => { window.location.reload(); };
                                :preservedActiveTab="_preservedModalSettings.activeTab" />
          </div>
 
-
       </template>
 
       <template #intro />

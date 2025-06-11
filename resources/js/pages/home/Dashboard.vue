@@ -45,6 +45,39 @@ const props =defineProps({
     phpVersion: String
 });
 
+// variables
+const _module = "home";
+const _table = 'dashboard';
+const _model = 'Dashboard';
+const keyIndex = ref(0);
+const editRecordMode = ref(false);
+const _activeRecord = ref({});
+const _superSelfAdmin = computed(() => _usePage.props.auth.user?.super_self_admin || 0);
+
+// Store preserved modal settings
+const _preservedModalSettings = ref({
+  modalSize: null,
+  fontSize: null,
+  activeTab: null
+});
+
+const _close = async (_nr) => {
+    editRecordMode.value = false;
+}
+
+const handleRecordChange = (recordData) => {
+  // Store preserved settings if provided
+  if (recordData.preservedModalSize) {
+    _preservedModalSettings.value.modalSize = recordData.preservedModalSize;
+  }
+  if (recordData.preservedFontSize) {
+    _preservedModalSettings.value.fontSize = recordData.preservedFontSize;
+  }
+  if (recordData.preservedActiveTab) {
+    _preservedModalSettings.value.activeTab = recordData.preservedActiveTab;
+  }
+}
+
 // webhooks
 onMounted(async ()=> {
     _set.domainFunction='home';
@@ -109,162 +142,6 @@ const keyUpResolve = async (_selfResolve) => {
 }
 
 
-const _features = [
-    { "item":"Grid", "title":"Grid feature", "description": "This module is all about relative content browsing", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Grid sample', url: route('grid'),    route: 'grid' }
-            ]
-            , "status":"featured"
-    }, 
-    { "item":"Event", "title":"Scheduler feature", "description": "This module is all about eventHandlers", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
-            ]
-            , "status":"featured"
-    }, 
-    { "item":"Mood", "title":"Mood feature", "description": "This module is all about task assigments and todo browsing", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
-            ]
-            , "status":"featured"
-    }, 
-    { "item":"Calc", "title":"Spreadsheet feature", "description": "This moduls is all about calculation requirements", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
-            ]
-            , "status":"featured"
-    }, 
-    { "item":"Proj", "title":"Project feature", "description": "This modules is all about project handling", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
-            ]
-            , "status":"featured"
-    }, 
-    { "item":"Contract", "title":"Contract feature", "description": "This modules is all web3 Contract browsing", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
-            ]
-            , "status":"featured"
-    }, 
-    { "item":"Gantt", "title":"Gantt feature ", "description": "This module is all about planning projects", "options" : 
-            [   
-                { name: 'Demo', url: route('home/dashboard'),    route: 'home/dashboard' }
-            ]
-            ,"status":"featured"
-    }
-];
-
-
-
-
-
-
-const _functions = [
-    { "item":"Home", "title":"i3-Framework", "description": "Core Indigo3 framework structure  provides a foundation for all business services", "color": "indigo", "version" : "v1.0.04", "icon" : "I3FrameworkIcon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Administration', url: route('home/administration'),    route: 'home/administration' },
-                { name: 'Welcome', url: route('home/welkom'),    route: 'home/welkom' },
-                { name: 'Tiers', url: route('home/tiers'),    route: 'home/tiers' },
-                { name: 'Sandbox', url: route('home/sandbox'),    route: 'home/sandbox' }]
-                ,"status":"featured", "progress": 96
-    }, 
-
-    { "item":"CMS", "title":"Content Management", "description": "This function is all about articles/ posts and other content","icon": "ContentManagementIcon",  "color": "green",  "version" : "v0.1.24", "options" : 
-            [   
-                { name: 'Dashboard',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
-                { name: 'Posts',    url: route('content/posts'),    route: 'posts',     when:() => usePage().props.auth.user },
-                { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user }]
-                ,"status":"featured", "progress": 29
-
-    }, 
-    { "item":"ERP", "title":"Resource Planning", "description": "This function is about managing time consuming resources", "icon" : "ResourcePlanningIcon", "color": "red", "version" : "v3.1.63", "options" : 
-            [   
-                { name: 'Dashboard', url: route('erp/dashboard'),    route: 'erp/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' },
-                { name: 'Mood',    url: route('erp/mood'),    route: 'erp/mood',     when:() => usePage().props.auth.user },
-                { name: 'Sand',    url: route('erp/sand'),    route: 'erp/sand' }]
-                ,"status":"upgrading", "progress": 60
-    },
-    { "item":"I3L", "title":"Logistic Management", "description": "This function controls your logistic processes", "color": "blue", "icon": "LogisticsIcon", "version" : "v1.1.04", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
-            ,"status":"scheduled", "progress": 10
-    },
-    { "item":"I3P", "title":"Project Management", "description": "This function controls your projects", "icon" : "ProjectIcon", "version" : "v1.1.02", "color": "pink", "options" : 
-            [
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Projects',    url: route('project/projects'),    route: 'project/projects',     when:() => usePage().props.auth.user },
-                { name: 'Plan',    url: route('project/plan'),    route: 'project/plan',     when:() => usePage().props.auth.user },
-                { name: 'Work',    url: route('project/work'),    route: 'project/work',     when:() => usePage().props.auth.user },
-                { name: 'Budget',    url: route('project/budget'),    route: 'project/budget',     when:() => usePage().props.auth.user }]
-            ,"status":"featured", "progress": 70
-    },
-
-    { "item":"design", "title":"Design Tool", "description": "Diagrams for your business ideas, projects and others", "color": "violet", "icon": "DesignIcon", "version" : "v1.1.02", "options" : 
-            [
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Mind',    url: route('design/mind'),    route: 'design/mind',     when:() => usePage().props.auth.user },
-                { name: 'Pert',    url: route('design/pert'),    route: 'design/pert',     when:() => usePage().props.auth.user },
-                { name: 'Lane',    url: route('design/lane'),    route: 'design/lane',     when:() => usePage().props.auth.user }]
-            ,"status":"featured", "progress": 80
-    },
-
-    { "item":"Sales", "title":"Ecommerce", "description": "This function controls your Ecommercial business","color": "purple",  "icon" : "EcommerceIcon", "version" : "v0.1.03", "options" : 
-            [   
-                { name: 'Dashboard', url: route('ecommerce/dashboard'),    route: 'ecommerce/dashboard' },
-                { name: 'Storefront',    url: route('ecommerce/storefront'),    route: 'ecommerce/storefront' } ]
-            ,"status":"upgrading", "progress": 5
-     },
-    { "item":"Web3", "title":"Web3 Innovations", "description": "This function handles your decentralized applications", "color": "teal", "icon" : "Web3Icon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('erp/dashboard'),    route: 'home/dashboard' },
-                { name: 'Web3',    url: route('web3'),    route: 'web3' } ]
-            ,"status":"upgrading", "progress": 40
-    },
-
-    { "item":"AI", "title":"AI Agents", "description": "This function handles your AI requirements","color": "purple",  "icon": "AiIcon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Contracts',    url: route('web3'),    route: 'web3' },
-                { name: 'Bots',     url: route('ai/bots'),     route: 'ai/bots',      when:() => usePage().props.auth.user },
-                { name: 'Providers',    url: route('ai/providers'),    route: 'ai/providers' } ,
-                { name: 'Processors',    url: route('ai/processors'),    route: 'ai/processors' } ,
-                { name: 'Executors',    url: route('ai/executors'),    route: 'ai/executors' } ]
-            ,"status":"upgrading", "progress": 12
-    },
-    { "item":"SMedia", "title":"Social Media", "description": "This function handles your social media interactions",  "color": "yellow", "icon":"SocialMediaIcon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
-            ,"status":"scheduled", "progress": 10
-     },
-    { "item":"Bots", "title":"Automated Scripts", "description": "This function takes care of your decentralized payment architecture", "color": "indigo", "icon": "WalletIcon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' }
-            ]
-            ,"status":"scheduled", "progress": 20
-
-    },
-
-    { "item":"I1", "title":"Indigo1 Legacy Mode", "description": "This function handles your backward compatible Indigo1 business processes", "color": "indigo", "icon": "TruckIcon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' }
-            ]
-            ,"status":"deprecated", "progress": 10
-
-    },
-    { "item":"I2", "title":"Indigo2 Legacy Mode", "description": "This function handles your backward compatible Indigo2 business processes", "color": "indigo", "icon": "PuzzlePieceIcon", "options" : 
-            [   
-                { name: 'Dashboard', url: route('home/dashboard'),    route: 'home/dashboard' },
-                { name: 'Resources',    url: route('erp/resources'),    route: 'erp/resources' } ]
-            ,"status":"deprecated", "progress": 10
-     },
-];
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
@@ -374,6 +251,9 @@ onMounted(async () => {
     </template>
   </AppToolbarLayout>
 
+
+<div v-if="showEditModal" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8 dark:bg-gray-800">
+
   <EditRecordModal
     v-if="showEditModal"
     :show="showEditModal"
@@ -381,6 +261,10 @@ onMounted(async () => {
     @close="showEditModal = false"
     @save="handleSave"
   />
+</div>
+
+
+
 </template>
 
 <style>

@@ -213,12 +213,24 @@ export const useDbStore = defineStore('db', () => {
     async function logAction(_logData) {
         console.log(_logData);
         try {
-            await axios.post('/logs', _logData) // or route('logs.store') if using Ziggy
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                console.warn('CSRF token not found. Make sure the meta tag is present in your HTML.');
+            }
+
+            await axios.post('/logs', _logData, {
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
             .then((response) => {
                 return response;
             })
         } catch (err) {
             console.error('Error storing log:', err.response?.data || err.message);
+            throw err; // Re-throw the error to handle it in the calling code
         }
     }
 

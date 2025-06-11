@@ -4,16 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorelogRequest;
 use App\Http\Requests\UpdatelogRequest;
-use App\Models\log;
-
+use App\Models\Log;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 
 class LogController extends Controller
 {
-
-
-
     /**
      * Display a listing of the resource.
      */
@@ -33,15 +29,23 @@ class LogController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // NEEEDS WORK.. THIS IS THE AUTHENTICATED CALL
-        // Bypass all auth just for testing
-    // DO NOT USE IN PRODUCTION
-    public function store(StorelogRequest $request)
+    public function store(Request $request)
     {
+        try {
         $validated = $request->validate(Log::criteria());
+            
+            // Ensure user_id is set from authenticated user
+            $validated['user_id'] = Auth::id();
+            
         $log = Log::create($validated);
         
         return response()->json($log, 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error creating log',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function criteria()
@@ -52,7 +56,7 @@ class LogController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(log $log)
+    public function show(Log $log)
     {
         //
     }
@@ -60,7 +64,7 @@ class LogController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(log $log)
+    public function edit(Log $log)
     {
         //
     }
@@ -68,7 +72,7 @@ class LogController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatelogRequest $request, log $log)
+    public function update(UpdatelogRequest $request, Log $log)
     {
         //
     }
@@ -76,7 +80,7 @@ class LogController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(log $log)
+    public function destroy(Log $log)
     {
         //
     }

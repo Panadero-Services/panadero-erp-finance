@@ -3,7 +3,7 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\log;
+use App\Models\Log;
 use Illuminate\Auth\Access\Response;
 
 class LogPolicy
@@ -13,15 +13,15 @@ class LogPolicy
      */
     public function viewAny(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, log $log): bool
+    public function view(User $user, Log $log): bool
     {
-        //
+        return true;
     }
 
     /**
@@ -29,38 +29,38 @@ class LogPolicy
      */
     public function create(User $user): bool
     {
-        //
+        return true;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, log $log): bool
+    public function update(User $user, Log $log): bool
     {
-        //
+        return true;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, log $log): bool
+    public function delete(User $user, Log $log): bool
     {
-        //
+        return true;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, log $log): bool
+    public function restore(User $user, Log $log): bool
     {
-        //
+        return true;
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, log $log): bool
+    public function forceDelete(User $user, Log $log): bool
     {
-        //
+        return true;
     }
 }

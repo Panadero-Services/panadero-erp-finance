@@ -505,3 +505,9 @@ Route::get('home/administration', function () {
 Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
 Route::get('/features', [FeatureController::class, 'index'])->name('features.index');
 
+// Log routes
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
+    Route::get('/logs/criteria', [LogController::class, 'criteria'])->name('logs.criteria');
+});
+
