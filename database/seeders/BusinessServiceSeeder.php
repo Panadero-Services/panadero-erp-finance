@@ -26,6 +26,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Administration', 'url' => '/home/administration', 'route' => 'home/administration'],
                     ['name' => 'Welcome', 'url' => '/home/welkom', 'route' => 'home/welkom'],
                     ['name' => 'Tiers', 'url' => '/home/tiers', 'route' => 'home/tiers'],
+                    ['name' => 'Futures', 'url' => '/home/futures', 'route' => 'home.futures'],
                     ['name' => 'Landing', 'url' => '/home/landing', 'route' => 'home/landing'],
                     ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home/sandbox']
                 ]),
@@ -228,7 +229,10 @@ class BusinessServiceSeeder extends Seeder
         ];
 
         foreach ($services as $service) {
-            BusinessService::create($service);
+            BusinessService::updateOrCreate(
+                ['item' => $service['item']],
+                $service
+            );
         }
     }
 }; 

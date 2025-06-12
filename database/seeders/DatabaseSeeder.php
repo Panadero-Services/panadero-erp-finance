@@ -101,6 +101,7 @@ class DatabaseSeeder extends Seeder
         StateDatasetSeeder::class,
         BusinessServiceSeeder::class,
         FeatureSeeder::class,
+        FutureSeeder::class,
     ]);
 
     $users = User::all();

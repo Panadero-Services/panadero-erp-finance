@@ -432,7 +432,6 @@ const sendMessage = async () => {
         <img class="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="/images/hero-image.jpg" alt="AI and Blockchain Technology">
     </div>
     </div>
-           {{featuredPosts.data}}
 
     <!-- Featured Posts Section -->
     <div v-if="featuredPosts && featuredPosts.length > 0" class="py-12 bg-white dark:bg-gray-900">

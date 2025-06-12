@@ -154,6 +154,31 @@ Route::middleware([
         ]);
     })->name('home/tiers');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
+    Route::get('/home/futures', function () {
+        $futures = \App\Models\Future::with(['user', 'project'])->paginate(12);
+        
+        return Inertia::render('home/Futures', [
+            'page' => [
+                'title' => 'Futures',
+                'module' => 'home',
+                'icon' => 'view-dashboard-outline',
+                'slogan' => 'Just do it, innovation at the heart of your businesss',
+                'type' => 'table'
+            ],
+            'baseSections' => Section::where('page_id','0')->get(),
+            'records' => [
+                'data' => $futures->items(),
+                'meta' => [
+                    'current_page' => $futures->currentPage(),
+                    'last_page' => $futures->lastPage(),
+                    'per_page' => $futures->perPage(),
+                    'total' => $futures->total(),
+                    'links' => $futures->linkCollection()->toArray()
+                ]
+            ]
+        ]);
+    })->name('home.futures');
+
     Route::get('erp/dashboard', function () {
         return Inertia::render('erp/ErpDashboard', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
@@ -347,14 +372,13 @@ Route::middleware([
 
 
 
-   // Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
-  //  Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
-
-  //  Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
-  //  Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
+//  Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
+//  Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
+//  Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
+//  Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
     Route::get('planning', function () { return Inertia::render('Planning', []);})->name('planning');
-  //  Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
-  //  Route::get('posts',[PostController::class,'index'])->name('posts');
+//  Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
+//  Route::get('posts',[PostController::class,'index'])->name('posts');
 
 
 //Route::get('posts',[PostController::class,'index'])->name('posts');

@@ -70,26 +70,26 @@ const _color = computed(()=> {
     <div class="h-20 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
       <div class="grid grid-cols-4">
               <div class="m-3 h-6 w-6 lg:h-8 lg:w-8 items-center justify-center rounded-lg " :class="_color">
-                    <RectangleGroupIcon v-if="'I3FrameworkIcon'==f.icon" :class="_feature" aria-hidden="true" />
-                    <PencilSquareIcon v-if="'ContentManagementIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <BarsArrowUpIcon v-if="'ResourcePlanningIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <BuildingOfficeIcon v-if="'LogisticsIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <ClipboardDocumentCheckIcon v-if="'ProjectIcon'==f.icon" :class="_feature" aria-hidden="true" />
-                    <CubeTransparentIcon v-if="'DesignIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <CreditCardIcon v-if="'EcommerceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <RocketLaunchIcon v-if="'Web3Icon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <LanguageIcon v-if="'AiIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <DevicePhoneMobileIcon v-if="'SocialMediaIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <PuzzlePieceIcon v-if="'PuzzlePieceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <TruckIcon v-if="'TruckIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <CloudArrowUpIcon v-if="'CloudArrowUpIcon'==f.icon"  :class="_feature" aria-hidden="true" />
-                    <ArrowPathIcon v-if="'ArrowPathIcon'==f.icon" :class="_feature" aria-hidden="true" />
-                    <FingerPrintIcon v-if="'FingerPrintIcon'==f.icon" :class="_feature" aria-hidden="true" />
-                    <Bars3Icon v-if="'Bars3Icon'==f.icon" :class="_feature" aria-hidden="true" />                     
-                    <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
-                    <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <RectangleGroupIcon v-if="'I3FrameworkIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <PencilSquareIcon v-if="'ContentManagementIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <BarsArrowUpIcon v-if="'ResourcePlanningIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <BuildingOfficeIcon v-if="'LogisticsIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <ClipboardDocumentCheckIcon v-if="'ProjectIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <CubeTransparentIcon v-if="'DesignIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <CreditCardIcon v-if="'EcommerceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <RocketLaunchIcon v-if="'Web3Icon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <LanguageIcon v-if="'AiIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <DevicePhoneMobileIcon v-if="'SocialMediaIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <PuzzlePieceIcon v-if="'PuzzlePieceIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <TruckIcon v-if="'TruckIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <CloudArrowUpIcon v-if="'CloudArrowUpIcon'==f.icon"  :class="_feature" aria-hidden="true" />
+                          <ArrowPathIcon v-if="'ArrowPathIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <FingerPrintIcon v-if="'FingerPrintIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <Bars3Icon v-if="'Bars3Icon'==f.icon" :class="_feature" aria-hidden="true" />                     
+                          <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
+                          <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
                 <p class="mt-2 text-center text-xxxs col-span-3 text-gray-600 dark:text-white ">{{ f.version }}</p>
-            </div>
+                    </div>
             <div class="col-span-3 mt-3">
                 <p class="text-sm col-span-3 text-gray-800 dark:text-white ">{{ f.title }}</p>
             </div>
@@ -105,16 +105,16 @@ const _color = computed(()=> {
           <a @click.prevent="navigateTo(option.url)" class="text-sm text-gray-700 dark:text-gray-300 h-10 cursor-pointer flex items-center hover:text-indigo-600 dark:hover:text-indigo-400">
             {{ option.name }}
           </a>
-        </div>
+                </div>
         <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-100 dark:border-gray-700">
           <a @click="handleEdit" class="text-sm text-gray-700 dark:text-gray-300 h-10 cursor-pointer flex items-center gap-2 hover:text-indigo-600 dark:hover:text-indigo-400">
             <PencilSquareIcon class="h-4 w-4" />
             Edit Card
           </a>
         </div>
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 </template>
 
 <style scoped>
