@@ -61,12 +61,10 @@ const _activeRecord = ref();
 const loadRecord = async (recordType, recordId) => {
   try {
     const response = await _db.getRecordById(_model, recordId);
-    console.log(response.title)
 
     if (response) {
       Object.keys(response).filter(key => (key !== 'user_id')).forEach(key => {
         _activeRecord.value[key] = response[key];
-        console.log(key)
       });
       
       keyIndex.value++;

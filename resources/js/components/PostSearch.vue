@@ -75,13 +75,28 @@ const delayedHideDropdown = () => {
 
 const searchPosts = async () => {
   try {
-    const labels = await db.getLabels(props.model, props.label, props.filter);
-    searchResults.value = labels.map((label, index) => ({
-      id: props.filter || index + 1,
-      [props.label]: label
+    const response = await db.fetchApiRecords(props.table);
+    
+    // Ensure response is an array before filtering
+    if (!Array.isArray(response)) {
+      console.error('Expected array response but got:', response);
+      searchResults.value = [];
+      return;
+    }
+    
+    // Filter results based on search query
+    const filteredResults = response.filter(item => 
+      item[props.label]?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
+    
+    // Map the results to the expected format
+    searchResults.value = filteredResults.map(item => ({
+      id: item[props.idColumn],
+      [props.label]: item[props.label]
     }));
   } catch (error) {
-    console.error(`Error fetching ${props.model} labels:`, error);
+    console.error(`Error fetching ${props.table} records:`, error);
+    searchResults.value = [];
   }
 };
 

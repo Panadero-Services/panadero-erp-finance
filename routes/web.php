@@ -44,6 +44,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Controllers\TestPhotoUploadController;
 use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\FutureController;
 
 Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
 
@@ -154,6 +155,21 @@ Route::middleware([
         ]);
     })->name('home/tiers');//->middleware(RoleAccessMiddleware::class.':admin,author');
 
+
+
+    // futures
+    Route::get('/home/futures', [FutureController::class, 'index'])->name('home.futures');
+    Route::put('/api/futures/{id}', [FutureController::class, 'update'])->name('futures.update');
+
+
+
+/*
+
+    Route::get('home/futures', [FutureController::class, 'index'])
+         ->name('home/futures');
+
+
+
     Route::get('/home/futures', function () {
         $futures = \App\Models\Future::with(['user', 'project'])->paginate(12);
         
@@ -178,6 +194,7 @@ Route::middleware([
             ]
         ]);
     })->name('home.futures');
+    */
 
     Route::get('erp/dashboard', function () {
         return Inertia::render('erp/ErpDashboard', [
@@ -286,6 +303,10 @@ Route::middleware([
     Route::get('content/posts', [PostController::class, 'index'])
          ->name('content/posts')
          ->middleware(RoleAccessMiddleware::class.':admin,member');
+
+
+
+
 
 });
 
@@ -447,8 +468,8 @@ Route::post('/insertTeam',[Web3RecordController::class, 'insertTeam'])->name('in
 Route::post('/insertProject',[Web3RecordController::class, 'insertProject'])->name('insertProject');
 
 Route::resource('pages',PageController::class);
-Route::put('posts.update',[PostController::class, 'update'])->name('posts.update');
 
+Route::put('posts.update',[PostController::class, 'update'])->name('posts.update');
 Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'updateicon'])->name('postupdateicon');
 
 Route::resource('logs',LogController::class);

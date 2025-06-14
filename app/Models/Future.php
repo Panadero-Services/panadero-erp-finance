@@ -4,6 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+
+
+use App\Models\User;
+use App\Models\Project;
+
+
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Future extends Model
@@ -55,8 +61,8 @@ class Future extends Model
             'icon' => 'nullable|string|max:80',
             'status' => 'required|string|min:1|max:32',
             'project_id' => 'required|integer|exists:projects,id',
-            'json' => 'required|array',
-            'links' => 'required|array',
+            'json' => 'required',
+            'links' => 'required',
             'is_active' => 'boolean',
             'is_locked' => 'boolean',
         ];
@@ -89,59 +95,64 @@ class Future extends Model
     public static function formFields(): array
     {
         return [
+            'title' => [
+                'type' => 'input',
+                'label' => 'Title',
+                'col_span' => 4,
+                'rows' => 1,
+                'placeholder' => 'Enter post title',
+                'required' => true
+            ],
+
+            'item' => [
+                'type' => 'input',
+                'label' => 'Item',
+                'col_span' => 4,
+                'rows' => 1,
+                'placeholder' => 'Enter post item',
+                'required' => true
+            ],
+
             'user_id' => [
                 'type' => 'select',
-                'label' => 'User',
-                'col_span' => 3,
-                'sequence' => 1,
+            'label' => 'User',
+                'col_span' => 4,
                 'options' => User::pluck('name', 'id'),
-                'help' => 'Select the user who owns this post'
+                'help' => 'Select the user who owns this record'
             ],
+
             'created_at' => [
                 'type' => 'datetime',
                 'label' => 'Created At',
-                'col_span' => 3,
-                'sequence' => 2,
+                'col_span' => 2,
                 'readonly' => true
             ],
             'updated_at' => [
                 'type' => 'datetime',
                 'label' => 'Updated At',
-                'col_span' => 3,
-                'sequence' => 3,
+                'col_span' => 2,
                 'readonly' => true
             ],
-            'item' => [
-                'type' => 'textarea',
-                'label' => 'Item',
-                'col_span' => 8,
-                'sequence' => 6,
-                'rows' => 1,
-                'placeholder' => 'Enter post item',
-                'required' => true
-            ],
-            'title' => [
-                'type' => 'textarea',
-                'label' => 'Title',
-                'col_span' => 8,
-                'sequence' => 6,
-                'rows' => 1,
-                'placeholder' => 'Enter post title',
-                'required' => true
-            ],
+
             'description' => [
                 'type' => 'textarea',
                 'label' => 'Description',
-                'col_span' => 5,
-                'sequence' => 7,
-                'rows' => 6,
+                'col_span' => 8,
+                'rows' => 2,
                 'required' => true
             ],
+            'project_id' => [
+                'type' => 'select',
+                'label' => 'Project',
+                'col_span' => 4,
+                'options' => Project::pluck('title', 'id'),
+                'help' => 'Select the project for this record'
+            ],
+
             'icon' => [
                 'type' => 'input',
                 'label' => 'Icon',
-                'col_span' => 4,
-                'sequence' => 6,
+                'col_span' => 2,
                 'rows' => 1,
                 'placeholder' => 'Enter icon',
                 'required' => true
@@ -149,8 +160,7 @@ class Future extends Model
             'status' => [
                 'type' => 'input',
                 'label' => 'Status',
-                'col_span' => 4,
-                'sequence' => 6,
+                'col_span' => 2,
                 'rows' => 1,
                 'placeholder' => 'Enter status',
                 'required' => true
@@ -158,38 +168,33 @@ class Future extends Model
             'json' => [
                 'type' => 'textarea',
                 'label' => 'JSON',
-                'col_span' => 3,
-                'sequence' => 8,
-                'rows' => 6,
+                'col_span' => 8,
+                'rows' => 2,
                 'help' => 'Use this to store unstructured data'
             ],
             'links' => [
                 'type' => 'textarea',
                 'label' => 'Links',
                 'col_span' => 8,
-                'sequence' => 9,
-                'rows' => 3,
+                'rows' => 2,
                 'help' => 'Link this post to other posts with different relationships'
             ],
             'switches' => [
                 'type' => 'label',
                 'label' => 'Switches',
                 'col_span' => 8,
-                'sequence' => 10,
                 'help' => 'This label separates the switches from the rest'
             ],
             'is_active' => [
                 'type' => 'switch',
                 'label' => 'Active',
                 'col_span' => 1,
-                'sequence' => 11,
                 'default' => true
             ],
             'is_locked' => [
                 'type' => 'switch',
                 'label' => 'Locked',
                 'col_span' => 1,
-                'sequence' => 12,
                 'default' => false
             ]
         ];

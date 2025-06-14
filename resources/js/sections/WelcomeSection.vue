@@ -150,7 +150,7 @@ const _editClass= computed(()=>{
 
     const _sectionTitle = _css.gray + _css.sectionTitle;
     const _sectionSubtitle = _css.gray + _css.sectionSubtitle ;
-    const _slogan = _css.slogan + _css.indigo;
+    const _slogan = _css.slogan + " text-indigo-800 dark:text-indigo-400 ";
 
 </script>
 
@@ -273,8 +273,7 @@ const _editClass= computed(()=>{
                   </div>
                 </dl>
 
-        <div v-if="_selfAuth" class="-mt-2 md:-mt-1 lg:mt-1 " :class= "_slogan">
-                  {{form.html}}
+                <div v-if="_selfAuth" class="-mt-2 md:-mt-1 lg:mt-1 " :class= "_slogan">
                 </div>
 
                 <!-- effect 

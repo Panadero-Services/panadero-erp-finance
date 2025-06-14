@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed } from 'vue';
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
@@ -42,12 +42,15 @@ const processHtml = (html) => {
     return html.replace(/<a data-inertia-link href="([^"]+)">([^<]+)<\/a>/g, '<inertia-link href="$1">$2 click on me</inertia-link>');
 }
 
-const _body = processHtml(props.record[props.config.body]);
+const _body = computed(() => {
+    if (!props.record?.[props.config.body]) return '';
+    return processHtml(props.record[props.config.body]);
+});
 
 // Update icon handler
-let _updateIcon = async (_id, _field, _value) => {    
+const _updateIcon = async (_id, _field, _value) => {    
     console.log('_updateIcon');
-    let i = {
+    const i = {
         id: _id,
         field: _field,
         value: _value
@@ -56,7 +59,12 @@ let _updateIcon = async (_id, _field, _value) => {
     _iconChangedId.value = _id;
     _iconChangedValue.value = _value;
     
-    let _response = await props.db.postUpdateIcon(props.table, i);
+    if (!props.db) {
+        console.error('Database connection not available');
+        return;
+    }
+    
+    const _response = await props.db.postUpdateIcon(props.table, i);
     console.log(_response);
 
     // logAction
@@ -65,24 +73,24 @@ let _updateIcon = async (_id, _field, _value) => {
         user_id: usePage().props.auth.user.id || 'no_uid',
         module: props.module, 
         node: 'none',
-        team: usePage().props.auth.user.current_team.name || 'no_team', 
+        team: usePage().props.auth.user.current_team.name || 'no_team',
         project: 'none', 
         content: _response.data,
         json: '{}',
         tags: `${props.module}, ${props.table}`,
     }
-    let _response2 = await props.db.logAction(_logData);
+    const _response2 = await props.db.logAction(_logData);
     console.log(_response2);
 }
 
 // Computed for formatted body
 const formattedBody = computed(() => {
-    return _body.replaceAll('.', '.<br>');
+    return _body.value.replaceAll('.', '.<br>');
 });
 
 // Computed for initials (Author initials - First and Last name)
 const initials = computed(() => {
-    if (!props.record.user?.name) return 'U';
+    if (!props.record?.user?.name) return 'U';
     const names = props.record.user.name.trim().split(' ');
     if (names.length >= 2) {
         return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
@@ -96,7 +104,7 @@ const statusFlags = computed(() => {
         key: flag,
         label: flag.replace('is_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
         icon: getIconForFlag(flag),
-        active: props.record[flag] == 1
+        active: props.record?.[flag] === 1
     }));
 });
 
@@ -127,13 +135,13 @@ const emit = defineEmits(['edit', 'show', 'delete']);
                         <div class="text-blue-600 dark:text-blue-300 font-bold text-base absolute top-2">{{ initials }}</div>
                     </div>
                     <div class="flex-1 text-center sm:text-lg">
-                        <h3 v-if="!(set.self=='nope')" @click="$emit('show', record.id)" class="line-clamp-1 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
-                            {{ record[config.title] }}
+                        <h3 v-if="!(set?.self==='nope')" @click="$emit('show', record?.id)" class="line-clamp-1 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
+                            {{ record?.[config.title] }}
                         </h3>
                         <h3 v-else class="font-semibold text-gray-900 dark:text-white line-clamp-1">
-                            {{ record[config.title] }}
+                            {{ record?.[config.title] }}
                         </h3>
-                        <p class="text-xxxs sm:text-xxs text-gray-500 dark:text-gray-500">Updated {{ formatDistance(record.updated_at, new Date()) }} ago</p>
+                        <p class="text-xxxs sm:text-xxs text-gray-500 dark:text-gray-500">Updated {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago</p>
                     </div>
                 </div>
 
@@ -157,7 +165,7 @@ const emit = defineEmits(['edit', 'show', 'delete']);
                             <CategorySectionIcon 
                                 v-for="flag in statusFlags"
                                 :key="flag.key"
-                                @click="_updateIcon(record.id, flag.key, record[flag.key]==0), record[flag.key] = record[flag.key] == 1 ? 0 : 1"
+                                @click="_updateIcon(record?.id ?? 0, flag.key, record?.[flag.key] === 0)"
                                 :icon="flag.icon"
                                 :activated="flag.active"
                                 :error="_false"
@@ -199,9 +207,9 @@ const emit = defineEmits(['edit', 'show', 'delete']);
                     <div v-else-if="activeTab === 'author' && config.showUser" class="space-y-2">
                         <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
                             <div class="flex-1">
-                                <p class="font-medium text-blue-700 dark:text-blue-400 text-xs -mt-4">{{ record.user.name }}</p>
+                                <p class="font-medium text-blue-700 dark:text-blue-400 text-xs -mt-4">{{ record?.user?.name ?? 'Unknown User' }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Author</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(record.user.created_at || Date.now()), new Date()) }} ago</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(record?.user?.created_at ?? Date.now()), new Date()) }} ago</p>
                             </div>
                         </div>
 
@@ -209,11 +217,11 @@ const emit = defineEmits(['edit', 'show', 'delete']);
                             <h4 class="font-medium text-blue-700 dark:text-blue-400 text-xs mb-2">Author Stats</h4>
                             <div class="grid grid-cols-2 gap-2 text-xs">
                                 <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ record.user.posts_count || 0 }}</div>
+                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ record?.user?.posts_count ?? 0 }}</div>
                                     <div class="text-gray-500 dark:text-gray-400">Posts</div>
                                 </div>
                                 <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ record.user.id }}</div>
+                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ record?.user?.id ?? 'N/A' }}</div>
                                     <div class="text-gray-500 dark:text-gray-400">User ID</div>
                                 </div>
                             </div>
@@ -225,20 +233,21 @@ const emit = defineEmits(['edit', 'show', 'delete']);
                 <div class="mt-auto">
                     <div class="flex space-x-1 w-full justify-between mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
                         <div class="mt-3 text-xs text-gray-500 dark:text-gray-500">
-                            id: {{ record.id }}
-                            <span v-if="config.showTags && record.tags" v-for="tag in record.tags" 
+                            id: {{ record?.id }}
+                            <span v-if="config.showTags && record?.tags" v-for="tag in record?.tags" 
+                                :key="tag.id"
                                 class="text-xxs bg-indigo-50 text-indigo-700 dark:text-indigo-200 dark:bg-indigo-900 dark:border-indigo-600 py-0.5 px-2 m-1 rounded-2xl border border-indigo-300">
                                 {{ tag.name }}
                             </span>
                         </div>
                         <div>
                             <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" 
-                                @click="$emit('show', record.id)">Show</button>
-                            <button v-if="!(set.self=='nope')" 
+                                @click="$emit('show', record?.id ?? 0)">Show</button>
+                            <button v-if="!(set?.self==='nope')" 
                                 class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" 
-                                @click="$emit('edit', record.id)">Edit</button>
+                                @click="$emit('edit', record?.id ?? 0)">Edit</button>
                             <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" 
-                                @click="$emit('delete', record.id)">Delete</button>
+                                @click="$emit('delete', record?.id ?? 0)">Delete</button>
                         </div>
                     </div>
                 </div>

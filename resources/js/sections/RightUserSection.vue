@@ -53,6 +53,7 @@ const formattedUser = computed(() =>
 
 // Cancel Handler
 const cancel = () => {
+  console.log("cancellled")
   open.value = false;
 };
 

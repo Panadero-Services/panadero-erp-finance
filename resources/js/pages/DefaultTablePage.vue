@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, provide, computed, onMounted } from 'vue';
 import { useForm } from "@inertiajs/vue3";
 
@@ -37,34 +37,31 @@ const props = defineProps({
     records: Object
 });
 
-
-THESE ARE THE PARAMETER WE USE TO BUILD UP THE RECORD AND PAGE.VUE FILE, REMOVE IN FINAL FILE
-MODULE: "home",
-TITLE: "Futures",
-MODEL: "Future",
-CONTROLLER: FutureController,
-RESOURCE: FutureResource,
-ROUTE: "home/futures",
-FILE: 'home/Futures',
-ICON: 'view-dashboard-outline',
-IMAGE: '',
-SLOGAN: 'Just do it, innovation at the heart of your businesss',
-TABLE: 'futures',
-TYPE: 'table' 
-
+// Configuration parameters - remove in final file
+const MODULE = "home";
+const TITLE = "Futures";
+const MODEL = "Future";
+const CONTROLLER = "FutureController";
+const RESOURCE = "FutureResource";
+const ROUTE = "home/futures";
+const FILE = 'home/Futures';
+const ICON = 'view-dashboard-outline';
+const IMAGE = '';
+const SLOGAN = 'Just do it, innovation at the heart of your businesss';
+const TABLE = 'futures';
+const TYPE = 'table';
 
 _set.domainFunction = MODULE;
 
-
 // variables
-const _module = MODULE
-const _table = TABLE
-const _model = MODEL
+const _module = MODULE;
+const _table = TABLE;
+const _model = MODEL;
 const keyIndex = ref(0);
 
 let _poolTimer; 
 let _pulse = ref(false);
-let editRecordMode= ref(false);
+let editRecordMode = ref(false);
 
 provide(/* key */ 'pulse', /* value */ _pulse);
 

@@ -259,11 +259,28 @@ export const useDbStore = defineStore('db', () => {
             });
         }
 
+    async function fetchApiRecords(table) {
+        try {
+            const response = await axios.get(`/api/${table}`, {
+                withCredentials: true,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            // Handle both Laravel API Resource format and direct array format
+            return Array.isArray(response.data) ? response.data : 
+                   (response.data.data || []);
+        } catch (error) {
+            console.error(`Error fetching records from /api/${table}:`, error);
+            return []; // Return empty array instead of throwing
+        }
+    }
 
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 
         insertTeam, insertProject, setUser, postUpdateIcon, logAction, getLabels,
-        getRecordById
+        getRecordById,
+        fetchApiRecords
     };
 });

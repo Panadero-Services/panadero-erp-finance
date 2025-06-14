@@ -1,0 +1,395 @@
+<script setup>
+import { ref, reactive, computed, onMounted } from 'vue';
+import { useForm, usePage } from "@inertiajs/vue3";
+import PostSearch from '@/components/PostSearch.vue';
+import { validateField, parseRules } from '@/utils/validators';
+import { Switch } from '@headlessui/vue';
+import { XMarkIcon } from '@heroicons/vue/24/outline';
+import TheButton from "@/panadero/components/TheButton.vue";
+import axios from 'axios';
+
+// Props
+const props = defineProps({
+  lng: String,
+  record: Object,
+  module: String,
+  table: String,
+  superSelfAdmin: Boolean,
+  db: Object,
+});
+
+const emit = defineEmits(['close', 'changeRecord']);
+
+// State & Refs
+const table = ref(props.table || 'posts');
+const titleColumn = ref(props.record.titleColumn || 'title');
+const idColumn = ref(props.record.idColumn || 'id');
+
+const fields = ref([]);
+
+// Projects list for project_id field
+
+// Load projects for project_id field
+onMounted(() => {
+
+  loadForm();
+  // Load projects if needed
+ // if (props.record.form_fields?.project_id?.type === 'select') {
+  //  loadProjects();
+  //}
+
+});
+
+
+// If you want to end up with a simple JS object (not a nested array) that looks like this:
+//{
+//  users: [ /* …user rows… */ ],
+//  projects: [ /* …project rows… */ ]
+// }
+//then don’t use an array at all. Instead, use a reactive object (or a ref to an object) and assign each table’s data by key:
+const projects = reactive({})
+
+// Initialize form with default values
+const loadForm = async () => {
+  try {
+    const initialForm = {};
+    Object.keys(props.record.form_fields || {}).forEach(field => {
+
+      initialForm[field] = props.record[field] || null;
+      if (props.record.form_fields[field].type === 'select') {
+          console.log('props.record. select found! ', props.record.form_fields[field].label);
+          const _table = (field).replace("_id","s");  
+          loadProjects(_table, field);
+      }
+    });
+    form.value = initialForm;
+
+
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  }
+};
+
+// Load projects for project_id field
+const loadProjects = async (_table, _field) => {
+  try {
+    const response = await axios.get('/api/'+_table);
+    projects[_field] = response.data
+
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  }
+};
+
+// Form setup
+const form = ref({});
+
+// Ensure json and links are arrays
+if (typeof form.json === 'string') {
+  try {
+    form.json = JSON.parse(form.json);
+  } catch (e) {
+    form.json = [];
+  }
+}
+
+if (typeof form.links === 'string') {
+  try {
+    form.links = JSON.parse(form.links);
+  } catch (e) {
+    form.links = [];
+  }
+}
+
+// Computed: validation
+const hasJsonLinkError = computed(() => {
+  try {
+    const links = JSON.parse(form.links);
+    return !Array.isArray(links) || links.some(link => typeof link !== 'object' || !link.link_id || !link.type);
+  } catch {
+    return true;
+  }
+});
+
+const hasJsonError = computed(() => (field) => {
+  if (!form[field]) return false;
+  try {
+    JSON.parse(form[field]);
+    return false;
+  } catch {
+    return true;
+  }
+});
+
+const links = computed(() => {
+  try {
+    return JSON.parse(form.links);
+  } catch {
+    return [];
+  }
+});
+
+const link = ref({ link_id: '', type: 'relates_to', link_title: '' });
+
+// Methods
+const addLink = () => {
+  const newLinks = [...links.value, link.value];
+  form.links = JSON.stringify(newLinks);
+};
+
+const removeLink = (index) => {
+  const newLinks = [...links.value];
+  newLinks.splice(index, 1);
+  form.links = JSON.stringify(newLinks);
+};
+
+const getRulesForField = (key) => {
+  return props.record.validation_rules?.[key]
+    ? parseRules(props.record.validation_rules[key])
+    : null;
+};
+
+const isInvalid = (key) => {
+  const rules = getRulesForField(key);
+  return !validateField(form[key], rules);
+};
+
+const getRuleText = (key) => props.record.validation_rules?.[key] || '';
+
+const isFormValid = computed(() =>
+  fields.value.every(field => {
+    const rules = getRulesForField(field);
+    return !rules || validateField(form[field], rules);
+  })
+);
+
+const submit = async () => {
+  if (!isFormValid.value) return;
+
+  // Format the data before submission
+  const formData = { ...form };
+  
+  // Process each field based on its type from form_fields
+  fields.value.forEach(field => {
+    const fieldConfig = props.record.form_fields?.[field];
+    if (!fieldConfig) return;
+
+    const value = formData[field];
+    
+    // Handle different field types
+    switch (fieldConfig.type) {
+      case 'json':
+      case 'array':
+        try {
+          formData[field] = typeof value === 'string' ? JSON.parse(value) : value;
+        } catch (e) {
+          console.error(`Error parsing ${field}:`, e);
+        }
+        break;
+      
+      case 'integer':
+      case 'number':
+        formData[field] = value ? parseInt(value) : null;
+        break;
+      
+      case 'boolean':
+        formData[field] = Boolean(value);
+        break;
+      
+      case 'string':
+        formData[field] = String(value);
+        break;
+    }
+  });
+
+  // Update the form with the formatted data
+  Object.keys(formData).forEach(key => {
+    form[key] = formData[key];
+  });
+
+  form.put(route(`${props.table}.update`, props.record.id), {
+    preserveScroll: true,
+    onSuccess: () => {
+      const user = usePage().props.auth.user;
+
+      props.db.logAction({
+        action: `${props.table}.update`,
+        user_id: user.id || 'no_uid',
+        module: props.module,
+        node: 'none',
+        team: user.current_team.name || 'no_team',
+        project: 'none',
+        content: form.title || 'none',
+        json: JSON.stringify(form),
+        tags: 'content, posts',
+      });
+
+      emit('close');
+    },
+    onError: (errors) => {
+      console.error('Form submission error:', errors);
+    },
+    onFinish: () => false,
+  });
+};
+
+// Display states
+const advancedMode = ref(false);
+let _switchSection = ".";
+
+// Style constants
+const _button = {
+  active: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400",
+  inactive: "w-16 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-300 ring-gray-300 dark:text-gray-800 dark:ring-gray-800",
+};
+
+const _input = {
+  base: "w-full pl-3 pr-10 py-2 text-xs rounded-md focus:outline-none focus:ring-1",
+  light: "bg-white border-gray-300 text-gray-700 focus:ring-indigo-500",
+  dark: "dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-indigo-600",
+  label: "block text-sm text-gray-700 dark:text-gray-200 font-bold",
+  info: "text-xxs text-gray-400 ml-1",
+  readOnly: "text-xxs text-gray-500 dark:text-gray-300",
+};
+
+const _container = {
+  base: "fixed inset-0 z-20 bg-black opacity-20 dark:opacity-75",
+};
+
+const _window = {
+  base: "z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500",
+  padding: "p-6 pt-10",
+  motion: "motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2",
+  light: "bg-gray-100 text-gray-600 from-gray-200/50 via-transparent",
+  dark: "dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600",
+};
+
+const _footer = {
+  base: "fixed left-1/2 transform -translate-x-1/2 w-full max-w-4xl p-4 bg-gray-100 dark:bg-gray-900 rounded-b-xl dark:border-gray-600",
+  switches: "fixed bottom-12 bg-gray-100 dark:bg-gray-900  border-t dark:border-gray-600",
+  buttons: "flex bottom-0 justify-end space-x-4 border-b",
+};
+</script>
+
+<template>
+  <div>
+    <div :class="_container.base" @click="$emit('close')">
+    </div>
+    <div :class="[_window.base, _window.padding, _window.motion, _window.light, _window.dark]">
+      <div class="h-full flex flex-col">
+        <!-- Content area -->
+        <div class="flex-1 overflow-y-auto">
+         <!--
+            Now projectsMap is an object, so
+            `Object.entries(projectsMap)` gives you
+            [ ['users', […]], ['projects', […]] ]
+          <div v-for="([table, rows], idx) in Object.entries(projects)" :key="table">
+            <h3>{{ table }} ({{ rows.length }} records)</h3>
+            <ul>
+              <li v-for="row in rows" :key="row.id" class="mt-2">
+                {{ row }}
+              </li>
+            </ul>
+          </div>
+          -->
+          <form @submit.prevent="submit" class="grid grid-cols-8 gap-4">
+            <template v-for="(fieldConfig, fieldName) in record.form_fields" :key="fieldName">
+              <div
+                :class="{
+                  'col-span-8': fieldConfig.col_span === 8,
+                  'col-span-6': fieldConfig.col_span === 6,
+                  'col-span-5': fieldConfig.col_span === 5,
+                  'col-span-4': fieldConfig.col_span === 4,
+                  'col-span-3': fieldConfig.col_span === 3,
+                  'col-span-2': fieldConfig.col_span === 2,
+                  'col-span-1': fieldConfig.col_span === 1 || !fieldConfig.col_span
+                }"
+              >
+                <!-- Label -->
+                <label :for="fieldName" class="block text-xs font-medium text-gray-700 dark:text-gray-200">
+                    <span v-if="!(getRuleText(fieldName) == 'boolean')">
+                    {{ getRuleText(fieldName) == 'boolean' ? f.replace('is_','') : fieldName }}
+                  </span>       
+                  <span v-if="getRuleText(fieldName) && (getRuleText(fieldName)!='boolean')" :class="isInvalid(fieldName) ? 'text-red-500' : 'text-gray-500'">({{ getRuleText(fieldName) }})</span>
+
+                  <!-- Validation message and character count -->
+                  <span v-if="isInvalid(fieldName)" class="text-xxs text-red-600 ml-4 pt-4">
+                    <div v-if="typeof form[fieldName] === 'string' && getRulesForField(fieldName)">
+                      <span v-for="rule in getRulesForField(fieldName)" :key="rule.name">
+
+                        <template v-if="['min', 'max'].includes(rule.name)">
+                          Length: {{ form[f]?.length || 0 }} /
+                          <span v-if="rule.name === 'min'">min {{ rule.param }}</span>
+                          <span v-if="rule.name === 'max'">max {{ rule.param }}</span>
+                        </template>
+                      </span>
+                    </div>
+                  </span>
+
+                </label>
+
+                <!-- Select Field -->
+                <div v-if="fieldConfig.type === 'select'" class="mt-1">
+                  <select
+                    v-model="form[fieldName]"
+                    :id="fieldName"
+                    class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    :required="record.validation_rules?.[fieldName]?.includes('required')"
+                  >
+                    <option value="">Select {{ fieldConfig.label }}</option>
+                    <option 
+                      v-for="project in projects[fieldName]" 
+                      :key="project.id" 
+                      :value="project.id"
+                    >
+                      {{ project.title }}
+                    </option>
+                  </select>
+                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
+                </div>
+
+                <!-- Boolean Switch -->
+                <div v-else-if="fieldConfig.type === 'boolean'" class="mt-1">
+                  <Switch v-model="form[fieldName]"
+                    :class="[
+                      form[fieldName] ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-600',
+                      'relative inline-flex h-6 w-11 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none'
+                    ]"
+                  >
+                    <span aria-hidden="true"
+                      :class="[
+                        form[fieldName] ? 'translate-x-5' : 'translate-x-0',
+                        'inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-200 shadow transition'
+                      ]"
+                    />
+                  </Switch>
+                </div>
+
+                <!-- Default Input -->
+                <input
+                  v-else
+                  :type="fieldConfig.type || 'text'"
+                  :id="fieldName"
+                  v-model="form[fieldName]"
+                  :class="[
+                    _input.base,
+                    _input.light,
+                    _input.dark,
+                    isInvalid(fieldName) ? 'border-red-500' : ''
+                  ]"
+                  :required="record.validation_rules?.[fieldName]?.includes('required')"
+                />
+              </div>
+            </template>
+          </form>
+        </div>
+
+        <!-- Fixed footer with buttons -->
+        <div :class="[_footer.base, _footer.buttons]">
+          <button @click="$emit('close')" type="button" :class="[_button.active]">Cancel</button>
+          <button v-if="superSelfAdmin" @click="submit" type="button" :class="[_button.active]">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

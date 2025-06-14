@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
+use App\Models\Project;
+use App\Models\Future;
 use App\Http\Controllers\SomethingController;
 use App\Http\Middleware\VerifyFastApiKey;
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -10,6 +12,7 @@ use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\ProviderController;
 use OpenAI\OpenAI;
+use App\Http\Resources\UserResource;
 
 Route::apiResource('providers', ProviderController::class);
 
@@ -39,14 +42,34 @@ Route::get('/adm', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('test_user', function (){
-    return Post::take(5)->get();
+    return User::take(25)->get();
 });
 
 Route::get('whatever', function (){
     return Post::take(51)->get();
 });
 
+Route::get('projects', function (){
+    return Project::take(25)->get();
+});
 
+Route::get('futures', function (){
+    return Future::take(50)->get();
+});
+
+Route::get('posts', function (){
+    return Post::take(50)->get();
+});
+
+
+
+
+Route::get('users', function (Request $request) {
+    if (!$request->user()) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+    return UserResource::collection(User::take(25)->get());
+})->middleware('auth:sanctum');
 
 Route::get('u', function (Request $request){
     $response = $request;
@@ -157,3 +180,6 @@ Route::post('/ai/chat', function (Request $request) {
         ], 500);
     }
 });
+
+// Add this at the end or in the appropriate section for API resources
+Route::get('/resource/{table}', [\App\Http\Controllers\ResourceController::class, 'index']);

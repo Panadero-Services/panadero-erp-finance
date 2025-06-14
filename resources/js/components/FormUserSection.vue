@@ -9,8 +9,6 @@ const hasActions = computed(() => !! useSlots().actions);
 
 <template>
     <div class="">
-
-
         <div class=" md:mt-0 md:col-span-2">
             <form @submit.prevent="$emit('submitted')">
                 <div

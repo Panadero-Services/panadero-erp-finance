@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Future;
+use App\Models\Page;
+use App\Models\Section;
+use App\Http\Resources\FutureResource;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,14 +14,43 @@ class FutureController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $futures = Future::with(['user', 'project'])
-            ->where('is_active', true)
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-        return response()->json($futures);
+        $query = Future::with(['user', 'project']);
+        
+        // Handle search functionality
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $searchFields = $request->get('search_fields', 'title');
+            $fieldsArray = explode(',', $searchFields);
+            
+            $query->where(function ($q) use ($searchTerm, $fieldsArray) {
+                foreach ($fieldsArray as $field) {
+                    switch (trim($field)) {
+                        case 'title':
+                            $q->orWhere('title', 'like', '%' . $searchTerm . '%');
+                            break;
+                        case 'description':
+                            $q->orWhere('description', 'like', '%' . $searchTerm . '%');
+                            break;
+                        case 'author':
+                            $q->orWhereHas('user', function ($subQ) use ($searchTerm) {
+                                $subQ->where('name', 'like', '%' . $searchTerm . '%');
+                            });
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // Order by most recent first
+        $query->orderBy('created_at', 'desc');
+        
+        return inertia('home/Futures', [
+            'records' => FutureResource::collection($query->paginate(12)->appends($request->query())),
+            'page' => Page::with('sections')->where('title', 'home/futures')->first(),
+            'baseSections' => Section::where('page_id', '0')->get()
+        ]);
     }
 
     /**
@@ -44,13 +76,33 @@ class FutureController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Future $future)
+    public function update(Request $request)
     {
+        $future = Future::findOrFail($request->id);
+        
+        // Convert json and links to arrays if they're strings
+        $data = $request->all();
+        if (isset($data['json']) && is_string($data['json'])) {
+            $data['json'] = json_decode($data['json'], true) ?? [];
+        }
+        if (isset($data['links']) && is_string($data['links'])) {
+            $data['links'] = json_decode($data['links'], true) ?? [];
+        }
+        
+        // Ensure user_id and project_id are integers
+        if (isset($data['user_id'])) {
+            $data['user_id'] = (int) $data['user_id'];
+        }
+        if (isset($data['project_id'])) {
+            $data['project_id'] = (int) $data['project_id'];
+        }
+        
+        // Validate using model's validation rules
         $validated = $request->validate(Future::validationRules());
         
         $future->update($validated);
-
-        return response()->json($future);
+        
+        return back();
     }
 
     /**
