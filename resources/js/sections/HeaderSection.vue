@@ -105,7 +105,7 @@ const _wallet = computed(() => {
 //const _menu= "text-xs lg:text-sm font-normal text-gray-700 hover:text-black hover:font-semibold dark:text-gray-300 dark:hover:text-yellow-400 ";
 
 const _layout = {
-  main   : "grid grid-cols-8 h-18 md:h-12 border-b border-white dark:border-gray-900 text-xs max-w-11xl" ,  //  max-w-7xl
+  main   : "grid grid-cols-8 h-18 md:h-12  border-white dark:border-gray-900 text-xs max-w-11xl" ,  //  max-w-7xl
   header : "col-span-8" , 
   left   : "col-span-8 md:col-span-4 mt-2 lg:mt-1 text-left text-xs uppercase", 
   right  : "col-span-8 md:col-span-4 mt-2 lg:mt-1", 
@@ -123,7 +123,7 @@ const _layout = {
         <!--left slot -->
         <template v-if="set.isMetaMask" #left="leftProps">     
             <div> 
-                <div class="flex items-center space-x-1 md:space-x-2 p-3">
+                <div class="flex items-center space-x-1 md:space-x-2 p-3 bg-gray-100 dark:bg-slate-950">
                     <Link href="/">
                         <span><img class="m-0.5 hover:rotate-45 dark:brightness-200" :class="_icon" :src="logo"/></span>
                     </Link>
@@ -141,7 +141,7 @@ const _layout = {
        <!--right slot -->
         <template #right="rightProps">
             <!-- SELF Section -->
-            <div class=" "> 
+            <div class=" bg-gray-100 dark:bg-slate-950"> 
                 <div class="flex items-end text-right justify-end space-x-1 md:space-x-2 md:p-3">
                     <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && set.self=='nope')" @click="_getNextSelf"><img class="hover:scale-150 hover:rotate-45 h-3 w-3 mb-1 dark:brightness-200" :src="logo"/> </span>
                     <span v-if="(!(set.wallet=='0x0') && set.isMetaMask && !(set.self=='nope'))" ><img class="hover:rotate-45 h-3 w-3 mb-1 dark:brightness-200" :src="logo"/> </span>

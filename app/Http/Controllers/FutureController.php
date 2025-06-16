@@ -102,7 +102,11 @@ class FutureController extends Controller
         
         $future->update($validated);
         
-        return back();
+        return redirect()->back()->with('flash', [
+            'banner' => 'FutureController: update passed id:' . $request->id,
+            'bannerStyle' => 'success'
+        ]);
+
     }
 
     /**

@@ -11,7 +11,14 @@ use App\Http\Middleware\EnsureTokenIsValid;
 
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\ProviderController;
-use OpenAI\OpenAI;
+use OpenAI\Client;
+use OpenAI\Transporters\HttpTransporter;
+use OpenAI\ValueObjects\Transporter\BaseUri;
+use OpenAI\ValueObjects\Transporter\Headers;
+use OpenAI\ValueObjects\ApiKey;
+use OpenAI\ValueObjects\Transporter\QueryParams;
+use OpenAI\ValueObjects\Transporter\Payload;
+use GuzzleHttp\Client as GuzzleClient;
 use App\Http\Resources\UserResource;
 
 Route::apiResource('providers', ProviderController::class);
@@ -135,23 +142,30 @@ Route::post('/ai/chat', function (Request $request) {
             }
         }
 
-        $client = OpenAI::client(config('services.openai.api_key'));
+        $httpClient = new GuzzleClient();
+        $baseUri = BaseUri::from('https://api.openai.com/v1');
+        $apiKey = ApiKey::from(config('services.openai.api_key'));
+        $headers = Headers::withAuthorization($apiKey);
+        $queryParams = QueryParams::create();
+        $streamHandler = function ($response) {
+            return $response;
+        };
+        $transporter = new HttpTransporter($httpClient, $baseUri, $headers, $queryParams, $streamHandler);
+        $client = new Client($transporter);
         
         // Enhanced system prompt with post context
         $systemPrompt = "You are a helpful AI assistant for a business software platform. You can help with business process automation, data analysis, software recommendations, and technical support. Be concise but informative in your responses.\n\n";
         $systemPrompt .= "Here are some relevant posts from our knowledge base that might help you provide better answers. When referencing these posts, mention their titles and categories:\n\n{$context}";
 
-        // Prepare the conversation history with relevant posts
-        $messages = array_merge([
-            ['role' => 'system', 'content' => $systemPrompt]
-        ], $context);
-
-        // Add the current message
-        $messages[] = ['role' => 'user', 'content' => $message];
+        // Prepare the conversation history
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+            ['role' => 'user', 'content' => $message]
+        ];
 
         // Generate response
         $response = $client->chat()->create([
-            'model' => 'gpt-4',
+            'model' => 'gpt-3.5-turbo',
             'messages' => $messages,
             'temperature' => 0.7,
             'max_tokens' => 500,

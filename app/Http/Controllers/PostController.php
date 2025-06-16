@@ -136,6 +136,12 @@ class PostController extends Controller
         $newPost->is_archived = $request->is_archived;
         $newPost->save();
 
+
+    return redirect()->back()->with('flash', [
+        'banner' => 'PostController: update passed id:' . $request->id,
+        'bannerStyle' => 'success'
+    ]);
+
         //return 'PostController: update passed id:' . $request->id . ' title:'. $request->title;
     }
     /**

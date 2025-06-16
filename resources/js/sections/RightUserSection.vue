@@ -150,7 +150,7 @@ const buttonStyles = {
                     <!-- Actions -->
                     <div class="grid grid-cols-5 gap-2 mt-4 px-3">
                       <button type="submit" :class="buttonStyles.default">Save</button>
-                      <button type="button" @click="cancel" :class="buttonStyles.default">Cancel</button>
+                      <button type="button" @click="cancel" :class="buttonStyles.default" @cancel="cancel">Cancel</button>
                     </div>
 
                   </form>

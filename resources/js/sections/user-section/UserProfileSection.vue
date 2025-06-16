@@ -16,6 +16,8 @@ const props = defineProps({
     user: Object
 });
 
+const emit = defineEmits(['cancel']);
+
 const form = useForm({
     user: props.user,
     mode: props.set.mode
@@ -135,15 +137,11 @@ const _update = async () => {
 
 const _button = "rounded-md border border-indigo-400 py-1 px-3 mr-1 text-sm font-medium shadow-sm hover:bg-indigo-700 hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 mt-2 disabled:opacity-25";
 
-
-
 const baseButton = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset";
 const buttonStyles = {
   default: `${baseButton} bg-white dark:bg-black min-w-16 text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 dark:hover:ring-indigo-400`,
   disabled: `${baseButton} text-gray-300 ring-gray-300 dark:text-gray-600 dark:ring-gray-600`,
 };
-
-
 
 </script>
 <template>
@@ -195,8 +193,10 @@ const buttonStyles = {
 				<button type="update" :disabled="_oUpdate.loading" @click="_update" :class="buttonStyles.default">Save</button>
 			</div>
 			<div>
-				<button type="cancel" :disabled="_oUpdate.loading" @click="_cancel" :class="buttonStyles.default">Cancel</button>
+				<button type="button" :disabled="_oUpdate.loading" @click="emit('cancel')" :class="buttonStyles.default">Cancel</button>
 			</div>
+
+
 
 		</div>
 	</div>

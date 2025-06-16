@@ -49,14 +49,19 @@ let showRecordMode= ref(false);
 let editRecordMode= ref(false);
 
 // Search functionality
-const searchQuery = ref("");
-const selectedFields = ref(["title"]); // Default to title only, array for multiple selection
+const searchQuery = ref('');
 const isSearching = ref(false);
+const searchTimeout = ref(null);
+const selectedFields = ref(['title', 'content', 'author']);
 const searchFields = [
   { value: "title", label: "Title" },
   { value: "content", label: "Content" },
   { value: "author", label: "Author" }
 ];
+
+const showFieldPopup = ref(false);
+const isInputFocused = ref(false);
+const searchInput = ref(null);
 
 // Initialize search from URL parameters and auto-focus
 onMounted(() => {
@@ -84,7 +89,6 @@ onMounted(() => {
 });
 
 // Server-side search using Inertia
-let searchTimeout;
 const performSearch = () => {
   const query = searchQuery.value.trim();
   
@@ -115,8 +119,8 @@ const performSearch = () => {
 
 // Debounced search
 const handleSearchInput = () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
+  clearTimeout(searchTimeout.value);
+  searchTimeout.value = setTimeout(() => {
     performSearch();
   }, 400); // 400ms debounce for server requests
 };
@@ -124,59 +128,44 @@ const handleSearchInput = () => {
 // Watch for search field changes
 watch(selectedFields, () => {
   if (searchQuery.value.trim()) {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
+    clearTimeout(searchTimeout.value);
+    searchTimeout.value = setTimeout(() => {
       performSearch();
     }, 200); // Shorter delay for field changes
   }
 }, { deep: true });
 
 // Keyboard shortcuts
-const handleKeydown = (event) => {
-  // Cmd + Ctrl + K to focus search
-  if (event.metaKey && event.ctrlKey && event.key === 'k') {
-    event.preventDefault();
-    const searchInput = document.querySelector('input[name="search"]');
-    if (searchInput) {
-      searchInput.focus();
-      searchInput.select();
+const handleKeydown = (event: KeyboardEvent) => {
+    // Focus search with ⌘K
+    if (event.key === 'k' && (event.metaKey || event.ctrlKey) && !event.altKey) {
+        event.preventDefault();
+        if (searchInput.value) {
+            searchInput.value.focus();
+            searchInput.value.select();
+        }
     }
-  }
-  // Escape to clear search
-  if (event.key === 'Escape' && searchQuery.value) {
-    searchQuery.value = '';
-    performSearch();
-  }
-  // Cmd + Ctrl + T to toggle Title field
-  if (event.metaKey && event.ctrlKey && event.key === 't') {
-    event.preventDefault();
-    const titleIndex = selectedFields.value.indexOf('title');
-    if (titleIndex > -1) {
-      selectedFields.value.splice(titleIndex, 1);
-    } else {
-      selectedFields.value.push('title');
+    // Clear search with Escape
+    else if (event.key === 'Escape' && searchQuery.value) {
+        event.preventDefault();
+        searchQuery.value = '';
+        performSearch();
     }
-  }
-  // Cmd + Ctrl + C to toggle Content field
-  if (event.metaKey && event.ctrlKey && event.key === 'c') {
-    event.preventDefault();
-    const contentIndex = selectedFields.value.indexOf('content');
-    if (contentIndex > -1) {
-      selectedFields.value.splice(contentIndex, 1);
-    } else {
-      selectedFields.value.push('content');
+    // Toggle title field with ⌘⌃T
+    else if (event.key === 't' && (event.metaKey || event.ctrlKey) && event.altKey) {
+        event.preventDefault();
+        toggleField('title');
     }
-  }
-  // Cmd + Ctrl + A to toggle Author field
-  if (event.metaKey && event.ctrlKey && event.key === 'a') {
-    event.preventDefault();
-    const authorIndex = selectedFields.value.indexOf('author');
-    if (authorIndex > -1) {
-      selectedFields.value.splice(authorIndex, 1);
-    } else {
-      selectedFields.value.push('author');
+    // Toggle content field with ⌘⌃C
+    else if (event.key === 'c' && (event.metaKey || event.ctrlKey) && event.altKey) {
+        event.preventDefault();
+        toggleField('content');
     }
-  }
+    // Toggle author field with ⌘⌃A
+    else if (event.key === 'a' && (event.metaKey || event.ctrlKey) && event.altKey) {
+        event.preventDefault();
+        toggleField('author');
+    }
 };
 
 // Add keyboard event listener
@@ -187,7 +176,7 @@ onMounted(() => {
 // Clean up on unmount
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeydown);
-  clearTimeout(searchTimeout);
+  clearTimeout(searchTimeout.value);
 });
 
 provide(/* key */ 'pulse', /* value */ _pulse);
@@ -273,6 +262,28 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
 
 const refreshPage = () => { window.location.reload(); };
 
+// Close popup when clicking outside
+const closePopup = () => {
+    showFieldPopup.value = false;
+};
+
+// Handle click outside
+onMounted(() => {
+    document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.field-popup') && !target.closest('.field-button')) {
+            closePopup();
+        }
+    });
+});
+
+// Close popup when input is focused
+watch(isInputFocused, (focused) => {
+    if (focused) {
+        closePopup();
+    }
+});
+
 </script>
 
 <template>
@@ -320,18 +331,18 @@ const refreshPage = () => { window.location.reload(); };
                 <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
                 <button @click="refreshPage" type="button" :class="_button">Refresh</button>
             </div>      
-            <div class="flex flex-col lg:flex-row gap-4" id="toolbar">
-                <div class="lg:w-80">
-                    <div class="relative">
-                        <input 
-                            v-model="searchQuery" 
+            <div class="flex flex-col lg:flex-row gap-2" id="toolbar">
+                <div class="lg:w-64">
+                    <div class="relative mt-2">
+                        <input
+                            ref="searchInput"
+                            v-model="searchQuery"
+                            type="text"
+                            :placeholder="`Search in ${selectedFields.map(f => searchFields.find(sf => sf.value === f)?.label).join(', ')}...`"
+                            class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-2 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-400 sm:text-sm sm:leading-6 bg-white dark:bg-gray-800"
                             @input="handleSearchInput"
-                            name="search" 
-                            type="text" 
-                            autocomplete="off" 
-                            :disabled="isSearching"
-                            class="w-full rounded-sm bg-gray-50 dark:bg-slate-950 px-3 py-1.5 pr-12 text-sm text-gray-600 dark:text-gray-300 focus:ring-0 focus:outline-none border border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed" 
-                            :placeholder="`Search in ${selectedFields.map(f => searchFields.find(sf => sf.value === f)?.label).join(', ')}...`" 
+                            @focus="isInputFocused = true"
+                            @blur="isInputFocused = false"
                         />
                         <div class="absolute right-2 top-1/2 transform -translate-y-1/2 text-xs text-gray-400 hidden sm:block">
                             <svg v-if="isSearching" class="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -342,36 +353,66 @@ const refreshPage = () => { window.location.reload(); };
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
-                        Press <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃K</kbd> to focus, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Esc</kbd> to clear
+                        Press <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xxs">⌘K</kbd> to focus, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xxs">Esc</kbd> to clear
                     </p>
        
                 </div>
-                <div class="flex-1">
-                    <div class="flex flex-wrap gap-4 mt-2">
-                        <div v-for="field in searchFields" :key="field.value" class="flex items-center">
-                            <input 
-                                :id="`field-${field.value}`"
-                                v-model="selectedFields"
-                                :value="field.value"
-                                type="checkbox"
-                                :disabled="isSearching"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded disabled:opacity-50"
-                            />
-                            <label 
-                                :for="`field-${field.value}`" 
-                                class="ml-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                <div class="flex-1 mt-2">
+                    <div class="flex items-center space-x-2">
+                        <!-- Field Selection Button -->
+                        <div class="relative">
+                            <button 
+                                @click.stop="showFieldPopup = !showFieldPopup"
+                                class="field-button px-3 py-1 text-xs rounded-md ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400 transition-colors"
                             >
-                                {{ field.label }}
-                            </label>
+                                Fields: {{ selectedFields.length }}
+                            </button>
+                            
+                            <!-- Field Selection Popup -->
+                            <div v-if="showFieldPopup && !isInputFocused" @click.stop class="field-popup absolute top-full mt-2 left-0 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg p-2 z-50 min-w-[200px]">
+                                <div class="space-y-2">
+                                    
+                                   <div class="grid grid-cols-2">
+                                    <!-- Field Selection -->
+
+                                    <div class="space-y-1 border-r border-gray-200 dark:border-gray-600">
+                                        <div v-for="field in searchFields" :key="field.value" class="flex items-center px-2 py-1">
+                                            <input 
+                                                :id="`field-${field.value}`"
+                                                v-model="selectedFields"
+                                                :value="field.value"
+                                                type="checkbox"
+                                                :disabled="isSearching"
+                                                class="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded disabled:opacity-50"
+                                            />
+                                            <label 
+                                                :for="`field-${field.value}`" 
+                                                class="ml-2 text-xxs text-gray-700 dark:text-gray-300 cursor-pointer"
+                                            >
+                                                {{ field.label }}
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Divider -->
+
+                                    <!-- Keyboard Shortcuts -->
+                                    <div class="px-2 space-y-1 ml-2">
+                                        <p class="text-xxs text-gray-500 dark:text-gray-400">
+                                        </p>
+                                        <p class="text-xxs text-gray-500 dark:text-gray-400 space-y-1">
+                                            <p>Toggle fields: </p>
+                                            <p><kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xxs">⌘⌃T</kbd> Title</p>
+                                            <p><kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xxs">⌘⌃C</kbd> Content</p>
+                                            <p><kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xxs">⌘⌃A</kbd> Author</p>
+                                        </p>
+                                    </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block mt-2">
-                        Toggle fields: <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃T</kbd> Title, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃C</kbd> Content, <kbd class="px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">⌘⌃A</kbd> Author
-                    </p>
-
-
                 </div>
             </div>
         </div>

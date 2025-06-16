@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Head, usePage } from '@inertiajs/vue3'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { Head, usePage, router } from '@inertiajs/vue3'
 
 // Icons
 import {
@@ -40,6 +40,26 @@ const myTeamRight = ref(null)
 const myUserRight = ref(null)
 const myFooterSlide = ref(null)
 
+// Reactive variable to hold the remaining time until token expiration
+const remainingTime = ref(null);
+
+// Store the initial expiration time
+const expirationTime = ref(Date.now() + (2 * 60 * 60 * 1000)); // 2 hours from now
+
+// Add computed property for progress percentage
+const progressPercentage = computed(() => {
+  if (remainingTime.value === null) return 100;
+  return (remainingTime.value / (2 * 60 * 60)) * 100; // 2 hours in seconds
+});
+
+// Add computed property for progress bar color
+const progressBarColor = computed(() => {
+  const percentage = progressPercentage.value;
+  if (percentage > 60) return 'bg-green-500 dark:bg-green-600';
+  if (percentage > 30) return 'bg-yellow-500 dark:bg-yellow-500';
+  return 'bg-red-500 dark:bg-red-600';
+});
+
 // Generic toggle utility
 const toggleRef = (refVar) => { refVar.value.open = !refVar.value.open }
 const _toggleFooter = () => toggleRef(myFooterSlide)
@@ -78,7 +98,43 @@ const _sideSpacing = "mx-3"
 
 const page = usePage();
 
+// Check token expiration every minute
+const checkTokenExpiration = () => {
+  // Get session token from meta tag
+  const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  
+  if (token) {
+    try {
+      const currentTime = Date.now();
+      
+      // Calculate remaining time in seconds
+      const remainingSeconds = Math.max(0, Math.floor((expirationTime.value - currentTime) / 1000));
+      remainingTime.value = remainingSeconds;
+      
+      // If token is expired or will expire in the next minute
+      if (currentTime >= expirationTime.value || (expirationTime.value - currentTime) < 60000) {
+        // Log out the user
+        router.post('/logout', {}, {
+          onSuccess: () => {
+            window.location.href = '/login';
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+      remainingTime.value = null;
+    }
+  } else {
+    remainingTime.value = null;
+  }
+};
+
+// Set up intervals
+let tokenCheckInterval;
+let countdownInterval;
+
 onMounted(() => {
+  console.log('Component mounted');
   if (!page.props.auth.user) {
     const currentPath = window.location.pathname;
     sessionStorage.setItem('intendedDestination', currentPath);
@@ -90,18 +146,53 @@ onMounted(() => {
       window.location.href = intendedDestination;
     }
   }
+
+  // Set initial time to 2 hours (7200 seconds)
+  remainingTime.value = 2 * 60 * 60;
+  
+  // Check token immediately on mount
+  checkTokenExpiration();
+  
+  // Update countdown every second
+  countdownInterval = setInterval(() => {
+    if (remainingTime.value > 0) {
+      remainingTime.value--;
+    }
+  }, 1000);
+  
+  // Check token validity every minute
+  tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
 });
+
+onUnmounted(() => {
+  // Clean up intervals when component is unmounted
+  if (tokenCheckInterval) {
+    clearInterval(tokenCheckInterval);
+  }
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+  }
+});
+
+
+const _tooltip = computed(() => {
+  //return "Asdf";
+return "Auto log off: "+ Math.floor(remainingTime.value / 60) +"m " +remainingTime.value % 60 +"s";
+});
+
+
 </script>
 
 <template>
-  <html class="overscroll-none" :class="set.dark ? 'dark bg-black' : 'light bg-indigo-50'">
-    <div class="bg-slate-50 text-black/50 dark:bg-black dark:text-white/50 h-screen w-screen font-roboto">
+  <html class="overscroll-none" :class="set.dark ? 'dark bg-black' : 'light bg-indigo-100'">
+    <div class="bg-slate-100 text-black/50 dark:bg-slate-950 dark:text-white/50 h-screen w-screen font-roboto">
       <Head :title="title" />
 
       <!-- Header Section -->
       <template v-if="$slots.header">
         <div :class="_sideSpacing">
           <Banner />
+
           <slot name="header" />
           <div v-for="section in baseSections" :key="section.file">
                 <HeaderSection
@@ -131,11 +222,27 @@ onMounted(() => {
       <!-- Intro Slot -->
       <template v-if="$slots.intro">
         <slot name="intro" />
+
+
+        
+      <!-- Optionally display remaining time -->
+      <div v-if="remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
+        <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
+          <div :title="_tooltip"
+            :class="[progressBarColor, 'h-full transition-all duration-500 ease-out']"
+            :style="{ width: `${progressPercentage}%`, minWidth: '2px' }"
+          ></div>
+        </div>
+      </div>
+
+
       </template>
 
       <!-- Main Content -->
       <template v-if="$slots.default">
-        <div class="bg-gray-100 dark:bg-black flex">
+
+        <div class="bg-gray-50 dark:bg-black flex">
+
           <!-- Sidebar -->
           <div
             v-if="set.layout.sidebar"
@@ -211,7 +318,10 @@ onMounted(() => {
           class="w-10 px-2.5 pb-3 mx-2"
           :class="_indigo"
         />
+
       </template>
+
+
     </div>
   </html>
 </template>

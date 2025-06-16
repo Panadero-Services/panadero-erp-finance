@@ -79,11 +79,19 @@ const handleRecordChange = (recordData) => {
 };
 
 const _whatever = async (_nr) => {
-   console.log(_nr);
-   _activeRecord.value = props.records.data.filter(x => x.id ==_nr)[0];
-   console.log(_activeRecord.value);
-   console.log(_nr);
-    editRecordMode.value = true;
+   console.log('Loading record:', _nr);
+   const record = props.records.data.find(x => x.id === _nr);
+   if (!record) {
+     console.error('Record not found:', _nr);
+     return;
+   }
+   console.log('Found record:', record);
+   _activeRecord.value = {
+     ...record,
+     form_fields: record.form_fields || {},
+     validation_rules: record.validation_rules || {}
+   };
+   editRecordMode.value = true;
 }
 
 const _superSelfAdmin = computed(() => {

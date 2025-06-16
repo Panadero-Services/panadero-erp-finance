@@ -44,9 +44,6 @@ const form = useForm({
   ...props.record
 });
 
-console.log('Initial record:', props.record);
-console.log('Initial form data:', form);
-
 // Relations list for dynamic select fields
 const relations = reactive({});
 
@@ -58,10 +55,8 @@ const linksTable = computed(() => {
 // Initialize form with default values
 const loadForm = async () => {
   try {
-    
     const initialForm = {};
     Object.keys(props.record.form_fields || {}).forEach(field => {
-      
       // For select fields, use the specific relation ID from the record
       if (props.record.form_fields[field].type === 'select') {
         // Get the relation ID from the record (e.g., user_id, project_id)
