@@ -54,10 +54,15 @@ const progressPercentage = computed(() => {
 
 // Add computed property for progress bar color
 const progressBarColor = computed(() => {
-  const percentage = progressPercentage.value;
-  if (percentage > 60) return 'bg-green-500 dark:bg-green-600';
-  if (percentage > 30) return 'bg-yellow-500 dark:bg-yellow-500';
+  if (progressPercentage.value > 60) return 'bg-green-500 dark:bg-green-600';
+  if (progressPercentage.value > 30) return 'bg-yellow-500 dark:bg-yellow-500';
   return 'bg-red-500 dark:bg-red-600';
+});
+
+const progressTextColor = computed(() => {
+  if (progressPercentage.value > 60) return 'text-green-500 dark:text-green-600';
+  if (progressPercentage.value > 30) return 'text-yellow-500 dark:text-yellow-500';
+  return 'text-red-500 dark:text-red-600';
 });
 
 // Generic toggle utility
@@ -217,24 +222,22 @@ return "Auto log off: "+ Math.floor(remainingTime.value / 60) +"m " +remainingTi
           <RightUserSection ref="myUserRight" :user="$page.props.auth.user" />
           <FooterSlideSection ref="myFooterSlide" :set="set" />
         </div>
+
       </template>
 
       <!-- Intro Slot -->
       <template v-if="$slots.intro">
         <slot name="intro" />
-
-
         
-      <!-- Optionally display remaining time -->
-      <div v-if="remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
-        <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
-          <div :title="_tooltip"
-            :class="[progressBarColor, 'h-full transition-all duration-500 ease-out']"
-            :style="{ width: `${progressPercentage}%`, minWidth: '2px' }"
-          ></div>
-        </div>
-      </div>
-
+          <!-- Optionally display remaining time -->
+          <div v-if="remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
+            <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
+              <div :title="_tooltip"
+                :class="[progressBarColor, 'h-full transition-all duration-500 ease-out']"
+                :style="{ width: `${progressPercentage}%`, minWidth: '2px' }"
+              ></div>
+            </div><span v-if="remainingTime<4000" class="-mt-1 text-xxs font-bold"  :class="['h-full transition-all duration-500 ease-out', progressTextColor]">{{_tooltip}}</span>
+          </div>
 
       </template>
 

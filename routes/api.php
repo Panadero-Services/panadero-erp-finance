@@ -20,6 +20,7 @@ use OpenAI\ValueObjects\Transporter\QueryParams;
 use OpenAI\ValueObjects\Transporter\Payload;
 use GuzzleHttp\Client as GuzzleClient;
 use App\Http\Resources\UserResource;
+use App\Http\Controllers\ModelConfigController;
 
 Route::apiResource('providers', ProviderController::class);
 
@@ -89,7 +90,7 @@ Route::post('/example', [SomethingController::class, 'justAnExample'])
 
 // Model configuration
 Route::get('/model-config/{module}/{table}', [ModelConfigController::class, 'getModelConfig'])
-    ->middleware(['auth:sanctum', 'verified']);
+    ->middleware(['web', 'auth:sanctum']);
 
 /*
 Route::get('/examplez', [SomethingController::class, 'justAnExample']);

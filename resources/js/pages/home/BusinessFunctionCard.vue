@@ -2,7 +2,7 @@
 import ApplicationLogo from '@/components/logoSelf.vue';
 import { EnvelopeIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon, RectangleGroupIcon, PencilSquareIcon, BarsArrowUpIcon, BuildingOfficeIcon, ClipboardDocumentCheckIcon, CubeTransparentIcon, CreditCardIcon, RocketLaunchIcon, LanguageIcon, DevicePhoneMobileIcon, TruckIcon, PuzzlePieceIcon } from '@heroicons/vue/24/outline';
 
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link } from '@inertiajs/vue3';
 import NavLink from '@/components/NavLink.vue';
 
 
@@ -14,9 +14,18 @@ const props = defineProps({
     progress: Number
 });
 
-const _navigate = () =>  {
-    router.push(props.f.url); 
-}
+//const _navigate = () =>  {
+//    router.push(props.f.url); 
+//}
+
+const _navigate = () => {
+    router.visit(props.f.url, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true
+    });
+};
+
 
 
 // css
@@ -45,7 +54,7 @@ const _feature = "h-5 w-5 m-2 text-gray-500 dark:text-white";
                         <span class="font-bold text-sm text-gray-50 dark:text-gray-300">{{f.item}}</span>
                     </div>
 
-                    <div @click="_navigate" class="flex mt-4 pt-3 text-black dark:text-white text-xl text-center"> 
+                    <Link :href="f.url" class="flex mt-4 pt-3 text-black dark:text-white text-xl text-center"> 
                           <RectangleGroupIcon v-if="'I3FrameworkIcon'==f.icon" :class="_feature" aria-hidden="true" />
                           <PencilSquareIcon v-if="'ContentManagementIcon'==f.icon"  :class="_feature" aria-hidden="true" />
                           <BarsArrowUpIcon v-if="'ResourcePlanningIcon'==f.icon"  :class="_feature" aria-hidden="true" />
@@ -65,7 +74,7 @@ const _feature = "h-5 w-5 m-2 text-gray-500 dark:text-white";
                           <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
                           <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
                             {{f.title}}
-                    </div>
+                    </Link>
 
                     <div class="text-gray-600 dark:text-gray-400 text-xxs text-center"> Business Service </div>
 

@@ -393,20 +393,9 @@ const closePopups = () => {
                       →
                     </div>
                   </div>
-
-
-
-
                     </div>
                   </div>
-
-
-
-                  
                 </div>
-
-
-                
               </div>
 
               <!-- Status Tab -->

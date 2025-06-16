@@ -3,7 +3,7 @@ import { ref, computed } from 'vue';
 import ApplicationLogo from '@/components/logoSelf.vue';
 import { EnvelopeIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon, RectangleGroupIcon, PencilSquareIcon, BarsArrowUpIcon, BuildingOfficeIcon, ClipboardDocumentCheckIcon, CubeTransparentIcon, CreditCardIcon, RocketLaunchIcon, LanguageIcon, DevicePhoneMobileIcon, TruckIcon, PuzzlePieceIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
 
-import { usePage } from '@inertiajs/vue3';
+import { usePage, Link, router } from '@inertiajs/vue3';
 import NavLink from '@/components/NavLink.vue';
 
 
@@ -24,9 +24,13 @@ const handleEdit = (event) => {
   emit('edit', props.f);
 };
 
-const _navigate = () =>  {
-    router.push(props.f.url); 
-}
+const _navigate = () => {
+    router.visit(props.f.url, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true
+    });
+};
 
 const showPopup = ref(false);
 
@@ -37,9 +41,17 @@ const togglePopup = () => {
 const navigateTo = (url) => {
   const page = usePage();
   if (page.props.auth.user) {
-    window.location.href = url;
+    router.visit(url || props.f.url, {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true
+    });
   } else {
-    window.location.href = '/login';
+    router.visit('/login', {
+      preserveState: true,
+      preserveScroll: true,
+      replace: true
+    });
   }
 };
 

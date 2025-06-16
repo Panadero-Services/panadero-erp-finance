@@ -141,8 +141,6 @@ const keyUpResolve = async (_selfResolve) => {
     selfResolve.value = _selfResolve;
 }
 
-
-
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 const services = ref([]);
