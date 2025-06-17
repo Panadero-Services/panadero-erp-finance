@@ -69,9 +69,6 @@ Route::get('posts', function (){
     return Post::take(50)->get();
 });
 
-
-
-
 Route::get('users', function (Request $request) {
     if (!$request->user()) {
         return response()->json(['message' => 'Unauthorized'], 401);

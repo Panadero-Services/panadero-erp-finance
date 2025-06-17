@@ -34,6 +34,7 @@ class FutureResource extends JsonResource
             'validation_rules' => $this->resource::validationRules(),
             'form_fields' => $this->resource::formFields(),
             'links_table' => $this->resource::linksTable(),
+            'searchable_columns' => (new $this->resource)->getSearchableColumns(),
         ];
     }
 } 

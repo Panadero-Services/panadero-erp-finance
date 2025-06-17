@@ -356,12 +356,6 @@ const propsDefinition = computed(() => ({
                 <slot></slot>
               </div>
 
-
-
-
-
-
-
               <!-- Relations Tab -->
               <div v-else-if="activeTab === 'relations'" :class="['space-y-2', fontSizeClass]">
                 <!-- Debug info (only when raw data is shown) -->
@@ -373,7 +367,7 @@ const propsDefinition = computed(() => ({
                 <div v-if="relatedLinks.length === 0" class="text-center text-gray-500 dark:text-gray-400 p-4">
                   <div>No relations found</div>
                 </div>
-                <div v-else class="grid gap-2">
+                <div v-else class="grid gap-2" :class="modalSize=='standard' ? 'grid-cols-2' : 'grid-cols-3'">
                   <div v-for="(link, index) in relatedLinks" 
                        :key="index" 
                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors cursor-pointer"
@@ -408,7 +402,7 @@ const propsDefinition = computed(() => ({
               <div class="flex items-center justify-between w-full mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
                 <!-- Left side: ID -->
                 <div class="text-xs text-gray-500 dark:text-gray-500">
-                  ID: {{ id }}
+                  ID: {{ id }} 
                 </div>
                 
                 <!-- Center: Controls -->

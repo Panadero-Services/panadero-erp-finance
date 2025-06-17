@@ -1,6 +1,7 @@
 <script setup>
 import { ref, provide, computed, onMounted } from 'vue';
-import { useForm } from "@inertiajs/vue3";
+import { useForm, router } from "@inertiajs/vue3";
+import axios from 'axios';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -171,8 +172,17 @@ const handleDelete = (id) => {
 };
 
 
-const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+const handleSearch = (searchQuery) => {
+    if (searchQuery.length > 2 || searchQuery.length === 0) {
+        axios.get(`/api/futures?search=${searchQuery}`).then(response => {
+            props.records.data = response.data;
+            console.log(searchQuery);
+        });
 
+    }
+};
+
+const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 </script>
 
@@ -214,9 +224,16 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
       <template #default>
          <div id="futures" class="w-full min-h-4 min-w-full">
 
-            <div class="flex my-2">
-                <ButtonAndSearch />
-            </div>
+<div class="flex my-2">
+    <ButtonAndSearch 
+        :module="_module"
+        :table="_table"
+        :buttonText="'New Future'"
+        :placeholder="'Search futures...'"
+        :searchRoute="'/api/futures'"
+        @search="handleSearch"
+    />
+</div>
 
             <!-- Cards Section-->
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">

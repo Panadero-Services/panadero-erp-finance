@@ -36,7 +36,7 @@ const activeTab = ref(props.preservedActiveTab || 'content');
 // Modal size and display options
 const modalSize = ref(props.preservedModalSize || 'standard');
 const showRawData = ref(false);
-const fontSize = ref(props.preservedFontSize || 'sm');
+const fontSize = ref(props.preservedFontSize || 'xs');
 
 // Size configurations
 const sizeConfig = {
