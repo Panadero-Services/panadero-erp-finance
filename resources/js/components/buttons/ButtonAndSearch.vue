@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { router } from '@inertiajs/vue3';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
+import Button0 from '@/components/buttons/button0.vue';
 
 const props = defineProps({
   module: {
@@ -58,15 +59,31 @@ const handleSearch = () => {
   }
 };
 
-const _button = " mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
+
 
 </script>
 
 <template>
-  <div class="flex items-center justify-between mb-4">
-   
-    <div class="min-w-64">
-      <button @click="isSearching=!isSearching" type="button" :class="_button">Search</button>
+    <div class="flex flex-col lg:flex-row gap-4 mb-4">
+      <!-- Left container -->
+      <div class="flex-shrink-0 pl-2 h-12 space-x-1">
+
+  <Button0 name="Search" @click="isSearching=!isSearching" />
+
+  <Button0 name="Search" outline />
+  <Button0 name="Search" />
+  <Button0 variant="primary" >Search</Button0>
+  <Button0 variant="primary" outline>Search</Button0>
+  <Button0 variant="secondary">Search</Button0>
+  <Button0 variant="success" outline>Search</Button0>
+  <Button0 variant="danger">Search</Button0>
+  <Button0 variant="warning" outline>Search</Button0>
+  <Button0 variant="info">Search</Button0>
+  <Button0 variant="dark">Search</Button0>
+
+
+
+
     </div>
 
     <!-- Search Bar -->
@@ -76,12 +93,21 @@ const _button = " mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600
           <MagnifyingGlassIcon class="h-4 w-4 text-gray-400" />
         </div>
         <input
-          type="text"
+          ref="searchInput"
           v-model="searchQuery"
+          type="text"
           :placeholder="placeholder"
-          class="block w-full pl-10 pr-3 py-0.5 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0.5 focus:ring-blue-500 focus:border-blue-500 sm:text-xs"
+          class="block w-full rounded-md border-0 pl-10  pt-1 pb-0.5 text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:ring-1 focus:ring-inset focus:ring-indigo-600 dark:focus:ring-indigo-400 sm:text-xs sm:leading-6 bg-white dark:bg-gray-800"
           @keyup.enter="handleSearch"
         />
+        <label 
+            class="ml-2 text-xxs text-gray-700 dark:text-gray-300 cursor-pointer"
+        >
+abc        </label>
+
+
+
+
         <div v-if="isSearching" class="absolute inset-y-0 right-0 pr-3 flex items-center">
           <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
         </div>

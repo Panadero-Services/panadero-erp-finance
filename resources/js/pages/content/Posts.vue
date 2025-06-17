@@ -24,6 +24,9 @@ import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 import { useDbStore } from '@/stores/db';
 
+import Button0 from '@/components/buttons/button.vue';
+
+
 const _set = useSettingsStore();
 const _contract = useContractStore();
 const _db = useDbStore();
@@ -257,9 +260,6 @@ const _superSelfAdmin = computed(() => {
   return _set.superSelfAdmins.includes(_set.self);
 });
 
-
-const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
-
 const refreshPage = () => { window.location.reload(); };
 
 // Close popup when clicking outside
@@ -340,10 +340,11 @@ const toggleField = (field) => {
             
             <div class="flex flex-col lg:flex-row gap-4 mb-4">
                 <!-- Left container -->
-                <div class="flex-shrink-0 pl-2 h-12">
-                    <button @click="_set.dark=false" type="button" :class="_button">Light</button>
-                    <button @click="_set.dark=true" type="button" :class="_button">Dark</button>
-                    <button @click="refreshPage" type="button" :class="_button">Refresh</button>
+                <div class="flex-shrink-0 pl-2 h-12 mt-2">
+                    <Button0 name="Light" @click="_set.dark=false" />
+                    <Button0 name="Dark" @click="_set.dark=true" />
+                    <Button0 name="Refresh" @click="refreshPage" />
+
                 </div>   
 
                 <!-- Right container -->
