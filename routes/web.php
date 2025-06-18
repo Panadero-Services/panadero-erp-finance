@@ -76,11 +76,11 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
         ->name('users.index')
         ->middleware('can:admin-access');
 
-    // Profiel bijwerken
+    // Profiel bijwerken (accessible to any authenticated and verified user)
     Route::post('/updateuserprofile', [UserController::class, 'updateProfile'])
         ->name('updateuserprofile');
 
-    // Profielfoto uploaden
+    // Profielfoto uploaden (accessible to any authenticated and verified user)
     Route::post('/photo-upload', [UserController::class, 'upload'])
         ->name('photo.upload');
 });

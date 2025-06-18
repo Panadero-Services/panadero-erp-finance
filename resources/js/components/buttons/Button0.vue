@@ -78,8 +78,8 @@ const buttonClasses = computed(() => {
 	// Variant classes
 	const variantClasses = {
 		default: props.outline
-			? 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/50'
-			: 'bg-white border dark:border-0 border-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
+			? 'border border-gray-300 dark:border-gray-600 text-gray-700 dark:bg-gray-800 dark:text-gray-400 hover:border-indigo-600 dark:hover:border-indigo-400 '
+			: 'bg-white border dark:border-0 border-gray-300 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
 		primary: props.outline
 			? 'border border-blue-600 text-blue-600 hover:bg-blue-50'
 			: 'bg-blue-600 text-white hover:bg-blue-700',

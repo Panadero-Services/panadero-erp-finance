@@ -18,8 +18,9 @@ if (sanctumToken) {
 // Enable credentials
 window.axios.defaults.withCredentials = true;
 
+
 // Add response interceptor for handling 401 errors
-window.axios.interceptors.response.use(
+/*window.axios.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 401) {
@@ -27,6 +28,19 @@ window.axios.interceptors.response.use(
             sessionStorage.setItem('intended_url', window.location.href);
             // Redirect to login
             window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+*/
+
+window.axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401) {
+            // sessionStorage.setItem('intended_url', window.location.href);
+            // window.location.href = '/login'; // <--- comment this out
+            debugger; // <-- add this to pause JS execution
         }
         return Promise.reject(error);
     }

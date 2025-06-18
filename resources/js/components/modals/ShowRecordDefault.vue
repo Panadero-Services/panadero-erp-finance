@@ -263,73 +263,73 @@ onMounted(() => {
         <div class="sticky top-0">
           <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Content Index</h3>
           <div class="space-y-1">
-            <button
+                <button 
               v-for="section in contentSections"
               :key="section.id"
               @click="scrollToSection(section.id)"
               class="w-full text-left px-2 py-1 text-xs rounded hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300"
             >
               {{ section.index }}. {{ section.title }}
-            </button>
-          </div>
-        </div>
-      </div>
+                </button>
+                </div>
+              </div>
+            </div>
 
 
 
       <!-- Main Content -->
-      <div :class="[showContentIndex ? 'flex-1' : 'w-full']">
-        <div v-if="showRawData" :class="[
-          'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto font-mono',
-          fontSizeClass
-        ]">
-          {{ formattedBody }}
-        </div>
-        <div v-else>
-          <!-- Content with sections for indexing -->
-          <div v-if="showContentIndex" class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto">
-            <div v-for="section in contentSections" 
-                 :key="section.id" 
-                 :id="section.id"
-                 :class="['mb-4 pb-2', fontSizeClass]">
-              <div class="text-gray-700 dark:text-gray-300">
-                {{ section.content }}<span v-if="section.index < contentSections.length">.</span>
+                <div :class="[showContentIndex ? 'flex-1' : 'w-full']">
+                  <div v-if="showRawData" :class="[
+                    'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto font-mono',
+                    fontSizeClass
+                  ]">
+                    {{ formattedBody }}
+                  </div>
+                  <div v-else>
+                    <!-- Content with sections for indexing -->
+                    <div v-if="showContentIndex" class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto">
+                      <div v-for="section in contentSections" 
+                           :key="section.id" 
+                           :id="section.id"
+                           :class="['mb-4 pb-2', fontSizeClass]">
+                        <div class="text-gray-700 dark:text-gray-300">
+                          {{ section.content }}<span v-if="section.index < contentSections.length">.</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Regular content for standard mode -->
+                    <div v-else :class="[
+                      'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto',
+                      fontSizeClass
+                    ]" v-html="formattedBody">
+                    </div>
+                  </div>
+                </div>
+
+
               </div>
-            </div>
-          </div>
-          <!-- Regular content for standard mode -->
-          <div v-else :class="[
-            'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto',
-            fontSizeClass
-          ]" v-html="formattedBody">
-          </div>
-        </div>
-      </div>
+
+              <!-- Status Tab -->
 
 
-    </div>
+              <!-- Details Tab -->
+              <div v-else-if="activeTab === 'details'" class="grid grid-cols-2 gap-2">
+                <div v-for="field in displayFields" 
+                     :key="field" 
+                     class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                  <div class="flex-1">
+                    <p :class="['font-medium text-blue-700 dark:text-blue-400 capitalize', fontSizeClass]">{{ field.replace('_', ' ') }}</p>
+                    <p v-if="showRawData" :class="['text-gray-500 dark:text-gray-400 mt-1 break-words font-mono', fontSizeClass]">
+                      {{ record[field] || 'N/A' }}
+                    </p>
+                    <p v-else :class="['text-gray-500 dark:text-gray-400 mt-1 break-words', fontSizeClass]">
+                      {{ record[field] || 'N/A' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-    <!-- Status Tab -->
-
-
-    <!-- Details Tab -->
-    <div v-else-if="activeTab === 'details'" class="grid grid-cols-2 gap-2">
-      <div v-for="field in displayFields" 
-           :key="field" 
-           class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-        <div class="flex-1">
-          <p :class="['font-medium text-blue-700 dark:text-blue-400 capitalize', fontSizeClass]">{{ field.replace('_', ' ') }}</p>
-          <p v-if="showRawData" :class="['text-gray-500 dark:text-gray-400 mt-1 break-words font-mono', fontSizeClass]">
-            {{ record[field] || 'N/A' }}
-          </p>
-          <p v-else :class="['text-gray-500 dark:text-gray-400 mt-1 break-words', fontSizeClass]">
-            {{ record[field] || 'N/A' }}
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Relations Tab -->
+              <!-- Relations Tab -->
 
   </ModalLayout>
 </template>

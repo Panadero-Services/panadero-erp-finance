@@ -9,6 +9,8 @@ import TheButton from "@/panadero/components/TheButton.vue";
 import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 
+const page = usePage();
+
 // Types
 
 // Props
@@ -87,10 +89,24 @@ const loadForm = async () => {
 // Load relations for select fields
 const loadRelations = async (_table, _field) => {
   try {
-    const response = await props.db.fetchApiRecords(_table);
-    relations[_field] = response;
+    // Use a non-blocking approach to prevent page refresh
+    // For now, we'll skip loading relations on modal open to prevent refresh
+    // Relations can be loaded when user actually interacts with select fields
+    relations[_field] = [];
+    
+    // Alternative: Use a timeout to delay the API call
+    setTimeout(async () => {
+      try {
+        const response = await props.db.fetchApiRecords(_table);
+        relations[_field] = response;
+      } catch (error) {
+        console.error('Error fetching relations:', error);
+        relations[_field] = [];
+      }
+    }, 100);
   } catch (error) {
-    console.error('Error fetching relations:', error);
+    console.error('Error in loadRelations:', error);
+    relations[_field] = [];
   }
 };
 
@@ -151,16 +167,20 @@ const submit = async () => {
     onError: (errors) => {
       console.error('Form submission error:', errors);
     },
-    onFinish: () => false,
+    onFinish: () => true,
   });
 };
 
 // Initialize form on mount
 onMounted(() => {
   if (!props.record.id) return;
-  loadForm();
+  if ( usePage().props.auth &&  usePage().props.auth.user) {
+    loadForm();
+  } else {
+    // Optionally, show a message or redirect
+    console.warn('User not authenticated, not loading form.');
+  }
 });
-
 // Display states
 const advancedMode = ref(false);
 let _switchSection = ".";

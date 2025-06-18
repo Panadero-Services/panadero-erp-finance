@@ -5,6 +5,7 @@ import axios from 'axios';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
+import SearchWithPopup from '@/components/inputs/SearchWithPopup.vue';
 
 // usePage
 import { usePage } from '@inertiajs/vue3';
@@ -28,7 +29,7 @@ import Pagination from '@/layouts/Pagination.vue';
 import RecordCardDefault from '@/components/cards/RecordCardDefault.vue';
 import EditRecordDefault from '@/components/modals/EditRecordDefault.vue';
 
-import ButtonAndSearch from '@/components/buttons/ButtonAndSearch.vue';
+import Search from '@/components/inputs/Search.vue';
 
 const props = defineProps({
     page: Object,
@@ -172,21 +173,31 @@ const handleDelete = (id) => {
 };
 
 
-const handleSearch = (searchQuery) => {
-    if (searchQuery.length > 2 || searchQuery.length === 0) {
-        axios.get(`/api/futures?search=${searchQuery}`).then(response => {
-            props.records.data = response.data;
-            console.log(searchQuery);
+const handleSearch = (searchData) => {
+    if (searchData.query.length > 2 || searchData.query.length === 0) {
+        // Build search parameters
+        const searchParams = {
+            search: searchData.query || undefined,
+            search_fields: searchData.query && searchData.fields.length > 0 ? searchData.fields.join(',') : undefined,
+        };
+        
+        // Remove undefined values
+        Object.keys(searchParams).forEach(key => 
+            searchParams[key] === undefined && delete searchParams[key]
+        );
+        
+        // Use Inertia router to make the request
+        router.get(window.location.pathname, searchParams, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
         });
-
     }
 };
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 </script>
-
-
 
 <template>
    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
@@ -208,6 +219,7 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
 
          <div v-if="editRecordMode" class="col-span-2 md:col-span-1 mt-4 sm:mt-12 lg:mt-16 mx-4 sm:mx-6 lg:mx-8">
             <EditRecordDefault
+                :key="keyIndex"
                 :record="_activeRecord"
                 :module="_module"
                 :table="_table"
@@ -224,16 +236,14 @@ const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gr
       <template #default>
          <div id="futures" class="w-full min-h-4 min-w-full">
 
-<div class="flex my-2">
-    <ButtonAndSearch 
-        :module="_module"
-        :table="_table"
-        :buttonText="'New Future'"
-        :placeholder="'Search futures...'"
-        :searchRoute="'/api/futures'"
-        @search="handleSearch"
-    />
-</div>
+            <div class="flex my-2">
+                <SearchWithPopup
+                    :searchableColumns="['id','item', 'title', 'description']"
+                    placeholder="Search futures....."
+                    buttonText="Search"
+                    @search="handleSearch"
+                />
+            </div>
 
             <!-- Cards Section-->
             <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
