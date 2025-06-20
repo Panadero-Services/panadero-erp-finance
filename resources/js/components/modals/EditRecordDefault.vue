@@ -6,7 +6,7 @@ import { validateField, parseRules } from '@/utils/validators';
 import { Switch } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import TheButton from "@/panadero/components/TheButton.vue";
-import axios from 'axios';
+//import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 
 const page = usePage();
@@ -313,7 +313,7 @@ const removeLink = (index) => {
                     <!-- Show relations if they exist, otherwise show options -->
                     <template v-if="relations[String(fieldName)]?.length">
                       <option v-for="relation in relations[String(fieldName)]" :key="String(relation.id)" :value="String(relation.id)" :selected="String(relation.id) === String(form[String(fieldName)])">
-                        {{ relation.title }}
+                       {{ relation.id || relation.name}} {{ relation.title || relation.name}}
                       </option>
                     </template>
                     <template v-else>

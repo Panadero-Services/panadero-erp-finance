@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
+//import axios from 'axios';
 
 export const useDbStore = defineStore('db', () => {
     const records = ref([]);
@@ -211,7 +211,7 @@ export const useDbStore = defineStore('db', () => {
 
     // logs.store
     async function logAction(_logData) {
-        console.log(_logData);
+        //console.log(_logData);
         try {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             if (!csrfToken) {
@@ -259,23 +259,61 @@ export const useDbStore = defineStore('db', () => {
             });
         }
 
-    async function fetchApiRecords(table) {
-        try {
-            const response = await axios.get(`/api/${table}`, {
-                withCredentials: true,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-            // Handle both Laravel API Resource format and direct array format
-            return Array.isArray(response.data) ? response.data : 
-                   (response.data.data || []);
-        } catch (error) {
-            console.error(`Error fetching records from /api/${table}:`, error);
-            return []; // Return empty array instead of throwing
-        }
-    }
 
+
+async function ensureAuthenticated() {
+    try {
+        await axios.get('/sanctum/csrf-cookie');
+        // Now make your API call
+    } catch (error) {
+        console.error('Error getting CSRF cookie:', error);
+    }
+}
+
+// Modified fetchApiRecords
+/*async function fetchApiRecords(table) {
+    try {
+        await ensureAuthenticated();
+        const response = await axios.get(`/api/${table}`);
+        return Array.isArray(response.data) ? response.data : 
+               (response.data.data || []);
+    } catch (error) {
+        console.error(`Error fetching records from /api/${table}:`, error);
+        return [];
+    }
+}
+*/
+
+async function fetchApiRecords(table) {
+    try {
+        await ensureAuthenticated();
+
+        const response = await axios.get(`/api/${table}`, {
+            withCredentials: true,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+                'X-XSRF-TOKEN': getCookie('XSRF-TOKEN')
+            }
+        });
+        // Handle both Laravel API Resource format and direct array format
+        return Array.isArray(response.data) ? response.data : 
+               (response.data.data || []);
+    } catch (error) {
+        console.error(`Error fetching records from /api/${table}:`, error);
+        return []; // Return empty array instead of throwing
+    }
+}
+
+
+
+
+// Helper function to get cookie value
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
     return {
         records, debugMode, payload, usdPrice, nRecords,
         setDebugMode, setState, getState, set, get, getPrice, 

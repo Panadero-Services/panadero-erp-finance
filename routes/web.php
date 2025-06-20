@@ -46,6 +46,18 @@ use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FutureController;
 
+
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+
+Route::get('/adm', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+
 Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
 
 Route::get('/photo-test', function () {
@@ -475,6 +487,29 @@ Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'upd
 Route::resource('logs',LogController::class);
 
 Route::get('/getrecordbyid',[\App\Http\Controllers\PostController::class, 'getrecordbyid'])->name('getrecordbyid');
+
+
+
+// Add this debugging middleware to your Laravel route to see what's happening server-side:
+Route::middleware(['web', 'auth:sanctum'])->group(function () {
+    Route::get('/api/users', function () {
+        \Log::info('Session ID: ' . session()->getId());
+        \Log::info('User authenticated: ' . auth()->check());
+        \Log::info('Session data: ', session()->all());
+        
+        if (!auth()->check()) {
+            return response()->json([
+                'error' => 'Unauthenticated',
+                'session_present' => session()->has('auth'),
+                'session_id' => session()->getId()
+            ], 401);
+        }
+        
+        // Your original users route logic here
+        return \App\Models\User::all();
+    });
+});
+
 
 //Route::get('/logs/criteria', [LogController::class, 'criteria']);
 

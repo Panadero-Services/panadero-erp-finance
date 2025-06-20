@@ -105,25 +105,21 @@ const page = usePage();
 
 // Check token expiration every minute
 const checkTokenExpiration = () => {
-  // Get session token from meta tag
   const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
   
   if (token) {
     try {
       const currentTime = Date.now();
-      
-      // Calculate remaining time in seconds
       const remainingSeconds = Math.max(0, Math.floor((expirationTime.value - currentTime) / 1000));
       remainingTime.value = remainingSeconds;
       
-      // If token is expired or will expire in the next minute
       if (currentTime >= expirationTime.value || (expirationTime.value - currentTime) < 60000) {
-        // Log out the user
-        router.post('/logout', {}, {
-          onSuccess: () => {
-            window.location.href = '/login';
-          }
-        });
+        // Clear any stored data
+        sessionStorage.clear();
+        localStorage.clear();
+        
+        // Force redirect to login
+        window.location.replace('/login');
       }
     } catch (error) {
       console.error('Error checking token expiration:', error);
@@ -227,7 +223,6 @@ return "Auto log off: "+ Math.floor(remainingTime.value / 60) +"m " +remainingTi
 
       <!-- Intro Slot -->
       <template v-if="$slots.intro">
-        <slot name="intro" />
         
           <!-- Optionally display remaining time -->
           <div v-if="remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
@@ -284,11 +279,21 @@ return "Auto log off: "+ Math.floor(remainingTime.value / 60) +"m " +remainingTi
               </ul>
             </nav>
           </div>
-
-          <!-- Main Slot Content -->
-          <div :class="_sideSpacing">
-            <slot name="default" />
+      
+        <div>
+        
+          <!-- Intro Slot Content - Independent -->
+          <div class="w-full">
+              <slot name="intro" />
           </div>
+
+          <!-- Main Slot Content - Independent -->
+          <div class="w-full">
+              <slot name="default" />
+          </div>
+
+        </div>
+
         </div>
       </template>
 

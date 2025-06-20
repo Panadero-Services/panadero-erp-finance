@@ -1,46 +1,56 @@
 import axios from 'axios';
 window.axios = axios;
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// Helper function to get cookie value
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
 
-// Get CSRF token from meta tag
+// Base configuration
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+// CSRF token from meta tag
 const token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
-    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+} else {
+    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
-// Set up Sanctum token
-const sanctumToken = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
-if (sanctumToken) {
-    window.axios.defaults.headers.common['X-XSRF-TOKEN'] = decodeURIComponent(sanctumToken[1]);
-}
-
-// Enable credentials
-window.axios.defaults.withCredentials = true;
-
-
-// Add response interceptor for handling 401 errors
-/*window.axios.interceptors.response.use(
-    response => response,
-    error => {
-        if (error.response?.status === 401) {
-            // Store the current URL for redirect after login
-            sessionStorage.setItem('intended_url', window.location.href);
-            // Redirect to login
-            window.location.href = '/login';
-        }
-        return Promise.reject(error);
+// Request interceptor for XSRF token
+axios.interceptors.request.use(config => {
+    // Get the latest XSRF token from cookie before each request
+    const xsrfToken = getCookie('XSRF-TOKEN');
+    if (xsrfToken) {
+        config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
     }
-);
-*/
+    return config;
+}, error => {
+    return Promise.reject(error);
+});
 
-window.axios.interceptors.response.use(
+// Response interceptor for handling 401 errors
+axios.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 401) {
-            // sessionStorage.setItem('intended_url', window.location.href);
-            // window.location.href = '/login'; // <--- comment this out
-            debugger; // <-- add this to pause JS execution
+            console.error('Authentication error:', error);
+            
+            // Log all cookies individually
+            document.cookie.split(';').forEach(cookie => {
+                console.log('Cookie:', cookie.trim());
+            });
+            
+            // Check specifically for session cookie
+            const sessionCookie = getCookie('i3v1_self_saas_session');
+            console.log('Session cookie present:', !!sessionCookie);
+            
+            console.log('Headers sent:', error.config?.headers);
+            console.log('Full error response:', error.response?.data);
+            debugger;
         }
         return Promise.reject(error);
     }

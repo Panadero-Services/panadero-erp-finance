@@ -40,14 +40,6 @@ Route::prefix('bots')->group(function () {
     Route::get('/{id}/status', [BotController::class, 'status']);
 });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-
-Route::get('/adm', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 Route::get('test_user', function (){
     return User::take(25)->get();

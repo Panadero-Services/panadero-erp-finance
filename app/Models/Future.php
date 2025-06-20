@@ -68,12 +68,14 @@ class Future extends Model
         ];
     }
 
-    public function getSearchableColumns(): array
+    public static function getSearchableColumns(): array
     {
         return [
             'item',
             'title',
-            'description'
+            'description',
+            'json',
+            'links'
         ];
     }
 
@@ -197,6 +199,131 @@ class Future extends Model
                 'col_span' => 1,
                 'default' => false
             ]
+        ];
+    }
+
+    public static function getTableColumns(): array
+    {
+        return [
+            [
+                'key' => 'id',
+                'label' => 'ID',
+                'type' => 'text',
+                'width' => 'w-16',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'item',
+                'label' => 'Item',
+                'type' => 'text',
+                'width' => 'w-32',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'title',
+                'label' => 'Title',
+                'type' => 'text',
+                'width' => 'w-48',
+                'formatter' => 'text',
+                'clickable' => true
+            ],
+            [
+                'key' => 'description',
+                'label' => 'Description',
+                'type' => 'text',
+                'width' => 'w-64',
+                'formatter' => 'truncate'
+            ],
+            [
+                'key' => 'color',
+                'label' => 'Color',
+                'type' => 'color',
+                'width' => 'w-24',
+                'formatter' => 'color'
+            ],
+            [
+                'key' => 'version',
+                'label' => 'Version',
+                'type' => 'text',
+                'width' => 'w-24',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'icon',
+                'label' => 'Icon',
+                'type' => 'text',
+                'width' => 'w-24',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'status',
+                'label' => 'Status',
+                'type' => 'status',
+                'width' => 'w-32',
+                'formatter' => 'status'
+            ],
+            [
+                'key' => 'user',
+                'label' => 'User',
+                'type' => 'relation',
+                'width' => 'w-32',
+                'formatter' => 'text',
+                'relationField' => 'name'
+            ],
+            [
+                'key' => 'project',
+                'label' => 'Project',
+                'type' => 'relation',
+                'width' => 'w-32',
+                'formatter' => 'text',
+                'relationField' => 'title'
+            ],
+            [
+                'key' => 'is_active',
+                'label' => 'Active',
+                'type' => 'boolean',
+                'width' => 'w-24',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_locked',
+                'label' => 'Locked',
+                'type' => 'boolean',
+                'width' => 'w-24',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'created_at',
+                'label' => 'Created',
+                'type' => 'date',
+                'width' => 'w-32',
+                'formatter' => 'date'
+            ],
+            [
+                'key' => 'updated_at',
+                'label' => 'Updated',
+                'type' => 'date',
+                'width' => 'w-32',
+                'formatter' => 'date'
+            ],
+            [
+                'key' => 'actions',
+                'label' => 'Actions',
+                'type' => 'actions',
+                'width' => 'w-24',
+                'formatter' => 'actions'
+            ]
+        ];
+    }
+
+    public static function getStatusMapping(): array
+    {
+        return [
+            'idle' => 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 ring-gray-500/10 dark:ring-gray-400/20',
+            'in_progress' => 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-blue-700/10 dark:ring-blue-400/20',
+            'completed' => 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-400/20',
+            'blocked' => 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 ring-red-600/10 dark:ring-red-400/20',
+            'review' => 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-400/20'
         ];
     }
 } 

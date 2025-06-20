@@ -17,37 +17,48 @@ class FutureController extends Controller
     public function index(Request $request)
     {
         $query = Future::with(['user', 'project']);
-        
+
+        // Get allowed searchable columns from the model
+        $allowedSearchFields = \App\Models\Future::getSearchableColumns();
+
         // Handle search functionality
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
-            $searchFields = $request->get('search_fields', 'title');
-            $fieldsArray = explode(',', $searchFields);
-            
+            // Use provided search_fields or default to all allowed fields
+            $searchFields = $request->get('search_fields', implode(',', $allowedSearchFields));
+            $fieldsArray = array_filter(array_map('trim', explode(',', $searchFields)));
+
+            // Only keep valid fields
+            $fieldsArray = array_intersect($fieldsArray, $allowedSearchFields);
+
             $query->where(function ($q) use ($searchTerm, $fieldsArray) {
                 foreach ($fieldsArray as $field) {
-                    switch (trim($field)) {
-                        case 'title':
-                            $q->orWhere('title', 'like', '%' . $searchTerm . '%');
-                            break;
-                        case 'description':
-                            $q->orWhere('description', 'like', '%' . $searchTerm . '%');
-                            break;
-                        case 'author':
-                            $q->orWhereHas('user', function ($subQ) use ($searchTerm) {
-                                $subQ->where('name', 'like', '%' . $searchTerm . '%');
-                            });
-                            break;
-                    }
+                    $q->orWhere($field, 'like', '%' . $searchTerm . '%');
                 }
             });
         }
-        
+
         // Order by most recent first
         $query->orderBy('created_at', 'desc');
-        
-        return inertia('home/Futures', [
-            'records' => FutureResource::collection($query->paginate(12)->appends($request->query())),
+
+        // Get per_page from request, default to 12
+        $perPage = $request->get('per_page', 12);
+
+        // Add meta data only once, not per record
+        $records = FutureResource::collection($query->paginate($perPage)->appends($request->query()))
+            ->additional([
+                'meta' => [
+                    'validation_rules' => \App\Models\Future::validationRules(),
+                    'form_fields' => \App\Models\Future::formFields(),
+                    'links_table' => \App\Models\Future::linksTable(),
+                    'searchable_columns' => \App\Models\Future::getSearchableColumns(),
+                    'table_columns' => \App\Models\Future::getTableColumns(),
+                    'status_mapping' => \App\Models\Future::getStatusMapping(),
+                ]
+            ]);
+
+        return Inertia::render('home/Futures', [
+            'records' => $records,
             'page' => Page::with('sections')->where('title', 'home/futures')->first(),
             'baseSections' => Section::where('page_id', '0')->get()
         ]);
@@ -106,7 +117,6 @@ class FutureController extends Controller
             'banner' => 'FutureController: update passed id:' . $request->id,
             'bannerStyle' => 'success'
         ]);
-
     }
 
     /**
