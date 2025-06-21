@@ -90,7 +90,13 @@ class FutureController extends Controller
     public function update(Request $request)
     {
         $future = Future::findOrFail($request->id);
-        
+     
+        \Log::info('Update request received', [
+            'id' => $future->id,
+            'data' => $request->all()
+        ]);
+
+
         // Convert json and links to arrays if they're strings
         $data = $request->all();
         if (isset($data['json']) && is_string($data['json'])) {

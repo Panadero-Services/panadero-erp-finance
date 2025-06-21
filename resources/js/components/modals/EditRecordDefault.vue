@@ -30,6 +30,10 @@ const props = defineProps({
   db: {
     type: Object,
     required: true
+  },
+  meta: {
+    type: Object,
+    default: () => ({})
   }
 });
 
@@ -51,16 +55,16 @@ const relations = reactive({});
 
 // Links table based on current table
 const linksTable = computed(() => {
-  return [table.value, `${table.value}_related`, `${table.value}_dependencies`];
+  return props.meta.links_table || [table.value, `${table.value}_related`, `${table.value}_dependencies`];
 });
 
 // Initialize form with default values
 const loadForm = async () => {
   try {
     const initialForm = {};
-    Object.keys(props.record.form_fields || {}).forEach(field => {
+    Object.keys(props.meta.form_fields || {}).forEach(field => {
       // For select fields, use the specific relation ID from the record
-      if (props.record.form_fields[field].type === 'select') {
+      if (props.meta.form_fields[field].type === 'select') {
         // Get the relation ID from the record (e.g., user_id, project_id)
         const relationId = props.record[field];
         
@@ -112,8 +116,8 @@ const loadRelations = async (_table, _field) => {
 
 // Validation methods
 const getRulesForField = (key) => {
-  return props.record.validation_rules?.[key]
-    ? parseRules(props.record.validation_rules[key])
+  return props.meta.validation_rules?.[key]
+    ? parseRules(props.meta.validation_rules[key])
     : null;
 };
 
@@ -122,10 +126,10 @@ const isInvalid = (key) => {
   return !validateField(form[key], rules);
 };
 
-const getRuleText = (key) => props.record.validation_rules?.[key] || '';
+const getRuleText = (key) => props.meta.validation_rules?.[key] || '';
 
 const isFormValid = computed(() =>
-  Object.keys(props.record.form_fields || {}).every(field => {
+  Object.keys(props.meta.form_fields || {}).every(field => {
     const rules = getRulesForField(field);
     return !rules || validateField(form[field], rules);
   })
@@ -135,16 +139,28 @@ const isFormValid = computed(() =>
 const submit = async () => {
   if (!isFormValid.value) return;
 
-  // Format the data before submission
-  const formData = {
-    ...form,
-    // Keep json as a string if it's already a string, otherwise stringify it
-    json: typeof form.json === 'string' ? form.json : JSON.stringify(form.json),
-    // Keep links as a string if it's already a string, otherwise stringify it
-    links: typeof form.links === 'string' ? form.links : JSON.stringify(form.links)
-  };
+  // Filter data to only include record fields (no metadata)
+  const filteredData = {};
+  
+  // Only include fields that are defined in form_fields (actual record fields)
+  Object.keys(props.meta.form_fields || {}).forEach(fieldName => {
+    if (form.hasOwnProperty(fieldName)) {
+      filteredData[fieldName] = form[fieldName];
+    }
+  });
+  
+  // Always include the ID for the update
+  filteredData.id = form.id;
 
-  router.put(`/api/${props.table}/${form.id}`, formData, {
+  // Format json and links fields
+  if (filteredData.json !== undefined) {
+    filteredData.json = typeof filteredData.json === 'string' ? filteredData.json : JSON.stringify(filteredData.json);
+  }
+  if (filteredData.links !== undefined) {
+    filteredData.links = typeof filteredData.links === 'string' ? filteredData.links : JSON.stringify(filteredData.links);
+  }
+
+  router.put(`/api/${props.table}/${form.id}`, filteredData, {
     preserveScroll: true,
     onSuccess: () => {
       const page = usePage();
@@ -174,7 +190,7 @@ const submit = async () => {
 // Initialize form on mount
 onMounted(() => {
   if (!props.record.id) return;
-  if ( usePage().props.auth &&  usePage().props.auth.user) {
+  if (usePage().props.auth && usePage().props.auth.user) {
     loadForm();
   } else {
     // Optionally, show a message or redirect
@@ -222,7 +238,7 @@ const _footer = {
 const link = ref({ link_id: "0", type: 'relates_to', link_title: '' });
 
 const availableLinkTypes = computed(() => {
-  return props.record.links_table || [];
+  return props.meta.links_table || [];
 });
 
 const hasJsonLinkError = computed(() => {
@@ -263,7 +279,7 @@ const removeLink = (index) => {
         <!-- Content area -->
         <div class="flex-1 overflow-y-auto">
           <form @submit.prevent="submit" class="grid grid-cols-8 gap-4">
-            <template v-for="(fieldConfig, fieldName) in record.form_fields" :key="String(fieldName)">
+            <template v-for="(fieldConfig, fieldName) in meta.form_fields" :key="String(fieldName)">
               <div
                 :class="{
                   'col-span-8': fieldConfig.col_span === 8,
@@ -296,18 +312,31 @@ const removeLink = (index) => {
                   </span>
                 </label>
 
-
-                <div v-if="fieldConfig.readonly" class="mt-3" :class="_input.readOnly">
-                    {{ form[fieldName] }}
+                <!-- Switch Field -->
+                <div v-if="fieldConfig.type === 'switch'" class="mt-1">
+                  <Switch
+                    v-model="form[String(fieldName)]"
+                    :class="[
+                      form[String(fieldName)] ? 'bg-indigo-600' : 'bg-gray-200',
+                      'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                    ]"
+                  >
+                    <span
+                      :class="[
+                        form[String(fieldName)] ? 'translate-x-6' : 'translate-x-1',
+                        'inline-block h-4 w-4 transform rounded-full bg-white transition-transform'
+                      ]"
+                    />
+                  </Switch>
                 </div>
 
-<!-- Select Field -->
+                <!-- Select Field -->
                 <div v-else-if="fieldConfig.type === 'select'" class="mt-1">
                   <select
                     v-model="form[String(fieldName)]"
                     :id="String(fieldName)"
                     class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                    :required="record.validation_rules?.[String(fieldName)]?.includes('required')"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                   >
                     <option v-if="!form[String(fieldName)]" value="">Select {{ fieldConfig.label }}</option>
                     <!-- Show relations if they exist, otherwise show options -->
@@ -325,8 +354,7 @@ const removeLink = (index) => {
                   <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
 
-
-<!-- Links Field -->
+                <!-- Links Field -->
                 <div v-else-if="fieldName === 'links'" class="mt-1">
                   <div class="space-y-2 overflow-scroll z-30">
                     <div class="flex items-center justify-between p-1.5 rounded-sm">
@@ -368,23 +396,18 @@ const removeLink = (index) => {
                           </button>
                           <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                              <span class="text-xs text-gray-600 dark:text-gray-300 w-24">
-                                {{ link?.type?.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase()) || 'N/A' }}
-                              </span>
-                              <span class="text-xs text-blue-600 dark:text-gray-300 w-6">{{ link?.link_id || 'N/A' }}</span>
-                              <span class="text-xs text-blue-600 dark:text-gray-300 w-max hover:text-black cursor-pointer" 
-                                    @click="emit('changeRecord', { type: link.type, id: link.link_id })">
-                                {{ link?.link_title || 'N/B' }}
-                              </span>
+                              <span class="text-xs text-gray-600 dark:text-gray-300">{{ link.type }}</span>
+                              <span class="text-xs text-gray-800 dark:text-gray-200 ml-2">{{ link.link_title }}</span>
                             </div>
                           </div>
                         </div>
                       </div>
+
                       <div class="col-span-3">
                         <!-- Show col-span-3 links inputbox -->
                         <textarea
-                          v-if="record.form_fields?.[fieldName]?.type === 'textarea'"
-                          :rows="record.form_fields?.[fieldName]?.rows || 2"
+                          v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
+                          :rows="meta.form_fields?.[fieldName]?.rows || 2"
                           v-model="form[String(fieldName)]"
                           :class="[
                             'block w-full rounded-md shadow-sm sm:text-xs ',
@@ -393,16 +416,14 @@ const removeLink = (index) => {
                               : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
                             'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400'
                           ]"
-                          :placeholder="record.form_fields?.[fieldName]?.placeholder"
+                          :placeholder="meta.form_fields?.[fieldName]?.placeholder"
                         ></textarea>
                       </div>
                     </div>
                   </div>
                 </div>
 
-
-
-<!-- Boolean Field -->
+                <!-- Boolean Field -->
                 <div v-else-if="fieldConfig.type === 'boolean'" class="mt-1">
                   <div class="flex space-x-4">
                     <button
@@ -428,8 +449,7 @@ const removeLink = (index) => {
                   </div>
                 </div>
 
-
-<!-- Default Input -->
+                <!-- Default Input -->
                 <div v-else class="mt-1">
                   <input
                     v-if="fieldConfig.type !== 'textarea'"
@@ -442,12 +462,12 @@ const removeLink = (index) => {
                       _input.dark,
                       isInvalid(String(fieldName)) ? 'border-red-500' : ''
                     ]"
-                    :required="record.validation_rules?.[String(fieldName)]?.includes('required')"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                   />
                   <textarea
                     v-else
                     :id="String(fieldName)"
-                    :rows="record.form_fields?.[fieldName]?.rows || 2"
+                    :rows="meta.form_fields?.[fieldName]?.rows || 2"
                     v-model="form[String(fieldName)]"
                     :class="[
                       _input.base,
@@ -455,7 +475,7 @@ const removeLink = (index) => {
                       _input.dark,
                       isInvalid(String(fieldName)) ? 'border-red-500' : ''
                     ]"
-                    :required="record.validation_rules?.[String(fieldName)]?.includes('required')"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                     rows="3"
                   ></textarea>
                 </div>
@@ -464,10 +484,10 @@ const removeLink = (index) => {
           </form>
         </div>
 
- <!-- Fixed line for switches above footer -->
+        <!-- Fixed line for switches above footer -->
         <div class="grid grid-cols-8 " :class="[_footer.base, _footer.switches]">
            <div
-              v-for="(fieldConfig, fieldName) in record.form_fields"
+              v-for="(fieldConfig, fieldName) in meta.form_fields"
               :key="fieldName"
               :class="{
                   'col-span-8': fieldConfig.col_span === 8,
@@ -483,27 +503,9 @@ const removeLink = (index) => {
               <label :for="fieldName" class="ml-4 text-center text-xs" v-if="getRuleText(fieldName) == 'boolean'">
                 <span >
                 {{ fieldName.replace('is_','') }}
-              </span>
+                </span>
               </label>
-
-              <!-- Boolean Switch -->
-              <div v-if="getRuleText(fieldName) == 'boolean'" class="scale-75 ml-1">
-                <Switch v-model="form[fieldName]"
-                  :class="[
-                    form[fieldName] ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-600',
-                    'relative inline-flex h-6 w-11 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none'
-                  ]"
-                >
-                  <span aria-hidden="true"
-                    :class="[
-                      form[fieldName] ? 'translate-x-5' : 'translate-x-0',
-                      'inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-200 shadow transition'
-                    ]"
-                  />
-                </Switch>
-              </div>
-
-          </div>
+            </div>
         </div>
 
         <!-- Fixed footer with buttons -->

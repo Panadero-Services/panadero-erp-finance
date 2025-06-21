@@ -31,12 +31,6 @@ class FutureResource extends JsonResource
             'is_locked' => $this->is_locked,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'validation_rules' => $this->resource::validationRules(),
-            'form_fields' => $this->resource::formFields(),
-            'links_table' => $this->resource::linksTable(),
-            'searchable_columns' => (new $this->resource)->getSearchableColumns(),
-            'table_columns' => $this->resource::getTableColumns(),
-            'status_mapping' => $this->resource::getStatusMapping(),
         ];
     }
 } 

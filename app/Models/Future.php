@@ -326,4 +326,11 @@ class Future extends Model
             'review' => 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-400/20'
         ];
     }
+
+    public static function getContentFields(): array
+    {
+        return [
+            'description', 'color', 'version', 'icon'
+        ];
+    }
 } 

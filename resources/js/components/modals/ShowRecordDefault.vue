@@ -18,6 +18,7 @@ const props = defineProps({
   table: String,
   superSelfAdmin: Boolean,
   db: Object,
+  meta: Object,
   preservedModalSize: String,
   preservedFontSize: String,
   preservedActiveTab: String
@@ -63,8 +64,6 @@ const sizeOptions = [
   { id: 'full', name: 'Full' }
 ];
 
-
-
 // Popup states
 const showSizePopup = ref(false);
 const showFontPopup = ref(false);
@@ -97,14 +96,92 @@ const initials = computed(() => {
   return words[0].charAt(0).toUpperCase();
 });
 
-// Computed for status flags
+// Status flags computed property
 const statusFlags = computed(() => {
-  if (!modelConfig.value?.flags) return [];
-  return modelConfig.value.flags.map(flag => ({
-    key: flag,
-    label: flag.replace('is_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
-    active: props.record[flag] == 1
-  }));
+  const formFields = props.meta?.form_fields || props.meta?.formFields;
+  if (!formFields) return [];
+  
+  return Object.entries(formFields)
+    .filter(([_, config]) => config.type === 'switch')
+    .map(([field, config]) => ({
+      key: field,
+      label: config.label || field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      active: props.record[field] == 1 || props.record[field] === true,
+      config
+    }));
+});
+
+// Content fields computed property
+const contentFields = computed(() => {
+  return props.meta?.content_fields || ['description', 'body'];
+});
+
+const formattedContent = computed(() => {
+  const contentSections = [];
+  
+  for (const field of contentFields.value) {
+    const value = props.record[field];
+    const fieldLabel = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    
+    if (value !== null && value !== undefined) {
+      let content = value;
+      
+      if (showRawData.value) {
+        contentSections.push({
+          field: field,
+          label: fieldLabel,
+          content: content,
+          type: 'raw',
+          isEmpty: !content || content.toString().trim() === ''
+        });
+      } else {
+        let formatted = content;
+        
+        if (field === 'color') {
+          formatted = `
+            <div class="flex items-center gap-2">
+              <div class="w-4 h-4 rounded border border-gray-300 dark:border-gray-600" 
+                   style="background-color: ${content || '#3b82f6'}"></div>
+              <span>${content || 'No color set'}</span>
+            </div>
+          `;
+        } else if (field === 'icon') {
+          formatted = `
+            <div class="flex items-center gap-2">
+              <span class="text-lg">${content || '📄'}</span>
+              <span>${content || 'No icon set'}</span>
+            </div>
+          `;
+        } else if (field === 'version') {
+          formatted = `
+            <span class="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+              ${content || 'No version'}
+            </span>
+          `;
+        } else {
+          if (content && content.toString().trim() !== '') {
+            formatted = content.toString()
+              .replace(/\n/g, '<br>')
+              .replace(/\.(?=\s|$)/g, '.<br>')
+              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\*(.*?)\*/g, '<em>$1</em>');
+          } else {
+            formatted = '<em class="text-gray-500">No content</em>';
+          }
+        }
+        
+        contentSections.push({
+          field: field,
+          label: fieldLabel,
+          content: formatted,
+          type: 'formatted',
+          isEmpty: !content || content.toString().trim() === ''
+        });
+      }
+    }
+  }
+  
+  return contentSections.length > 0 ? contentSections : null;
 });
 
 // Get all displayable fields (excluding internal fields)
@@ -121,12 +198,11 @@ const links = computed(() => {
     if (!props.record.links) return [];
     const parsedLinks = JSON.parse(props.record.links);
     
-    // Ensure each link has the necessary properties, handle both post_id/post_title and link_id/link_title formats
     return parsedLinks.map(link => ({
       link_id: link.link_id || link.post_id || link.id || 'Unknown',
       link_title: link.link_title || link.post_title || link.title || link.name || `Record ${link.link_id || link.post_id || link.id}`,
       type: link.type || 'relates_to',
-      ...link // spread original properties
+      ...link
     }));
   } catch {
     return [];
@@ -137,10 +213,9 @@ const links = computed(() => {
 const contentSections = computed(() => {
   if (!props.record.body) return [];
   
-  // Split by periods, but be more intelligent about it
   const sentences = props.record.body
-    .split(/\.(?=\s|$)/) // Split on periods followed by space or end of string
-    .filter(sentence => sentence.trim().length > 10) // Only include meaningful sentences
+    .split(/\.(?=\s|$)/)
+    .filter(sentence => sentence.trim().length > 10)
     .map(sentence => sentence.trim());
   
   return sentences.map((sentence, index) => ({
@@ -160,9 +235,6 @@ const showContentIndex = computed(() => {
 
 // Method to navigate to related record
 const navigateToRelated = (link) => {
-  console.log('Navigating to related record:', link);
-  
-  // Ensure we have the necessary data, handle both post_id and link_id formats
   const linkId = link.link_id || link.post_id || link.id;
   const linkType = link.type || 'relates_to';
   
@@ -175,7 +247,6 @@ const navigateToRelated = (link) => {
     type: linkType, 
     id: linkId,
     title: link.link_title || link.post_title || link.title || link.name,
-    // Preserve current modal settings
     preservedModalSize: modalSize.value,
     preservedFontSize: fontSize.value,
     preservedActiveTab: activeTab.value
@@ -202,10 +273,7 @@ const fetchModelConfig = async () => {
     loading.value = true;
     const response = await axios.get(`/api/model-config/${props.module}/${props.table}`);
     modelConfig.value = response.data;
-
-    console.log(response);
     
-    // Set initial active tab based on available data
     if (!activeTab.value || !['content', 'status', 'details', 'relations'].includes(activeTab.value)) {
       if (modelConfig.value?.flags?.length) {
         activeTab.value = 'status';
@@ -223,6 +291,26 @@ const fetchModelConfig = async () => {
   }
 };
 
+// Add the getTabContent function
+function getTabContent(tab) {
+  switch (tab) {
+    case 'record':
+      return 'record';
+    case 'content':
+      return 'content';
+    case 'status':
+      return 'status';
+    case 'details':
+      return 'details';
+    case 'relations':
+      return 'relations';
+    case 'metadata':
+      return 'metadata';
+    default:
+      return null;
+  }
+}
+
 onMounted(() => {
   fetchModelConfig();
 });
@@ -230,13 +318,9 @@ onMounted(() => {
 
 <template>
   <ModalLayout
-    :record = "record" 
-
-
+    :record="record" 
     :title="record.title || record.name || 'Record Details'"
-    :tabs="['content', 'status', 'details', 'relations', 'config', 'record']"
-
-
+    :tabs="['content', 'status', 'details', 'relations', 'metadata', 'config', 'record']"
     :time-ago="formatDistance(new Date(record.updated_at || Date.now()), new Date())"
     :initials="initials"
     :id="record.id"
@@ -246,6 +330,7 @@ onMounted(() => {
     :show-raw-data="showRawData"
     :status-flags="statusFlags"
     :related-links="links"
+    :meta="meta"
     @update:active-tab="activeTab = $event"
     @update:modal-size="modalSize = $event"
     @update:font-size="fontSize = $event"
@@ -254,82 +339,56 @@ onMounted(() => {
     @close="$emit('close')"
   >
     <!-- Content Tab -->
-    <div v-if="activeTab === 'content'" class="flex">
-      
-
-
-      <!-- Content Index Sidebar (only in large/full mode) -->
-      <div v-if="showContentIndex" class="w-64 pr-4 border-r border-gray-200 dark:border-gray-700">
-        <div class="sticky top-0">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Content Index</h3>
-          <div class="space-y-1">
-                <button 
-              v-for="section in contentSections"
-              :key="section.id"
-              @click="scrollToSection(section.id)"
-              class="w-full text-left px-2 py-1 text-xs rounded hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-600 dark:text-gray-300"
-            >
-              {{ section.index }}. {{ section.title }}
-                </button>
-                </div>
-              </div>
+    <template v-if="getTabContent(activeTab) === 'content'">
+      <div class="space-y-4">
+        <div v-if="!formattedContent" class="text-gray-400 text-xs text-center py-8">
+          No content fields available.
+        </div>
+        
+        <div v-else class="grid gap-4" :class="{
+          'grid-cols-1': modalSize === 'standard',
+          'grid-cols-2': modalSize === 'large', 
+          'grid-cols-3': modalSize === 'full'
+        }">
+          <div v-for="section in formattedContent" :key="section.field" class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+            <!-- Field Header -->
+            <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                <span class="mr-2">
+                  {{ section.field === 'description' ? '📝' : 
+                     section.field === 'color' ? '🎨' : 
+                     section.field === 'version' ? '🏷️' : 
+                     section.field === 'icon' ? '🔖' : '📄' }}
+                </span>
+                {{ section.label }}
+                <span class="ml-2 text-xs text-gray-500 dark:text-gray-500">({{ section.field }})</span>
+                <span v-if="section.isEmpty" class="ml-2 text-xs text-orange-500">(empty)</span>
+              </h3>
             </div>
+            
+            <!-- Content Body -->
+            <div v-if="section.type === 'raw'" :class="[
+              'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-4 overflow-auto font-mono text-xs min-h-[100px]',
+              fontSizeClass
+            ]">
+              {{ section.content || '(empty)' }}
+            </div>
+            
+            <div v-else :class="[
+              'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-4 overflow-auto text-xs min-h-[100px]',
+              fontSizeClass
+            ]" v-html="section.content">
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
 
-
-
-      <!-- Main Content -->
-                <div :class="[showContentIndex ? 'flex-1' : 'w-full']">
-                  <div v-if="showRawData" :class="[
-                    'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto font-mono',
-                    fontSizeClass
-                  ]">
-                    {{ formattedBody }}
-                  </div>
-                  <div v-else>
-                    <!-- Content with sections for indexing -->
-                    <div v-if="showContentIndex" class="bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto">
-                      <div v-for="section in contentSections" 
-                           :key="section.id" 
-                           :id="section.id"
-                           :class="['mb-4 pb-2', fontSizeClass]">
-                        <div class="text-gray-700 dark:text-gray-300">
-                          {{ section.content }}<span v-if="section.index < contentSections.length">.</span>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Regular content for standard mode -->
-                    <div v-else :class="[
-                      'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto',
-                      fontSizeClass
-                    ]" v-html="formattedBody">
-                    </div>
-                  </div>
-                </div>
-
-
-              </div>
-
-              <!-- Status Tab -->
-
-
-              <!-- Details Tab -->
-              <div v-else-if="activeTab === 'details'" class="grid grid-cols-2 gap-2">
-                <div v-for="field in displayFields" 
-                     :key="field" 
-                     class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-                  <div class="flex-1">
-                    <p :class="['font-medium text-blue-700 dark:text-blue-400 capitalize', fontSizeClass]">{{ field.replace('_', ' ') }}</p>
-                    <p v-if="showRawData" :class="['text-gray-500 dark:text-gray-400 mt-1 break-words font-mono', fontSizeClass]">
-                      {{ record[field] || 'N/A' }}
-                    </p>
-                    <p v-else :class="['text-gray-500 dark:text-gray-400 mt-1 break-words', fontSizeClass]">
-                      {{ record[field] || 'N/A' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Relations Tab -->
-
+    <!-- Details Tab -->
+    <template v-else-if="getTabContent(activeTab) === 'details'">
+      <div class="grid grid-cols-1 gap-2">
+        <!-- Your existing details content -->
+      </div>
+    </template>
   </ModalLayout>
 </template>

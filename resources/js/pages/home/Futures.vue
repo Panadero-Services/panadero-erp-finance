@@ -47,43 +47,39 @@ const props = defineProps({
 
 _set.domainFunction = "home";
 
-// variables
-const _module = "home"
-const _table = "futures"
-const _model = "Future"
-const keyIndex = ref(0);
+// Group related variables together
+// ================================
+// Page Configuration
+const _module = "home";
+const _table = "futures";
+const _model = "Future";
 
-let _poolTimer; 
-let _pulse = ref(false);
-let editRecordMode = ref(false);
-let showRecordMode = ref(false);
+// State Management
+const viewMode = ref(localStorage.getItem('viewMode') || 'default');
+const perPage = ref(localStorage.getItem('perPage') || '10');
+const showActionButtons = ref(localStorage.getItem('showActionButtons') !== 'false');
+const showSearchInput = ref(localStorage.getItem('showSearchInput') !== 'false');
 
-// Add these refs with the other variables
-const viewMode = ref('default');
-const darkMode = ref(false);
-
-// Add this with the other variables
-const viewModes = [
-  { id: 'default', label: 'Default' },
-  { id: 'compact', label: 'Compact' },
-  { id: 'rows', label: 'Rows' }
-];
-
-
-
-// Add this with the other refs
+// UI State
 const showAppearanceOptions = ref(false);
 const appearanceBtn = ref(null);
 const appearancePopupStyle = ref({ top: '0px', left: '0px' });
+const editRecordMode = ref(false);
+const showRecordMode = ref(false);
+const _activeRecord = ref(null);
+const keyIndex = ref(0);
 
-// Add this with the other refs
-const showActionButtons = ref(true);
+// Constants
+const viewModes = [
+    { id: 'default', label: 'Default' },
+    { id: 'compact', label: 'Compact' },
+    { id: 'rows', label: 'Rows' }
+];
 
-const showSearchInput = ref(true);
+let _poolTimer; 
+let _pulse = ref(false);
 
-
-
-
+const darkMode = ref(false);
 
 provide('pulse', _pulse);
 
@@ -113,10 +109,7 @@ const _show = async (id) => {
 
         // Set the active record with all necessary data
         _activeRecord.value = {
-            ...record,
-            form_fields: record.form_fields || {},
-            validation_rules: record.validation_rules || {},
-            links_table: record.links_table || {}
+            ...record
         };
 
         // Increment keyIndex to force re-render
@@ -135,17 +128,12 @@ const _show = async (id) => {
     }
 }
 
-const _activeRecord = ref(null);
-
 const loadRecord = async (recordType, recordId) => {
     try {
         const response = await _db.getRecordById(_model, recordId);
         if (response) {
             _activeRecord.value = {
-                ...response,
-                form_fields: response.form_fields || {},
-                validation_rules: response.validation_rules || {},
-                links_table: response.links_table || {}
+                ...response
             };
             keyIndex.value++;
         }
@@ -167,10 +155,11 @@ const _whatever = async (id) => {
         }
         
         _activeRecord.value = {
-            ...record,
-            form_fields: record.form_fields || {},
-            validation_rules: record.validation_rules || {},
-            links_table: record.links_table || {}
+            ...record
+            //,
+            //form_fields: record.form_fields || {},
+            //validation_rules: record.validation_rules || {},
+            //links_table: record.links_table || {}
         };
         
         editRecordMode.value = true;
@@ -216,7 +205,7 @@ const handleSearch = (searchData) => {
         const searchParams = {
             search: searchData.query || undefined,
             search_fields: searchData.query && searchData.fields.length > 0 ? searchData.fields.join(',') : undefined,
-            per_page: viewMode.value === 'compact' ? 60 : 10, // Respect current view mode
+            per_page: perPage.value, // Use stored perPage value
         };
         
         // Remove undefined values
@@ -251,48 +240,60 @@ const positionAppearancePopup = () => {
     }
 };
 
+// Update the toggleActionButtons function
 const toggleActionButtons = () => {
     showActionButtons.value = !showActionButtons.value;
+    localStorage.setItem('showActionButtons', showActionButtons.value.toString());
+};
+
+// Update the toggleSearchInput function to handle the toggle properly
+const toggleSearchInput = () => {
+    showSearchInput.value = !showSearchInput.value;
+    localStorage.setItem('showSearchInput', showSearchInput.value.toString());
 };
 
 const _frame = computed(()=>{
     return "rounded-md p-1  " ;
 });
 
-// Add this function to handle view mode changes with per_page adjustment
+// Update the handleViewModeChange function
 const handleViewModeChange = (mode) => {
-    viewMode.value = mode;
-    
-    // Get current URL parameters
-    const currentParams = new URLSearchParams(window.location.search);
-    const currentPerPage = currentParams.get('per_page');
-    
-    // Set different per_page based on view mode
-    let newPerPage;
-    if (mode === 'compact') {
-        newPerPage = 60; // 6x more records for compact mode
-    } else if (mode === 'rows') {
-        newPerPage = 24; // 24 records for rows mode
-    } else {
-        newPerPage = 10; // Default records for other modes
-    }
-    
-    // Only reload if per_page actually changed
-    if (currentPerPage !== newPerPage.toString()) {
-        currentParams.set('per_page', newPerPage);
+    try {
+        viewMode.value = mode;
+        localStorage.setItem('viewMode', mode);
         
-        // Use Inertia router to reload with new per_page
-        router.get(window.location.pathname, Object.fromEntries(currentParams), {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true
-        });
+        // Set different per_page based on view mode
+        const perPageMap = {
+            'compact': 60,
+            'rows': 24,
+            'default': 10
+        };
+        
+        const newPerPage = perPageMap[mode] || 10;
+        perPage.value = newPerPage.toString();
+        localStorage.setItem('perPage', newPerPage.toString());
+        
+        // Update URL if needed
+        const currentParams = new URLSearchParams(window.location.search);
+        const currentPerPage = currentParams.get('per_page');
+        
+        if (currentPerPage !== newPerPage.toString()) {
+            currentParams.set('per_page', newPerPage);
+            router.get(window.location.pathname, Object.fromEntries(currentParams), {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        }
+    } catch (error) {
+        console.error('Error changing view mode:', error);
     }
 };
 
+// Update the selectViewMode function
 const selectViewMode = (modeId) => {
-  handleViewModeChange(modeId);
-  showAppearanceOptions.value = false;
+    handleViewModeChange(modeId);
+    showAppearanceOptions.value = false;
 };
 
 // Keyboard shortcuts for ⌘4, ⌘5, ⌘6
@@ -316,9 +317,30 @@ const onClickOutside = (e) => {
   }
 };
 
+// Add this function to sync localStorage with URL on page load
+const syncPerPageFromStorage = () => {
+    const storedPerPage = localStorage.getItem('perPage');
+    const currentPerPage = new URLSearchParams(window.location.search).get('per_page');
+    
+    // If we have a stored perPage and it's different from URL, update URL
+    if (storedPerPage && currentPerPage !== storedPerPage) {
+        const currentParams = new URLSearchParams(window.location.search);
+        currentParams.set('per_page', storedPerPage);
+        
+        router.get(window.location.pathname, Object.fromEntries(currentParams), {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    }
+};
+
 onMounted(() => {
-  document.addEventListener('keydown', handleAppearanceShortcuts);
-  document.addEventListener('click', onClickOutside);
+    // Sync perPage from localStorage on page load
+    syncPerPageFromStorage();
+    
+    document.addEventListener('keydown', handleAppearanceShortcuts);
+    document.addEventListener('click', onClickOutside);
 });
 onUnmounted(() => {
   document.removeEventListener('keydown', handleAppearanceShortcuts);
@@ -347,6 +369,7 @@ onUnmounted(() => {
                     @changeRecord="handleRecordChange"
                     :superSelfAdmin="_superSelfAdmin"
                     :db="_db"
+                    :meta="props.records.meta"
                 />
             </div>
 
@@ -358,9 +381,10 @@ onUnmounted(() => {
                     :table="_table"
                     :superSelfAdmin="_superSelfAdmin"
                     :db="_db"
+                    :meta="props.records.meta"
                     @close="_close"
                     @changeRecord="handleRecordChange"
-                    />
+                />
             </div>
         </template>
 
@@ -401,7 +425,7 @@ onUnmounted(() => {
                             buttonText="Search"
                             :searchResults="records"
                             @search="handleSearch"
-                            @toggle-search="showSearchInput = !showSearchInput"
+                            @toggle-search="toggleSearchInput"
                      />
                 </div>
 
@@ -461,7 +485,6 @@ onUnmounted(() => {
                         <table class="w-full whitespace-nowrap text-left">
                             <colgroup>
                                 <col v-for="column in cardConfig.columns" :key="column.key" :class="column.width || 'w-auto'" />
-                                <col class="w-24" /> <!-- Actions column -->
                             </colgroup>
                             <thead class="border-b border-gray-200 dark:border-white/10 text-sm/6 text-gray-900 dark:text-white">
                                 <tr>
@@ -471,7 +494,6 @@ onUnmounted(() => {
                                         class="py-2 px-2 font-semibold">
                                         {{ column.label }}
                                     </th>
-                                    <th scope="col" class="py-2 px-2 font-semibold">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200 dark:divide-white/5">

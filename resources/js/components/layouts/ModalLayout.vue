@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
+import { usePage, router } from '@inertiajs/vue3';
 
 const props = defineProps({
   record: {
@@ -50,6 +51,10 @@ const props = defineProps({
   relatedLinks: {
     type: Array,
     default: () => []
+  },
+  meta: {
+    type: Object,
+    default: () => ({})
   }
 });
 
@@ -59,8 +64,11 @@ const emit = defineEmits([
   'update:modalSize',
   'update:fontSize',
   'update:showRawData',
-  'navigate'
+  'navigate',
+  'recordUpdated'
 ]);
+
+const page = usePage();
 
 // Size configurations
 const sizeConfig = {
@@ -204,6 +212,67 @@ const propsDefinition = computed(() => ({
   statusFlags: { type: 'Array', default: '[]' },
   relatedLinks: { type: 'Array', default: '[]' }
 }));
+
+// Add computed property for formatted metadata display
+const formattedMetadata = computed(() => {
+  if (!props.meta || Object.keys(props.meta).length === 0) {
+    return [];
+  }
+  
+  const sections = [];
+  
+  // System Information
+  if (props.meta.system) {
+    sections.push({
+      title: 'System Information',
+      data: props.meta.system,
+      icon: '🔧'
+    });
+  }
+  
+  // Field Information
+  if (props.meta.fields) {
+    sections.push({
+      title: 'Field Information',
+      data: props.meta.fields,
+      icon: '📊'
+    });
+  }
+  
+  // Model Configuration
+  if (props.meta.modelConfig) {
+    sections.push({
+      title: 'Model Configuration',
+      data: props.meta.modelConfig,
+      icon: '⚙️'
+    });
+  }
+  
+  // Custom Metadata
+  const customMeta = { ...props.meta };
+  delete customMeta.system;
+  delete customMeta.fields;
+  delete customMeta.modelConfig;
+  
+  if (Object.keys(customMeta).length > 0) {
+    sections.push({
+      title: 'Custom Metadata',
+      data: customMeta,
+      icon: '📋'
+    });
+  }
+  
+  return sections;
+});
+
+// Add handler for record updates
+const handleRecordUpdate = (updatedRecord) => {
+  // Update the record in the local data
+  const index = records.data.findIndex(r => r.id === updatedRecord.id);
+  if (index !== -1) {
+    records.data[index] = { ...records.data[index], ...updatedRecord };
+  }
+};
 </script>
 
 <template>
@@ -265,8 +334,7 @@ const propsDefinition = computed(() => ({
             <!-- Content area -->
             <div class="flex-1 w-full overflow-auto">
     
-
-            <!-- Record Tab -->
+              <!-- Record Tab -->
               <div v-if="activeTab === 'record'" class="flex w-full">
                 <div v-if="showRawData" :class="[
                   'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto font-mono',
@@ -321,32 +389,52 @@ const propsDefinition = computed(() => ({
                 </div>
               </div>
 
-
-
               <!-- Content Tab -->
-              <div v-if="activeTab === 'content'" class="flex">
+              <div v-if="activeTab === 'content'" :class="['flex', fontSizeClass]">
                 <slot></slot>
               </div>
 
-            
-
-
-
               <!-- Status Tab -->
-              <div v-else-if="activeTab === 'status'" class="space-y-2">
-                <div class="grid sm:grid-cols-2 gap-2">
-                  <div v-for="(flag, idx) in statusFlags" 
-                       :key="idx" 
-                       :class="['flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700', fontSizeClass]">
-                    <span class="font-medium text-blue-700 dark:text-blue-400">{{ flag.label }}:</span>
-                    <span :class="[
-                      'px-2 py-1 rounded',
-                      flag.active 
-                        ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                        : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                    ]">
-                      {{ flag.active ? 'Active' : 'Inactive' }}
-                    </span>
+              <div v-else-if="activeTab === 'status'" :class="['space-y-2', fontSizeClass]">
+                <div class="grid gap-4" :class="{
+                  'grid-cols-1': modalSize === 'standard',
+                  'grid-cols-2': modalSize === 'large', 
+                  'grid-cols-3': modalSize === 'full'
+                }">
+                  <div v-for="flag in statusFlags" :key="flag.key" class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                    <!-- Field Header -->
+                    <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                      <h3 class="font-medium text-gray-700 dark:text-gray-300 flex items-center">
+                        <span class="mr-2">✅</span>
+                        {{ flag.label }}
+                        <span class="ml-2 text-gray-500 dark:text-gray-500">({{ flag.key }})</span>
+                      </h3>
+                    </div>
+                    
+                    <!-- Status Content -->
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700/50">
+                      <div class="flex justify-between items-center">
+                        <span class="text-gray-700 dark:text-gray-300">Status:</span>
+                        <span :class="[
+                          'px-3 py-1 rounded-full font-medium',
+                          flag.active 
+                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 ring-1 ring-green-600/20' 
+                            : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 ring-1 ring-red-600/20'
+                        ]">
+                          {{ flag.active ? 'Active' : 'Inactive' }}
+                        </span>
+                      </div>
+                      
+                      <!-- Show help text if available -->
+                      <div v-if="flag.config.help" class="mt-2 text-gray-500 dark:text-gray-400">
+                        {{ flag.config.help }}
+                      </div>
+                      
+                      <!-- Show default value if available -->
+                      <div v-if="flag.config.default !== undefined" class="mt-1 text-gray-400 dark:text-gray-500">
+                        Default: {{ flag.config.default ? 'Active' : 'Inactive' }}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -383,7 +471,6 @@ const propsDefinition = computed(() => ({
                         <p class="text-gray-500 dark:text-gray-400">
                           Type: {{ (link.type || 'unknown').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
                         </p>
-                        <!-- Debug info (remove in production) -->
                         <p v-if="showRawData" class="text-xs text-gray-400 font-mono mt-1">
                           Raw: {{ JSON.stringify(link).substring(0, 60) }}...
                         </p>
@@ -392,6 +479,21 @@ const propsDefinition = computed(() => ({
                     <div class="text-gray-400 dark:text-gray-500 flex-shrink-0">
                       →
                     </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metadata Tab -->
+              <div v-else-if="activeTab === 'metadata'" :class="['space-y-4', fontSizeClass]">
+                <div v-if="formattedMetadata.length === 0" class="text-gray-400 text-xs">
+                  No metadata available.
+                </div>
+                <div v-else>
+                  <div v-for="section in formattedMetadata" :key="section.title" class="mb-4">
+                    <h3 class="text-xs font-semibold text-gray-700 dark:text-gray-200 flex items-center mb-1">
+                      <span class="mr-1">{{ section.icon }}</span>{{ section.title }}
+                    </h3>
+                    <pre class="bg-gray-50 dark:bg-gray-800 rounded p-2 text-xxs overflow-x-auto">{{ JSON.stringify(section.data, null, 2) }}</pre>
                   </div>
                 </div>
               </div>
