@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use App\Models\User;
+
+
 class Project extends Model
 {
     use HasFactory;
@@ -17,20 +20,21 @@ class Project extends Model
      */
     protected $fillable = [
         'title',
-        'body',
+        'description',
+        'color',
+        'status',
         'json',
         'links',
         'user_id',
-        'created_at',
-        'updated_at',    
-        'is_published',
-        'is_public',
-        'is_featured',
-        'is_locked',
-        'is_self',
-        'is_smart',
-        'is_active',
-        'is_archived'
+        'is_active'
+    ];
+
+    protected $casts = [
+        'json' => 'array',
+        'links' => 'array',
+        'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
     /**
@@ -57,6 +61,8 @@ class Project extends Model
     {
         return [
             'is_active' => 'boolean',
+            'json' => 'array',
+            'links' => 'array'
         ];
     }
 
@@ -68,30 +74,23 @@ class Project extends Model
     public static function validationRules(): array
     {
         return [
-            'user_id' => 'nullable|integer',
-            'title' => 'required|string|max:128|min:8',
-            'body' => 'required|string|max:1024',
-            'json' => 'required|string|min:2',
-            'links' => 'nullable|string',
-            'created_at' => 'nullable|date',
-            'updated_at' => 'nullable|date',
-            'is_published' => 'boolean',
-            'is_public' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_locked' => 'boolean',
-            'is_self' => 'boolean',
-            'is_smart' => 'boolean',
-            'is_active' => 'boolean',
-            'is_archived' => 'boolean'
+            'title' => 'required|string|max:80|min:1',
+            'description' => 'required|string',
+            'color' => 'nullable|string|max:24',
+            'status' => 'nullable|string|max:32',
+            'json' => 'nullable|array',
+            'links' => 'nullable|array',
+            'user_id' => 'required|exists:users,id',
+            'is_active' => 'boolean'
         ];
     }
 
-    public function getSearchableColumns(): array
+    public static function getSearchableColumns(): array
     {
         return [
             'title',
-            'body',
-            'json',
+            'description',
+            'status',
             'id'
         ];
     }
@@ -111,128 +110,175 @@ class Project extends Model
         ];
     }
 
+    public static function getTableColumns(): array
+    {
+        return [
+            [
+                'key' => 'id',
+                'label' => 'ID',
+                'type' => 'text',
+                'width' => 'w-16',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'title',
+                'label' => 'Title',
+                'type' => 'text',
+                'width' => 'w-48',
+                'formatter' => 'text',
+                'clickable' => true
+            ],
+            [
+                'key' => 'description',
+                'label' => 'Description',
+                'type' => 'text',
+                'width' => 'w-64',
+                'formatter' => 'truncate'
+            ],
+            [
+                'key' => 'color',
+                'label' => 'Color',
+                'type' => 'text',
+                'width' => 'w-24',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'status',
+                'label' => 'Status',
+                'type' => 'text',
+                'width' => 'w-32',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'user',
+                'label' => 'User',
+                'type' => 'relation',
+                'width' => 'w-32',
+                'formatter' => 'text',
+                'relationField' => 'name'
+            ],
+            [
+                'key' => 'is_active',
+                'label' => 'Active',
+                'type' => 'boolean',
+                'width' => 'w-24',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'created_at',
+                'label' => 'Created',
+                'type' => 'date',
+                'width' => 'w-32',
+                'formatter' => 'date'
+            ],
+            [
+                'key' => 'updated_at',
+                'label' => 'Updated',
+                'type' => 'date',
+                'width' => 'w-32',
+                'formatter' => 'date'
+            ],
+            [
+                'key' => 'actions',
+                'label' => 'Actions',
+                'type' => 'actions',
+                'width' => 'w-24',
+                'formatter' => 'actions'
+            ]
+        ];
+    }
+
+    public static function getStatusMapping(): array
+    {
+        return [
+            'is_active' => [
+                'true' => 'Active',
+                'false' => 'Inactive'
+            ]
+        ];
+    }
+
     public static function formFields(): array
     {
         return [
-            'user_id' => [
-                'type' => 'select',
-                'label' => 'User',
-                'col_span' => 3,
-                'sequence' => 1,
-                'options' => User::pluck('name', 'id'),
-                'help' => 'Select the user who owns this project'
-            ],
-            'created_at' => [
-                'type' => 'datetime',
-                'label' => 'Created At',
-                'col_span' => 3,
-                'sequence' => 2,
-                'readonly' => true
-            ],
-            'updated_at' => [
-                'type' => 'datetime',
-                'label' => 'Updated At',
-                'col_span' => 3,
-                'sequence' => 3,
-                'readonly' => true
-            ],
             'title' => [
-                'type' => 'textarea',
+                'type' => 'text',
                 'label' => 'Title',
-                'col_span' => 8,
-                'sequence' => 6,
-                'rows' => 1,
+                'col_span' => 6,
+                'sequence' => 1,
                 'placeholder' => 'Enter project title',
                 'required' => true
             ],
-            'body' => [
+            'description' => [
                 'type' => 'textarea',
                 'label' => 'Description',
-                'col_span' => 5,
-                'sequence' => 7,
+                'col_span' => 6,
+                'sequence' => 2,
                 'rows' => 3,
+                'required' => true
+            ],
+            'color' => [
+                'type' => 'select',
+                'label' => 'Color',
+                'col_span' => 3,
+                'sequence' => 3,
+                'options' => [
+                    'blue' => 'Blue',
+                    'green' => 'Green',
+                    'red' => 'Red',
+                    'yellow' => 'Yellow',
+                    'purple' => 'Purple',
+                    'orange' => 'Orange',
+                    'gray' => 'Gray',
+                    'pink' => 'Pink'
+                ],
+                'default' => 'blue'
+            ],
+            'status' => [
+                'type' => 'select',
+                'label' => 'Status',
+                'col_span' => 3,
+                'sequence' => 4,
+                'options' => [
+                    'idle' => 'Idle',
+                    'in_progress' => 'In Progress',
+                    'completed' => 'Completed',
+                    'blocked' => 'Blocked',
+                    'review' => 'Review'
+                ],
+                'default' => 'idle'
+            ],
+            'user_id' => [
+                'type' => 'select',
+                'label' => 'User',
+                'col_span' => 6,
+                'sequence' => 5,
+                'options' => User::pluck('name', 'id'),
+                'help' => 'Select the user who owns this project',
                 'required' => true
             ],
             'json' => [
                 'type' => 'textarea',
-                'label' => 'json',
-                'col_span' => 3,
-                'sequence' => 8,
-                'rows' => 3,
-                'help' => 'Use this to store unstructured data'
+                'label' => 'JSON Data',
+                'col_span' => 6,
+                'sequence' => 6,
+                'rows' => 4,
+                'help' => 'Use this to store unstructured data in JSON format'
             ],
             'links' => [
                 'type' => 'textarea',
                 'label' => 'Links',
-                'col_span' => 8,
-                'sequence' => 9,
-                'rows' => 6,
+                'col_span' => 6,
+                'sequence' => 7,
+                'rows' => 4,
                 'help' => 'Link this project to other projects with different relationships'
             ],
-
-            'switches' => [
-                'type' => 'label',
-                'label' => 'switches',
-                'col_span' => 8,
-                'sequence' => 10,
-                'help' => 'This label separates the switches from the rest'
-            ],
-
-            'is_published' => [
-                'type' => 'switch',
-                'label' => 'Published',
-                'col_span' => 1,
-                'sequence' => 10,
-                'default' => false
-            ],
-            'is_public' => [
-                'type' => 'switch',
-                'label' => 'Public',
-                'col_span' => 1,
-                'sequence' => 11,
-                'default' => true
-            ],
-            'is_featured' => [
-                'type' => 'switch',
-                'label' => 'Featured',
-                'col_span' => 1,
-                'sequence' => 12,
-                'default' => false
-            ],
-            'is_locked' => [
-                'type' => 'switch',
-                'label' => 'Locked',
-                'col_span' => 1,
-                'sequence' => 10,
-                'default' => false
-            ],
-            'is_self' => [
-                'type' => 'switch',
-                'label' => 'Self',
-                'col_span' => 1,
-                'sequence' => 13,
-                'default' => false
-            ],
-            'is_smart' => [
-                'type' => 'switch',
-                'label' => 'Smart',
-                'col_span' => 1,
-                'sequence' => 14,
-                'default' => false
-            ],           
             'is_active' => [
                 'type' => 'switch',
                 'label' => 'Active',
                 'col_span' => 1,
-                'sequence' => 15,
-                'default' => false
-            ],
-            'is_archived' => [
-                'type' => 'switch',
-                'label' => 'Archived',
-                'col_span' => 1,
-                'sequence' => 16,
-                'default' => false
+                'sequence' => 8,
+                'default' => true
             ]
         ];
     }

@@ -15,29 +15,19 @@ class ProjectResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request);
         return [
             'id'=> $this->id,
-            //'user_id'=> $this->user_id,
             'user'=> $this->whenLoaded('user', fn () => UserResource::make($this->user)),
             'title'=> $this->title,
-            'body'=> $this->body,
+            'description'=> $this->description,
+            'color'=> $this->color,
+            'status'=> $this->status,
             'json'=> $this->json,
             'links'=> $this->links,
+            'user_id'=> $this->user_id,
+            'is_active'=> $this->is_active,
             'created_at'=> $this->created_at,
             'updated_at'=> $this->updated_at,
-            'is_published'=> $this->is_published==1,
-            'is_public'=> $this->is_public==1,
-            'is_featured'=> $this->is_featured==1,
-            'is_locked'=> $this->is_locked==1,
-            'is_self'=> $this->is_self==1,
-            'is_smart'=> $this->is_smart==1,
-            'is_active'=> $this->is_active==1,
-            'is_archived'=> $this->is_archived==1,
-            'validation_rules' => Project::validationRules(),
-            'form_fields' => Project::formFields(),
-            'links_table' => Project::linksTable()
         ];
-
     }
 }

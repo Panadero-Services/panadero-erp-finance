@@ -111,13 +111,15 @@ const _footer = {
                 </div>
               </div>
             </div>
-            <div class="flex space-x-2 mt-2 justify-end mr-3">  
-              <CategorySectionIcon @click="_updateIcon(project.id, 'is_self', project.is_self==0), project.is_self = project.is_self == 1 ? 0 : 1 " icon="FingerPrint" :activated="project.is_self==1" :error="_false" title="is self"/>
-              <CategorySectionIcon @click="_updateIcon(project.id, 'is_locked', project.is_locked==0), project.is_locked = project.is_locked == 1 ? 0 : 1 " icon="LockClosed" :activated="project.is_locked==1" :error="_false" title="is locked"/>
-              <CategorySectionIcon @click="_updateIcon(project.id, 'is_featured', project.is_featured==0), project.is_featured = project.is_featured == 1 ? 0 : 1 " icon="Fire" :activated="project.is_featured==1" :error="_false" title="is featured"/>
-              <CategorySectionIcon @click="_updateIcon(project.id, 'is_smart', project.is_smart==0), project.smart = project.is_smart == 1 ? 0 : 1 " icon="Heart" :activated="project.is_smart==1" :error="_false" title="is smart"/>
-              <CategorySectionIcon @click="_updateIcon(project.id, 'is_public', project.is_public==0), project.public = project.is_public == 1 ? 0 : 1 " icon="LockOpen" :activated="project.is_public==1" :error="_false" title="is public"/>
-              <CategorySectionIcon @click="_updateIcon(project.id, 'is_published', project.is_published==0), project.is_published = project.is_published == 1 ? 0 : 1 " icon="Tv" :activated="project.is_published==1" :error="_false" title="is published"/>
+            <div class="flex space-x-2 mt-2 justify-end mr-3">
+              <CategorySectionIcon
+                v-if="typeof project.is_active !== 'undefined'"
+                @click="_updateIcon(project.id, 'is_active', !project.is_active), project.is_active = !project.is_active"
+                icon="CheckCircle"
+                :activated="project.is_active"
+                :error="_false"
+                title="Active"
+              />
             </div>
           </div>
         </div>

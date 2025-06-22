@@ -4,105 +4,47 @@ namespace App\Http\Resources;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
+// Model imports
 use App\Models\Post;
-use App\Http\Controllers\PostController;
-use App\Http\Resources\PostResource;
-
 use App\Models\Project;
-use App\Http\Controllers\ProjectController;
-use App\Http\Resources\ProjectResource;
-
 use App\Models\User;
 use App\Models\Comment;
-
 use App\Models\Page;
-use App\Http\Controllers\PageController;
-
 use App\Models\Tag;
-use App\Http\Controllers\TagController;
 use App\Models\Task;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\Web3RecordController;
-use App\Http\Controllers\Web3RecordLineController;
 use App\Models\Section;
 use App\Models\Role;
 
+// Controller imports
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
-//use Laravel\Jetstream\Http\Controllers\Inertia\TeamController;
-
-// custom token
-use App\Http\Middleware\EnsureTokenIsValid;
-use App\Http\Middleware\RoleAccessMiddleware;
-
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\TagController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\Web3RecordController;
+use App\Http\Controllers\Web3RecordLineController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LogController;
-
 use App\Http\Controllers\TestPhotoUploadController;
 use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
-use App\Http\Controllers\FutureController;
 use App\Http\Controllers\DynamicController;
 
+// Resource imports
+use App\Http\Resources\PostResource;
+use App\Http\Resources\ProjectResource;
 
+// Middleware imports
+use App\Http\Middleware\EnsureTokenIsValid;
+use App\Http\Middleware\RoleAccessMiddleware;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-
-Route::get('/adm', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-
-Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
-
-Route::get('/photo-test', function () {
-    return inertia('PhotoTest');
-});
-
-Route::post('/photo-test', function (Request $request) {
-    $request->validate([
-        'photo' => ['required', 'image', 'max:2048'],
-    ]);
-
-    $file = $request->file('photo');
-    $path = $file->store('test-photos', 'public');
-
-    Log::info('Upload success', [
-        'original_name' => $file->getClientOriginalName(),
-        'stored_path' => $path,
-    ]);
-
-    return back()->with('success', 'Upload gelukt: ' . $path);
-});
-
-
-
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    // Gebruikerslijst alleen voor admins
-    Route::get('/users', [UserController::class, 'index'])
-        ->name('users.index')
-        ->middleware('can:admin-access');
-
-    // Profiel bijwerken (accessible to any authenticated and verified user)
-    Route::post('/updateuserprofile', [UserController::class, 'updateProfile'])
-        ->name('updateuserprofile');
-
-    // Profielfoto uploaden (accessible to any authenticated and verified user)
-    Route::post('/photo-upload', [UserController::class, 'upload'])
-        ->name('photo.upload');
-});
-
-//Route::post('/photo-upload', [UserController::class, 'store'])->name('photo.upload');
-
-// Route::get('{any}', function () {return view('app'); })->where('any', '.*');
-Route::get('/getLabels', [\App\Http\Controllers\PostController::class, 'getLabels'])->name('getLabels');
-
+// ========================================
+// PUBLIC ROUTES (No Authentication Required)
+// ========================================
 
 Route::get('/', function () {
     return redirect()->route('home/welkom');
@@ -122,24 +64,23 @@ Route::get('home', function () {
 
 Route::get('home/welcome', function () {
     return Inertia::render('home/Welcome', [
-        //'canLogin' => Route::has('login'),
-        //'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('home/welcome');//->middleware(RoleAccessMiddleware::class.':admin,author');
-
+})->name('home/welcome');
 
 Route::get('home/welkom', function () {
     return Inertia::render('home/Welkom', [
         'page'=> Page::with('sections')->where('title','home/Welkom')->first(),
         'baseSections' => Section::where('page_id','0')->get(),
-        //'canLogin' => Route::has('login'),
-        //'canRegister' => Route::has('register'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->name('home/welkom');//->middleware(RoleAccessMiddleware::class.':admin,author');
+})->name('home/welkom');
+
+// ========================================
+// AUTHENTICATED ROUTES
+// ========================================
 
 Route::middleware([
     'auth:sanctum',
@@ -147,74 +88,188 @@ Route::middleware([
     'verified',
 ])->group(function () {
 
+    // ========================================
+    // API UTILITY ROUTES
+    // ========================================
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    })->middleware('auth:sanctum');
+
+    Route::get('/adm', function (Request $request) {
+        return $request->user();
+    })->middleware('auth:sanctum');
+
+    Route::post('/test-upload', [TestPhotoUploadController::class, 'store'])->name('test.upload');
+
+    Route::get('/photo-test', function () {
+        return inertia('PhotoTest');
+    });
+
+    Route::post('/photo-test', function (Request $request) {
+        $request->validate([
+            'photo' => ['required', 'image', 'max:2048'],
+        ]);
+
+        $file = $request->file('photo');
+        $path = $file->store('test-photos', 'public');
+
+        Log::info('Upload success', [
+            'original_name' => $file->getClientOriginalName(),
+            'stored_path' => $path,
+        ]);
+
+        return back()->with('success', 'Upload gelukt: ' . $path);
+    });
+
+    // ========================================
+    // FUTURES TABLE
+    // ========================================
+    Route::get('/home/futures', function() {
+        return app(DynamicController::class)->index(request(), 'home', 'futures');
+    })->name('home.futures');
+
+    Route::put('/api/futures/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('futures.update');
+
+    // ========================================
+    // PROJECTS TABLE
+    // ========================================
+    Route::get('/project/projects', function() {
+        return app(DynamicController::class)->index(request(), 'project', 'projects');
+    })->name('project/projects');
+    
+    Route::put('/api/projects/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('projects.update');
+
+    Route::get('/getproject', function() {
+        return app(DynamicController::class)->index(request(), 'project', 'projects');
+    })->name('getproject');
+
+    // ========================================
+    // POSTS TABLE
+    // ========================================
+    Route::get('/content/posts', [PostController::class, 'index'])->name('content/posts');
+    Route::put('/posts.update', [PostController::class, 'update'])->name('posts.update');
+    Route::post('/postupdateicon', [PostController::class, 'updateicon'])->name('postupdateicon');
+    Route::get('/getrecordbyid', [PostController::class, 'getrecordbyid'])->name('getrecordbyid');
+    Route::get('/getLabels', [PostController::class, 'getLabels'])->name('getLabels');
+
+    // ========================================
+    // USERS TABLE
+    // ========================================
+    Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('can:admin-access');
+    Route::post('/updateuserprofile', [UserController::class, 'updateProfile'])->name('updateuserprofile');
+    Route::post('/photo-upload', [UserController::class, 'upload'])->name('photo.upload');
+    Route::resource('users', UserController::class);
+
+    // ========================================
+    // PAGES TABLE
+    // ========================================
+    Route::get('/getpage', [PageController::class, 'getPage'])->name('getpage');
+    Route::get('/defaultPages', [PageController::class, 'defaultPages'])->name('defaultPages');
+    Route::resource('pages', PageController::class);
+
+    // ========================================
+    // SECTIONS TABLE
+    // ========================================
+    Route::resource('sections', SectionController::class);
+
+    // ========================================
+    // WEB3RECORDS TABLE
+    // ========================================
+    Route::resource('web3Records', Web3RecordController::class);
+    Route::get('/getrecord', [Web3RecordController::class, 'getrecord'])->name('getrecord');
+    Route::get('/getweb3recordline', [Web3RecordController::class, 'getweb3recordline'])->name('getweb3recordline');
+    Route::get('/getweb3records', [Web3RecordController::class, 'getweb3records'])->name('getweb3records');
+    Route::post('/setweb3record', [Web3RecordController::class, 'setweb3record'])->name('setweb3record');
+    Route::post('/setweb3recordcomplete', [Web3RecordController::class, 'setweb3recordcomplete'])->name('setweb3recordcomplete');
+    Route::post('/setweb3recordline', [Web3RecordController::class, 'setweb3recordline'])->name('setweb3recordline');
+    Route::get('/getrecords', [Web3RecordController::class, 'getrecords'])->name('getrecords');
+    Route::post('/insertTeam', [Web3RecordController::class, 'insertTeam'])->name('insertTeam');
+    Route::post('/insertProject', [Web3RecordController::class, 'insertProject'])->name('insertProject');
+
+    // ========================================
+    // WEB3RECORDLINES TABLE
+    // ========================================
+    Route::resource('web3RecordLines', Web3RecordLineController::class);
+
+    // ========================================
+    // LOGS TABLE
+    // ========================================
+    Route::resource('logs', LogController::class);
+    Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
+    Route::get('/logs/criteria', [LogController::class, 'criteria'])->name('logs.criteria');
+
+    // ========================================
+    // BUSINESS SERVICES TABLE
+    // ========================================
+    Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
+
+    // ========================================
+    // FEATURES TABLE
+    // ========================================
+    Route::get('/features', [FeatureController::class, 'index'])->name('features.index');
+
+    // ========================================
+    // STATE DATASET ROUTES
+    // ========================================
+    Route::post('/setstate', [\App\Http\Controllers\StateDatasetController::class, 'setstate'])->name('setstate');
+    Route::get('/getstate', [\App\Http\Controllers\StateDatasetController::class, 'getstate'])->name('getstate');
+    Route::get('/gettables', [\App\Http\Controllers\StateDatasetController::class, 'gettables'])->name('gettables');
+
+    // ========================================
+    // GAME/SCORE ROUTES
+    // ========================================
+    Route::get('/getgame', [\App\Http\Controllers\GameController::class, 'get'])->name('getgame');
+    Route::post('/setgame', [\App\Http\Controllers\GameController::class, 'setgame'])->name('setgame');
+    Route::get('/getscore', [\App\Http\Controllers\ScoreController::class, 'getscore'])->name('getscore');
+    Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
+
+    // ========================================
+    // PRICE ROUTES
+    // ========================================
+    Route::get('/getprice', [\App\Http\Controllers\PriceController::class, 'get'])->name('getprice');
+    Route::post('/setprice', [\App\Http\Controllers\PriceController::class, 'setprice'])->name('setprice');
+
+    // ========================================
+    // PAGE ROUTES (Non-API)
+    // ========================================
     Route::get('home/dashboard', function () {
         return Inertia::render('home/Dashboard', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('home/dashboard');//->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('home/dashboard');
 
     Route::get('home/sandbox', function () {
         return Inertia::render('home/Sandbox', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('home/sandbox');//->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('home/sandbox');
 
     Route::get('home/tiers', function () {
         return Inertia::render('home/Tiers', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('home/tiers');//->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('home/tiers');
 
-
-
-    // futures
-    Route::get('/home/futures', [FutureController::class, 'index'])->name('home.futures');
-    Route::put('/api/futures/{id}', [FutureController::class, 'update'])->name('futures.update');
-
-
-
-/*
-
-    Route::get('home/futures', [FutureController::class, 'index'])
-         ->name('home/futures');
-
-
-
-    Route::get('/home/futures', function () {
-        $futures = \App\Models\Future::with(['user', 'project'])->paginate(12);
-        
-        return Inertia::render('home/Futures', [
-            'page' => [
-                'title' => 'Futures',
-                'module' => 'home',
-                'icon' => 'view-dashboard-outline',
-                'slogan' => 'Just do it, innovation at the heart of your businesss',
-                'type' => 'table'
-            ],
-            'baseSections' => Section::where('page_id','0')->get(),
-            'records' => [
-                'data' => $futures->items(),
-                'meta' => [
-                    'current_page' => $futures->currentPage(),
-                    'last_page' => $futures->lastPage(),
-                    'per_page' => $futures->perPage(),
-                    'total' => $futures->total(),
-                    'links' => $futures->linkCollection()->toArray()
-                ]
-            ]
+    Route::get('home/administration', function () {
+        return Inertia::render('home/Administration', [
+            'page'=> Page::with('sections')->where('title','home/Administration')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('home.futures');
-    */
+    })->name('home/administration');
 
     Route::get('erp/dashboard', function () {
         return Inertia::render('erp/ErpDashboard', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('erp/dashboard');//->middleware(RoleAccessMiddleware::class.':admin,author');
+    })->name('erp/dashboard');
 
     Route::get('erp/mood', function () { 
         return Inertia::render('erp/Mood', [
@@ -237,9 +292,6 @@ Route::middleware([
         ]);
     })->name('erp/sand');
 
-
-    // Business Function : Poject Management Software
-    // project
     Route::get('project/plan', function () { 
         return Inertia::render('project/Plan', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
@@ -247,32 +299,20 @@ Route::middleware([
         ]);
     })->name('project/plan')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    // Business Function : Poject Management Software
-    // project
-    Route::get('project/projects', function () { 
-        return Inertia::render('project/Projects', [
-            'projects'=> ProjectResource::collection(Project::with('user')->paginate()),
-            'page'=> Page::with('sections')->where('title','Mood')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('project/projects')->middleware(RoleAccessMiddleware::class.':admin,author');
-
- Route::get('project/work', function () { 
+    Route::get('project/work', function () { 
         return Inertia::render('project/Work', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('project/work')->middleware(RoleAccessMiddleware::class.':admin,author');
 
- Route::get('project/budget', function () { 
+    Route::get('project/budget', function () { 
         return Inertia::render('project/Budget', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('project/budget')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    // Business Function : Design  Software
-    // design
     Route::get('design/mind', function () { 
         return Inertia::render('design/Diagram', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
@@ -297,8 +337,6 @@ Route::middleware([
         ]);
     })->name('design/lane')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-
-
     Route::get('ecommerce/dashboard', function () {
         return Inertia::render('ecommerce/EcommerceDashboard', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
@@ -313,23 +351,6 @@ Route::middleware([
         ]);
     })->name('ecommerce/storefront');
 
-    Route::get('content/posts', [PostController::class, 'index'])
-         ->name('content/posts')
-         ->middleware(RoleAccessMiddleware::class.':admin,member');
-
-
-
-
-
-});
-
-    Route::get('home/tiers', function () {
-        return Inertia::render('home/Tiers', [
-            'page'=> Page::with('sections')->where('title','Tiers')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('home/tiers')->middleware(RoleAccessMiddleware::class.':admin,author');
-
     Route::get('bento', function () {
         return Inertia::render('Bento', [
             'page'=> Page::with('sections')->where('title','Bento')->first(),
@@ -337,8 +358,6 @@ Route::middleware([
         ]);
     })->name('bento')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-//  Gate function
-//  Route::middleware('can:admin-access')->get('posts', function () {
     Route::get('grid', function () {
         return Inertia::render('Grid', [
             'page'=> Page::with('sections')->where('title','Grid')->first(),
@@ -374,8 +393,6 @@ Route::middleware([
         ]);
     })->name('ai/executors');
 
-
-
     Route::get('project', function () {
         return Inertia::render('Project', [
             'page'=> Page::with('sections')->where('title','Project')->first(),
@@ -404,95 +421,28 @@ Route::middleware([
         ]);
     })->name('table');
 
+    Route::get('planning', function () { 
+        return Inertia::render('Planning', []); 
+    })->name('planning');
 
+    // ========================================
+    // TEST ROUTES
+    // ========================================
+    Route::get('test/{id?}', function($id=1){
+        return [
+            UserResource::make(User::where('id',$id)->first()),
+            PostResource::make(Post::where('id',$id)->first()),
+            CommentResource::make(Comment::where('id',$id)->first())
+        ];
+    });
 
-//  Route::get('grid', function () { return Inertia::render('Grid', []);})->name('grid');
-//  Route::get('table', function () { return Inertia::render('Table', []);})->name('table');
-//  Route::get('config', function () { return Inertia::render('Config', []);})->name('config');
-//  Route::get('web3', function () { return Inertia::render('Web3', []);})->name('web3');
-    Route::get('planning', function () { return Inertia::render('Planning', []);})->name('planning');
-//  Route::get('resources', function () { return Inertia::render('Resources', []);})->name('resources');
-//  Route::get('posts',[PostController::class,'index'])->name('posts');
+    Route::get('test_user', function (){
+        return Post::take(5)->get();
+    });
 
-
-//Route::get('posts',[PostController::class,'index'])->name('posts');
-Route::get('test/{id?}', function($id=1){
-    return [
-    UserResource::make(User::where('id',$id)->first()),
-        PostResource::make(Post::where('id',$id)->first()),
-        CommentResource::make(Comment::where('id',$id)->first())
-    ];
-});
-
-Route::get('test_user', function (){
-    return Post::take(5)->get();
-});
-
-// price
-Route::get('/getprice',[\App\Http\Controllers\PriceController::class, 'get'])->name('getprice');
-Route::post('/setprice',[\App\Http\Controllers\PriceController::class, 'setprice'])->name('setprice');
-
-// game
-Route::get('/getgame',[\App\Http\Controllers\GameController::class, 'get'])->name('getgame');
-Route::post('/setgame',[\App\Http\Controllers\GameController::class, 'setgame'])->name('setgame');
-
-// score
-Route::get('/getscore',[\App\Http\Controllers\ScoreController::class, 'getscore'])->name('getscore');
-Route::post('/setscore',[\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
-
-// stateDataSet
-Route::post('/setstate',[\App\Http\Controllers\StateDatasetController::class, 'setstate'])->name('setstate');
-Route::get('/getstate',[\App\Http\Controllers\StateDatasetController::class, 'getstate'])->name('getstate');
-
-Route::get('/gettables',[\App\Http\Controllers\StateDatasetController::class, 'gettables'])->name('gettables');
-
-Route::get('/defaultPages',[\App\Http\Controllers\PageController::class, 'defaultPages'])->name('defaultPages');
-
-// web3Record
-Route::resource('web3Records',Web3RecordController::class);
-
-Route::get('/getrecord',[\App\Http\Controllers\Web3RecordController::class, 'getrecord'])->name('getrecord');
-Route::get('/getweb3recordline',[\App\Http\Controllers\Web3RecordController::class, 'getweb3recordline'])->name('getweb3recordline');
-Route::get('/getweb3records',[\App\Http\Controllers\Web3RecordController::class, 'getweb3records'])->name('getweb3records');
-Route::post('/setweb3record',[\App\Http\Controllers\Web3RecordController::class, 'setweb3record'])->name('setweb3record');
-Route::post('/setweb3recordcomplete',[\App\Http\Controllers\Web3RecordController::class, 'setweb3recordcomplete'])->name('setweb3recordcomplete');
-Route::post('/setweb3recordline',[\App\Http\Controllers\Web3RecordController::class, 'setweb3recordline'])->name('setweb3recordline');
-
-Route::get('/getrecords',[\App\Http\Controllers\Web3RecordController::class, 'getrecords'])->name('getrecords');
-
-// web3RecordLine
-Route::resource('web3RecordLines',Web3RecordLineController::class);
-
-// page
-Route::get('/getpage',[\App\Http\Controllers\PageController::class, 'getPage'])->name('getpage');
-
-// project
-Route::get('/getproject',[\App\Http\Controllers\ProjectController::class, 'getProject'])->name('getproject');
-
-// user
-Route::resource('users',UserController::class);
-Route::post('/updateuserprofile',[UserController::class, 'updateProfile'])->name('updateuserprofile');
-
-// sections
-Route::resource('sections',SectionController::class);
-
-// team
-Route::post('/insertTeam',[Web3RecordController::class, 'insertTeam'])->name('insertTeam');
-Route::post('/insertProject',[Web3RecordController::class, 'insertProject'])->name('insertProject');
-
-Route::resource('pages',PageController::class);
-
-Route::put('posts.update',[PostController::class, 'update'])->name('posts.update');
-Route::post('/postupdateicon',[\App\Http\Controllers\PostController::class, 'updateicon'])->name('postupdateicon');
-
-Route::resource('logs',LogController::class);
-
-Route::get('/getrecordbyid',[\App\Http\Controllers\PostController::class, 'getrecordbyid'])->name('getrecordbyid');
-
-
-
-// Add this debugging middleware to your Laravel route to see what's happening server-side:
-Route::middleware(['web', 'auth:sanctum'])->group(function () {
+    // ========================================
+    // DEBUGGING ROUTES
+    // ========================================
     Route::get('/api/users', function () {
         \Log::info('Session ID: ' . session()->getId());
         \Log::info('User authenticated: ' . auth()->check());
@@ -506,13 +456,49 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             ], 401);
         }
         
-        // Your original users route logic here
         return \App\Models\User::all();
     });
+
+    // ========================================
+    // DYNAMIC API ROUTES
+    // ========================================
+    Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table');
+
+    // ========================================
+    // DYNAMIC ROUTES
+    // ========================================
+    Route::get('/{module}/{table}', [DynamicController::class, 'index'])->name('dynamic.table');
+
+    // Add these routes for dropdown options
+    Route::get('/api/color', function() {
+        return response()->json([
+            'blue' => 'Blue',
+            'green' => 'Green', 
+            'red' => 'Red',
+            'yellow' => 'Yellow',
+            'purple' => 'Purple',
+            'orange' => 'Orange',
+            'gray' => 'Gray',
+            'pink' => 'Pink'
+        ]);
+    })->name('api.color');
+
+    Route::get('/api/status', function() {
+        return response()->json([
+            'idle' => 'Idle',
+            'in_progress' => 'In Progress',
+            'completed' => 'Completed',
+            'blocked' => 'Blocked',
+            'review' => 'Review'
+        ]);
+    })->name('api.status');
+
 });
 
-
-//Route::get('/logs/criteria', [LogController::class, 'criteria']);
+// ========================================
+// CATCH-ALL ROUTE (Keep at the end)
+// ========================================
+// Route::get('{any}', function () {return view('app'); })->where('any', '.*');
 
 /*
 plan
@@ -563,8 +549,6 @@ Functies
 11 indigo2
     11.0. dashboard.
 
-
-
 Modules
 1 dashboard
 2 grid
@@ -573,25 +557,4 @@ Modules
 5 landing
 6 adminSection
 7 
-
 */
-
-Route::get('home/administration', function () {
-    return Inertia::render('home/Administration', [
-        'page'=> Page::with('sections')->where('title','home/Administration')->first(),
-        'baseSections' => Section::where('page_id','0')->get()
-    ]);
-})->name('home/administration');
-
-Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
-Route::get('/features', [FeatureController::class, 'index'])->name('features.index');
-
-// Log routes
-Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
-    Route::get('/logs/criteria', [LogController::class, 'criteria'])->name('logs.criteria');
-});
-
-// Dynamic table routes
-Route::get('/{module}/{table}', [DynamicController::class, 'index'])->name('dynamic.table');
-

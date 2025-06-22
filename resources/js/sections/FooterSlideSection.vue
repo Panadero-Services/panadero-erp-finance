@@ -22,7 +22,7 @@ const _userId = ref(0);
 onMounted(async ()=> {
   _userId.value = usePage().props.auth.user.id;
   _actualProject.value = await _project.getProjectFromDb(1);
-  console.log( _actualProject.value)
+  //console.log( _actualProject.value)
   // board.selectCard({ id: 3, groupMode: true });
 });
 

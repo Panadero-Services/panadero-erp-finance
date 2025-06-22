@@ -97,10 +97,132 @@ class DynamicController extends Controller
         $page = \App\Models\Page::with('sections')->where('title', "{$module}/{$table}")->first();
         $baseSections = \App\Models\Section::where('page_id', '0')->get();
 
-        return Inertia::render("{$module}/{$table}", [
+        $vueComponent = Str::studly($table);
+        return Inertia::render("{$module}/{$vueComponent}", [
             'records' => $records,
             'page' => $page,
             'baseSections' => $baseSections
         ]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        // Get the table name from the route
+        $table = $request->route()->getName();
+        $table = str_replace('.update', '', $table); // Remove .update suffix
+        
+        // Convert table name to model class
+        $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
+        
+        if (!class_exists($modelClass)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Model {$modelClass} not found"
+            ], 404);
+        }
+        
+        $model = $modelClass::findOrFail($id);
+
+        // Filter request data to only include record fields (no metadata)
+        $fillableFields = $model->getFillable();
+        $data = $request->only($fillableFields);
+        
+        // Always include the ID for the update
+        $data['id'] = $id;
+
+        // Convert json and links to arrays if they're strings
+        if (isset($data['json']) && is_string($data['json'])) {
+            $data['json'] = json_decode($data['json'], true) ?? [];
+        }
+        if (isset($data['links']) && is_string($data['links'])) {
+            $data['links'] = json_decode($data['links'], true) ?? [];
+        }
+        
+        // Ensure user_id is integer if it exists
+        if (isset($data['user_id'])) {
+            $data['user_id'] = (int) $data['user_id'];
+        }
+        
+        // Convert boolean strings to actual booleans for all boolean fields
+        $casts = $model->getCasts();
+        foreach ($casts as $field => $cast) {
+            if ($cast === 'boolean' && isset($data[$field])) {
+                if (is_string($data[$field])) {
+                    $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
+                }
+            }
+        }
+
+        try {
+            // Validate using model's validation rules AFTER data conversion
+            if (method_exists($modelClass, 'validationRules')) {
+                \Validator::make($data, $modelClass::validationRules())->validate();
+            }
+            
+            $model->update($data);
+            
+            // Return Inertia response
+            return redirect()->back()->with('success', Str::studly(Str::singular($table)) . ' updated successfully');
+            
+        } catch (\Exception $e) {
+            // Return Inertia response with errors
+            return back()->withErrors(['error' => 'Error updating ' . Str::studly(Str::singular($table)) . ': ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Get API data for a specific table (for dropdowns, etc.)
+     */
+    public function api(Request $request, $table)
+    {
+        // Convert table name to model class
+        $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
+        
+        if (!class_exists($modelClass)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Model {$modelClass} not found"
+            ], 404);
+        }
+        
+        $query = $modelClass::query();
+        
+        // Get display fields from model metadata
+        $displayFields = ['id'];
+        if (method_exists($modelClass, 'formFields')) {
+            $formFields = $modelClass::formFields();
+            foreach ($formFields as $field) {
+                if (isset($field['type']) && in_array($field['type'], ['text', 'string', 'title', 'name'])) {
+                    $displayFields[] = $field['name'];
+                    break; // Use first text field as display
+                }
+            }
+        }
+        
+        // If no specific display field found, use common ones
+        if (count($displayFields) === 1) {
+            $commonFields = ['title', 'name', 'label', 'description'];
+            foreach ($commonFields as $field) {
+                if (in_array($field, $modelClass::getFillable())) {
+                    $displayFields[] = $field;
+                    break;
+                }
+            }
+        }
+        
+        // Select only the needed fields
+        $query->select($displayFields);
+        
+        // Order by the display field
+        if (count($displayFields) > 1) {
+            $query->orderBy($displayFields[1], 'asc');
+        }
+        
+        $records = $query->get();
+        
+        return response()->json($records);
     }
 } 

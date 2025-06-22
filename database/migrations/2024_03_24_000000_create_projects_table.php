@@ -16,20 +16,15 @@ return new class extends Migration
             $table->id();
             $table->string('title',80);
             $table->text('description');
-            $table->text('json');
+            $table->string('color', 24)->default('blue');
+            $table->string('status', 32)->default('idle');
+            $table->json('json');
+            $table->json('links');
             $table->foreignId('user_id')->index();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
             $table->boolean('is_active');
         });
-        
-        Project::insert([
-            'title' => 'public',
-            'description' => 'default project',
-            'json' => '{"key":"value"}',
-            'user_id' => 1,
-            'is_active' => 1
-        ]);
     }
 
     /**

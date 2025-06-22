@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
+import axios from 'axios'
 
 // Icons
 import {
@@ -118,8 +119,14 @@ const checkTokenExpiration = () => {
         sessionStorage.clear();
         localStorage.clear();
         
-        // Force redirect to login
-        window.location.replace('/login');
+        // Refresh CSRF token before redirect
+        axios.get('/sanctum/csrf-cookie').then(() => {
+          // Force redirect to login
+          window.location.replace('/login');
+        }).catch(() => {
+          // If CSRF refresh fails, still redirect
+          window.location.replace('/login');
+        });
       }
     } catch (error) {
       console.error('Error checking token expiration:', error);

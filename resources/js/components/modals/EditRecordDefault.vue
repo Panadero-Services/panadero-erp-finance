@@ -50,8 +50,8 @@ const form = useForm({
   ...props.record
 });
 
-// Relations list for dynamic select fields
-const relations = reactive({});
+// Relations list for dynamic select fields - now using metadata
+const projects = reactive({});
 
 // Links table based on current table
 const linksTable = computed(() => {
@@ -59,60 +59,96 @@ const linksTable = computed(() => {
 });
 
 // Initialize form with default values
-const loadForm = async () => {
+const loadForm = () => {
   try {
     const initialForm = {};
+    
     Object.keys(props.meta.form_fields || {}).forEach(field => {
-      // For select fields, use the specific relation ID from the record
-      if (props.meta.form_fields[field].type === 'select') {
-        // Get the relation ID from the record (e.g., user_id, project_id)
-        const relationId = props.record[field];
+      const fieldConfig = props.meta.form_fields[field];
+      
+      // For select fields, handle them based on their purpose
+      if (fieldConfig.type === 'select') {
+        let fieldValue = null;
         
-        // If we have a relation object (e.g., user, project), use its ID
-        if (props.record[field.replace('_id', '')]) {
-          const relation = props.record[field.replace('_id', '')];
-          initialForm[field] = relation.id;
+        // Check if this is a foreign key field (ends with _id)
+        if (field.endsWith('_id')) {
+          // Check if the record has the direct field (e.g., user_id)
+          if (props.record[field] !== undefined) {
+            fieldValue = parseInt(props.record[field]);
+          }
+          // Check if the record has a relation object (e.g., user.id)
+          else {
+            const relationName = field.replace('_id', ''); // user_id -> user
+            if (props.record[relationName] && props.record[relationName].id) {
+              fieldValue = parseInt(props.record[relationName].id);
+            }
+          }
         } else {
-          initialForm[field] = relationId;
+          // For non-foreign key select fields (like color, status), keep as string
+          fieldValue = props.record[field] || fieldConfig.default || null;
         }
         
-        // Load the relations data
-        const _table = (field).replace("_id", "s");
-        loadRelations(_table, field);
+        initialForm[field] = fieldValue;
+        
+        // Convert options object to array format for consistency
+        if (fieldConfig.options) {
+          projects[field] = Object.entries(fieldConfig.options).map(([id, label]) => ({
+            id: field.endsWith('_id') ? parseInt(id) : id, // Keep strings for non-ID fields
+            title: label,
+            name: label // Add name for compatibility
+          }));
+        }
       } else {
+        // Simple assignment for non-select fields
         initialForm[field] = props.record[field] || null;
       }
     });
     
     Object.assign(form, initialForm);
+    
+    // Convert arrays to JSON strings for textarea display
+    if (Array.isArray(form.json)) {
+      form.json = JSON.stringify(form.json);
+    }
+    
+    if (Array.isArray(form.links)) {
+      form.links = JSON.stringify(form.links);
+    }
+    
+    // Debug: Log the actual values (not Proxy objects)
+    console.log('Form initialized with values:', JSON.parse(JSON.stringify(form)));
+    console.log('Projects options:', JSON.parse(JSON.stringify(projects)));
+    console.log('Record data:', JSON.parse(JSON.stringify(props.record)));
+    
+    // Also log specific select field values
+    Object.keys(props.meta.form_fields || {}).forEach(field => {
+      if (props.meta.form_fields[field].type === 'select') {
+        console.log(`Select field ${field}:`, {
+          formValue: form[field],
+          formValueType: typeof form[field],
+          recordValue: props.record[field],
+          recordValueType: typeof props.record[field],
+          relationValue: field.endsWith('_id') ? props.record[field.replace('_id', '')] : null,
+          options: projects[field],
+          optionsCount: projects[field] ? projects[field].length : 0,
+          isForeignKey: field.endsWith('_id')
+        });
+      }
+    });
   } catch (error) {
     console.error('Error initializing form:', error);
   }
 };
 
-// Load relations for select fields
-const loadRelations = async (_table, _field) => {
-  try {
-    // Use a non-blocking approach to prevent page refresh
-    // For now, we'll skip loading relations on modal open to prevent refresh
-    // Relations can be loaded when user actually interacts with select fields
-    relations[_field] = [];
-    
-    // Alternative: Use a timeout to delay the API call
-    setTimeout(async () => {
-      try {
-        const response = await props.db.fetchApiRecords(_table);
-        relations[_field] = response;
-      } catch (error) {
-        console.error('Error fetching relations:', error);
-        relations[_field] = [];
-      }
-    }, 100);
-  } catch (error) {
-    console.error('Error in loadRelations:', error);
-    relations[_field] = [];
-  }
-};
+// Add a computed property to check if options are loaded
+const isOptionsLoaded = computed(() => {
+  return Object.keys(props.meta.form_fields || {}).every(field => {
+    if (props.meta.form_fields[field].type === 'select') {
+      return projects[field] && projects[field].length > 0;
+    }
+    return true;
+  });
+});
 
 // Validation methods
 const getRulesForField = (key) => {
@@ -145,7 +181,22 @@ const submit = async () => {
   // Only include fields that are defined in form_fields (actual record fields)
   Object.keys(props.meta.form_fields || {}).forEach(fieldName => {
     if (form.hasOwnProperty(fieldName)) {
-      filteredData[fieldName] = form[fieldName];
+      const fieldConfig = props.meta.form_fields[fieldName];
+      let value = form[fieldName];
+      
+      // Convert switch fields to proper boolean values
+      if (fieldConfig.type === 'switch') {
+        // Handle null, undefined, and falsy values
+        if (value === null || value === undefined || value === '') {
+          value = false;
+        } else if (typeof value === 'string') {
+          value = value === 'true' || value === '1';
+        } else {
+          value = Boolean(value);
+        }
+      }
+      
+      filteredData[fieldName] = value;
     }
   });
   
@@ -243,7 +294,14 @@ const availableLinkTypes = computed(() => {
 
 const hasJsonLinkError = computed(() => {
   try {
-    const links = JSON.parse(form.links || '[]');
+    let links;
+    if (typeof form.links === 'string') {
+      links = JSON.parse(form.links || '[]');
+    } else if (Array.isArray(form.links)) {
+      links = form.links;
+    } else {
+      links = [];
+    }
     return !Array.isArray(links) || links.some(link => typeof link !== 'object' || !link.link_id || !link.type);
   } catch {
     return true;
@@ -252,7 +310,13 @@ const hasJsonLinkError = computed(() => {
 
 const links = computed(() => {
   try {
-    return JSON.parse(form.links || '[]');
+    if (typeof form.links === 'string') {
+      return JSON.parse(form.links || '[]');
+    } else if (Array.isArray(form.links)) {
+      return form.links;
+    } else {
+      return [];
+    }
   } catch {
     return [];
   }
@@ -267,6 +331,36 @@ const removeLink = (index) => {
   const newLinks = [...links.value];
   newLinks.splice(index, 1);
   form.links = JSON.stringify(newLinks);
+};
+
+const linksJsonString = computed({
+  get() {
+    if (typeof form.links === 'string') {
+      return form.links;
+    } else if (Array.isArray(form.links)) {
+      return JSON.stringify(form.links, null, 2);
+    } else {
+      return '[]';
+    }
+  },
+  set(value) {
+    try {
+      form.links = JSON.parse(value);
+    } catch {
+      form.links = [];
+    }
+  }
+});
+
+const updateLinksFromJson = (event) => {
+  try {
+    const parsed = JSON.parse(event.target.value);
+    if (Array.isArray(parsed)) {
+      form.links = parsed;
+    }
+  } catch {
+    // Invalid JSON, keep the current value
+  }
 };
 </script>
 
@@ -332,26 +426,52 @@ const removeLink = (index) => {
 
                 <!-- Select Field -->
                 <div v-else-if="fieldConfig.type === 'select'" class="mt-1">
+                  <!-- Debug info -->
+                  <div v-if="!projects[fieldName] || projects[fieldName].length === 0" class="text-red-500 text-xs mb-1">
+                    No options loaded for {{ fieldName }}
+                  </div>
+                  
                   <select
-                    v-model="form[String(fieldName)]"
-                    :id="String(fieldName)"
+                    v-model="form[fieldName]"
+                    :id="fieldName"
                     class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
-                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
+                    :required="meta.validation_rules?.[fieldName]?.includes('required')"
                   >
-                    <option v-if="!form[String(fieldName)]" value="">Select {{ fieldConfig.label }}</option>
-                    <!-- Show relations if they exist, otherwise show options -->
-                    <template v-if="relations[String(fieldName)]?.length">
-                      <option v-for="relation in relations[String(fieldName)]" :key="String(relation.id)" :value="String(relation.id)" :selected="String(relation.id) === String(form[String(fieldName)])">
-                       {{ relation.id || relation.name}} {{ relation.title || relation.name}}
-                      </option>
-                    </template>
-                    <template v-else>
-                      <option v-for="(label, id) in fieldConfig.options" :key="String(id)" :value="String(id)" :selected="String(id) === String(form[String(fieldName)])">
-                        {{ label }}
-                      </option>
-                    </template>
+                    <option value="">Select {{ fieldConfig.label }}</option>
+                    <option 
+                      v-for="relation in (projects[fieldName] || [])" 
+                      :key="relation.id" 
+                      :value="relation.id"
+                    >
+                      {{ relation.title || relation.name || relation.id }}
+                    </option>
                   </select>
+                  
+                  <!-- Debug info -->
+                  <div class="text-xs text-gray-500 mt-1">
+                    Current value: {{ form[fieldName] }} (type: {{ typeof form[fieldName] }})
+                    <br>
+                    Available options: {{ projects[fieldName] ? projects[fieldName].length : 0 }}
+                  </div>
+                  
                   <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
+                </div>
+
+                <!-- JSON Field -->
+                <div v-else-if="fieldName === 'json'" class="mt-1">
+                  <textarea
+                    v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
+                    :rows="meta.form_fields?.[fieldName]?.rows || 2"
+                    v-model="form[String(fieldName)]"
+                    :class="[
+                      'block w-full rounded-md shadow-sm sm:text-xs ',
+                      isInvalid(String(fieldName))
+                        ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
+                        : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
+                      'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400'
+                    ]"
+                    :placeholder="meta.form_fields?.[fieldName]?.placeholder"
+                  ></textarea>
                 </div>
 
                 <!-- Links Field -->
@@ -404,7 +524,6 @@ const removeLink = (index) => {
                       </div>
 
                       <div class="col-span-3">
-                        <!-- Show col-span-3 links inputbox -->
                         <textarea
                           v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
                           :rows="meta.form_fields?.[fieldName]?.rows || 2"
@@ -500,11 +619,27 @@ const removeLink = (index) => {
               }"
             >
               <!-- Label left.. Boolean center -->
-              <label :for="fieldName" class="ml-4 text-center text-xs" v-if="getRuleText(fieldName) == 'boolean'">
-                <span >
-                {{ fieldName.replace('is_','') }}
-                </span>
+              <label :for="fieldName" class="ml-4 text-center text-xs" v-if="fieldConfig.type === 'switch'">
+                <span>{{ fieldName.replace('is_','') }}</span>
               </label>
+              
+              <!-- Switch Component for switch type fields -->
+              <div v-if="fieldConfig.type === 'switch'" class="scale-75 ml-1">
+                <Switch
+                  v-model="form[String(fieldName)]"
+                  :class="[
+                    form[String(fieldName)] ? 'bg-indigo-600' : 'bg-gray-200',
+                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                  ]"
+                >
+                  <span
+                    :class="[
+                      form[String(fieldName)] ? 'translate-x-6' : 'translate-x-1',
+                      'inline-block h-4 w-4 transform rounded-full bg-white transition-transform'
+                    ]"
+                  />
+                </Switch>
+              </div>
             </div>
         </div>
 
