@@ -45,6 +45,7 @@ use App\Http\Controllers\TestPhotoUploadController;
 use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\FutureController;
+use App\Http\Controllers\DynamicController;
 
 
 
@@ -590,4 +591,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
     Route::get('/logs/criteria', [LogController::class, 'criteria'])->name('logs.criteria');
 });
+
+// Dynamic table routes
+Route::get('/{module}/{table}', [DynamicController::class, 'index'])->name('dynamic.table');
 

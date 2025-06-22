@@ -396,44 +396,37 @@ const handleRecordUpdate = (updatedRecord) => {
 
               <!-- Status Tab -->
               <div v-else-if="activeTab === 'status'" :class="['space-y-2', fontSizeClass]">
-                <div class="grid gap-4" :class="{
-                  'grid-cols-1': modalSize === 'standard',
-                  'grid-cols-2': modalSize === 'large', 
-                  'grid-cols-3': modalSize === 'full'
+                <div v-if="statusFlags.length === 0" class="text-center text-gray-500 dark:text-gray-400 p-4">
+                  <div>No status flags available</div>
+                </div>
+                <div v-else class="grid gap-2" :class="{
+                  'grid-cols-2': modalSize === 'standard',
+                  'grid-cols-3': modalSize === 'large', 
+                  'grid-cols-4': modalSize === 'full'
                 }">
-                  <div v-for="flag in statusFlags" :key="flag.key" class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-                    <!-- Field Header -->
-                    <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-                      <h3 class="font-medium text-gray-700 dark:text-gray-300 flex items-center">
-                        <span class="mr-2">✅</span>
+                  <div v-for="flag in statusFlags" :key="flag.key" 
+                       class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center space-x-2">
+                      <span class="text-xs text-gray-500 dark:text-gray-400">
                         {{ flag.label }}
-                        <span class="ml-2 text-gray-500 dark:text-gray-500">({{ flag.key }})</span>
-                      </h3>
+                      </span>
+                      <span class="text-xxs text-gray-400 dark:text-gray-500">
+                        ({{ flag.key }})
+                      </span>
                     </div>
-                    
-                    <!-- Status Content -->
-                    <div class="p-4 bg-gray-50 dark:bg-gray-700/50">
-                      <div class="flex justify-between items-center">
-                        <span class="text-gray-700 dark:text-gray-300">Status:</span>
-                        <span :class="[
-                          'px-3 py-1 rounded-full font-medium',
-                          flag.active 
-                            ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 ring-1 ring-green-600/20' 
-                            : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 ring-1 ring-red-600/20'
-                        ]">
-                          {{ flag.active ? 'Active' : 'Inactive' }}
-                        </span>
-                      </div>
-                      
-                      <!-- Show help text if available -->
-                      <div v-if="flag.config.help" class="mt-2 text-gray-500 dark:text-gray-400">
-                        {{ flag.config.help }}
-                      </div>
-                      
-                      <!-- Show default value if available -->
-                      <div v-if="flag.config.default !== undefined" class="mt-1 text-gray-400 dark:text-gray-500">
-                        Default: {{ flag.config.default ? 'Active' : 'Inactive' }}
-                      </div>
+                    <div class="flex items-center space-x-2">
+                      <span :class="[
+                        'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+                        flag.active 
+                          ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
+                          : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                      ]">
+                        {{ flag.active ? '✓' : '✗' }}
+                      </span>
+                      <span v-if="flag.config.default !== undefined" 
+                            class="text-xxs text-gray-400 dark:text-gray-500">
+                        ({{ flag.config.default ? '✓' : '✗' }})
+                      </span>
                     </div>
                   </div>
                 </div>
