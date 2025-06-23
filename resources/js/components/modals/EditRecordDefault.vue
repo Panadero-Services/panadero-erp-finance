@@ -8,6 +8,7 @@ import { XMarkIcon } from '@heroicons/vue/24/outline';
 import TheButton from "@/panadero/components/TheButton.vue";
 //import axios from 'axios';
 import { router } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const page = usePage();
 
@@ -114,29 +115,8 @@ const loadForm = () => {
     if (Array.isArray(form.links)) {
       form.links = JSON.stringify(form.links);
     }
-    
-    // Debug: Log the actual values (not Proxy objects)
-    console.log('Form initialized with values:', JSON.parse(JSON.stringify(form)));
-    console.log('Projects options:', JSON.parse(JSON.stringify(projects)));
-    console.log('Record data:', JSON.parse(JSON.stringify(props.record)));
-    
-    // Also log specific select field values
-    Object.keys(props.meta.form_fields || {}).forEach(field => {
-      if (props.meta.form_fields[field].type === 'select') {
-        console.log(`Select field ${field}:`, {
-          formValue: form[field],
-          formValueType: typeof form[field],
-          recordValue: props.record[field],
-          recordValueType: typeof props.record[field],
-          relationValue: field.endsWith('_id') ? props.record[field.replace('_id', '')] : null,
-          options: projects[field],
-          optionsCount: projects[field] ? projects[field].length : 0,
-          isForeignKey: field.endsWith('_id')
-        });
-      }
-    });
   } catch (error) {
-    console.error('Error initializing form:', error);
+    // Silent error handling
   }
 };
 
@@ -211,31 +191,49 @@ const submit = async () => {
     filteredData.links = typeof filteredData.links === 'string' ? filteredData.links : JSON.stringify(filteredData.links);
   }
 
-  router.put(`/api/${props.table}/${form.id}`, filteredData, {
-    preserveScroll: true,
-    onSuccess: () => {
-      const page = usePage();
-      const user = page.props.auth.user;
+  // Use axios directly with proper CSRF handling for API routes
+  try {
+    const response = await axios.put(`/api/${props.table}/${form.id}`, filteredData, {
+      headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      withCredentials: true
+    });
 
-      props.db.logAction({
-        action: `${props.table}.update`,
-        user_id: user.id || 'no_uid',
-        module: props.module,
-        node: 'none',
-        team: user.current_team.name || 'no_team',
-        project: 'none',
-        content: form.title || 'none',
-        json: JSON.stringify(form),
-        tags: 'content, posts',
-      });
+    // Success handling
+    const page = usePage();
+    const user = page.props.auth.user;
 
-      emit('close');
-    },
-    onError: (errors) => {
-      console.error('Form submission error:', errors);
-    },
-    onFinish: () => true,
-  });
+    props.db.logAction({
+      action: `${props.table}.update`,
+      user_id: user.id || 'no_uid',
+      module: props.module,
+      node: 'none',
+      team: user.current_team.name || 'no_team',
+      project: 'none',
+      content: form.title || 'none',
+      json: JSON.stringify(form),
+      tags: 'content, posts',
+    });
+
+    emit('close');
+    
+    // Show success message
+    router.visit(window.location.pathname, {
+      data: { success: `${props.table} updated successfully` },
+      preserveScroll: true,
+      replace: true
+    });
+
+  } catch (error) {
+    // Handle validation errors silently
+    if (error.response?.status === 422) {
+      // Validation failed - could add user notification here if needed
+    }
+  }
 };
 
 // Initialize form on mount
@@ -374,7 +372,9 @@ const updateLinksFromJson = (event) => {
         <div class="flex-1 overflow-y-auto">
           <form @submit.prevent="submit" class="grid grid-cols-8 gap-4">
             <template v-for="(fieldConfig, fieldName) in meta.form_fields" :key="String(fieldName)">
+              <!-- Skip switch fields in main form - they're handled in footer -->
               <div
+                v-if="fieldConfig.type !== 'switch'"
                 :class="{
                   'col-span-8': fieldConfig.col_span === 8,
                   'col-span-6': fieldConfig.col_span === 6,
@@ -406,35 +406,13 @@ const updateLinksFromJson = (event) => {
                   </span>
                 </label>
 
-                <!-- Switch Field -->
-                <div v-if="fieldConfig.type === 'switch'" class="mt-1">
-                  <Switch
-                    v-model="form[String(fieldName)]"
-                    :class="[
-                      form[String(fieldName)] ? 'bg-indigo-600' : 'bg-gray-200',
-                      'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
-                    ]"
-                  >
-                    <span
-                      :class="[
-                        form[String(fieldName)] ? 'translate-x-6' : 'translate-x-1',
-                        'inline-block h-4 w-4 transform rounded-full bg-white transition-transform'
-                      ]"
-                    />
-                  </Switch>
-                </div>
-
                 <!-- Select Field -->
-                <div v-else-if="fieldConfig.type === 'select'" class="mt-1">
-                  <!-- Debug info -->
-                  <div v-if="!projects[fieldName] || projects[fieldName].length === 0" class="text-red-500 text-xs mb-1">
-                    No options loaded for {{ fieldName }}
-                  </div>
-                  
+                <div v-if="fieldConfig.type === 'select'" class="mt-1">
                   <select
                     v-model="form[fieldName]"
                     :id="fieldName"
-                    class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300"
+                    :disabled="fieldConfig.readonly"
+                    class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     :required="meta.validation_rules?.[fieldName]?.includes('required')"
                   >
                     <option value="">Select {{ fieldConfig.label }}</option>
@@ -446,14 +424,33 @@ const updateLinksFromJson = (event) => {
                       {{ relation.title || relation.name || relation.id }}
                     </option>
                   </select>
-                  
-                  <!-- Debug info -->
-                  <div class="text-xs text-gray-500 mt-1">
-                    Current value: {{ form[fieldName] }} (type: {{ typeof form[fieldName] }})
-                    <br>
-                    Available options: {{ projects[fieldName] ? projects[fieldName].length : 0 }}
+                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
+                </div>
+
+                <!-- Readonly Field Display -->
+                <div v-else-if="fieldConfig.readonly" class="mt-1">
+                  <div class="block w-full pl-3 pr-10 py-2 text-xs rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
+                    {{ form[String(fieldName)] || 'N/A' }}
                   </div>
-                  
+                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
+                </div>
+
+                <!-- Datetime Field -->
+                <div v-else-if="fieldConfig.type === 'datetime'" class="mt-1">
+                  <input
+                    type="datetime-local"
+                    :id="String(fieldName)"
+                    v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
+                    :class="[
+                      _input.base,
+                      _input.light,
+                      _input.dark,
+                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                    ]"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
+                  />
                   <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
 
@@ -463,12 +460,14 @@ const updateLinksFromJson = (event) => {
                     v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
                     :rows="meta.form_fields?.[fieldName]?.rows || 2"
                     v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
                     :class="[
                       'block w-full rounded-md shadow-sm sm:text-xs ',
                       isInvalid(String(fieldName))
                         ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
                         : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
-                      'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400'
+                      'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
                     ]"
                     :placeholder="meta.form_fields?.[fieldName]?.placeholder"
                   ></textarea>
@@ -528,12 +527,14 @@ const updateLinksFromJson = (event) => {
                           v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
                           :rows="meta.form_fields?.[fieldName]?.rows || 2"
                           v-model="form[String(fieldName)]"
+                          :readonly="fieldConfig.readonly"
                           :class="[
                             'block w-full rounded-md shadow-sm sm:text-xs ',
                             isInvalid(String(fieldName))
                               ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
                               : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
-                            'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400'
+                            'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
+                            fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
                           ]"
                           :placeholder="meta.form_fields?.[fieldName]?.placeholder"
                         ></textarea>
@@ -547,20 +548,24 @@ const updateLinksFromJson = (event) => {
                   <div class="flex space-x-4">
                     <button
                       type="button"
+                      :disabled="fieldConfig.readonly"
                       @click="form[String(fieldName)] = true"
                       :class="[
                         _button.base,
-                        form[String(fieldName)] ? _button.active : _button.inactive
+                        form[String(fieldName)] ? _button.active : _button.inactive,
+                        fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
                       ]"
                     >
                       Yes
                     </button>
                     <button
                       type="button"
+                      :disabled="fieldConfig.readonly"
                       @click="form[String(fieldName)] = false"
                       :class="[
                         _button.base,
-                        !form[String(fieldName)] ? _button.active : _button.inactive
+                        !form[String(fieldName)] ? _button.active : _button.inactive,
+                        fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
                       ]"
                     >
                       No
@@ -575,11 +580,13 @@ const updateLinksFromJson = (event) => {
                     :type="fieldConfig.type || 'text'"
                     :id="String(fieldName)"
                     v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
                     :class="[
                       _input.base,
                       _input.light,
                       _input.dark,
-                      isInvalid(String(fieldName)) ? 'border-red-500' : ''
+                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
                     ]"
                     :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                   />
@@ -588,11 +595,13 @@ const updateLinksFromJson = (event) => {
                     :id="String(fieldName)"
                     :rows="meta.form_fields?.[fieldName]?.rows || 2"
                     v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
                     :class="[
                       _input.base,
                       _input.light,
                       _input.dark,
-                      isInvalid(String(fieldName)) ? 'border-red-500' : ''
+                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
                     ]"
                     :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                     rows="3"

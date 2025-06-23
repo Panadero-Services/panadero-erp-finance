@@ -58,6 +58,14 @@ const props = defineProps({
   }
 });
 
+// Debug: Log the relatedLinks prop
+console.log('ModalLayout received relatedLinks:', props.relatedLinks);
+console.log('relatedLinks length:', props.relatedLinks?.length);
+console.log('relatedLinks type:', typeof props.relatedLinks);
+
+// Add this near the top of the script section
+console.log('ModalLayout activeTab:', props.activeTab);
+
 const emit = defineEmits([
   'close',
   'update:activeTab',
@@ -213,52 +221,25 @@ const propsDefinition = computed(() => ({
   relatedLinks: { type: 'Array', default: '[]' }
 }));
 
-// Add computed property for formatted metadata display
+// Add computed property for formatted metadata
 const formattedMetadata = computed(() => {
-  if (!props.meta || Object.keys(props.meta).length === 0) {
-    return [];
-  }
-  
   const sections = [];
   
-  // System Information
-  if (props.meta.system) {
+  // Add record data section
+  if (props.record) {
     sections.push({
-      title: 'System Information',
-      data: props.meta.system,
-      icon: '🔧'
+      title: 'Record Data',
+      icon: '📊',
+      data: props.record
     });
   }
   
-  // Field Information
-  if (props.meta.fields) {
+  // Add meta data section
+  if (props.meta) {
     sections.push({
-      title: 'Field Information',
-      data: props.meta.fields,
-      icon: '📊'
-    });
-  }
-  
-  // Model Configuration
-  if (props.meta.modelConfig) {
-    sections.push({
-      title: 'Model Configuration',
-      data: props.meta.modelConfig,
-      icon: '⚙️'
-    });
-  }
-  
-  // Custom Metadata
-  const customMeta = { ...props.meta };
-  delete customMeta.system;
-  delete customMeta.fields;
-  delete customMeta.modelConfig;
-  
-  if (Object.keys(customMeta).length > 0) {
-    sections.push({
-      title: 'Custom Metadata',
-      data: customMeta,
-      icon: '📋'
+      title: 'Metadata',
+      icon: '🔧',
+      data: props.meta
     });
   }
   
@@ -273,6 +254,14 @@ const handleRecordUpdate = (updatedRecord) => {
     records.data[index] = { ...records.data[index], ...updatedRecord };
   }
 };
+
+// Add debugging to see what relatedLinks contains
+const debugRelatedLinks = computed(() => {
+  console.log('ModalLayout received relatedLinks:', props.relatedLinks);
+  console.log('relatedLinks length:', props.relatedLinks?.length);
+  console.log('relatedLinks type:', typeof props.relatedLinks);
+  return props.relatedLinks;
+});
 </script>
 
 <template>
@@ -439,16 +428,16 @@ const handleRecordUpdate = (updatedRecord) => {
 
               <!-- Relations Tab -->
               <div v-else-if="activeTab === 'relations'" :class="['space-y-2', fontSizeClass]">
-                <!-- Debug info (only when raw data is shown) -->
-                <div v-if="showRawData && relatedLinks.length > 0" class="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-800 dark:text-blue-200 rounded border">
-                  Raw JSON: {{ JSON.stringify(relatedLinks).substring(0, 200) }}{{ JSON.stringify(relatedLinks).length > 200 ? '...' : '' }}
-                  <br>Parsed links count: {{ relatedLinks.length }}
+                <!-- Debug info -->
+                <div class="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-800 dark:text-blue-200 rounded border">
+                  Debug: relatedLinks count = {{ relatedLinks?.length || 0 }}
+                  <br>relatedLinks type = {{ typeof relatedLinks }}
+                  <br>relatedLinks value = {{ JSON.stringify(relatedLinks).substring(0, 200) }}
+                  <br>activeTab = {{ activeTab }}
+                  <br>Condition check: relatedLinks && relatedLinks.length > 0 = {{ relatedLinks && relatedLinks.length > 0 }}
                 </div>
                 
-                <div v-if="relatedLinks.length === 0" class="text-center text-gray-500 dark:text-gray-400 p-4">
-                  <div>No relations found</div>
-                </div>
-                <div v-else class="grid gap-2" :class="modalSize=='standard' ? 'grid-cols-2' : 'grid-cols-3'">
+                <div v-if="relatedLinks && relatedLinks.length > 0" class="grid gap-2" :class="modalSize=='standard' ? 'grid-cols-2' : 'grid-cols-3'">
                   <div v-for="(link, index) in relatedLinks" 
                        :key="index" 
                        class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors cursor-pointer"
@@ -473,6 +462,10 @@ const handleRecordUpdate = (updatedRecord) => {
                       →
                     </div>
                   </div>
+                </div>
+                <div v-else class="text-center text-gray-500 dark:text-gray-400 p-4">
+                  <div>No relations found</div>
+                  <div class="text-xs mt-1">Debug: relatedLinks is {{ relatedLinks ? 'defined' : 'undefined' }}, length: {{ relatedLinks?.length || 0 }}</div>
                 </div>
               </div>
 

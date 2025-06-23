@@ -130,7 +130,7 @@ Route::middleware([
 
     Route::put('/api/futures/{id}', function(Request $request, $id) {
         return app(DynamicController::class)->update($request, $id);
-    })->name('futures.update');
+    })->name('futures.update')->middleware('web');
 
     // ========================================
     // PROJECTS TABLE
@@ -141,7 +141,7 @@ Route::middleware([
     
     Route::put('/api/projects/{id}', function(Request $request, $id) {
         return app(DynamicController::class)->update($request, $id);
-    })->name('projects.update');
+    })->name('projects.update')->middleware('web');
 
     Route::get('/getproject', function() {
         return app(DynamicController::class)->index(request(), 'project', 'projects');
@@ -462,7 +462,7 @@ Route::middleware([
     // ========================================
     // DYNAMIC API ROUTES
     // ========================================
-    Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table');
+    Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')->middleware('web');
 
     // ========================================
     // DYNAMIC ROUTES

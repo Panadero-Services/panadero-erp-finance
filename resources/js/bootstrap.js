@@ -16,8 +16,6 @@ axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 const token = document.head.querySelector('meta[name="csrf-token"]');
 if (token) {
     axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-} else {
-    console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
 
 // Request interceptor for XSRF token
@@ -37,20 +35,7 @@ axios.interceptors.response.use(
     response => response,
     error => {
         if (error.response?.status === 401) {
-            console.error('Authentication error:', error);
-            
-            // Log all cookies individually
-            document.cookie.split(';').forEach(cookie => {
-                console.log('Cookie:', cookie.trim());
-            });
-            
-            // Check specifically for session cookie
-            const sessionCookie = getCookie('i3v1_self_saas_session');
-            console.log('Session cookie present:', !!sessionCookie);
-            
-            console.log('Headers sent:', error.config?.headers);
-            console.log('Full error response:', error.response?.data);
-            debugger;
+            // Silent handling of auth errors
         }
         return Promise.reject(error);
     }

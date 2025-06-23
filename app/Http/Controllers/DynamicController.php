@@ -110,9 +110,19 @@ class DynamicController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Get the table name from the route
-        $table = $request->route()->getName();
-        $table = str_replace('.update', '', $table); // Remove .update suffix
+        // Get the table name from the URL path instead of route name
+        $path = $request->path();
+        $pathParts = explode('/', $path);
+        
+        // Extract table name from /api/{table}/{id}
+        $table = $pathParts[1] ?? null;
+        
+        if (!$table) {
+            return response()->json([
+                'success' => false,
+                'message' => "Could not determine table name from path: {$path}"
+            ], 400);
+        }
         
         // Convert table name to model class
         $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
@@ -164,12 +174,24 @@ class DynamicController extends Controller
             
             $model->update($data);
             
-            // Return Inertia response
-            return redirect()->back()->with('success', Str::studly(Str::singular($table)) . ' updated successfully');
+            // Return JSON response for API routes
+            return response()->json([
+                'success' => true,
+                'message' => Str::studly(Str::singular($table)) . ' updated successfully',
+                'data' => $model->fresh()
+            ]);
             
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            // Return Inertia response with errors
-            return back()->withErrors(['error' => 'Error updating ' . Str::studly(Str::singular($table)) . ': ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating ' . Str::studly(Str::singular($table)) . ': ' . $e->getMessage()
+            ], 500);
         }
     }
 

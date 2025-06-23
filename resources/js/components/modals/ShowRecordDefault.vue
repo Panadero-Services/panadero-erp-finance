@@ -195,16 +195,39 @@ const displayFields = computed(() => {
 // Computed for related posts/links
 const links = computed(() => {
   try {
-    if (!props.record.links) return [];
-    const parsedLinks = JSON.parse(props.record.links);
+    console.log('Record links field:', props.record.links);
+    console.log('Record links type:', typeof props.record.links);
     
-    return parsedLinks.map(link => ({
+    if (!props.record.links) {
+      console.log('No links field found');
+      return [];
+    }
+    
+    // Handle both string and array formats
+    let parsedLinks;
+    if (typeof props.record.links === 'string') {
+      parsedLinks = JSON.parse(props.record.links);
+    } else if (Array.isArray(props.record.links)) {
+      parsedLinks = props.record.links;
+    } else {
+      console.log('Links is not a string or array:', props.record.links);
+      return [];
+    }
+    
+    console.log('Parsed links:', parsedLinks);
+    
+    const result = parsedLinks.map(link => ({
       link_id: link.link_id || link.post_id || link.id || 'Unknown',
       link_title: link.link_title || link.post_title || link.title || link.name || `Record ${link.link_id || link.post_id || link.id}`,
       type: link.type || 'relates_to',
       ...link
     }));
-  } catch {
+    
+    console.log('Processed links result:', result);
+    return result;
+  } catch (error) {
+    console.error('Error parsing links:', error);
+    console.log('Raw links value:', props.record.links);
     return [];
   }
 });
@@ -275,7 +298,10 @@ const fetchModelConfig = async () => {
     modelConfig.value = response.data;
     
     if (!activeTab.value || !['content', 'status', 'details', 'relations'].includes(activeTab.value)) {
-      if (modelConfig.value?.flags?.length) {
+      // Check if there are relations/links first
+      if (links.value && links.value.length > 0) {
+        activeTab.value = 'relations';
+      } else if (modelConfig.value?.flags?.length) {
         activeTab.value = 'status';
       } else if (modelConfig.value?.formFields) {
         activeTab.value = 'details';

@@ -204,7 +204,7 @@ class Project extends Model
             'title' => [
                 'type' => 'text',
                 'label' => 'Title',
-                'col_span' => 6,
+                'col_span' => 8,
                 'sequence' => 1,
                 'placeholder' => 'Enter project title',
                 'required' => true
@@ -212,15 +212,41 @@ class Project extends Model
             'description' => [
                 'type' => 'textarea',
                 'label' => 'Description',
-                'col_span' => 6,
+                'col_span' => 8,
                 'sequence' => 2,
-                'rows' => 3,
+                'rows' => 2,
                 'required' => true
             ],
+            'user_id' => [
+                'type' => 'select',
+                'label' => 'User',
+                'col_span' => 4,
+                'sequence' => 5,
+                'options' => User::pluck('name', 'id'),
+                'help' => 'Select the user who owns this project',
+                'required' => true
+            ],
+
+            'status' => [
+                'type' => 'select',
+                'label' => 'Status',
+                'col_span' => 2,
+                'sequence' => 4,
+                'options' => [
+                    'idle' => 'Idle',
+                    'in_progress' => 'In Progress',
+                    'completed' => 'Completed',
+                    'blocked' => 'Blocked',
+                    'review' => 'Review'
+                ],
+                'default' => 'idle'
+            ],
+
+
             'color' => [
                 'type' => 'select',
                 'label' => 'Color',
-                'col_span' => 3,
+                'col_span' => 2,
                 'sequence' => 3,
                 'options' => [
                     'blue' => 'Blue',
@@ -234,43 +260,22 @@ class Project extends Model
                 ],
                 'default' => 'blue'
             ],
-            'status' => [
-                'type' => 'select',
-                'label' => 'Status',
-                'col_span' => 3,
-                'sequence' => 4,
-                'options' => [
-                    'idle' => 'Idle',
-                    'in_progress' => 'In Progress',
-                    'completed' => 'Completed',
-                    'blocked' => 'Blocked',
-                    'review' => 'Review'
-                ],
-                'default' => 'idle'
-            ],
-            'user_id' => [
-                'type' => 'select',
-                'label' => 'User',
-                'col_span' => 6,
-                'sequence' => 5,
-                'options' => User::pluck('name', 'id'),
-                'help' => 'Select the user who owns this project',
-                'required' => true
-            ],
+
+   
             'json' => [
                 'type' => 'textarea',
                 'label' => 'JSON Data',
-                'col_span' => 6,
+                'col_span' => 8,
                 'sequence' => 6,
-                'rows' => 4,
+                'rows' => 2,
                 'help' => 'Use this to store unstructured data in JSON format'
             ],
             'links' => [
                 'type' => 'textarea',
                 'label' => 'Links',
-                'col_span' => 6,
+                'col_span' => 8,
                 'sequence' => 7,
-                'rows' => 4,
+                'rows' => 2,
                 'help' => 'Link this project to other projects with different relationships'
             ],
             'is_active' => [
