@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 use App\Models\Project;
 use App\Models\Future;
+use App\Models\BusinessService;
 use App\Http\Controllers\SomethingController;
 use App\Http\Middleware\VerifyFastApiKey;
 use App\Http\Middleware\EnsureTokenIsValid;
@@ -56,6 +57,11 @@ Route::get('projects', function (){
 Route::get('futures', function (){
     return Future::take(50)->get();
 });
+
+Route::get('business_services', function (){
+    return BusinessService::take(50)->get();
+});
+
 
 Route::get('posts', function (){
     return Post::take(50)->get();

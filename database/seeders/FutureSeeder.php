@@ -35,17 +35,19 @@ class FutureSeeder extends Seeder
                 'status' => $statuses[array_rand($statuses)],
                 'user_id' => $users->random()->id,
                 'project_id' => $projects->random()->id,
-                'json' => json_encode([
+                'json' => [
                     'priority' => rand(1, 5),
                     'complexity' => rand(1, 5),
                     'estimated_hours' => rand(4, 40),
                     'tags' => ['feature', 'enhancement', 'optimization']
-                ]),
-                'links' => json_encode([
-                    'related' => [],
-                    'dependencies' => [],
-                    'references' => []
-                ]),
+                ],
+                'links' => [
+                    [
+                        'type' => 'relates_to',
+                        'link_id' => '1',
+                        'link_title' => 'Future Feature 1'
+                    ]
+                ],
                 'is_active' => rand(0, 1),
                 'is_locked' => rand(0, 1)
             ]);

@@ -138,16 +138,16 @@ class Project extends Model
             [
                 'key' => 'color',
                 'label' => 'Color',
-                'type' => 'text',
+                'type' => 'color',
                 'width' => 'w-24',
-                'formatter' => 'text'
+                'formatter' => 'color'
             ],
             [
                 'key' => 'status',
                 'label' => 'Status',
-                'type' => 'text',
+                'type' => 'status',
                 'width' => 'w-32',
-                'formatter' => 'text'
+                'formatter' => 'status'
             ],
             [
                 'key' => 'user',
@@ -191,11 +191,43 @@ class Project extends Model
     public static function getStatusMapping(): array
     {
         return [
-            'is_active' => [
-                'true' => 'Active',
-                'false' => 'Inactive'
-            ]
+            'idle' => 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 ring-gray-500/10 dark:ring-gray-400/20',
+            'in_progress' => 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-blue-700/10 dark:ring-blue-400/20',
+            'completed' => 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-400/20',
+            'blocked' => 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 ring-red-600/10 dark:ring-red-400/20',
+            'fly_in_the_sky' => 'bg-indigo-50 dark:bg-blue-900/20 text-indigo-700 dark:text-indigo-300 ring-indigo-600/10 dark:ring-indigo-400/20',
+            'review' => 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-400/20'
         ];
+    }
+
+    public static function getColorOptions(): array
+    {
+        return [
+            'blue' => 'Blue',
+            'green' => 'Green',
+            'red' => 'Red',
+            'yellow' => 'Yellow',
+            'purple' => 'Purple',
+            'orange' => 'Orange',
+            'gray' => 'Gray',
+            'pink' => 'Pink'
+        ];
+    }
+
+    public static function getRelationOptions(string $relation): array
+    {
+        $relationMap = [
+            'user' => ['model' => User::class, 'display' => 'name'],
+            'project' => ['model' => Project::class, 'display' => 'title'],
+            // Add more relations as needed
+        ];
+        
+        if (isset($relationMap[$relation])) {
+            $config = $relationMap[$relation];
+            return $config['model']::pluck($config['display'], 'id')->toArray();
+        }
+        
+        return [];
     }
 
     public static function formFields(): array
@@ -222,7 +254,7 @@ class Project extends Model
                 'label' => 'User',
                 'col_span' => 4,
                 'sequence' => 5,
-                'options' => User::pluck('name', 'id'),
+                'options' => self::getRelationOptions('user'),
                 'help' => 'Select the user who owns this project',
                 'required' => true
             ],
@@ -232,32 +264,15 @@ class Project extends Model
                 'label' => 'Status',
                 'col_span' => 2,
                 'sequence' => 4,
-                'options' => [
-                    'idle' => 'Idle',
-                    'in_progress' => 'In Progress',
-                    'completed' => 'Completed',
-                    'blocked' => 'Blocked',
-                    'review' => 'Review'
-                ],
                 'default' => 'idle'
             ],
-
 
             'color' => [
                 'type' => 'select',
                 'label' => 'Color',
                 'col_span' => 2,
                 'sequence' => 3,
-                'options' => [
-                    'blue' => 'Blue',
-                    'green' => 'Green',
-                    'red' => 'Red',
-                    'yellow' => 'Yellow',
-                    'purple' => 'Purple',
-                    'orange' => 'Orange',
-                    'gray' => 'Gray',
-                    'pink' => 'Pink'
-                ],
+                'options' => self::getColorOptions(),
                 'default' => 'blue'
             ],
 

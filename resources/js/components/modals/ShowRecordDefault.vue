@@ -366,8 +366,8 @@ onMounted(() => {
   >
     <!-- Content Tab -->
     <template v-if="getTabContent(activeTab) === 'content'">
-      <div class="space-y-4">
-        <div v-if="!formattedContent" class="text-gray-400 text-xs text-center py-8">
+      <div :class="['space-y-4', fontSizeClass]">
+        <div v-if="!formattedContent" class="text-gray-400 text-center py-8">
           No content fields available.
         </div>
         
@@ -379,7 +379,7 @@ onMounted(() => {
           <div v-for="section in formattedContent" :key="section.field" class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
             <!-- Field Header -->
             <div class="bg-gray-50 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center">
+              <h3 class="font-medium text-gray-700 dark:text-gray-300 flex items-center">
                 <span class="mr-2">
                   {{ section.field === 'description' ? '📝' : 
                      section.field === 'color' ? '🎨' : 
@@ -387,21 +387,21 @@ onMounted(() => {
                      section.field === 'icon' ? '🔖' : '📄' }}
                 </span>
                 {{ section.label }}
-                <span class="ml-2 text-xs text-gray-500 dark:text-gray-500">({{ section.field }})</span>
-                <span v-if="section.isEmpty" class="ml-2 text-xs text-orange-500">(empty)</span>
+                <span class="ml-2 text-gray-500 dark:text-gray-500 opacity-75">({{ section.field }})</span>
+                <span v-if="section.isEmpty" class="ml-2 text-orange-500 opacity-75">(empty)</span>
               </h3>
             </div>
             
             <!-- Content Body -->
             <div v-if="section.type === 'raw'" :class="[
-              'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-4 overflow-auto font-mono text-xs min-h-[100px]',
+              'text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-4 overflow-auto font-mono min-h-[100px]',
               fontSizeClass
             ]">
               {{ section.content || '(empty)' }}
             </div>
             
             <div v-else :class="[
-              'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-4 overflow-auto text-xs min-h-[100px]',
+              'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/50 p-4 overflow-auto min-h-[100px]',
               fontSizeClass
             ]" v-html="section.content">
             </div>
@@ -412,7 +412,7 @@ onMounted(() => {
 
     <!-- Details Tab -->
     <template v-else-if="getTabContent(activeTab) === 'details'">
-      <div class="grid grid-cols-1 gap-2">
+      <div :class="['grid grid-cols-1 gap-2', fontSizeClass]">
         <!-- Your existing details content -->
       </div>
     </template>

@@ -147,6 +147,26 @@ Route::middleware([
         return app(DynamicController::class)->index(request(), 'project', 'projects');
     })->name('getproject');
 
+
+    // ========================================
+    // BUSINESS SERVICES TABLE
+    // ========================================
+    Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
+
+    // ========================================
+    // BUSINESS_SERVICES TABLE
+    // ========================================
+    Route::get('/home/businessservices', function() {
+        return app(DynamicController::class)->index(request(), 'home', 'businessservices');
+    })->name('home.businessservices');
+
+    Route::put('/api/business_services/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('business_services.update')->middleware('web');
+
+
+    
+
     // ========================================
     // POSTS TABLE
     // ========================================
@@ -202,10 +222,9 @@ Route::middleware([
     Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
     Route::get('/logs/criteria', [LogController::class, 'criteria'])->name('logs.criteria');
 
-    // ========================================
-    // BUSINESS SERVICES TABLE
-    // ========================================
-    Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
+
+
+
 
     // ========================================
     // FEATURES TABLE

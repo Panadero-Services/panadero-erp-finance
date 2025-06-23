@@ -121,8 +121,8 @@ const checkTokenExpiration = () => {
         
         // Refresh CSRF token before redirect
         axios.get('/sanctum/csrf-cookie').then(() => {
-          // Force redirect to login
-          window.location.replace('/login');
+        // Force redirect to login
+        window.location.replace('/login');
         }).catch(() => {
           // If CSRF refresh fails, still redirect
           window.location.replace('/login');

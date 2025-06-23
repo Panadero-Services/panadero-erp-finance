@@ -21,15 +21,16 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'indigo',
                 'version' => 'v1.0.04',
                 'icon' => 'I3FrameworkIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Administration', 'url' => '/home/administration', 'route' => 'home/administration'],
                     ['name' => 'Welcome', 'url' => '/home/welkom', 'route' => 'home/welkom'],
                     ['name' => 'Tiers', 'url' => '/home/tiers', 'route' => 'home/tiers'],
                     ['name' => 'Futures', 'url' => '/home/futures', 'route' => 'home.futures'],
                     ['name' => 'Landing', 'url' => '/home/landing', 'route' => 'home/landing'],
+                    ['name' => 'BusinessServices', 'url' => '/home/businessservices', 'route' => 'home/businessservices'],
                     ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home/sandbox']
-                ]),
+                ],
                 'status' => 'featured',
                 'progress' => 96,
                 'path' => '/'
@@ -41,11 +42,11 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'green',
                 'version' => 'v0.1.24',
                 'icon' => 'ContentManagementIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/content/posts', 'route' => 'posts'],
                     ['name' => 'Posts', 'url' => '/content/posts', 'route' => 'posts'],
                     ['name' => 'Bento', 'url' => '/bento', 'route' => 'bento']
-                ]),
+                ],
                 'status' => 'featured',
                 'progress' => 29,
                 'path' => '/'
@@ -57,12 +58,12 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'red',
                 'version' => 'v3.1.63',
                 'icon' => 'ResourcePlanningIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/erp/dashboard', 'route' => 'erp/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources'],
                     ['name' => 'Mood', 'url' => '/erp/mood', 'route' => 'erp/mood'],
                     ['name' => 'Sand', 'url' => '/erp/sand', 'route' => 'erp/sand']
-                ]),
+                ],
                 'status' => 'upgrading',
                 'progress' => 60,
                 'path' => '/'
@@ -74,10 +75,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'blue',
                 'version' => 'v1.1.04',
                 'icon' => 'LogisticsIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
-                ]),
+                ],
                 'status' => 'scheduled',
                 'progress' => 10,
                 'path' => '/'
@@ -89,13 +90,13 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'pink',
                 'version' => 'v1.1.02',
                 'icon' => 'ProjectIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Projects', 'url' => '/project/projects', 'route' => 'project/projects'],
                     ['name' => 'Plan', 'url' => '/project/plan', 'route' => 'project/plan'],
                     ['name' => 'Work', 'url' => '/project/work', 'route' => 'project/work'],
                     ['name' => 'Budget', 'url' => '/project/budget', 'route' => 'project/budget']
-                ]),
+                ],
                 'status' => 'featured',
                 'progress' => 70,
                 'path' => '/'
@@ -107,12 +108,12 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'violet',
                 'version' => 'v1.1.02',
                 'icon' => 'DesignIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Mind', 'url' => '/design/mind', 'route' => 'design/mind'],
                     ['name' => 'Pert', 'url' => '/design/pert', 'route' => 'design/pert'],
                     ['name' => 'Lane', 'url' => '/design/lane', 'route' => 'design/lane']
-                ]),
+                ],
                 'status' => 'featured',
                 'progress' => 80,
                 'path' => '/'
@@ -124,10 +125,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'purple',
                 'version' => 'v0.1.03',
                 'icon' => 'EcommerceIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/ecommerce/dashboard', 'route' => 'ecommerce/dashboard'],
                     ['name' => 'Storefront', 'url' => '/ecommerce/storefront', 'route' => 'ecommerce/storefront']
-                ]),
+                ],
                 'status' => 'upgrading',
                 'progress' => 5,
                 'path' => '/'
@@ -139,10 +140,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'teal',
                 'version' => 'v1.0.00',
                 'icon' => 'Web3Icon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/erp/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Web3', 'url' => '/web3', 'route' => 'web3']
-                ]),
+                ],
                 'status' => 'upgrading',
                 'progress' => 40,
                 'path' => '/'
@@ -154,14 +155,14 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'purple',
                 'version' => 'v1.0.00',
                 'icon' => 'AiIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Contracts', 'url' => '/web3', 'route' => 'web3'],
                     ['name' => 'Bots', 'url' => '/ai/bots', 'route' => 'ai/bots'],
                     ['name' => 'Providers', 'url' => '/ai/providers', 'route' => 'ai/providers'],
                     ['name' => 'Processors', 'url' => '/ai/processors', 'route' => 'ai/processors'],
                     ['name' => 'Executors', 'url' => '/ai/executors', 'route' => 'ai/executors']
-                ]),
+                ],
                 'status' => 'upgrading',
                 'progress' => 12,
                 'path' => '/'
@@ -173,10 +174,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'yellow',
                 'version' => 'v1.0.00',
                 'icon' => 'SocialMediaIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
-                ]),
+                ],
                 'status' => 'scheduled',
                 'progress' => 10,
                 'path' => '/'
@@ -188,10 +189,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'indigo',
                 'version' => 'v1.0.00',
                 'icon' => 'WalletIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
-                ]),
+                ],
                 'status' => 'scheduled',
                 'progress' => 20,
                 'path' => '/'
@@ -203,10 +204,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'indigo',
                 'version' => 'v1.0.00',
                 'icon' => 'TruckIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
-                ]),
+                ],
                 'status' => 'deprecated',
                 'progress' => 10,
                 'path' => '/'
@@ -218,10 +219,10 @@ class BusinessServiceSeeder extends Seeder
                 'color' => 'indigo',
                 'version' => 'v1.0.00',
                 'icon' => 'PuzzlePieceIcon',
-                'options' => json_encode([
+                'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
-                ]),
+                ],
                 'status' => 'deprecated',
                 'progress' => 10,
                 'path' => '/'
@@ -231,7 +232,10 @@ class BusinessServiceSeeder extends Seeder
         foreach ($services as $service) {
             BusinessService::updateOrCreate(
                 ['item' => $service['item']],
-                $service
+                array_merge($service, [
+                    'links' => [],
+                    'is_active' => true
+                ])
             );
         }
     }

@@ -396,16 +396,16 @@ const debugRelatedLinks = computed(() => {
                   <div v-for="flag in statusFlags" :key="flag.key" 
                        class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center space-x-2">
-                      <span class="text-xs text-gray-500 dark:text-gray-400">
+                      <span class="text-gray-500 dark:text-gray-400">
                         {{ flag.label }}
                       </span>
-                      <span class="text-xxs text-gray-400 dark:text-gray-500">
+                      <span class="text-gray-400 dark:text-gray-500 opacity-75">
                         ({{ flag.key }})
                       </span>
                     </div>
                     <div class="flex items-center space-x-2">
                       <span :class="[
-                        'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
+                        'inline-flex items-center px-2 py-0.5 rounded-full font-medium',
                         flag.active 
                           ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
                           : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
@@ -413,7 +413,7 @@ const debugRelatedLinks = computed(() => {
                         {{ flag.active ? '✓' : '✗' }}
                       </span>
                       <span v-if="flag.config.default !== undefined" 
-                            class="text-xxs text-gray-400 dark:text-gray-500">
+                            class="text-gray-400 dark:text-gray-500 opacity-75">
                         ({{ flag.config.default ? '✓' : '✗' }})
                       </span>
                     </div>
@@ -429,7 +429,7 @@ const debugRelatedLinks = computed(() => {
               <!-- Relations Tab -->
               <div v-else-if="activeTab === 'relations'" :class="['space-y-2', fontSizeClass]">
                 <!-- Debug info -->
-                <div class="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 text-xs text-blue-800 dark:text-blue-200 rounded border">
+                <div class="mb-2 p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200 rounded border">
                   Debug: relatedLinks count = {{ relatedLinks?.length || 0 }}
                   <br>relatedLinks type = {{ typeof relatedLinks }}
                   <br>relatedLinks value = {{ JSON.stringify(relatedLinks).substring(0, 200) }}
@@ -444,7 +444,7 @@ const debugRelatedLinks = computed(() => {
                        @click="$emit('navigate', link)">
                     <div class="flex items-center space-x-3">
                       <div class="h-8 w-8 bg-green-200 dark:bg-green-900 flex items-center justify-center rounded-full flex-shrink-0">
-                        <span class="text-green-600 dark:text-green-300 font-bold text-xs">{{ link.link_id }}</span>
+                        <span class="text-green-600 dark:text-green-300 font-bold">{{ link.link_id }}</span>
                       </div>
                       <div class="min-w-0 flex-1">
                         <p class="font-medium text-blue-700 dark:text-blue-400 truncate">
@@ -453,7 +453,7 @@ const debugRelatedLinks = computed(() => {
                         <p class="text-gray-500 dark:text-gray-400">
                           Type: {{ (link.type || 'unknown').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
                         </p>
-                        <p v-if="showRawData" class="text-xs text-gray-400 font-mono mt-1">
+                        <p v-if="showRawData" class="text-gray-400 font-mono mt-1 opacity-75">
                           Raw: {{ JSON.stringify(link).substring(0, 60) }}...
                         </p>
                       </div>
@@ -465,21 +465,21 @@ const debugRelatedLinks = computed(() => {
                 </div>
                 <div v-else class="text-center text-gray-500 dark:text-gray-400 p-4">
                   <div>No relations found</div>
-                  <div class="text-xs mt-1">Debug: relatedLinks is {{ relatedLinks ? 'defined' : 'undefined' }}, length: {{ relatedLinks?.length || 0 }}</div>
+                  <div class="mt-1 opacity-75">Debug: relatedLinks is {{ relatedLinks ? 'defined' : 'undefined' }}, length: {{ relatedLinks?.length || 0 }}</div>
                 </div>
               </div>
 
               <!-- Metadata Tab -->
               <div v-else-if="activeTab === 'metadata'" :class="['space-y-4', fontSizeClass]">
-                <div v-if="formattedMetadata.length === 0" class="text-gray-400 text-xs">
+                <div v-if="formattedMetadata.length === 0" class="text-gray-400">
                   No metadata available.
                 </div>
                 <div v-else>
                   <div v-for="section in formattedMetadata" :key="section.title" class="mb-4">
-                    <h3 class="text-xs font-semibold text-gray-700 dark:text-gray-200 flex items-center mb-1">
+                    <h3 class="font-semibold text-gray-700 dark:text-gray-200 flex items-center mb-1">
                       <span class="mr-1">{{ section.icon }}</span>{{ section.title }}
                     </h3>
-                    <pre class="bg-gray-50 dark:bg-gray-800 rounded p-2 text-xxs overflow-x-auto">{{ JSON.stringify(section.data, null, 2) }}</pre>
+                    <pre class="bg-gray-50 dark:bg-gray-800 rounded p-2 overflow-x-auto opacity-75">{{ JSON.stringify(section.data, null, 2) }}</pre>
                   </div>
                 </div>
               </div>

@@ -499,6 +499,27 @@ class PageSeeder extends Seeder
                 'animate' => 1,
                 'max_width' => 1,
             ],
+            [
+                'id' => 31,
+                'title' => 'home/Businessservices', // <-- this shoud match the actual file
+                'file' => 'home/Businessservices.vue',
+                'icon' => 'view-dashboard-outline',
+                'image' => 'h-80 text-4xl text-black bg-contain bg-[url(../images/new2.jpg)]',
+                'slogan' => 'Default Home Slogan1234',
+                'type' => 'Home',
+                'settings' => 'Home',
+                'user_id' => 1,
+                'project_id' => 1,
+                'created_at' => '2024-12-07 22:31:41',
+                'updated_at' => '2025-05-20 21:31:48',
+                'is_active' => 1,
+                'sidebar' => 1,
+                'header' => 1,
+                'footer' => 0,
+                'public' => 1,
+                'animate' => 1,
+                'max_width' => 1,
+            ],
 
 
         ];

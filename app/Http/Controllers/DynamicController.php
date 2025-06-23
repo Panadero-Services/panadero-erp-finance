@@ -61,7 +61,10 @@ class DynamicController extends Controller
         if (class_exists($resourceClass)) {
             $records = $resourceClass::collection($query->paginate($perPage)->appends($request->query()));
         } else {
-            $records = $query->paginate($perPage)->appends($request->query());
+            // Use DynamicResource for models without specific Resource classes
+            $records = \App\Http\Resources\DynamicResource::collection(
+                $query->paginate($perPage)->appends($request->query())
+            );
         }
 
         // Add meta data
@@ -91,7 +94,10 @@ class DynamicController extends Controller
             $meta['status_mapping'] = $modelClass::getStatusMapping();
         }
 
-        $records->additional(['meta' => $meta]);
+        // Add meta data to the resource collection
+        if ($records instanceof \Illuminate\Http\Resources\Json\ResourceCollection) {
+            $records->additional(['meta' => $meta]);
+        }
 
         // Get page configuration
         $page = \App\Models\Page::with('sections')->where('title', "{$module}/{$table}")->first();
@@ -143,19 +149,11 @@ class DynamicController extends Controller
         // Always include the ID for the update
         $data['id'] = $id;
 
-        // Convert json and links to arrays if they're strings
-        if (isset($data['json']) && is_string($data['json'])) {
-            $data['json'] = json_decode($data['json'], true) ?? [];
-        }
-        if (isset($data['links']) && is_string($data['links'])) {
-            $data['links'] = json_decode($data['links'], true) ?? [];
-        }
-        
         // Ensure user_id is integer if it exists
         if (isset($data['user_id'])) {
             $data['user_id'] = (int) $data['user_id'];
         }
-        
+
         // Convert boolean strings to actual booleans for all boolean fields
         $casts = $model->getCasts();
         foreach ($casts as $field => $cast) {
@@ -165,7 +163,7 @@ class DynamicController extends Controller
                 }
             }
         }
-
+        
         try {
             // Validate using model's validation rules AFTER data conversion
             if (method_exists($modelClass, 'validationRules')) {

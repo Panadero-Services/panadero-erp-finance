@@ -11,7 +11,10 @@ class BusinessServiceController extends Controller
     {
         $services = BusinessService::all();
         $services->each(function ($service) {
-            $service->options = json_decode($service->options, true);
+            // Only decode if it's a string (backward compatibility)
+            if (is_string($service->options)) {
+                $service->options = json_decode($service->options, true) ?? [];
+            }
         });
         return response()->json($services->toArray());
     }

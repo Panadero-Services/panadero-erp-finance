@@ -115,9 +115,9 @@ class Future extends Model
 
             'user_id' => [
                 'type' => 'select',
-            'label' => 'User',
+                'label' => 'User',
                 'col_span' => 4,
-                'options' => User::pluck('name', 'id'),
+                'options' => self::getRelationOptions('user'),
                 'help' => 'Select the user who owns this record'
             ],
 
@@ -145,7 +145,7 @@ class Future extends Model
                 'type' => 'select',
                 'label' => 'Project',
                 'col_span' => 4,
-                'options' => Project::pluck('title', 'id'),
+                'options' => self::getRelationOptions('project'),
                 'help' => 'Select the project for this record'
             ],
 
@@ -158,11 +158,10 @@ class Future extends Model
                 'required' => true
             ],
             'status' => [
-                'type' => 'input',
+                'type' => 'select',
                 'label' => 'Status',
                 'col_span' => 2,
-                'rows' => 1,
-                'placeholder' => 'Enter status',
+                'default' => 'idle',
                 'required' => true
             ],
             'json' => [
@@ -196,6 +195,13 @@ class Future extends Model
                 'label' => 'Locked',
                 'col_span' => 1,
                 'default' => false
+            ],
+            'color' => [
+                'type' => 'select',
+                'label' => 'Color',
+                'col_span' => 2,
+                'options' => self::getColorOptions(),
+                'default' => 'blue'
             ]
         ];
     }
@@ -320,6 +326,7 @@ class Future extends Model
             'idle' => 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 ring-gray-500/10 dark:ring-gray-400/20',
             'in_progress' => 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-blue-700/10 dark:ring-blue-400/20',
             'completed' => 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-400/20',
+            'stealth_mode' => 'bg-indigo-50 dark:bg-blue-900/20 text-indigo-700 dark:text-indigo-300 ring-indigo-600/10 dark:ring-indigo-400/20',
             'blocked' => 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 ring-red-600/10 dark:ring-red-400/20',
             'review' => 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-400/20'
         ];
@@ -330,5 +337,34 @@ class Future extends Model
         return [
             'description', 'color', 'version', 'icon'
         ];
+    }
+
+    public static function getColorOptions(): array
+    {
+        return [
+            'blue' => 'Blue',
+            'green' => 'Green',
+            'red' => 'Red',
+            'yellow' => 'Yellow',
+            'purple' => 'Purple',
+            'orange' => 'Orange',
+            'gray' => 'Gray',
+            'pink' => 'Pink'
+        ];
+    }
+
+    public static function getRelationOptions(string $relation): array
+    {
+        $relationMap = [
+            'user' => ['model' => User::class, 'display' => 'name'],
+            'project' => ['model' => Project::class, 'display' => 'title'],
+        ];
+        
+        if (isset($relationMap[$relation])) {
+            $config = $relationMap[$relation];
+            return $config['model']::pluck($config['display'], 'id')->toArray();
+        }
+        
+        return [];
     }
 } 

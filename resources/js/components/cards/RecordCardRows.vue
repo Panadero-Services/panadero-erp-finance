@@ -67,8 +67,18 @@ const defaultFieldFormatters = {
     color: (value) => {
         return value || '#3b82f6';
     },
-    // Status text
+    // Status text - now dynamic based on statusMapping
     status: (value) => {
+        // Use the status mapping from config if available
+        const statusMapping = props.config.statusMapping || {};
+        const statusKeys = Object.keys(statusMapping);
+        
+        // If we have status mapping, use the key as display text
+        if (statusKeys.length > 0) {
+            return value || 'idle';
+        }
+        
+        // Fallback to default mapping
         const statusMap = {
             'idle': 'Idle',
             'in_progress': 'In Progress',
@@ -77,6 +87,24 @@ const defaultFieldFormatters = {
             'review': 'Review'
         };
         return statusMap[value] || value;
+    },
+    // JSON formatter - improved
+    json: (value) => {
+        if (!value) return 'N/A';
+        if (typeof value === 'object') {
+            // For arrays, show a summary
+            if (Array.isArray(value)) {
+                if (value.length === 0) return '[]';
+                if (value.length === 1) return `[${value[0].name || value[0].title || 'item'}]`;
+                return `[${value.length} items]`;
+            }
+            // For objects, show a summary
+            const keys = Object.keys(value);
+            if (keys.length === 0) return '{}';
+            if (keys.length === 1) return `{${keys[0]}: ${value[keys[0]]}}`;
+            return `{${keys.length} properties}`;
+        }
+        return value;
     }
 };
 
@@ -332,6 +360,19 @@ const getFieldValue = (column) => {
             <!-- Date Columns -->
             <td v-else-if="column.type === 'date'" class="py-2 px-2 text-xs text-gray-500 dark:text-gray-400">
                 {{ formatField(column, getFieldValue(column)) }}
+            </td>
+
+            <!-- JSON Columns -->
+            <td v-else-if="column.type === 'json'" class="py-2 px-2 text-xs">
+                <div class="max-w-xs overflow-hidden">
+                    <div class="text-xs text-gray-600 dark:text-gray-300">
+                        {{ formatField(column, getFieldValue(column)) }}
+                    </div>
+                    <!-- Show full JSON on hover -->
+                    <div class="hidden group-hover:block absolute z-10 mt-1 p-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg max-w-md">
+                        <pre class="text-xs text-gray-600 dark:text-gray-300 whitespace-pre-wrap">{{ JSON.stringify(getFieldValue(column), null, 2) }}</pre>
+                    </div>
+                </div>
             </td>
 
             <!-- Actions Column -->

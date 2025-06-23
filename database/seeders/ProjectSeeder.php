@@ -39,8 +39,8 @@ class ProjectSeeder extends Seeder
                     'description' => 'Sample project description ' . $i,
                     'color' => $colors[array_rand($colors)],
                     'status' => $statuses[array_rand($statuses)],
-                    'json' => json_encode(['priority' => rand(1, 5), 'category' => 'sample']),
-                    'links' => json_encode([]),
+                    'json' => ['priority' => rand(1, 5), 'category' => 'sample'],
+                    'links' => [],
                     'user_id' => rand(1, 15), // Assuming you have users with IDs 1-15
                     'is_active' => rand(0, 1)
                 ]
