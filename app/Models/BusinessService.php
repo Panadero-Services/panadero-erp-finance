@@ -53,7 +53,7 @@ class BusinessService extends Model
 
     public static function getSearchableColumns(): array
     {
-        return ['item', 'title', 'description', 'color', 'version', 'icon', 'path', 'status'];
+        return ['item', 'title', 'description', 'color', 'status'];
     }
 
     public static function linksTable(): array
@@ -85,7 +85,7 @@ class BusinessService extends Model
                 'key' => 'item',
                 'label' => 'Item',
                 'type' => 'text',
-                'width' => 'w-32',
+                'width' => 'w-24',
                 'formatter' => 'text'
             ],
             [
@@ -100,7 +100,7 @@ class BusinessService extends Model
                 'key' => 'description',
                 'label' => 'Description',
                 'type' => 'text',
-                'width' => 'w-64',
+                'width' => 'w-48',
                 'formatter' => 'truncate'
             ],
             [
@@ -128,7 +128,7 @@ class BusinessService extends Model
                 'key' => 'status',
                 'label' => 'Status',
                 'type' => 'status',
-                'width' => 'w-32',
+                'width' => 'w-24',
                 'formatter' => 'status'
             ],
             [
@@ -142,35 +142,35 @@ class BusinessService extends Model
                 'key' => 'is_active',
                 'label' => 'Active',
                 'type' => 'boolean',
-                'width' => 'w-24',
+                'width' => 'w-16',
                 'formatter' => 'boolean'
             ],
             [
                 'key' => 'created_at',
                 'label' => 'Created',
                 'type' => 'date',
-                'width' => 'w-32',
+                'width' => 'w-24',
                 'formatter' => 'date'
             ],
             [
                 'key' => 'updated_at',
                 'label' => 'Updated',
                 'type' => 'date',
-                'width' => 'w-32',
+                'width' => 'w-24',
                 'formatter' => 'date'
             ],
             [
                 'key' => 'options',
                 'label' => 'Options',
                 'type' => 'json',
-                'width' => 'w-48',
+                'width' => 'w-24',
                 'formatter' => 'json'
             ],
             [
                 'key' => 'links',
                 'label' => 'Links',
                 'type' => 'json',
-                'width' => 'w-48',
+                'width' => 'w-24',
                 'formatter' => 'json'
             ],
             [
@@ -186,25 +186,79 @@ class BusinessService extends Model
     public static function getStatusMapping(): array
     {
         return [
-            'idle' => 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 ring-gray-500/10 dark:ring-gray-400/20',
-            'in_progress' => 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-blue-700/10 dark:ring-blue-400/20',
-            'completed' => 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-400/20',
-            'blocked' => 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 ring-red-600/10 dark:ring-red-400/20',
-            'review' => 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-400/20'
+            'pending' => 'yellow',
+            'deprecated' => 'red',
+            'maintenance' => 'orange',
+            'in_progress' => 'blue',
+            'testing' => 'yellow',
+            'ready' => 'green',
+            'experimental' => 'cyan',
+            'alpha' => 'pink',
+            'beta' => 'purple',
+            'featured' => 'purple'
         ];
     }
 
     public static function getColorOptions(): array
     {
         return [
+            // Primary Colors
             'blue' => 'Blue',
-            'green' => 'Green',
             'red' => 'Red',
+            'green' => 'Green',
             'yellow' => 'Yellow',
+            
+            // Rich Colors
+            'indigo' => 'Indigo',
             'purple' => 'Purple',
+            'violet' => 'Violet',
+            'fuchsia' => 'Fuchsia',
+            'pink' => 'Pink',
+            'rose' => 'Rose',
+            
+            // Nature Colors
+            'emerald' => 'Emerald',
+            'teal' => 'Teal',
+            'cyan' => 'Cyan',
+            'sky' => 'Sky',
+            'lime' => 'Lime',
+            'amber' => 'Amber',
+            
+            // Warm Colors
             'orange' => 'Orange',
+            'amber' => 'Amber',
+            'coral' => 'Coral',
+            'crimson' => 'Crimson',
+            'maroon' => 'Maroon',
+            'sienna' => 'Sienna',
+            
+            // Cool Colors
+            'azure' => 'Azure',
+            'cerulean' => 'Cerulean',
+            'sapphire' => 'Sapphire',
+            'turquoise' => 'Turquoise',
+            'aqua' => 'Aqua',
+            
+            // Earth Tones
+            'brown' => 'Brown',
+            'bronze' => 'Bronze',
+            'copper' => 'Copper',
+            'sepia' => 'Sepia',
+            'umber' => 'Umber',
+            
+            // Monochrome
+            'slate' => 'Slate',
+            'zinc' => 'Zinc',
             'gray' => 'Gray',
-            'pink' => 'Pink'
+            'neutral' => 'Neutral',
+            'stone' => 'Stone',
+            
+            // Jewel Tones
+            'ruby' => 'Ruby',
+            'amethyst' => 'Amethyst',
+            'topaz' => 'Topaz',
+            'jade' => 'Jade',
+            'pearl' => 'Pearl'
         ];
     }
 
@@ -300,7 +354,7 @@ class BusinessService extends Model
     public static function getContentFields(): array
     {
         return [
-            'description', 'color', 'version', 'icon'
+            'description', 'version', 'icon', 'path'
         ];
     }
 } 

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
 import { usePage } from '@inertiajs/vue3';
+import Badges from '@/components/colors/Badges.vue';
 
 const props = defineProps({
     module: String,
@@ -21,12 +22,41 @@ const props = defineProps({
             version: 'version',
             icon: 'icon',
             flags: ['is_active', 'is_locked', 'is_featured', 'is_public', 'is_published'],
-            tabs: ['content', 'status', 'author'],
             showUser: true,
-            showTags: true
+            showTags: true,
+            columns: [],
+            statusMapping: {},
+            fieldFormatters: {}
         })
+    },
+    meta: {
+        type: Object,
+        default: () => ({})
     }
 });
+
+// Add rich field formatters from RecordCardRows
+const defaultFieldFormatters = {
+    date: (value) => {
+        if (!value) return 'N/A';
+        return formatDistance(new Date(value), new Date(), { addSuffix: true });
+    },
+    truncate: (value, length = 40) => {
+        if (!value) return 'N/A';
+        return value.length > length ? value.substring(0, length) + '...' : value;
+    },
+    json: (value) => {
+        if (!value) return 'N/A';
+        if (typeof value === 'object') {
+            if (Array.isArray(value)) {
+                return value.length === 0 ? '[]' : `[${value.length} items]`;
+            }
+            const keys = Object.keys(value);
+            return keys.length === 0 ? '{}' : `{${keys.length} properties}`;
+        }
+        return value;
+    }
+};
 
 // variables
 const _iconChangedField = ref('iconChanged');
@@ -39,7 +69,7 @@ const activeTab = ref('content');
 // Process HTML content if needed
 const processHtml = (html) => {
     if (!html) return '';
-    return html.replace(/<a data-inertia-link href="([^"]+)">([^<]+)<\/a>/g, '<inertia-link href="$1">$2 click on me</inertia-link>');
+    return html.replace(/<a data-inertia-link href="([^"]+)">([^<]+)<\/a>/g, '<inertia-link href="$1">$2</inertia-link>');
 }
 
 const _body = computed(() => {
@@ -49,7 +79,7 @@ const _body = computed(() => {
 
 // Update icon handler
 const _updateIcon = async (_id, _field, _value) => {    
-    console.log('_updateIcon');
+    try {
     const i = {
         id: _id,
         field: _field,
@@ -59,15 +89,11 @@ const _updateIcon = async (_id, _field, _value) => {
     _iconChangedId.value = _id;
     _iconChangedValue.value = _value;
     
-    if (!props.db) {
-        console.error('Database connection not available');
-        return;
-    }
+        if (!props.db) throw new Error('Database connection not available');
     
     const _response = await props.db.postUpdateIcon(props.table, i);
-    console.log(_response);
 
-    // logAction
+        // Log action with enhanced data
     const _logData = {
         action: "recordcard.updateicon",
         user_id: usePage().props.auth.user.id || 'no_uid',
@@ -76,16 +102,18 @@ const _updateIcon = async (_id, _field, _value) => {
         team: usePage().props.auth.user.current_team.name || 'no_team',
         project: 'none', 
         content: _response.data,
-        json: '{}',
+            json: JSON.stringify(i),
         tags: `${props.module}, ${props.table}`,
+        };
+        await props.db.logAction(_logData);
+    } catch (error) {
+        console.error('Error updating icon:', error);
     }
-    const _response2 = await props.db.logAction(_logData);
-    console.log(_response2);
 }
 
 // Computed for formatted body
 const formattedBody = computed(() => {
-    return _body.value.replaceAll('.', '.<br>');
+    return _body.value.split('\n').join('<br>');
 });
 
 // Computed for initials (Author initials - First and Last name)
@@ -98,15 +126,29 @@ const initials = computed(() => {
     return names[0].charAt(0).toUpperCase();
 });
 
-// Computed for status flags
+// Enhanced status flags with modern styling
 const statusFlags = computed(() => {
     return props.config.flags.map(flag => ({
         key: flag,
         label: flag.replace('is_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
         icon: getIconForFlag(flag),
-        active: props.record?.[flag] === 1
+        active: props.record?.[flag] === 1,
+        color: getStatusColor(flag)
     }));
 });
+
+// Add modern color mapping for flags
+const getStatusColor = (flag) => {
+    const colorMap = {
+        'is_active': 'emerald',
+        'is_locked': 'amber',
+        'is_featured': 'purple',
+        'is_smart': 'blue',
+        'is_public': 'green',
+        'is_published': 'indigo'
+    };
+    return colorMap[flag] || 'gray';
+};
 
 // Helper function to get icon for flag
 const getIconForFlag = (flag) => {
@@ -122,133 +164,214 @@ const getIconForFlag = (flag) => {
     return iconMap[flag] || 'QuestionMarkCircle';
 };
 
-const emit = defineEmits(['edit', 'show', 'delete']);
+const emit = defineEmits(['edit', 'show', 'delete', 'show-json', 'navigate-link']);
+
+// Add dynamic columns support
+const columns = computed(() => {
+    return props.record?.meta?.columns || props.config.columns || [];
+});
+
+const showJsonDetail = (key) => {
+    // Emit event to show JSON detail in a modal or similar
+    emit('show-json', { key, value: props.record[key] });
+};
+
+const navigateToLink = (link) => {
+    // Emit event to handle link navigation
+    emit('navigate-link', link);
+};
+
+// Computed property for content fields
+const contentFields = computed(() => {
+    return props.meta?.content_fields || props.meta?.getContentFields || ['description', 'body'];
+});
 </script>
 
 <template>
     <div class="relative block w-full">
-        <div class="p-2 h-[400px] opacity-90 from-gray-700/50 via-transparent rounded-xs shadow-md shadow-gray-400 motion-safe:hover:scale-[1.01] transition-all duration-250 focus:outline focus:outline-2 focus:outline-purple-500 bg-white text-gray-600 dark:bg-gray-800/50 dark:bg-gradient-to-bl dark:ring-1 dark:ring-inset dark:ring-white/5 dark:shadow-none dark:text-gray-300">
-            <div class="flex flex-col h-full min-h-24 p-1 sm:px-6 sm:pt-3 tracking-tight leading-4">
-                <!-- Header section -->
-                <div class="flex items-center mb-1 w-full">
-                    <div v-if="config.showUser" class="h-12 w-12 bg-blue-200 dark:bg-blue-900 flex items-center justify-center rounded-full mr-4 flex-shrink-0 absolute top-3 -mt-8 left-1">
-                        <div class="text-blue-600 dark:text-blue-300 font-bold text-base absolute top-2">{{ initials }}</div>
-                    </div>
-                    <div class="flex-1 text-center sm:text-lg">
-                        <h3 v-if="!(set?.self==='nope')" @click="$emit('show', record?.id)" class="line-clamp-1 font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer">
-                            {{ record?.[config.title] }}
-                        </h3>
-                        <h3 v-else class="font-semibold text-gray-900 dark:text-white line-clamp-1">
-                            {{ record?.[config.title] }}
-                        </h3>
-                        <p class="text-xxxs sm:text-xxs text-gray-500 dark:text-gray-500">Updated {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago</p>
-                    </div>
+        <!-- Circle avatar positioned to overlap top border -->
+        <div v-if="config.showUser" 
+             class="absolute -top-3.5 left-3 h-8 w-8 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-800 rounded-full flex items-center justify-center">
+            <span class="text-white text-[10px]">{{ record?.item || record?.user?.name?.[0] || 'U' }}</span>
+        </div>
+
+        <div class="p-3 h-[300px] bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
+            <!-- Header with ID and Status -->
+            <div class="flex items-center justify-between mb-2">
+                <div class="flex-1 min-w-0">
+                    <h3 @click="$emit('show', record?.id)" 
+                        class="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer truncate">
+                        {{ record?.[config.title] }}
+                    </h3>
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400">
+                        {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago
+                    </p>
                 </div>
 
-                <!-- Tabs -->
-                <div class="flex mb-2 w-full border-b border-gray-200 dark:border-gray-700 grid grid-cols-2">
-                    <div>
-                        <button v-for="tab in config.tabs" :key="tab"
-                            @click="activeTab = tab"
-                            :class="[
-                                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
-                                activeTab === tab 
-                                    ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
-                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
-                            ]"
-                        >
-                            {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
-                        </button>
-                    </div>
-                    <div class="justify-end text-right">
-                        <div class="flex space-x-2 justify-end mt-3">
-                            <CategorySectionIcon 
-                                v-for="flag in statusFlags"
-                                :key="flag.key"
-                                @click="_updateIcon(record?.id ?? 0, flag.key, record?.[flag.key] === 0)"
-                                :icon="flag.icon"
-                                :activated="flag.active"
-                                :error="_false"
-                                :title="flag.label"
-                            />
+                <!-- ID and Status badge stacked -->
+                <div class="flex flex-col items-end gap-1">
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">#{{ record.id }}</span>
+                    <Badges 
+                        v-if="record.status"
+                        :status="record.status"
+                        :status-mapping="config.statusMapping"
+                        size="xxs"
+                        variant="badge"
+                    />
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 dark:border-gray-700 -mx-3 px-2">
+                <button v-for="tab in ['content', 'json', 'links', 'meta']" 
+                        :key="tab"
+                        @click="activeTab = tab"
+                        :class="[
+                            'px-2 py-1 text-[11px] font-medium transition-colors duration-200',
+                            activeTab === tab 
+                                ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        ]">
+                    {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
+                </button>
+            </div>
+
+            <!-- Content area -->
+            <div class="mt-2 h-[180px] overflow-y-auto">
+                <!-- Content Tab - Two Columns -->
+                <div v-if="activeTab === 'content'" class="grid grid-cols-2 gap-2 px-1">
+                    <!-- Description at top spanning both columns -->
+                    <div v-if="record?.[config.description]" 
+                         class="col-span-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start gap-2 px-2 py-1">
+                            <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400 shrink-0">
+                                Description
+                            </span>
+                            <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
+                                {{ record[config.description] }}
+                            </div>
                         </div>
                     </div>
+
+                    <!-- Other fields -->
+                    <template v-for="col in columns" :key="col.key">
+                        <div v-if="!['description'].includes(col.key)" 
+                             class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between px-2 py-1.5">
+                                <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                                    {{ col.label }}
+                                </span>
+                                
+                                <!-- Field content inline -->
+                                <div class="flex items-center">
+                                    <!-- Boolean fields -->
+                                    <div v-if="col.formatter === 'boolean'" class="flex items-center">
+                                        <div class="w-1.5 h-1.5 rounded-full"
+                                             :class="record[col.key] ? 'bg-green-500' : 'bg-red-500'">
+                                        </div>
+                                        <span class="ml-1 text-[10px] text-gray-500 dark:text-gray-400">
+                                            {{ record[col.key] ? 'Yes' : 'No' }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Color fields -->
+                                    <div v-else-if="col.formatter === 'color'" class="flex items-center">
+                                        <div class="w-3 h-3 rounded"
+                                             :style="{ backgroundColor: record[col.key] }">
+                                        </div>
+                                        <span class="ml-1.5 text-[10px] text-gray-500 dark:text-gray-400">
+                                            {{ record[col.key] }}
+                                        </span>
+                                    </div>
+
+                                    <!-- Date fields -->
+                                    <div v-else-if="col.key.includes('date') || col.formatter === 'date'">
+                                        <span class="text-[10px] text-gray-500 dark:text-gray-400">
+                                            {{ new Date(record[col.key]).toLocaleDateString() }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Default text -->
+                                    <div v-else class="text-[10px] text-gray-500 dark:text-gray-400">
+                                        {{ record[col.key] || '-' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
-                <!-- Content area -->
-                <div class="flex-1 w-full overflow-auto">
-                    <!-- Content Tab -->
-                    <div v-if="activeTab === 'content'" class="space-y-2">
-                        <div class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 p-3 rounded border border-gray-200 dark:border-gray-700 overflow-auto text-xs" 
-                            v-html="formattedBody">
+                <!-- JSON Tab -->
+                <div v-else-if="activeTab === 'json'" class="space-y-1.5">
+                    <template v-for="col in columns" :key="col.key">
+                        <div v-if="col.formatter === 'json'" 
+                             class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1.5">
+                            <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400">
+                                {{ col.label }}
+                            </span>
+                            <div class="flex items-center">
+                                <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                    {{ Array.isArray(record[col.key]) ? `${record[col.key].length} items` : 'Object' }}
+                                </span>
+                                <button @click="showJsonDetail(col.key)"
+                                        class="ml-2 text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                    View
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    </template>
+                </div>
 
-                    <!-- Status Tab -->
-                    <div v-else-if="activeTab === 'status'" class="space-y-2">
-                        <div class="grid sm:grid-cols-2 gap-2">
-                            <div v-for="(flag, idx) in statusFlags" 
-                                :key="idx" 
-                                class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-                                <span class="font-medium text-blue-700 dark:text-blue-400 text-xs">{{ flag.label }}:</span>
-                                <span :class="[
-                                    'text-xs px-2 py-1 rounded',
-                                    flag.active 
-                                        ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' 
-                                        : 'bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                                ]">
-                                    {{ flag.active ? 'Active' : 'Inactive' }}
+                <!-- Links Tab -->
+                <div v-else-if="activeTab === 'links'" class="space-y-1.5">
+                    <template v-for="(link, index) in record.links" :key="index">
+                        <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1.5">
+                            <div class="flex items-center">
+                                <span class="text-[10px] font-medium text-gray-700 dark:text-gray-300">
+                                    {{ link.link_title }}
+                                </span>
+                                <span class="ml-2 px-1.5 py-0.5 text-[9px] rounded bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                    {{ link.type }}
                                 </span>
                             </div>
+                            <button @click="navigateToLink(link)"
+                                    class="text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
+                                View
+                            </button>
                         </div>
-                    </div>
-
-                    <!-- Author Tab -->
-                    <div v-else-if="activeTab === 'author' && config.showUser" class="space-y-2">
-                        <div class="flex items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-                            <div class="flex-1">
-                                <p class="font-medium text-blue-700 dark:text-blue-400 text-xs -mt-4">{{ record?.user?.name ?? 'Unknown User' }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Author</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Joined: {{ formatDistance(new Date(record?.user?.created_at ?? Date.now()), new Date()) }} ago</p>
-                            </div>
-                        </div>
-
-                        <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-                            <h4 class="font-medium text-blue-700 dark:text-blue-400 text-xs mb-2">Author Stats</h4>
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ record?.user?.posts_count ?? 0 }}</div>
-                                    <div class="text-gray-500 dark:text-gray-400">Posts</div>
-                                </div>
-                                <div class="text-center p-2 bg-white dark:bg-gray-800 rounded">
-                                    <div class="font-bold text-blue-600 dark:text-blue-400">{{ record?.user?.id ?? 'N/A' }}</div>
-                                    <div class="text-gray-500 dark:text-gray-400">User ID</div>
-                                </div>
-                            </div>
-                        </div>
+                    </template>
+                    <div v-if="!record.links?.length" class="text-[10px] text-gray-500 dark:text-gray-400 text-center py-2">
+                        No links available
                     </div>
                 </div>
 
-                <!-- Footer -->
-                <div class="mt-auto">
-                    <div class="flex space-x-1 w-full justify-between mt-3 pt-0 border-t border-gray-200 dark:border-gray-700">
-                        <div class="mt-3 text-xs text-gray-500 dark:text-gray-500">
-                            id: {{ record?.id }}
-                            <span v-if="config.showTags && record?.tags" v-for="tag in record?.tags" 
-                                :key="tag.id"
-                                class="text-xxs bg-indigo-50 text-indigo-700 dark:text-indigo-200 dark:bg-indigo-900 dark:border-indigo-600 py-0.5 px-2 m-1 rounded-2xl border border-indigo-300">
-                                {{ tag.name }}
-                            </span>
-                        </div>
-                        <div>
-                            <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" 
-                                @click="$emit('show', record?.id ?? 0)">Show</button>
-                            <button v-if="!(set?.self==='nope')" 
-                                class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" 
-                                @click="$emit('edit', record?.id ?? 0)">Edit</button>
-                            <button class="mt-2.5 mx-1 rounded p-2 w-12 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400" 
-                                @click="$emit('delete', record?.id ?? 0)">Delete</button>
-                        </div>
+                <!-- Meta Tab -->
+                <div v-else-if="activeTab === 'meta'" class="grid grid-cols-3 gap-2">
+                    <div v-for="flag in statusFlags" 
+                         :key="flag.key"
+                         class="flex items-center justify-between p-2 rounded"
+                         :class="`bg-${flag.color}-50 dark:bg-${flag.color}-900/20`">
+                        <span class="text-[10px] font-medium" :class="`text-${flag.color}-700 dark:text-${flag.color}-300`">
+                            {{ flag.label }}
+                        </span>
+                        <CategorySectionIcon 
+                            :icon="flag.icon"
+                            :activated="flag.active"
+                            :error="false"
+                            :title="flag.label"
+                            class="h-3.5 w-3.5"
+                            @click="_updateIcon(record?.id, flag.key, !flag.active)"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="absolute bottom-2 left-3 flex items-center gap-2">
+                <!-- Color indicator only -->
+                <div v-if="record.color" class="flex items-center" title="Color">
+                    <div class="w-3 h-3 rounded"
+                         :style="{ backgroundColor: record.color }">
                     </div>
                 </div>
             </div>

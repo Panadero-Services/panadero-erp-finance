@@ -9,6 +9,7 @@ import TheButton from "@/panadero/components/TheButton.vue";
 //import axios from 'axios';
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
+import Badges from '@/components/colors/Badges.vue';
 
 const page = usePage();
 
@@ -307,7 +308,7 @@ const _container = {
 };
 
 const _window = {
-  base: "z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500",
+  base: "z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[720px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500",
   padding: "p-6 pt-10",
   motion: "motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2",
   light: "bg-gray-100 text-gray-600 from-gray-200/50 via-transparent",
@@ -354,7 +355,7 @@ const links = computed(() => {
     try {
       const parsed = JSON.parse(form.links || '[]');
       return Array.isArray(parsed) ? parsed : [];
-    } catch {
+  } catch {
       return [];
     }
   } else if (form.links === null || form.links === undefined) {
@@ -512,6 +513,111 @@ const jsonValue = computed(() => {
     return null;
   }
 });
+
+// Add tab management
+const activeTab = ref('main'); // 'main', 'json', 'links', 'options'
+
+// Color variables for status mapping
+const statusColors = {
+  green: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 ring-green-600/20 dark:ring-green-400/20',
+  red: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 ring-red-600/20 dark:ring-red-400/20',
+  blue: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 ring-blue-600/20 dark:ring-blue-400/20',
+  yellow: 'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 ring-yellow-600/20 dark:ring-yellow-400/20',
+  purple: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 ring-purple-600/20 dark:ring-purple-400/20',
+  indigo: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 ring-indigo-600/20 dark:ring-indigo-400/20',
+  pink: 'bg-pink-50 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 ring-pink-600/20 dark:ring-pink-400/20',
+  gray: 'bg-gray-50 dark:bg-gray-900/20 text-gray-700 dark:text-gray-300 ring-gray-600/20 dark:ring-gray-400/20',
+  orange: 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 ring-orange-600/20 dark:ring-orange-400/20',
+  teal: 'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-300 ring-teal-600/20 dark:ring-teal-400/20',
+  cyan: 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-300 ring-cyan-600/20 dark:ring-cyan-400/20',
+  emerald: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 ring-emerald-600/20 dark:ring-emerald-400/20',
+  lime: 'bg-lime-50 dark:bg-lime-900/20 text-lime-700 dark:text-lime-300 ring-lime-600/20 dark:ring-lime-400/20',
+  amber: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 ring-amber-600/20 dark:ring-amber-400/20',
+  rose: 'bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 ring-rose-600/20 dark:ring-rose-400/20',
+  violet: 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300 ring-violet-600/20 dark:ring-violet-400/20',
+  fuchsia: 'bg-fuchsia-50 dark:bg-fuchsia-900/20 text-fuchsia-700 dark:text-fuchsia-300 ring-fuchsia-600/20 dark:ring-fuchsia-400/20',
+  slate: 'bg-slate-50 dark:bg-slate-900/20 text-slate-700 dark:text-slate-300 ring-slate-600/20 dark:ring-slate-400/20',
+  zinc: 'bg-zinc-50 dark:bg-zinc-900/20 text-zinc-700 dark:text-zinc-300 ring-zinc-600/20 dark:ring-zinc-400/20',
+  neutral: 'bg-neutral-50 dark:bg-neutral-900/20 text-neutral-700 dark:text-neutral-300 ring-neutral-600/20 dark:ring-neutral-400/20',
+  stone: 'bg-stone-50 dark:bg-stone-900/20 text-stone-700 dark:text-stone-300 ring-stone-600/20 dark:ring-stone-400/20'
+};
+
+// Helper function to get status color from model mapping
+const getStatusColor = (status) => {
+  // Get the status mapping from the model metadata
+  const statusMapping = props.meta?.status_mapping || {};
+  const colorKey = statusMapping[status?.toLowerCase()];
+  
+  // Return the color classes or fallback to gray
+  return statusColors[colorKey] || statusColors.gray;
+};
+
+// You can use the exposed function
+const { getStatusColor: BadgesStatusColor } = Badges;
+
+// Add to state & refs section
+const showColorDropdown = ref(false);
+
+// Add click outside handler to close dropdown
+onMounted(() => {
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.color-dropdown')) {
+      showColorDropdown.value = false;
+    }
+  });
+});
+
+// Add to state & refs section
+const activeColorDropdown = ref(null);
+
+// Add color options
+const colorOptions = [
+  { value: 'red', label: 'Red' },
+  { value: 'blue', label: 'Blue' },
+  { value: 'green', label: 'Green' },
+  { value: 'yellow', label: 'Yellow' },
+  { value: 'purple', label: 'Purple' },
+  { value: 'indigo', label: 'Indigo' },
+  { value: 'pink', label: 'Pink' },
+  { value: 'gray', label: 'Gray' },
+  { value: 'orange', label: 'Orange' },
+  { value: 'teal', label: 'Teal' },
+  { value: 'cyan', label: 'Cyan' },
+  { value: 'emerald', label: 'Emerald' },
+  { value: 'lime', label: 'Lime' },
+  { value: 'amber', label: 'Amber' },
+  { value: 'rose', label: 'Rose' },
+  { value: 'violet', label: 'Violet' },
+  { value: 'fuchsia', label: 'Fuchsia' },
+  { value: 'slate', label: 'Slate' },
+  { value: 'zinc', label: 'Zinc' },
+  { value: 'neutral', label: 'Neutral' },
+  { value: 'stone', label: 'Stone' },
+  { value: 'turquoise', label: 'Turquoise' }
+];
+
+const toggleColorDropdown = (fieldName) => {
+  activeColorDropdown.value = activeColorDropdown.value === fieldName ? null : fieldName;
+};
+
+const selectColor = (fieldName, color) => {
+  form[fieldName] = color;
+  activeColorDropdown.value = null;
+};
+
+// Update onMounted
+onMounted(() => {
+  if (!props.record.id) return;
+  if (usePage().props.auth && usePage().props.auth.user) {
+    loadForm();
+    
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.color-dropdown')) {
+        activeColorDropdown.value = null;
+      }
+    });
+  }
+});
 </script>
 
 <template>
@@ -520,13 +626,91 @@ const jsonValue = computed(() => {
     </div>
     <div :class="[_window.base, _window.padding, _window.motion, _window.light, _window.dark]">
       <div class="h-full flex flex-col">
+
+        <!-- Modal Header with Tabs -->
+        <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <div>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {{ form.title || form.item || 'Edit Record' }}
+            </h2>
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+              #{{ form.id }} &mdash; {{ props.table }}
+            </div>
+          </div>
+          
+          <!-- Tabs moved to the right -->
+          <div class="flex space-x-1">
+            <!-- Main Form Tab -->
+            <button
+              @click="activeTab = 'main'"
+              :class="[
+                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                activeTab === 'main'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+              ]"
+            >
+              Main
+            </button>
+            
+            <!-- JSON Tab -->
+            <button
+              v-if="meta.form_fields?.json"
+              @click="activeTab = 'json'"
+              :class="[
+                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                activeTab === 'json'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+              ]"
+            >
+              JSON
+            </button>
+            
+            <!-- Links Tab -->
+            <button
+              v-if="meta.form_fields?.links"
+              @click="activeTab = 'links'"
+              :class="[
+                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                activeTab === 'links'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+              ]"
+            >
+              Links
+            </button>
+            
+            <!-- Options Tab -->
+            <button
+              v-if="meta.form_fields?.options"
+              @click="activeTab = 'options'"
+              :class="[
+                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                activeTab === 'options'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+              ]"
+            >
+              Options
+            </button>
+          </div>
+          
+          <button @click="$emit('close')" class="text-gray-400 hover:text-red-500 ml-4">
+            <XMarkIcon class="w-6 h-6" />
+          </button>
+        </div>
+
         <!-- Content area -->
         <div class="flex-1 overflow-y-auto">
+          
+          <!-- Main Form Tab -->
+          <div v-if="activeTab === 'main'" class="p-4">
           <form @submit.prevent="submit" class="grid grid-cols-8 gap-4">
             <template v-for="(fieldConfig, fieldName) in meta.form_fields" :key="String(fieldName)">
-              <!-- Skip switch fields in main form - they're handled in footer -->
+                <!-- Skip JSON fields and switch fields in main form -->
               <div
-                v-if="fieldConfig.type !== 'switch'"
+                  v-if="fieldConfig.type !== 'switch' && !['json', 'links', 'options'].includes(fieldName)"
                 :class="{
                   'col-span-8': fieldConfig.col_span === 8,
                   'col-span-6': fieldConfig.col_span === 6,
@@ -558,227 +742,105 @@ const jsonValue = computed(() => {
                   </span>
                 </label>
 
-                <!-- Select Field -->
-                <div v-if="fieldConfig.type === 'select'" class="mt-1">
-                  <select
-                    v-model="form[fieldName]"
-                    :id="fieldName"
-                    :disabled="fieldConfig.readonly"
-                    class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                    :required="meta.validation_rules?.[fieldName]?.includes('required')"
-                  >
-                    <option value="">Select {{ fieldConfig.label }}</option>
-                    <option 
-                      v-for="relation in (projects[fieldName] || [])" 
-                      :key="relation.id" 
-                      :value="relation.id"
+                  <!-- Color Select Field -->
+                  <div v-if="fieldConfig.type === 'select' && fieldName === 'color'" class="mt-1 relative color-dropdown">
+                    <button 
+                      type="button"
+                      @click="toggleColorDropdown(fieldName)"
+                      class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border border-gray-300 dark:border-gray-600 cursor-pointer bg-white dark:bg-gray-700 flex items-center justify-between"
                     >
-                      {{ relation.title || relation.name || relation.id }}
+                      <div class="flex items-center">
+                        <div 
+                          class="w-2 h-2 rounded-full mr-1.5"
+                          :style="{ backgroundColor: form[fieldName] || '#3b82f6' }"
+                        ></div>
+                        <span class="text-gray-900 dark:text-gray-300">
+                          {{ form[fieldName] || 'Select color' }}
+                        </span>
+                      </div>
+                      <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                      </svg>
+                    </button>
+                    
+                    <!-- Dropdown with reduced font size -->
+                    <div 
+                      v-show="activeColorDropdown === fieldName"
+                      class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-700 rounded-md shadow-lg border border-gray-200 dark:border-gray-600 py-1 max-h-60 overflow-auto text-xs"
+                    >
+                      <button
+                        type="button" 
+                        v-for="color in colorOptions"
+                        :key="color.value"
+                        @click="selectColor(fieldName, color.value)"
+                        class="w-full flex items-center px-3 py-1 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer"
+                      >
+                        <div 
+                          class="w-2 h-2 rounded-full mr-1.5"
+                          :style="{ backgroundColor: color.value }"
+                        ></div>
+                        <span class="text-gray-900 dark:text-gray-300">
+                          {{ color.label }}
+                        </span>
+                      </button>
+                    </div>
+                </div>
+
+                  <!-- Regular Select Field -->
+                <div v-else-if="fieldConfig.type === 'select'" class="mt-1">
+                  <select
+                      v-model="form[fieldName]"
+                      :id="fieldName"
+                      :disabled="fieldConfig.readonly"
+                      class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      :required="meta.validation_rules?.[fieldName]?.includes('required')"
+                    >
+                      <option value="">Select {{ fieldConfig.label }}</option>
+                      <option 
+                        v-for="relation in (projects[fieldName] || [])" 
+                        :key="relation.id" 
+                        :value="relation.id"
+                        :class="fieldName === 'color' ? 'flex items-center' : ''"
+                      >
+                        <template v-if="fieldName === 'color'">
+                          <span class="inline-flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-1.5" :style="{ backgroundColor: relation.id }"></span>
+                            {{ relation.title || relation.name || relation.id }}
+                          </span>
+                    </template>
+                    <template v-else>
+                          {{ relation.title || relation.name || relation.id }}
+                        </template>
                       </option>
                   </select>
                   <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
 
-                <!-- Readonly Field Display -->
-                <div v-else-if="fieldConfig.readonly" class="mt-1">
-                  <div class="block w-full pl-3 pr-10 py-2 text-xs rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
-                    {{ form[String(fieldName)] || 'N/A' }}
-                  </div>
-                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
-                </div>
-
-                <!-- Datetime Field -->
-                <div v-else-if="fieldConfig.type === 'datetime'" class="mt-1">
-                  <input
-                    type="datetime-local"
-                    :id="String(fieldName)"
-                    v-model="form[String(fieldName)]"
-                    :readonly="fieldConfig.readonly"
-                    :class="[
-                      _input.base,
-                      _input.light,
-                      _input.dark,
-                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
-                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                    ]"
-                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
-                  />
-                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
-                </div>
-
-                <!-- Improved JSON Field -->
-                <div v-else-if="fieldName === 'json'" class="mt-1">
-                  <div class="space-y-2">
-                    <!-- JSON Editor with syntax highlighting -->
-                    <div class="relative">
-                      <textarea
-                        v-model="jsonString"
-                        :rows="meta.form_fields?.[fieldName]?.rows || 4"
-                        :readonly="fieldConfig.readonly"
-                        :class="[
-                          'block w-full rounded-md shadow-sm sm:text-xs font-mono',
-                          isInvalid(String(fieldName))
-                            ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
-                            : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
-                          'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
-                          fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                        ]"
-                        :placeholder="meta.form_fields?.[fieldName]?.placeholder || 'Enter valid JSON...'"
-                      ></textarea>
-                      
-                      <!-- JSON validation indicator -->
-                      <div v-if="hasJsonError" class="absolute top-2 right-2">
-                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                        </svg>
-                      </div>
-                      <div v-else class="absolute top-2 right-2">
-                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                        </svg>
-                      </div>
+                  <!-- Readonly Field Display -->
+                  <div v-else-if="fieldConfig.readonly" class="mt-1">
+                    <div class="block w-full pl-3 pr-10 py-2 text-xs rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
+                      {{ form[String(fieldName)] || 'N/A' }}
                     </div>
-                    
-                    <!-- JSON validation message -->
-                    <div v-if="hasJsonError" class="text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
-                      Invalid JSON format. Please check your syntax.
-                    </div>
-                    
-                    <!-- JSON preview -->
-                    <details v-if="!hasJsonError && jsonValue" class="mt-2">
-                      <summary class="text-xs text-gray-500 cursor-pointer">Preview JSON structure</summary>
-                      <div class="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded border text-xs">
-                        <pre class="whitespace-pre-wrap">{{ JSON.stringify(jsonValue, null, 2) }}</pre>
-                      </div>
-                    </details>
-                  </div>
-                </div>
-
-                <!-- Links Field -->
-                <div v-else-if="fieldName === 'links'" class="mt-1">
-                  <div class="space-y-2 overflow-scroll z-30">
-                    <div class="flex items-center justify-between p-1.5 rounded-sm">
-                      <div class="flex items-center space-x-2 block w-full mr-2">
-                        <select v-model="link.type" class="text-xs rounded-md" :class="[_input.light, _input.dark]">
-                          <option v-for="_link in availableLinkTypes" :value="_link">{{_link.replaceAll('_',' ')}}</option>
-                        </select>
-                        <PostSearch
-                          :model-value="link.link_id"
-                          :model="props.table"
-                          :table="props.table"
-                          :title-column="titleColumn"
-                          :label="titleColumn"
-                          :id-column="idColumn"
-                          @update:model-value="(_value) => { link.link_id = String(_value); }"
-                          @update:link-title="(_title) => { link.link_title = _title }"
-                        />
-                      </div>
-                      <button @click.prevent="addLink" :class="[_button.active]" class="ml-2">Add_Link</button>
-                    </div>
-
-                    <!-- Existing links display -->
-                    <div class="grid grid-cols-8">
-                      <!-- Show col-span-5 links items -->
-                      <!-- JSON Error Message -->
-                      <div v-if="hasJsonLinkError" class="bg-red-100 dark:bg-red-800 text-black text-center p-2 rounded-sm col-span-5 h-12">
-                        JSON Error
+                    <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                       </div>
 
-                      <div v-if="!hasJsonLinkError && Array.isArray(links) && links.length > 0" class="col-span-5">
-                        <div v-for="(linkItem, i) in links" 
-                            :key="i" 
-                            v-if="i !== (links.length - 1)"
-                            class="bg-gray-100 dark:bg-gray-700 rounded-sm flex">
-                          <button @click.prevent="removeLink(i)" class="text-indigo-500 hover:text-red-700 w-6 ml-1">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                          </button>
-                          <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                              <span class="text-xs text-gray-600 dark:text-gray-300">{{ linkItem?.type || 'unknown' }}</span>
-                              <span class="text-xs text-gray-800 dark:text-gray-200 ml-2">{{ linkItem?.link_title || 'unknown' }}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-span-3">
-                        <textarea
-                          v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
-                          :rows="meta.form_fields?.[fieldName]?.rows || 2"
+                  <!-- Datetime Field -->
+                  <div v-else-if="fieldConfig.type === 'datetime'" class="mt-1">
+                    <input
+                      type="datetime-local"
+                      :id="String(fieldName)"
                           v-model="form[String(fieldName)]"
-                          :readonly="fieldConfig.readonly"
+                      :readonly="fieldConfig.readonly"
                           :class="[
-                            'block w-full rounded-md shadow-sm sm:text-xs ',
-                            isInvalid(String(fieldName))
-                              ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
-                              : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
-                            'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
-                            fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                          ]"
-                          :placeholder="meta.form_fields?.[fieldName]?.placeholder"
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Options Field (similar to JSON but with better UI) -->
-                <div v-else-if="fieldName === 'options'" class="mt-1">
-                  <div class="space-y-2">
-                    <!-- Options Editor -->
-                    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded border">
-                      <div class="flex items-center space-x-2 flex-1">
-                        <input
-                          v-model="newOption.name"
-                          placeholder="Option name"
-                          class="text-xs rounded border px-2 py-1 flex-1"
-                        />
-                        <input
-                          v-model="newOption.url"
-                          placeholder="URL"
-                          class="text-xs rounded border px-2 py-1 flex-1"
-                        />
-                        <input
-                          v-model="newOption.route"
-                          placeholder="Route"
-                          class="text-xs rounded border px-2 py-1 flex-1"
-                        />
-                      </div>
-                      <button @click.prevent="addOption" class="ml-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
-                        Add
-                      </button>
-                    </div>
-
-                    <!-- Existing options display -->
-                    <div v-if="Array.isArray(options) && options.length > 0" class="space-y-1">
-                      <div v-for="(optionItem, i) in options" :key="i" 
-                           class="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded border">
-                        <div class="flex-1">
-                          <div class="text-xs font-medium">{{ optionItem?.name || 'unknown' }}</div>
-                          <div class="text-xs text-gray-500">{{ optionItem?.url || 'unknown' }}</div>
-                          <div class="text-xs text-gray-400">{{ optionItem?.route || 'unknown' }}</div>
-                        </div>
-                        <button @click.prevent="removeOption(i)" class="ml-2 text-red-500 hover:text-red-700">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <!-- Raw JSON Editor (for advanced users) -->
-                    <details class="mt-2">
-                      <summary class="text-xs text-gray-500 cursor-pointer">Advanced: Edit JSON directly</summary>
-                      <textarea
-                        v-model="optionsJsonString"
-                        :rows="4"
-                        class="mt-1 block w-full rounded border text-xs font-mono"
-                        placeholder='[{"name": "Dashboard", "url": "/dashboard", "route": "dashboard"}]'
-                      ></textarea>
-                    </details>
-                  </div>
+                        _input.base,
+                        _input.light,
+                        _input.dark,
+                        isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                        fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                      ]"
+                      :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
+                    />
+                    <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
 
                 <!-- Boolean Field -->
@@ -786,24 +848,24 @@ const jsonValue = computed(() => {
                   <div class="flex space-x-4">
                     <button
                       type="button"
-                      :disabled="fieldConfig.readonly"
+                        :disabled="fieldConfig.readonly"
                       @click="form[String(fieldName)] = true"
                       :class="[
                         _button.base,
-                        form[String(fieldName)] ? _button.active : _button.inactive,
-                        fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
+                          form[String(fieldName)] ? _button.active : _button.inactive,
+                          fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
                       ]"
                     >
                       Yes
                     </button>
                     <button
                       type="button"
-                      :disabled="fieldConfig.readonly"
+                        :disabled="fieldConfig.readonly"
                       @click="form[String(fieldName)] = false"
                       :class="[
                         _button.base,
-                        !form[String(fieldName)] ? _button.active : _button.inactive,
-                        fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
+                          !form[String(fieldName)] ? _button.active : _button.inactive,
+                          fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
                       ]"
                     >
                       No
@@ -818,13 +880,13 @@ const jsonValue = computed(() => {
                     :type="fieldConfig.type || 'text'"
                     :id="String(fieldName)"
                     v-model="form[String(fieldName)]"
-                    :readonly="fieldConfig.readonly"
+                      :readonly="fieldConfig.readonly"
                     :class="[
                       _input.base,
                       _input.light,
                       _input.dark,
-                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
-                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                        isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                        fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
                     ]"
                     :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                   />
@@ -833,13 +895,13 @@ const jsonValue = computed(() => {
                     :id="String(fieldName)"
                     :rows="meta.form_fields?.[fieldName]?.rows || 2"
                     v-model="form[String(fieldName)]"
-                    :readonly="fieldConfig.readonly"
+                      :readonly="fieldConfig.readonly"
                     :class="[
                       _input.base,
                       _input.light,
                       _input.dark,
-                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
-                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                        isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                        fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
                     ]"
                     :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                     rows="3"
@@ -848,6 +910,204 @@ const jsonValue = computed(() => {
               </div>
             </template>
           </form>
+          </div>
+
+          <!-- JSON Tab -->
+          <div v-if="activeTab === 'json'" class="p-4">
+            <div class="space-y-4">
+              <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">JSON Data Editor</h3>
+              
+              <!-- JSON Field -->
+              <div class="space-y-2">
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200">JSON Data</label>
+                <div class="relative">
+                  <textarea
+                    v-model="jsonString"
+                    :rows="8"
+                    :readonly="meta.form_fields?.json?.readonly"
+                    :class="[
+                      'block w-full rounded-md shadow-sm sm:text-xs font-mono',
+                      isInvalid('json')
+                        ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
+                        : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
+                      'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
+                      meta.form_fields?.json?.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                    ]"
+                    placeholder="Enter valid JSON..."
+                  ></textarea>
+                  
+                  <!-- JSON validation indicator -->
+                  <div v-if="hasJsonError" class="absolute top-2 right-2">
+                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                  </div>
+                  <div v-else class="absolute top-2 right-2">
+                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                <!-- JSON validation message -->
+                <div v-if="hasJsonError" class="text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
+                  Invalid JSON format. Please check your syntax.
+                </div>
+                
+                <!-- JSON preview -->
+                <details v-if="!hasJsonError && jsonValue" class="mt-2">
+                  <summary class="text-xs text-gray-500 cursor-pointer">Preview JSON structure</summary>
+                  <div class="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded border text-xs">
+                    <pre class="whitespace-pre-wrap">{{ JSON.stringify(jsonValue, null, 2) }}</pre>
+                  </div>
+                </details>
+
+                <!-- Debug Panel (common style for all tabs) -->
+                <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
+                  <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
+                  <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
+Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
+{{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
+{{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
+activeTab = {{ activeTab }}
+Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Links Tab -->
+          <div v-else-if="activeTab === 'links'" class="p-4">
+            <div class="space-y-4">
+              <!-- Title and manager on one line -->
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Links Manager</h3>
+                
+                <!-- Links Manager moved inline -->
+                <div class="flex items-center space-x-2 flex-1 ml-4">
+                  <select 
+                    v-model="link.type" 
+                    class="text-xs rounded px-2 py-1 w-1/4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  >
+                    <option v-for="_link in availableLinkTypes" :value="_link">{{_link.replaceAll('_',' ')}}</option>
+                  </select>
+                  <div class="flex-1">
+                    <PostSearch
+                      :model-value="link.link_id"
+                      :model="props.table"
+                      :table="props.table"
+                      :title-column="titleColumn"
+                      :label="titleColumn"
+                      :id-column="idColumn"
+                      @update:model-value="(_value) => { link.link_id = String(_value); }"
+                      @update:link-title="(_title) => { link.link_title = _title }"
+                    />
+                  </div>
+                  <button @click.prevent="addLink" :class="[_button.active]">Add</button>
+                </div>
+              </div>
+              
+              <!-- Content area with scrolling -->
+              <div class="max-h-[calc(100vh-300px)] overflow-y-auto">
+                <!-- Existing Links -->
+                <div v-if="Array.isArray(links) && links.length > 0" class="space-y-4">
+                  <div class="grid grid-cols-2 gap-2">
+                    <div v-for="(linkItem, i) in links" :key="i" 
+                         class="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-700">
+                      <div class="flex items-center min-w-0 flex-1">
+                        <span class="text-xs text-gray-600 dark:text-gray-300 truncate">{{ linkItem?.type || 'unknown' }}</span>
+                        <span class="text-xs text-gray-800 dark:text-gray-200 ml-2 truncate">{{ linkItem?.link_title || 'unknown' }}</span>
+                      </div>
+                      <button @click.prevent="removeLink(i)" class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex-shrink-0">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Debug Panel (common style for all tabs) -->
+                  <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
+                    <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
+                    <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
+Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
+{{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
+{{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
+activeTab = {{ activeTab }}
+Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Options Tab -->
+          <div v-else-if="activeTab === 'options'" class="p-4">
+            <div class="space-y-4">
+              <!-- Title and manager on one line -->
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Options</h3>
+                
+                <!-- Options Manager moved inline -->
+                <div class="flex items-center space-x-2 flex-1 ml-4">
+                  <input
+                    v-model="newOption.name"
+                    placeholder="Option name"
+                    class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    v-model="newOption.url"
+                    placeholder="URL"
+                    class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    v-model="newOption.route"
+                    placeholder="Route"
+                    class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <button @click.prevent="addOption" :class="[_button.active]">
+                    Add
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Content area with scrolling -->
+              <div class="max-h-[calc(100vh-300px)] overflow-y-auto">
+                <!-- Existing Options -->
+                <div v-if="Array.isArray(options) && options.length > 0" class="space-y-4">
+                  <div class="grid grid-cols-3 gap-2">
+                    <div v-for="(optionItem, i) in options" :key="i" 
+                         class="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-700">
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-gray-900 dark:text-gray-200 truncate">{{ optionItem?.name || 'unknown' }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ optionItem?.url || 'unknown' }}</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ optionItem?.route || 'unknown' }}</div>
+                      </div>
+                      <button @click.prevent="removeOption(i)" class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex-shrink-0">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Debug Panel (common style for all tabs) -->
+                  <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
+                    <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
+                    <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
+Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
+{{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
+{{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
+activeTab = {{ activeTab }}
+Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Fixed line for switches above footer -->

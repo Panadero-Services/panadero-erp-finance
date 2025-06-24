@@ -18,10 +18,13 @@ import { useDbStore } from '@/stores/db';
 
 // Add ShowRecordDefault import
 import ShowRecordDefault from "@/components/modals/ShowRecordDefault.vue";
-import ShowRecordCompact from "@/components/modals/ShowRecordCompact.vue";
+//import ShowRecordCompact from "@/components/modals/ShowRecordCompact.vue";
 
 // Add this import with the other imports
 import { Bars3Icon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
+
+// Add Badges component import
+import Badges from '@/components/colors/Badges.vue';
 
 const _set = useSettingsStore();
 const _contract = useContractStore();
@@ -354,6 +357,9 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleAppearanceShortcuts);
   document.removeEventListener('click', onClickOutside);
 });
+
+// You can also use the exposed function directly
+const { getStatusColor } = Badges;
 </script>
 
 <template>
@@ -476,7 +482,7 @@ onUnmounted(() => {
             <div :id="table" class="w-full min-h-[800px] min-w-full mt-2">
                 <!-- Rows View - Table Format -->
                 <div v-if="viewMode === 'rows'" class="bg-white dark:bg-gray-900 py-6 border border-gray-200 dark:border-gray-700 rounded-lg">
-                    <h2 class="px-4 text-base/7 font-semibold text-gray-900 dark:text-white sm:px-6 lg:px-8">{{ table }} Activity</h2>
+                    <h2 class="px-4 text-base/7 font-semibold text-gray-900 dark:text-white sm:px-6 lg:px-8">{{ table }} - table</h2>
                     <div class="mt-4 overflow-x-auto">
                         <table class="w-full whitespace-nowrap text-left">
                             <colgroup>
@@ -497,11 +503,14 @@ onUnmounted(() => {
                                     v-for="record in records.data"
                                     :key="record.id"
                                     :record="record"
+                                    :meta="records.meta"
                                     :module="_module"
                                     :table="_table"
                                     :db="_db"
                                     :set="_set"
                                     :config="cardConfig"
+                                    :badges-component="Badges"
+                                    :status-mapping="records.meta.status_mapping"
                                     @edit="handleEdit"
                                     @show="handleShow"
                                     @delete="handleDelete"
@@ -536,6 +545,7 @@ onUnmounted(() => {
                             @delete="handleDelete"
                         />
                         
+
                         <!-- Compact Card View -->
                         <RecordCardCompact
                             v-if="viewMode === 'compact'"

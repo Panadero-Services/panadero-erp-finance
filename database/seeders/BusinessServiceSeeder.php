@@ -31,7 +31,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'BusinessServices', 'url' => '/home/businessservices', 'route' => 'home/businessservices'],
                     ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home/sandbox']
                 ],
-                'status' => 'featured',
+                'status' => 'ready',
                 'progress' => 96,
                 'path' => '/'
             ],
@@ -47,7 +47,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Posts', 'url' => '/content/posts', 'route' => 'posts'],
                     ['name' => 'Bento', 'url' => '/bento', 'route' => 'bento']
                 ],
-                'status' => 'featured',
+                'status' => 'in_progress',
                 'progress' => 29,
                 'path' => '/'
             ],
@@ -64,7 +64,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Mood', 'url' => '/erp/mood', 'route' => 'erp/mood'],
                     ['name' => 'Sand', 'url' => '/erp/sand', 'route' => 'erp/sand']
                 ],
-                'status' => 'upgrading',
+                'status' => 'ready',
                 'progress' => 60,
                 'path' => '/'
             ],
@@ -79,7 +79,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
                 ],
-                'status' => 'scheduled',
+                'status' => 'in_progress',
                 'progress' => 10,
                 'path' => '/'
             ],
@@ -114,7 +114,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Pert', 'url' => '/design/pert', 'route' => 'design/pert'],
                     ['name' => 'Lane', 'url' => '/design/lane', 'route' => 'design/lane']
                 ],
-                'status' => 'featured',
+                'status' => 'experimental',
                 'progress' => 80,
                 'path' => '/'
             ],
@@ -129,7 +129,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Dashboard', 'url' => '/ecommerce/dashboard', 'route' => 'ecommerce/dashboard'],
                     ['name' => 'Storefront', 'url' => '/ecommerce/storefront', 'route' => 'ecommerce/storefront']
                 ],
-                'status' => 'upgrading',
+                'status' => 'experimental',
                 'progress' => 5,
                 'path' => '/'
             ],
@@ -144,7 +144,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Dashboard', 'url' => '/erp/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Web3', 'url' => '/web3', 'route' => 'web3']
                 ],
-                'status' => 'upgrading',
+                'status' => 'pending',
                 'progress' => 40,
                 'path' => '/'
             ],
@@ -163,7 +163,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Processors', 'url' => '/ai/processors', 'route' => 'ai/processors'],
                     ['name' => 'Executors', 'url' => '/ai/executors', 'route' => 'ai/executors']
                 ],
-                'status' => 'upgrading',
+                'status' => 'testing',
                 'progress' => 12,
                 'path' => '/'
             ],
@@ -178,7 +178,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
                 ],
-                'status' => 'scheduled',
+                'status' => 'pending',
                 'progress' => 10,
                 'path' => '/'
             ],
@@ -193,7 +193,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
                     ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
                 ],
-                'status' => 'scheduled',
+                'status' => 'testing',
                 'progress' => 20,
                 'path' => '/'
             ],
