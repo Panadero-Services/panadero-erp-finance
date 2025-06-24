@@ -140,7 +140,7 @@ const isOptionsLoaded = computed(() => {
   return Object.keys(props.meta.form_fields || {}).every(field => {
     if (props.meta.form_fields[field].type === 'select') {
       return projects[field] && projects[field].length > 0;
-    }
+  }
     return true;
   });
 });
@@ -237,22 +237,22 @@ const submit = async () => {
     console.log('API response:', response);
 
     // Success handling
-    const page = usePage();
-    const user = page.props.auth.user;
+      const page = usePage();
+      const user = page.props.auth.user;
 
-    props.db.logAction({
-      action: `${props.table}.update`,
-      user_id: user.id || 'no_uid',
-      module: props.module,
-      node: 'none',
-      team: user.current_team.name || 'no_team',
-      project: 'none',
-      content: form.title || 'none',
-      json: JSON.stringify(form),
-      tags: 'content, posts',
-    });
+      props.db.logAction({
+        action: `${props.table}.update`,
+        user_id: user.id || 'no_uid',
+        module: props.module,
+        node: 'none',
+        team: user.current_team.name || 'no_team',
+        project: 'none',
+        content: form.title || 'none',
+        json: JSON.stringify(form),
+        tags: 'content, posts',
+      });
 
-    emit('close');
+      emit('close');
     
     // Show success message
     router.visit(window.location.pathname, {
@@ -320,7 +320,7 @@ const _footer = {
   buttons: "flex bottom-0 justify-end space-x-4 border-b",
 };
 
-// Links handling
+// Links handling - always work with arrays
 const link = ref({ link_id: "0", type: 'relates_to', link_title: '' });
 
 const availableLinkTypes = computed(() => {
@@ -344,28 +344,43 @@ const hasJsonLinkError = computed(() => {
 });
 
 const links = computed(() => {
-  try {
-    if (typeof form.links === 'string') {
-      return JSON.parse(form.links || '[]');
-    } else if (Array.isArray(form.links)) {
-      return form.links;
-    } else {
+  // Add debugging
+  console.log('links computed - form.links:', form.links, 'type:', typeof form.links);
+  
+  // Always return an array
+  if (Array.isArray(form.links)) {
+    return form.links;
+  } else if (typeof form.links === 'string') {
+    try {
+      const parsed = JSON.parse(form.links || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
       return [];
     }
-  } catch {
+  } else if (form.links === null || form.links === undefined) {
     return [];
+  } else {
+    // If it's an object but not an array, try to convert it
+    try {
+      return [form.links];
+    } catch {
+      return [];
+    }
   }
 });
 
 const addLink = () => {
-  const newLinks = [...links.value, link.value];
-  form.links = JSON.stringify(newLinks);
+  if (link.value.link_id && link.value.link_title) {
+    const newLinks = [...links.value, { ...link.value }];
+    form.links = newLinks; // Store as array, not string
+    link.value = { link_id: "0", type: 'relates_to', link_title: '' };
+  }
 };
 
-const removeLink = (index) => {
+const removeLink = (i) => {
   const newLinks = [...links.value];
-  newLinks.splice(index, 1);
-  form.links = JSON.stringify(newLinks);
+  newLinks.splice(i, 1);
+  form.links = newLinks;
 };
 
 const linksJsonString = computed({
@@ -398,34 +413,46 @@ const updateLinksFromJson = (event) => {
   }
 };
 
-// Options handling
+// Options handling - always work with arrays
 const newOption = ref({ name: '', url: '', route: '' });
 const options = computed(() => {
-  try {
-    if (typeof form.options === 'string') {
-      return JSON.parse(form.options || '[]');
-    } else if (Array.isArray(form.options)) {
-      return form.options;
-    } else {
+  // Add debugging
+  console.log('options computed - form.options:', form.options, 'type:', typeof form.options);
+  
+  // Always return an array
+  if (Array.isArray(form.options)) {
+    return form.options;
+  } else if (typeof form.options === 'string') {
+    try {
+      const parsed = JSON.parse(form.options || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
       return [];
     }
-  } catch {
+  } else if (form.options === null || form.options === undefined) {
     return [];
+  } else {
+    // If it's an object but not an array, try to convert it
+    try {
+      return [form.options];
+    } catch {
+      return [];
+    }
   }
 });
 
 const addOption = () => {
   if (newOption.value.name && newOption.value.url) {
     const newOptions = [...options.value, { ...newOption.value }];
-    form.options = JSON.stringify(newOptions);
+    form.options = newOptions; // Store as array, not string
     newOption.value = { name: '', url: '', route: '' };
   }
 };
 
-const removeOption = (index) => {
+const removeOption = (i) => {
   const newOptions = [...options.value];
-  newOptions.splice(index, 1);
-  form.options = JSON.stringify(newOptions);
+  newOptions.splice(i, 1);
+  form.options = newOptions;
 };
 
 const optionsJsonString = computed({
@@ -447,38 +474,30 @@ const optionsJsonString = computed({
   }
 });
 
-// Tab management for JSON fields
-const activeTab = ref('form'); // 'form', 'json', 'links', 'options'
-
-// Check if record has JSON fields
-const hasJsonFields = computed(() => {
-  return form.value.json || form.value.links || form.value.options;
-});
-
-// JSON field handling (keep existing code)
+// Improved JSON Field
 const jsonString = computed({
   get() {
-    if (typeof form.value.json === 'string') {
-      return form.value.json;
-    } else if (typeof form.value.json === 'object') {
-      return JSON.stringify(form.value.json, null, 2);
+    if (typeof form.json === 'string') {
+      return form.json;
+    } else if (typeof form.json === 'object') {
+      return JSON.stringify(form.json, null, 2);
     } else {
       return '';
     }
   },
   set(value) {
     try {
-      form.value.json = JSON.parse(value);
+      form.json = JSON.parse(value);
     } catch {
-      form.value.json = value; // Keep as string if parsing fails
+      form.json = value; // Keep as string if parsing fails
     }
   }
 });
 
 const hasJsonError = computed(() => {
-  if (!form.value.json || typeof form.value.json !== 'string') return false;
+  if (!form.json || typeof form.json !== 'string') return false;
   try {
-    JSON.parse(form.value.json);
+    JSON.parse(form.json);
     return false;
   } catch {
     return true;
@@ -488,454 +507,390 @@ const hasJsonError = computed(() => {
 const jsonValue = computed(() => {
   if (hasJsonError.value) return null;
   try {
-    return JSON.parse(form.value.json);
+    return JSON.parse(form.json);
   } catch {
     return null;
   }
 });
-
-// Links field handling (keep existing code)
-const link = ref({ type: 'relates_to', link_id: '', link_title: '' });
-const availableLinkTypes = ['relates_to', 'depends_on', 'blocks', 'duplicates', 'is_duplicate_of'];
-
-const links = computed(() => {
-  try {
-    if (typeof form.value.links === 'string') {
-      return JSON.parse(form.value.links || '[]');
-    } else if (Array.isArray(form.value.links)) {
-      return form.value.links;
-    } else {
-      return [];
-    }
-  } catch {
-    return [];
-  }
-});
-
-const hasJsonLinkError = computed(() => {
-  if (!form.value.links || typeof form.value.links !== 'string') return false;
-  try {
-    JSON.parse(form.value.links);
-    return false;
-  } catch {
-    return true;
-  }
-});
-
-const addLink = () => {
-  if (link.value.link_id && link.value.link_title) {
-    const newLinks = [...links.value, { ...link.value }];
-    form.value.links = JSON.stringify(newLinks);
-    link.value = { type: 'relates_to', link_id: '', link_title: '' };
-  }
-};
-
-const removeLink = (index) => {
-  const newLinks = [...links.value];
-  newLinks.splice(index, 1);
-  form.value.links = JSON.stringify(newLinks);
-};
-
-// Options field handling (keep existing code)
-const newOption = ref({ name: '', url: '', route: '' });
-const options = computed(() => {
-  try {
-    if (typeof form.value.options === 'string') {
-      return JSON.parse(form.value.options || '[]');
-    } else if (Array.isArray(form.value.options)) {
-      return form.value.options;
-    } else {
-      return [];
-    }
-  } catch {
-    return [];
-  }
-});
-
-const addOption = () => {
-  if (newOption.value.name && newOption.value.url) {
-    const newOptions = [...options.value, { ...newOption.value }];
-    form.value.options = JSON.stringify(newOptions);
-    newOption.value = { name: '', url: '', route: '' };
-  }
-};
-
-const removeOption = (index) => {
-  const newOptions = [...options.value];
-  newOptions.splice(index, 1);
-  form.value.options = JSON.stringify(newOptions);
-};
-
-const optionsJsonString = computed({
-  get() {
-    if (typeof form.value.options === 'string') {
-      return form.value.options;
-    } else if (Array.isArray(form.value.options)) {
-      return JSON.stringify(form.value.options, null, 2);
-    } else {
-      return '[]';
-    }
-  },
-  set(value) {
-    try {
-      form.value.options = JSON.parse(value);
-    } catch {
-      form.value.options = [];
-    }
-  }
-});
-
 </script>
 
 <template>
   <div>
-    <div :class="_container.base" @click="$emit('close')"></div>
+    <div :class="_container.base" @click="$emit('close')">
+    </div>
     <div :class="[_window.base, _window.padding, _window.motion, _window.light, _window.dark]">
       <div class="h-full flex flex-col">
-        <!-- Header with tabs if JSON fields exist -->
-        <div v-if="hasJsonFields" class="border-b border-gray-200 dark:border-gray-700">
-          <nav class="flex space-x-8 px-4">
-            <button
-              @click="activeTab = 'form'"
-              :class="[
-                'py-2 px-1 border-b-2 font-medium text-xs',
-                activeTab === 'form'
-                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-              ]"
-            >
-              Form Fields
-            </button>
-            <button
-              v-if="form.json"
-              @click="activeTab = 'json'"
-              :class="[
-                'py-2 px-1 border-b-2 font-medium text-xs',
-                activeTab === 'json'
-                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-              ]"
-            >
-              JSON Data
-            </button>
-            <button
-              v-if="form.links"
-              @click="activeTab = 'links'"
-              :class="[
-                'py-2 px-1 border-b-2 font-medium text-xs',
-                activeTab === 'links'
-                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-              ]"
-            >
-              Links
-            </button>
-            <button
-              v-if="form.options"
-              @click="activeTab = 'options'"
-              :class="[
-                'py-2 px-1 border-b-2 font-medium text-xs',
-                activeTab === 'options'
-                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-              ]"
-            >
-              Options
-            </button>
-          </nav>
-        </div>
-
         <!-- Content area -->
         <div class="flex-1 overflow-y-auto">
-          <!-- Form Fields Tab -->
-          <div v-if="activeTab === 'form' || !hasJsonFields">
-            <form @submit.prevent="submit" class="grid grid-cols-8 gap-4">
-              <template v-for="(fieldConfig, fieldName) in meta.form_fields" :key="String(fieldName)">
-                <!-- Skip JSON fields in main form - they're handled in tabs -->
-                <div
-                  v-if="fieldConfig.type !== 'switch' && !['json', 'links', 'options'].includes(fieldName)"
-                  :class="{
-                    'col-span-8': fieldConfig.col_span === 8,
-                    'col-span-6': fieldConfig.col_span === 6,
-                    'col-span-5': fieldConfig.col_span === 5,
-                    'col-span-4': fieldConfig.col_span === 4,
-                    'col-span-3': fieldConfig.col_span === 3,
-                    'col-span-2': fieldConfig.col_span === 2,
-                    'col-span-1': fieldConfig.col_span === 1 || !fieldConfig.col_span
-                  }"
-                >
-                  <!-- Label -->
-                  <label :for="String(fieldName)" class="block text-xs font-medium text-gray-700 dark:text-gray-200">
-                    <span v-if="!(getRuleText(String(fieldName)) == 'boolean')">
-                      {{ getRuleText(String(fieldName)) == 'boolean' ? String(fieldName).replace('is_','') : fieldName }}
-                    </span>       
-                    <span v-if="getRuleText(String(fieldName)) && (getRuleText(String(fieldName))!='boolean')" :class="isInvalid(String(fieldName)) ? 'text-red-500' : 'text-gray-500'">({{ getRuleText(String(fieldName)) }})</span>
+          <form @submit.prevent="submit" class="grid grid-cols-8 gap-4">
+            <template v-for="(fieldConfig, fieldName) in meta.form_fields" :key="String(fieldName)">
+              <!-- Skip switch fields in main form - they're handled in footer -->
+              <div
+                v-if="fieldConfig.type !== 'switch'"
+                :class="{
+                  'col-span-8': fieldConfig.col_span === 8,
+                  'col-span-6': fieldConfig.col_span === 6,
+                  'col-span-5': fieldConfig.col_span === 5,
+                  'col-span-4': fieldConfig.col_span === 4,
+                  'col-span-3': fieldConfig.col_span === 3,
+                  'col-span-2': fieldConfig.col_span === 2,
+                  'col-span-1': fieldConfig.col_span === 1 || !fieldConfig.col_span
+                }"
+              >
+                <!-- Label -->
+                <label :for="String(fieldName)" class="block text-xs font-medium text-gray-700 dark:text-gray-200">
+                  <span v-if="!(getRuleText(String(fieldName)) == 'boolean')">
+                    {{ getRuleText(String(fieldName)) == 'boolean' ? String(fieldName).replace('is_','') : fieldName }}
+                  </span>       
+                  <span v-if="getRuleText(String(fieldName)) && (getRuleText(String(fieldName))!='boolean')" :class="isInvalid(String(fieldName)) ? 'text-red-500' : 'text-gray-500'">({{ getRuleText(String(fieldName)) }})</span>
 
-                    <!-- Validation message and character count -->
-                    <span v-if="isInvalid(String(fieldName))" class="text-xxs text-red-600 ml-4 pt-4">
-                      <div v-if="typeof form[String(fieldName)] === 'string' && getRulesForField(String(fieldName))">
-                        <span v-for="rule in getRulesForField(String(fieldName))" :key="rule.name">
-                          <template v-if="['min', 'max'].includes(rule.name)">
-                            Length: {{ form[String(fieldName)]?.length || 0 }} /
-                            <span v-if="rule.name === 'min'">min {{ rule.param }}</span>
-                            <span v-if="rule.name === 'max'">max {{ rule.param }}</span>
-                          </template>
-                        </span>
-                      </div>
-                    </span>
-                  </label>
-
-                  <!-- Select Field -->
-                  <div v-if="fieldConfig.type === 'select'" class="mt-1">
-                    <select
-                      v-model="form[fieldName]"
-                      :id="fieldName"
-                      :disabled="fieldConfig.readonly"
-                      class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      :required="meta.validation_rules?.[fieldName]?.includes('required')"
-                    >
-                      <option value="">Select {{ fieldConfig.label }}</option>
-                      <option 
-                        v-for="relation in (projects[fieldName] || [])" 
-                        :key="relation.id" 
-                        :value="relation.id"
-                      >
-                        {{ relation.title || relation.name || relation.id }}
-                      </option>
-                    </select>
-                    <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
-                  </div>
-
-                  <!-- Readonly Field Display -->
-                  <div v-else-if="fieldConfig.readonly" class="mt-1">
-                    <div class="block w-full pl-3 pr-10 py-2 text-xs rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
-                      {{ form[String(fieldName)] || 'N/A' }}
+                  <!-- Validation message and character count -->
+                  <span v-if="isInvalid(String(fieldName))" class="text-xxs text-red-600 ml-4 pt-4">
+                    <div v-if="typeof form[String(fieldName)] === 'string' && getRulesForField(String(fieldName))">
+                      <span v-for="rule in getRulesForField(String(fieldName))" :key="rule.name">
+                        <template v-if="['min', 'max'].includes(rule.name)">
+                          Length: {{ form[String(fieldName)]?.length || 0 }} /
+                          <span v-if="rule.name === 'min'">min {{ rule.param }}</span>
+                          <span v-if="rule.name === 'max'">max {{ rule.param }}</span>
+                        </template>
+                      </span>
                     </div>
-                    <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
-                  </div>
-
-                  <!-- Datetime Field -->
-                  <div v-else-if="fieldConfig.type === 'datetime'" class="mt-1">
-                    <input
-                      type="datetime-local"
-                      :id="String(fieldName)"
-                      v-model="form[String(fieldName)]"
-                      :readonly="fieldConfig.readonly"
-                      :class="[
-                        _input.base,
-                        _input.light,
-                        _input.dark,
-                        isInvalid(String(fieldName)) ? 'border-red-500' : '',
-                        fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                      ]"
-                      :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
-                    />
-                    <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
-                  </div>
-
-                  <!-- Default Input -->
-                  <div v-else class="mt-1">
-                    <input
-                      v-if="fieldConfig.type !== 'textarea'"
-                      :type="fieldConfig.type || 'text'"
-                      :id="String(fieldName)"
-                      v-model="form[String(fieldName)]"
-                      :readonly="fieldConfig.readonly"
-                      :class="[
-                        _input.base,
-                        _input.light,
-                        _input.dark,
-                        isInvalid(String(fieldName)) ? 'border-red-500' : '',
-                        fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                      ]"
-                      :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
-                    />
-                    <textarea
-                      v-else
-                      :id="String(fieldName)"
-                      :rows="meta.form_fields?.[fieldName]?.rows || 2"
-                      v-model="form[String(fieldName)]"
-                      :readonly="fieldConfig.readonly"
-                      :class="[
-                        _input.base,
-                        _input.light,
-                        _input.dark,
-                        isInvalid(String(fieldName)) ? 'border-red-500' : '',
-                        fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                      ]"
-                      :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
-                      rows="3"
-                    ></textarea>
-                  </div>
-                </div>
-              </template>
-            </form>
-          </div>
-
-          <!-- JSON Data Tab -->
-          <div v-if="activeTab === 'json'" class="p-4">
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">JSON Data Editor</h3>
-              
-              <!-- JSON Editor with syntax highlighting -->
-              <div class="relative">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  JSON Content
+                  </span>
                 </label>
-                <textarea
-                  v-model="jsonString"
-                  rows="15"
-                  class="block w-full rounded-md shadow-sm text-sm font-mono border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400"
-                  placeholder='{"key": "value", "array": [1, 2, 3]}'
-                ></textarea>
-                
-                <!-- JSON validation indicator -->
-                <div v-if="hasJsonError" class="absolute top-4 right-4">
-                  <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                  </svg>
-                </div>
-                <div v-else class="absolute top-4 right-4">
-                  <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                  </svg>
-                </div>
-              </div>
-              
-              <!-- JSON validation message -->
-              <div v-if="hasJsonError" class="text-sm text-red-600 bg-red-50 dark:bg-red-900/20 p-3 rounded border border-red-200 dark:border-red-800">
-                Invalid JSON format. Please check your syntax.
-              </div>
-              
-              <!-- JSON preview -->
-              <details v-if="!hasJsonError && jsonValue" class="mt-4">
-                <summary class="text-sm text-gray-500 cursor-pointer font-medium">Preview JSON structure</summary>
-                <div class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded border">
-                  <pre class="whitespace-pre-wrap text-sm">{{ JSON.stringify(jsonValue, null, 2) }}</pre>
-                </div>
-              </details>
-            </div>
-          </div>
 
-          <!-- Links Tab -->
-          <div v-if="activeTab === 'links'" class="p-4">
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Links Manager</h3>
-              
-              <!-- Add new link -->
-              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded border">
-                <div class="flex items-center space-x-2 flex-1">
-                  <select v-model="link.type" class="text-sm rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
-                    <option v-for="_link in availableLinkTypes" :value="_link">{{_link.replaceAll('_',' ')}}</option>
+                <!-- Select Field -->
+                <div v-if="fieldConfig.type === 'select'" class="mt-1">
+                  <select
+                    v-model="form[fieldName]"
+                    :id="fieldName"
+                    :disabled="fieldConfig.readonly"
+                    class="block w-full pl-3 pr-10 py-2 text-xs rounded-md border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    :required="meta.validation_rules?.[fieldName]?.includes('required')"
+                  >
+                    <option value="">Select {{ fieldConfig.label }}</option>
+                    <option 
+                      v-for="relation in (projects[fieldName] || [])" 
+                      :key="relation.id" 
+                      :value="relation.id"
+                    >
+                      {{ relation.title || relation.name || relation.id }}
+                      </option>
                   </select>
-                  <PostSearch
-                    :model-value="link.link_id"
-                    :model="props.table"
-                    :table="props.table"
-                    :title-column="titleColumn"
-                    :label="titleColumn"
-                    :id-column="idColumn"
-                    @update:model-value="(_value) => { link.link_id = String(_value); }"
-                    @update:link-title="(_title) => { link.link_title = _title }"
-                  />
+                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
-                <button @click.prevent="addLink" class="ml-3 px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
-                  Add Link
-                </button>
-              </div>
 
-              <!-- Existing links -->
-              <div v-if="links.length > 0" class="space-y-2">
-                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Existing Links</h4>
-                <div v-for="(link, index) in links" :key="index" 
-                     class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded border">
-                  <div class="flex items-center space-x-3">
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ link.type }}</span>
-                    <span class="text-sm text-gray-800 dark:text-gray-200">{{ link.link_title }}</span>
+                <!-- Readonly Field Display -->
+                <div v-else-if="fieldConfig.readonly" class="mt-1">
+                  <div class="block w-full pl-3 pr-10 py-2 text-xs rounded-md bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600">
+                    {{ form[String(fieldName)] || 'N/A' }}
                   </div>
-                  <button @click.prevent="removeLink(index)" class="text-red-500 hover:text-red-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                  </button>
+                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
-              </div>
 
-              <!-- Raw JSON Editor -->
-              <details class="mt-4">
-                <summary class="text-sm text-gray-500 cursor-pointer font-medium">Advanced: Edit JSON directly</summary>
-                <textarea
-                  v-model="form.links"
-                  rows="8"
-                  class="mt-2 block w-full rounded border text-sm font-mono border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
-                  placeholder='[{"type": "relates_to", "link_id": "1", "link_title": "Related Item"}]'
-                ></textarea>
-              </details>
-            </div>
-          </div>
-
-          <!-- Options Tab -->
-          <div v-if="activeTab === 'options'" class="p-4">
-            <div class="space-y-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Options Manager</h3>
-              
-              <!-- Add new option -->
-              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded border">
-                <div class="flex items-center space-x-2 flex-1">
+                <!-- Datetime Field -->
+                <div v-else-if="fieldConfig.type === 'datetime'" class="mt-1">
                   <input
-                    v-model="newOption.name"
-                    placeholder="Option name"
-                    class="text-sm rounded border px-3 py-2 flex-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
+                    type="datetime-local"
+                    :id="String(fieldName)"
+                    v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
+                    :class="[
+                      _input.base,
+                      _input.light,
+                      _input.dark,
+                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                    ]"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                   />
-                  <input
-                    v-model="newOption.url"
-                    placeholder="URL"
-                    class="text-sm rounded border px-3 py-2 flex-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
-                  />
-                  <input
-                    v-model="newOption.route"
-                    placeholder="Route"
-                    class="text-sm rounded border px-3 py-2 flex-1 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
-                  />
+                  <p v-if="fieldConfig.help" class="mt-1 text-xs text-gray-500">{{ fieldConfig.help }}</p>
                 </div>
-                <button @click.prevent="addOption" class="ml-3 px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600">
-                  Add Option
-                </button>
-              </div>
 
-              <!-- Existing options -->
-              <div v-if="options.length > 0" class="space-y-2">
-                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300">Existing Options</h4>
-                <div v-for="(option, index) in options" :key="index" 
-                     class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded border">
-                  <div class="flex-1">
-                    <div class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ option.name }}</div>
-                    <div class="text-sm text-gray-600 dark:text-gray-400">{{ option.url }}</div>
-                    <div class="text-sm text-gray-500 dark:text-gray-500">{{ option.route }}</div>
+                <!-- Improved JSON Field -->
+                <div v-else-if="fieldName === 'json'" class="mt-1">
+                  <div class="space-y-2">
+                    <!-- JSON Editor with syntax highlighting -->
+                    <div class="relative">
+                      <textarea
+                        v-model="jsonString"
+                        :rows="meta.form_fields?.[fieldName]?.rows || 4"
+                        :readonly="fieldConfig.readonly"
+                        :class="[
+                          'block w-full rounded-md shadow-sm sm:text-xs font-mono',
+                          isInvalid(String(fieldName))
+                            ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
+                            : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
+                          'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
+                          fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                        ]"
+                        :placeholder="meta.form_fields?.[fieldName]?.placeholder || 'Enter valid JSON...'"
+                      ></textarea>
+                      
+                      <!-- JSON validation indicator -->
+                      <div v-if="hasJsonError" class="absolute top-2 right-2">
+                        <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                      </div>
+                      <div v-else class="absolute top-2 right-2">
+                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      </div>
+                    </div>
+                    
+                    <!-- JSON validation message -->
+                    <div v-if="hasJsonError" class="text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
+                      Invalid JSON format. Please check your syntax.
+                    </div>
+                    
+                    <!-- JSON preview -->
+                    <details v-if="!hasJsonError && jsonValue" class="mt-2">
+                      <summary class="text-xs text-gray-500 cursor-pointer">Preview JSON structure</summary>
+                      <div class="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded border text-xs">
+                        <pre class="whitespace-pre-wrap">{{ JSON.stringify(jsonValue, null, 2) }}</pre>
+                      </div>
+                    </details>
                   </div>
-                  <button @click.prevent="removeOption(index)" class="ml-3 text-red-500 hover:text-red-700">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                  </button>
+                </div>
+
+                <!-- Links Field -->
+                <div v-else-if="fieldName === 'links'" class="mt-1">
+                  <div class="space-y-2 overflow-scroll z-30">
+                    <div class="flex items-center justify-between p-1.5 rounded-sm">
+                      <div class="flex items-center space-x-2 block w-full mr-2">
+                        <select v-model="link.type" class="text-xs rounded-md" :class="[_input.light, _input.dark]">
+                          <option v-for="_link in availableLinkTypes" :value="_link">{{_link.replaceAll('_',' ')}}</option>
+                        </select>
+                        <PostSearch
+                          :model-value="link.link_id"
+                          :model="props.table"
+                          :table="props.table"
+                          :title-column="titleColumn"
+                          :label="titleColumn"
+                          :id-column="idColumn"
+                          @update:model-value="(_value) => { link.link_id = String(_value); }"
+                          @update:link-title="(_title) => { link.link_title = _title }"
+                        />
+                      </div>
+                      <button @click.prevent="addLink" :class="[_button.active]" class="ml-2">Add_Link</button>
+                    </div>
+
+                    <!-- Existing links display -->
+                    <div class="grid grid-cols-8">
+                      <!-- Show col-span-5 links items -->
+                      <!-- JSON Error Message -->
+                      <div v-if="hasJsonLinkError" class="bg-red-100 dark:bg-red-800 text-black text-center p-2 rounded-sm col-span-5 h-12">
+                        JSON Error
+                      </div>
+
+                      <div v-if="!hasJsonLinkError && Array.isArray(links) && links.length > 0" class="col-span-5">
+                        <div v-for="(linkItem, i) in links" 
+                            :key="i" 
+                            v-if="i !== (links.length - 1)"
+                            class="bg-gray-100 dark:bg-gray-700 rounded-sm flex">
+                          <button @click.prevent="removeLink(i)" class="text-indigo-500 hover:text-red-700 w-6 ml-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                          </button>
+                          <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                              <span class="text-xs text-gray-600 dark:text-gray-300">{{ linkItem?.type || 'unknown' }}</span>
+                              <span class="text-xs text-gray-800 dark:text-gray-200 ml-2">{{ linkItem?.link_title || 'unknown' }}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-span-3">
+                        <textarea
+                          v-if="meta.form_fields?.[fieldName]?.type === 'textarea'"
+                          :rows="meta.form_fields?.[fieldName]?.rows || 2"
+                          v-model="form[String(fieldName)]"
+                          :readonly="fieldConfig.readonly"
+                          :class="[
+                            'block w-full rounded-md shadow-sm sm:text-xs ',
+                            isInvalid(String(fieldName))
+                              ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
+                              : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
+                            'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
+                            fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                          ]"
+                          :placeholder="meta.form_fields?.[fieldName]?.placeholder"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Options Field (similar to JSON but with better UI) -->
+                <div v-else-if="fieldName === 'options'" class="mt-1">
+                  <div class="space-y-2">
+                    <!-- Options Editor -->
+                    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded border">
+                      <div class="flex items-center space-x-2 flex-1">
+                        <input
+                          v-model="newOption.name"
+                          placeholder="Option name"
+                          class="text-xs rounded border px-2 py-1 flex-1"
+                        />
+                        <input
+                          v-model="newOption.url"
+                          placeholder="URL"
+                          class="text-xs rounded border px-2 py-1 flex-1"
+                        />
+                        <input
+                          v-model="newOption.route"
+                          placeholder="Route"
+                          class="text-xs rounded border px-2 py-1 flex-1"
+                        />
+                      </div>
+                      <button @click.prevent="addOption" class="ml-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                        Add
+                      </button>
+                    </div>
+
+                    <!-- Existing options display -->
+                    <div v-if="Array.isArray(options) && options.length > 0" class="space-y-1">
+                      <div v-for="(optionItem, i) in options" :key="i" 
+                           class="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded border">
+                        <div class="flex-1">
+                          <div class="text-xs font-medium">{{ optionItem?.name || 'unknown' }}</div>
+                          <div class="text-xs text-gray-500">{{ optionItem?.url || 'unknown' }}</div>
+                          <div class="text-xs text-gray-400">{{ optionItem?.route || 'unknown' }}</div>
+                        </div>
+                        <button @click.prevent="removeOption(i)" class="ml-2 text-red-500 hover:text-red-700">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Raw JSON Editor (for advanced users) -->
+                    <details class="mt-2">
+                      <summary class="text-xs text-gray-500 cursor-pointer">Advanced: Edit JSON directly</summary>
+                      <textarea
+                        v-model="optionsJsonString"
+                        :rows="4"
+                        class="mt-1 block w-full rounded border text-xs font-mono"
+                        placeholder='[{"name": "Dashboard", "url": "/dashboard", "route": "dashboard"}]'
+                      ></textarea>
+                    </details>
+                  </div>
+                </div>
+
+                <!-- Boolean Field -->
+                <div v-else-if="fieldConfig.type === 'boolean'" class="mt-1">
+                  <div class="flex space-x-4">
+                    <button
+                      type="button"
+                      :disabled="fieldConfig.readonly"
+                      @click="form[String(fieldName)] = true"
+                      :class="[
+                        _button.base,
+                        form[String(fieldName)] ? _button.active : _button.inactive,
+                        fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
+                      ]"
+                    >
+                      Yes
+                    </button>
+                    <button
+                      type="button"
+                      :disabled="fieldConfig.readonly"
+                      @click="form[String(fieldName)] = false"
+                      :class="[
+                        _button.base,
+                        !form[String(fieldName)] ? _button.active : _button.inactive,
+                        fieldConfig.readonly ? 'opacity-50 cursor-not-allowed' : ''
+                      ]"
+                    >
+                      No
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Default Input -->
+                <div v-else class="mt-1">
+                  <input
+                    v-if="fieldConfig.type !== 'textarea'"
+                    :type="fieldConfig.type || 'text'"
+                    :id="String(fieldName)"
+                    v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
+                    :class="[
+                      _input.base,
+                      _input.light,
+                      _input.dark,
+                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                    ]"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
+                  />
+                  <textarea
+                    v-else
+                    :id="String(fieldName)"
+                    :rows="meta.form_fields?.[fieldName]?.rows || 2"
+                    v-model="form[String(fieldName)]"
+                    :readonly="fieldConfig.readonly"
+                    :class="[
+                      _input.base,
+                      _input.light,
+                      _input.dark,
+                      isInvalid(String(fieldName)) ? 'border-red-500' : '',
+                      fieldConfig.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
+                    ]"
+                    :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
+                    rows="3"
+                  ></textarea>
                 </div>
               </div>
-
-              <!-- Raw JSON Editor -->
-              <details class="mt-4">
-                <summary class="text-sm text-gray-500 cursor-pointer font-medium">Advanced: Edit JSON directly</summary>
-                <textarea
-                  v-model="optionsJsonString"
-                  rows="8"
-                  class="mt-2 block w-full rounded border text-sm font-mono border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
-                  placeholder='[{"name": "Dashboard", "url": "/dashboard", "route": "dashboard"}]'
-                ></textarea>
-              </details>
-            </div>
-          </div>
+            </template>
+          </form>
         </div>
 
-        <!-- Footer with buttons -->
+        <!-- Fixed line for switches above footer -->
+        <div class="grid grid-cols-8 " :class="[_footer.base, _footer.switches]">
+           <div
+              v-for="(fieldConfig, fieldName) in meta.form_fields"
+              :key="fieldName"
+              :class="{
+                  'col-span-8': fieldConfig.col_span === 8,
+                  'col-span-6': fieldConfig.col_span === 6,
+                  'col-span-5': fieldConfig.col_span === 5,
+                  'col-span-4': fieldConfig.col_span === 4,
+                  'col-span-3': fieldConfig.col_span === 3,
+                  'col-span-2': fieldConfig.col_span === 2,
+                  'col-span-1': fieldConfig.col_span === 1 || !fieldConfig.col_span
+              }"
+            >
+              <!-- Label left.. Boolean center -->
+              <label :for="fieldName" class="ml-4 text-center text-xs" v-if="fieldConfig.type === 'switch'">
+                <span>{{ fieldName.replace('is_','') }}</span>
+              </label>
+              
+              <!-- Switch Component for switch type fields -->
+              <div v-if="fieldConfig.type === 'switch'" class="scale-75 ml-1">
+                <Switch
+                  v-model="form[String(fieldName)]"
+                  :class="[
+                    form[String(fieldName)] ? 'bg-indigo-600' : 'bg-gray-200',
+                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2'
+                  ]"
+                >
+                  <span
+                    :class="[
+                      form[String(fieldName)] ? 'translate-x-6' : 'translate-x-1',
+                      'inline-block h-4 w-4 transform rounded-full bg-white transition-transform'
+                    ]"
+                  />
+                </Switch>
+              </div>
+            </div>
+        </div>
+
+        <!-- Fixed footer with buttons -->
         <div :class="[_footer.base, _footer.buttons]">
           <button @click="$emit('close')" type="button" :class="[_button.active]">Cancel</button>
           <button @click="submit" type="button" :class="[_button.active]">Save</button>
