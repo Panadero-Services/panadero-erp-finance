@@ -170,11 +170,13 @@ Route::middleware([
     // ========================================
     // POSTS TABLE
     // ========================================
-    Route::get('/content/posts', [PostController::class, 'index'])->name('content/posts');
-    Route::put('/posts.update', [PostController::class, 'update'])->name('posts.update');
-    Route::post('/postupdateicon', [PostController::class, 'updateicon'])->name('postupdateicon');
-    Route::get('/getrecordbyid', [PostController::class, 'getrecordbyid'])->name('getrecordbyid');
-    Route::get('/getLabels', [PostController::class, 'getLabels'])->name('getLabels');
+    Route::get('/content/posts', function() {
+        return app(DynamicController::class)->index(request(), 'content', 'posts');
+    })->name('content/posts');
+
+    Route::put('/api/posts/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('posts.update')->middleware('web');
 
     // ========================================
     // USERS TABLE

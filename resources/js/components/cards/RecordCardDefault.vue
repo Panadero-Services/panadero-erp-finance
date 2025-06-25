@@ -223,7 +223,7 @@ const contentFields = computed(() => {
                 </div>
 
                 <!-- Status badge moved up by 5px more -->
-                <div class="flex items-end -mb-[10px]">
+                <div class="flex items-end -mb-[0px] -mt-[15px]">
                     <Badges 
                         v-if="record.status"
                         :status="record.status"
@@ -303,7 +303,7 @@ const contentFields = computed(() => {
                                     
                                     <!-- Color fields -->
                                     <div v-else-if="col.formatter === 'color'" class="flex items-center">
-                                        <div class="w-3 h-3 rounded"
+                                        <div class="w-2.5 h-2.5 rounded-sm"
                                              :style="{ backgroundColor: record[col.key] }">
                                         </div>
                                         <span class="ml-1.5 text-[10px] text-gray-500 dark:text-gray-400">
@@ -457,7 +457,7 @@ const contentFields = computed(() => {
                 <div class="flex items-center gap-2">
                     <!-- Color indicator moved here -->
                     <div v-if="record.color" class="flex items-center" title="Color">
-                        <div class="w-2 h-2 rounded"
+                        <div class="w-2.5 h-2.5 rounded-sm"
                              :style="{ backgroundColor: record.color }">
                         </div>
                     </div>

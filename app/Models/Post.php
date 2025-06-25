@@ -19,7 +19,7 @@ class Post extends Model
         'user_id',
         'title',
         'body',
-        'json',
+        'options',
         'links',
         'category_id',
         'slug',
@@ -34,7 +34,7 @@ class Post extends Model
     ];
 
     protected $casts = [
-        'json' => 'array',
+        'options' => 'array',
         'links' => 'array',
         'is_published' => 'boolean',
         'is_public' => 'boolean',
@@ -79,7 +79,7 @@ class Post extends Model
             'user_id' => 'nullable|integer',
             'title' => 'required|string|max:128|min:8',
             'body' => 'required|string|min:24|max:2048',
-            'json' => 'nullable|array',
+            'options' => 'nullable|array',
             'links' => 'nullable|array',
             'category_id' => 'nullable|integer|exists:categories,id',
             'slug' => 'required|string|unique:posts,slug',
@@ -98,11 +98,11 @@ class Post extends Model
      * Get searchable columns for this model
      * @return array
      */
-    public function getSearchableColumns(): array {
+    public static function getSearchableColumns(): array {
         return [
             'title',
             'body',
-            'json',
+            'options',
             'id'
         ];
     }
@@ -126,12 +126,187 @@ class Post extends Model
     }
 
     /**
+     * Get table columns configuration for dynamic table
+     * @return array
+     */
+    public static function getTableColumns(): array {
+        return [
+            [
+                'key' => 'id',
+                'label' => 'ID',
+                'type' => 'text',
+                'width' => 'w-16',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'title',
+                'label' => 'Title',
+                'type' => 'text',
+                'width' => 'w-48',
+                'formatter' => 'text',
+                'clickable' => true
+            ],
+            [
+                'key' => 'body',
+                'label' => 'Content',
+                'type' => 'text',
+                'width' => 'w-48',
+                'formatter' => 'truncate'
+            ],
+            [
+                'key' => 'slug',
+                'label' => 'Slug',
+                'type' => 'text',
+                'width' => 'w-32',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'user_id',
+                'label' => 'User',
+                'type' => 'text',
+                'width' => 'w-24',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'category_id',
+                'label' => 'Category',
+                'type' => 'text',
+                'width' => 'w-24',
+                'formatter' => 'text'
+            ],
+            [
+                'key' => 'is_published',
+                'label' => 'Published',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_public',
+                'label' => 'Public',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_featured',
+                'label' => 'Featured',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_locked',
+                'label' => 'Locked',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_self',
+                'label' => 'Self',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_smart',
+                'label' => 'Smart',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_active',
+                'label' => 'Active',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'is_archived',
+                'label' => 'Archived',
+                'type' => 'boolean',
+                'width' => 'w-16',
+                'formatter' => 'boolean'
+            ],
+            [
+                'key' => 'options',
+                'label' => 'Options',
+                'type' => 'json',
+                'width' => 'w-24',
+                'formatter' => 'json'
+            ],
+            [
+                'key' => 'links',
+                'label' => 'Links',
+                'type' => 'json',
+                'width' => 'w-24',
+                'formatter' => 'json'
+            ],
+            [
+                'key' => 'actions',
+                'label' => 'Actions',
+                'type' => 'actions',
+                'width' => 'w-24',
+                'formatter' => 'actions'
+            ]
+        ];
+    }
+
+    /**
+     * Get status mapping for the model
+     * @return array
+     */
+    public static function getStatusMapping(): array {
+        return [
+            'draft' => 'gray',
+            'published' => 'green',
+            'archived' => 'red',
+            'featured' => 'purple',
+            'locked' => 'amber',
+            'public' => 'blue',
+            'private' => 'orange'
+        ];
+    }
+
+    /**
+     * Get color options for the model
+     * @return array
+     */
+    public static function getColorOptions(): array {
+        return [
+            'red' => 'Red',
+            'blue' => 'Blue',
+            'green' => 'Green',
+            'yellow' => 'Yellow',
+            'purple' => 'Purple',
+            'indigo' => 'Indigo',
+            'pink' => 'Pink',
+            'gray' => 'Gray',
+            'orange' => 'Orange',
+            'teal' => 'Teal',
+            'cyan' => 'Cyan',
+            'emerald' => 'Emerald',
+            'lime' => 'Lime',
+            'amber' => 'Amber',
+            'rose' => 'Rose',
+            'violet' => 'Violet',
+            'fuchsia' => 'Fuchsia',
+            'slate' => 'Slate',
+            'zinc' => 'Zinc',
+            'neutral' => 'Neutral',
+            'stone' => 'Stone',
+            'turquoise' => 'Turquoise'
+        ];
+    }
+
+    /**
      * Form configuration for the post model
      * @return array
      */
     public static function formFields(): array {
         return [
-
             'user_id' => [
                 'type' => 'select',
                 'label' => 'User',
@@ -171,13 +346,12 @@ class Post extends Model
                 'rows' => 6,
                 'required' => true
             ],
-            'json' => [
-                'type' => 'textarea',
-                'label' => 'json',
+            'options' => [
+                'type' => 'json',
+                'label' => 'Options',
                 'col_span' => 3,
                 'sequence' => 8,
-                'rows' => 6,
-                'help' => 'Use this to store unstructured data'
+                'help' => 'Use this to store structured data as JSON'
             ],
             'links' => [
                 'type' => 'textarea',
@@ -252,7 +426,16 @@ class Post extends Model
                 'sequence' => 16,
                 'default' => false
             ],
+        ];
+    }
 
+    /**
+     * Get content fields for the model
+     * @return array
+     */
+    public static function getContentFields(): array {
+        return [
+            'title', 'body', 'options', 'links'
         ];
     }
 }

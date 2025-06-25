@@ -19,7 +19,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'i3-Framework',
                 'description' => 'A robust framework designed to streamline and enhance business operations through integrated services.',
                 'color' => 'indigo',
-                'version' => 'v1.0.04',
+                'version' => 'v1.1.08',
                 'icon' => 'I3FrameworkIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
@@ -40,7 +40,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'Content Management',
                 'description' => 'Efficiently manage and organize your content, from articles to posts, with an intuitive interface.',
                 'color' => 'green',
-                'version' => 'v0.1.24',
+                'version' => 'v0.7.01',
                 'icon' => 'ContentManagementIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/content/posts', 'route' => 'posts'],
@@ -56,7 +56,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'Resource Planning',
                 'description' => 'Optimize resource allocation and management to enhance productivity and efficiency.',
                 'color' => 'red',
-                'version' => 'v3.1.63',
+                'version' => 'v3.1.65',
                 'icon' => 'ResourcePlanningIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/erp/dashboard', 'route' => 'erp/dashboard'],
@@ -88,7 +88,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'Project Management',
                 'description' => 'Manage your projects effectively with tools designed to track progress and allocate resources.',
                 'color' => 'pink',
-                'version' => 'v1.1.02',
+                'version' => 'v1.1.05',
                 'icon' => 'ProjectIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
@@ -106,7 +106,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'Design Tool',
                 'description' => 'Create and manage diagrams for your business ideas and projects with ease.',
                 'color' => 'violet',
-                'version' => 'v1.1.02',
+                'version' => 'v1.1.05',
                 'icon' => 'DesignIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
@@ -123,7 +123,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'Ecommerce',
                 'description' => 'Control and manage your e-commerce business with integrated tools and analytics.',
                 'color' => 'purple',
-                'version' => 'v0.1.03',
+                'version' => 'v0.1.04',
                 'icon' => 'EcommerceIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/ecommerce/dashboard', 'route' => 'ecommerce/dashboard'],
@@ -153,7 +153,7 @@ class BusinessServiceSeeder extends Seeder
                 'title' => 'AI Agents',
                 'description' => 'Utilize AI agents to automate and enhance your business processes.',
                 'color' => 'purple',
-                'version' => 'v1.0.00',
+                'version' => 'v1.0.02',
                 'icon' => 'AiIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],

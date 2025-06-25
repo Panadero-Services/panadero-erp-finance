@@ -11,14 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Ensure post_types table exists first
+        if (!Schema::hasTable('post_types')) {
+            Schema::create('post_types', function (Blueprint $table) {
+                $table->id();
+                $table->string('name')->unique();
+                $table->integer('text_length');
+                $table->timestamps();
+            });
+        }
+
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('body');
-            $table->json('json')->nullable();
+            $table->json('options')->nullable();
             $table->json('links')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('post_type_id')->nullable()->constrained()->nullOnDelete();
             $table->string('slug')->unique();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->useCurrent();
@@ -39,5 +50,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('posts');
+        Schema::dropIfExists('post_types');
     }
 }; 

@@ -56,7 +56,7 @@ class PostSeeder extends Seeder
             $categories = [1]; // Fallback to category 1 if none exist
         }
 
-        // Generate 0-3 random links
+        // Generate 0-3 random links as arrays (not JSON strings)
         $links = [];
         $numLinks = rand(0, 3);
         for ($i = 0; $i < $numLinks; $i++) {
@@ -67,12 +67,50 @@ class PostSeeder extends Seeder
             ];
         }
 
+        // Generate options data as an array of objects (not a single object)
+        $optionsData = [
+            [
+                'type' => 'metadata',
+                'data' => [
+                    'read_time' => rand(2, 15),
+                    'difficulty' => ['beginner', 'intermediate', 'advanced'][rand(0, 2)],
+                    'tags' => ['technology', 'development', 'ai', 'blockchain'][rand(0, 3)]
+                ]
+            ],
+            [
+                'type' => 'seo',
+                'data' => [
+                    'keywords' => ['web development', 'technology', 'programming'],
+                    'description' => 'A comprehensive guide to modern technology trends.'
+                ]
+            ],
+            [
+                'type' => 'analytics',
+                'data' => [
+                    'views' => rand(0, 1000),
+                    'likes' => rand(0, 100),
+                    'shares' => rand(0, 50)
+                ]
+            ],
+            [
+                'type' => 'settings',
+                'data' => [
+                    'allow_comments' => rand(0, 1),
+                    'featured_image' => 'https://example.com/image-' . rand(1, 10) . '.jpg',
+                    'reading_level' => ['basic', 'intermediate', 'advanced'][rand(0, 2)]
+                ]
+            ]
+        ];
+
+        // Randomly remove some options objects to create variety
+        $optionsData = array_slice($optionsData, 0, rand(2, 4));
+
         return [
             'id' => $id,
             'title' => $titles[array_rand($titles)] . ' - ' . Str::random(5),
             'body' => $bodies[array_rand($bodies)],
-            'json' => json_encode([]),
-            'links' => json_encode($links),
+            'options' => $optionsData, // Changed from 'json' to 'options'
+            'links' => $links, // Array of objects
             'user_id' => $users[array_rand($users)],
             'category_id' => $categories[array_rand($categories)],
             'created_at' => now()->subDays(rand(1, 365))->format('Y-m-d H:i:s'),

@@ -227,8 +227,8 @@ class PageSeeder extends Seeder
             ],
             [
                 'id' => 18,
-                'title' => 'Posts',
-                'file' => 'posts.vue',
+                'title' => 'content/Posts',
+                'file' => 'content/Posts.vue',
                 'icon' => 'view-dashboard-outline',
                 'image' => 'new2.jpg',
                 'slogan' => 'Manual: Sandbox sustainability focus accelerates innovation at the heart of your businesss',

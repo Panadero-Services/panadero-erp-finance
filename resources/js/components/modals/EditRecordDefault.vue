@@ -618,6 +618,41 @@ onMounted(() => {
     });
   }
 });
+
+// Add new JSON item management (similar to options)
+const newJsonItem = ref({ type: '', key: '', value: '' });
+
+const addJsonItem = () => {
+  if (newJsonItem.value.type && newJsonItem.value.key) {
+    // Initialize json as array if it doesn't exist
+    if (!Array.isArray(form.json)) {
+      form.json = [];
+    }
+    
+    const newItem = {
+      type: newJsonItem.value.type,
+      data: {
+        [newJsonItem.value.key]: newJsonItem.value.value
+      }
+    };
+    
+    const newJson = [...form.json, newItem];
+    form.json = newJson;
+    newJsonItem.value = { type: '', key: '', value: '' };
+  }
+};
+
+const removeJsonItem = (i) => {
+  if (Array.isArray(form.json)) {
+    const newJson = [...form.json];
+    newJson.splice(i, 1);
+    form.json = newJson;
+  }
+};
+
+const hasJsonFields = computed(() => {
+  return Object.values(props.meta.form_fields || {}).some(field => field.type === 'json');
+});
 </script>
 
 <template>
@@ -653,9 +688,9 @@ onMounted(() => {
               Main
             </button>
             
-            <!-- JSON Tab -->
+            <!-- JSON Tab - for any field with type 'json' -->
             <button
-              v-if="meta.form_fields?.json"
+              v-if="hasJsonFields"
               @click="activeTab = 'json'"
               :class="[
                 'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
@@ -667,7 +702,7 @@ onMounted(() => {
               JSON
             </button>
             
-            <!-- Links Tab -->
+            <!-- Links Tab - special case for relations -->
             <button
               v-if="meta.form_fields?.links"
               @click="activeTab = 'links'"
@@ -710,7 +745,7 @@ onMounted(() => {
             <template v-for="(fieldConfig, fieldName) in meta.form_fields" :key="String(fieldName)">
                 <!-- Skip JSON fields and switch fields in main form -->
               <div
-                  v-if="fieldConfig.type !== 'switch' && !['json', 'links', 'options'].includes(fieldName)"
+                  v-if="fieldConfig.type !== 'switch' && fieldConfig.type !== 'json' && fieldName !== 'links'"
                 :class="{
                   'col-span-8': fieldConfig.col_span === 8,
                   'col-span-6': fieldConfig.col_span === 6,
@@ -915,63 +950,74 @@ onMounted(() => {
           <!-- JSON Tab -->
           <div v-if="activeTab === 'json'" class="p-4">
             <div class="space-y-4">
-              <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">JSON Data Editor</h3>
+              <!-- Title and manager on one line -->
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">JSON Data Manager</h3>
+                
+                <!-- JSON Manager moved inline -->
+                <div class="flex items-center space-x-2 flex-1 ml-4">
+                  <input
+                    v-model="newJsonItem.type"
+                    placeholder="Type (e.g., metadata, seo, analytics)"
+                    class="text-xs rounded px-2 py-1 w-1/4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    v-model="newJsonItem.key"
+                    placeholder="Key"
+                    class="text-xs rounded px-2 py-1 w-1/4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    v-model="newJsonItem.value"
+                    placeholder="Value"
+                    class="text-xs rounded px-2 py-1 w-1/4 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <button @click.prevent="addJsonItem" :class="[_button.active]">
+                    Add
+                  </button>
+                </div>
+              </div>
               
-              <!-- JSON Field -->
-              <div class="space-y-2">
-                <label class="block text-xs font-medium text-gray-700 dark:text-gray-200">JSON Data</label>
-                <div class="relative">
-                  <textarea
-                    v-model="jsonString"
-                    :rows="8"
-                    :readonly="meta.form_fields?.json?.readonly"
-                    :class="[
-                      'block w-full rounded-md shadow-sm sm:text-xs font-mono',
-                      isInvalid('json')
-                        ? 'border-red-500 dark:border-red-400 focus:border-red-500 focus:ring-red-500 dark:focus:ring-red-500'
-                        : 'border-gray-300 dark:border-gray-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:ring-indigo-500 dark:focus:ring-indigo-700',
-                      'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400',
-                      meta.form_fields?.json?.readonly ? 'bg-gray-100 dark:bg-gray-800 cursor-not-allowed' : ''
-                    ]"
-                    placeholder="Enter valid JSON..."
-                  ></textarea>
-                  
-                  <!-- JSON validation indicator -->
-                  <div v-if="hasJsonError" class="absolute top-2 right-2">
-                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                    </svg>
+              <!-- Content area with scrolling -->
+              <div class="max-h-[calc(100vh-300px)] overflow-y-auto">
+                <!-- Existing JSON Items -->
+                <div v-if="Array.isArray(form.json) && form.json.length > 0" class="space-y-4">
+                  <div class="grid grid-cols-1 gap-2">
+                    <div v-for="(jsonItem, i) in form.json" :key="i" 
+                         class="flex items-center justify-between p-3 bg-gray-100 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-700">
+                      <div class="flex-1 min-w-0">
+                        <div class="text-xs font-medium text-gray-900 dark:text-gray-200 truncate">
+                          {{ jsonItem?.type || 'unknown' }}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <span class="font-medium">Data:</span>
+                          <pre class="mt-1 text-xs bg-gray-50 dark:bg-gray-800 p-2 rounded border">{{ JSON.stringify(jsonItem?.data || {}, null, 2) }}</pre>
+                        </div>
+                      </div>
+                      <button @click.prevent="removeJsonItem(i)" class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex-shrink-0">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                  <div v-else class="absolute top-2 right-2">
-                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                  </div>
-                </div>
-                
-                <!-- JSON validation message -->
-                <div v-if="hasJsonError" class="text-xs text-red-600 bg-red-50 dark:bg-red-900/20 p-2 rounded border border-red-200 dark:border-red-800">
-                  Invalid JSON format. Please check your syntax.
-                </div>
-                
-                <!-- JSON preview -->
-                <details v-if="!hasJsonError && jsonValue" class="mt-2">
-                  <summary class="text-xs text-gray-500 cursor-pointer">Preview JSON structure</summary>
-                  <div class="mt-1 p-2 bg-gray-50 dark:bg-gray-800 rounded border text-xs">
-                    <pre class="whitespace-pre-wrap">{{ JSON.stringify(jsonValue, null, 2) }}</pre>
-                  </div>
-                </details>
 
-                <!-- Debug Panel (common style for all tabs) -->
-                <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
-                  <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
-                  <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
+                  <!-- Debug Panel (common style for all tabs) -->
+                  <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
+                    <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
+                    <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
 Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
 {{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
 {{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
 activeTab = {{ activeTab }}
 Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-                  </pre>
+                    </pre>
+                  </div>
+                </div>
+                
+                <!-- Empty state -->
+                <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
+                  <div class="text-sm">No JSON data yet</div>
+                  <div class="text-xs mt-1">Add some JSON items using the form above</div>
                 </div>
               </div>
             </div>
