@@ -4,6 +4,17 @@ import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
 import { usePage } from '@inertiajs/vue3';
 import Badges from '@/components/colors/Badges.vue';
+import { 
+    DocumentCheckIcon,
+    GlobeAltIcon,
+    StarIcon,
+    LockClosedIcon,
+    UserIcon,
+    LightBulbIcon,
+    CheckCircleIcon,
+    ArchiveBoxIcon,
+    QuestionMarkCircleIcon
+} from '@heroicons/vue/24/outline';
 
 const props = defineProps({
     module: String,
@@ -153,15 +164,16 @@ const getStatusColor = (flag) => {
 // Helper function to get icon for flag
 const getIconForFlag = (flag) => {
     const iconMap = {
-        'is_self': 'FingerPrint',
-        'is_locked': 'LockClosed',
-        'is_featured': 'Fire',
-        'is_smart': 'Heart',
-        'is_public': 'LockOpen',
-        'is_published': 'Tv',
-        'is_active': 'CheckCircle'
+        'is_published': DocumentCheckIcon,
+        'is_public': GlobeAltIcon,
+        'is_featured': StarIcon,
+        'is_locked': LockClosedIcon,
+        'is_self': UserIcon,
+        'is_smart': LightBulbIcon,
+        'is_active': CheckCircleIcon,
+        'is_archived': ArchiveBoxIcon
     };
-    return iconMap[flag] || 'QuestionMarkCircle';
+    return iconMap[flag] || QuestionMarkCircleIcon;
 };
 
 const emit = defineEmits(['edit', 'show', 'delete', 'show-json', 'navigate-link']);
@@ -191,26 +203,27 @@ const contentFields = computed(() => {
     <div class="relative block w-full">
         <!-- Circle avatar positioned to overlap top border -->
         <div v-if="config.showUser" 
-             class="absolute -top-3.5 left-3 h-8 w-8 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-800 rounded-full flex items-center justify-center">
+             class="absolute -top-5 left-[0.6rem] h-11 w-11 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-800 rounded-full flex items-center justify-center">
             <span class="text-white text-[10px]">{{ record?.item || record?.user?.name?.[0] || 'U' }}</span>
-        </div>
-
-        <div class="p-3 h-[300px] bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
-            <!-- Header with ID and Status -->
+                    </div>
+        <!-- Increased height by 60px from 300px to 360px -->
+        <div class="p-3 h-[360px] bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300">
+            <!-- Header with Title -->
             <div class="flex items-center justify-between mb-2">
-                <div class="flex-1 min-w-0">
-                    <h3 @click="$emit('show', record?.id)" 
-                        class="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer truncate">
-                        {{ record?.[config.title] }}
-                    </h3>
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400">
-                        {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago
-                    </p>
+                <div class="flex-1 min-w-0 flex items-center gap-2">
+                    <div class="flex-1">
+                        <h3 @click="$emit('show', record?.id)" 
+                            class="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer truncate mt-[7px]">
+                            {{ record?.[config.title] }}
+                        </h3>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-400 -mt-[3px]">
+                            {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago
+                        </p>
+                    </div>
                 </div>
 
-                <!-- ID and Status badge stacked -->
-                <div class="flex flex-col items-end gap-1">
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">#{{ record.id }}</span>
+                <!-- Status badge moved up by 5px more -->
+                <div class="flex items-end -mb-[10px]">
                     <Badges 
                         v-if="record.status"
                         :status="record.status"
@@ -221,24 +234,38 @@ const contentFields = computed(() => {
                 </div>
             </div>
 
-            <!-- Tabs -->
-            <div class="flex border-b border-gray-200 dark:border-gray-700 -mx-3 px-2">
-                <button v-for="tab in ['content', 'json', 'links', 'meta']" 
+            <!-- Tabs with dynamic JSON tabs -->
+            <div class="flex border-b border-gray-200 dark:border-gray-700 -mx-3 px-2 -mt-[5px] overflow-x-auto">
+                <!-- Standard tabs -->
+                <button v-for="tab in ['content', 'meta', 'bit', 'links']" 
                         :key="tab"
-                        @click="activeTab = tab"
-                        :class="[
-                            'px-2 py-1 text-[11px] font-medium transition-colors duration-200',
-                            activeTab === tab 
-                                ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                            @click="activeTab = tab"
+                            :class="[
+                            'px-2 py-1 text-[11px] font-medium transition-colors duration-200 whitespace-nowrap',
+                                activeTab === tab 
+                                    ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
                                 : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                         ]">
-                    {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
-                </button>
-            </div>
+                            {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
+                        </button>
 
-            <!-- Content area -->
-            <div class="mt-2 h-[180px] overflow-y-auto">
-                <!-- Content Tab - Two Columns -->
+                <!-- Dynamic JSON field tabs -->
+                <button v-for="col in columns.filter(c => c.type === 'JSON' || c.key === 'options')" 
+                        :key="col.key"
+                        @click="activeTab = col.key"
+                        :class="[
+                            'px-2 py-1 text-[11px] font-medium transition-colors duration-200 whitespace-nowrap',
+                            activeTab === col.key 
+                                ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400' 
+                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        ]">
+                    {{ col.label || col.key.charAt(0).toUpperCase() + col.key.slice(1) }}
+                        </button>
+                    </div>
+
+            <!-- Content area with adjusted height to accommodate footer -->
+            <div class="mt-2 h-[210px] overflow-y-auto">
+                <!-- Original content tab -->
                 <div v-if="activeTab === 'content'" class="grid grid-cols-2 gap-2 px-1">
                     <!-- Description at top spanning both columns -->
                     <div v-if="record?.[config.description]" 
@@ -249,7 +276,7 @@ const contentFields = computed(() => {
                             </span>
                             <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
                                 {{ record[config.description] }}
-                            </div>
+                </div>
                         </div>
                     </div>
 
@@ -289,8 +316,8 @@ const contentFields = computed(() => {
                                         <span class="text-[10px] text-gray-500 dark:text-gray-400">
                                             {{ new Date(record[col.key]).toLocaleDateString() }}
                                         </span>
-                                    </div>
-                                    
+                </div>
+
                                     <!-- Default text -->
                                     <div v-else class="text-[10px] text-gray-500 dark:text-gray-400">
                                         {{ record[col.key] || '-' }}
@@ -299,30 +326,108 @@ const contentFields = computed(() => {
                             </div>
                         </div>
                     </template>
-                </div>
+                    </div>
 
-                <!-- JSON Tab -->
-                <div v-else-if="activeTab === 'json'" class="space-y-1.5">
-                    <template v-for="col in columns" :key="col.key">
-                        <div v-if="col.formatter === 'json'" 
-                             class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1.5">
-                            <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400">
-                                {{ col.label }}
-                            </span>
-                            <div class="flex items-center">
-                                <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                    {{ Array.isArray(record[col.key]) ? `${record[col.key].length} items` : 'Object' }}
+                <!-- JSON field content -->
+                <div v-else-if="columns.find(c => c.key === activeTab)" class="space-y-1.5">
+                    <!-- Individual JSON items display -->
+                    <template v-for="(value, key) in record[activeTab]" :key="key">
+                        <div class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-start gap-2 px-2 py-1.5">
+                                <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400 shrink-0">
+                                    {{ key }}
                                 </span>
-                                <button @click="showJsonDetail(col.key)"
-                                        class="ml-2 text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
-                                    View
-                                </button>
+                                <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
+                                    <template v-if="typeof value === 'object'">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
+                                            </span>
+                                            <pre class="whitespace-pre-wrap">{{ JSON.stringify(value, null, 2) }}</pre>
+                                        </div>
+                                    </template>
+                                    <template v-else>
+                                        {{ value }}
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </template>
+
+                    <!-- Full JSON preview -->
+                    <div class="mt-4 bg-gray-50 dark:bg-gray-700/50 rounded p-2 border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-medium text-gray-700 dark:text-gray-300">
+                                Full {{ columns.find(c => c.key === activeTab)?.label || activeTab }}
+                            </span>
+                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                {{ Array.isArray(record[activeTab]) ? `${record[activeTab].length} items` : 'Object' }}
+                            </span>
+                        </div>
+                        <pre class="text-[10px] text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{{ JSON.stringify(record[activeTab], null, 2) }}</pre>
+                        </div>
+                    </div>
+
+                <!-- New Bit tab for booleans -->
+                <div v-if="activeTab === 'bit'" class="grid grid-cols-3 gap-2">
+                    <div v-for="flag in meta?.boolean_fields || []" 
+                         :key="flag"
+                         class="flex items-center justify-between p-2 rounded"
+                         :class="`bg-${getStatusColor(flag)}-50 dark:bg-${getStatusColor(flag)}-900/20`">
+                        <div class="flex items-center gap-2">
+                            <component 
+                                :is="getIconForFlag(flag)"
+                                class="h-3.5 w-3.5 stroke-[1.5]"
+                                :class="`text-${getStatusColor(flag)}-600 dark:text-${getStatusColor(flag)}-400`"
+                            />
+                            <span class="text-[10px] font-medium" 
+                                  :class="`text-${getStatusColor(flag)}-700 dark:text-${getStatusColor(flag)}-300`">
+                                {{ flag.replace('is_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+                            </span>
+                        </div>
+                        <CategorySectionIcon 
+                            :icon="getIconForFlag(flag)"
+                            :activated="record[flag]"
+                            :error="false"
+                            :title="flag"
+                            class="h-3.5 w-3.5"
+                            @click="_updateIcon(record?.id, flag, !record[flag])"
+                        />
+                    </div>
                 </div>
 
-                <!-- Links Tab -->
+                <!-- Modified meta tab to use the meta prop -->
+                <div v-else-if="activeTab === 'meta'" class="space-y-1.5">
+                    <template v-if="meta">
+                        <template v-for="(value, key) in meta" :key="key">
+                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-start gap-2 px-2 py-1.5">
+                                    <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400 shrink-0">
+                                        {{ key }}
+                                    </span>
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
+                                        <template v-if="typeof value === 'object'">
+                                            <div class="flex items-center gap-2">
+                                                <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                    {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
+                                                </span>
+                                                <pre class="whitespace-pre-wrap">{{ JSON.stringify(value, null, 2) }}</pre>
+                                            </div>
+                                        </template>
+                                        <template v-else>
+                                            {{ value }}
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
+                    <div v-else class="text-[10px] text-gray-500 dark:text-gray-400 text-center py-2">
+                        No meta data available
+                    </div>
+                </div>
+
+                <!-- Original links tab -->
                 <div v-else-if="activeTab === 'links'" class="space-y-1.5">
                     <template v-for="(link, index) in record.links" :key="index">
                         <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700/50 rounded px-2 py-1.5">
@@ -332,7 +437,7 @@ const contentFields = computed(() => {
                                 </span>
                                 <span class="ml-2 px-1.5 py-0.5 text-[9px] rounded bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                                     {{ link.type }}
-                                </span>
+                            </span>
                             </div>
                             <button @click="navigateToLink(link)"
                                     class="text-[10px] text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
@@ -344,35 +449,41 @@ const contentFields = computed(() => {
                         No links available
                     </div>
                 </div>
-
-                <!-- Meta Tab -->
-                <div v-else-if="activeTab === 'meta'" class="grid grid-cols-3 gap-2">
-                    <div v-for="flag in statusFlags" 
-                         :key="flag.key"
-                         class="flex items-center justify-between p-2 rounded"
-                         :class="`bg-${flag.color}-50 dark:bg-${flag.color}-900/20`">
-                        <span class="text-[10px] font-medium" :class="`text-${flag.color}-700 dark:text-${flag.color}-300`">
-                            {{ flag.label }}
-                        </span>
-                        <CategorySectionIcon 
-                            :icon="flag.icon"
-                            :activated="flag.active"
-                            :error="false"
-                            :title="flag.label"
-                            class="h-3.5 w-3.5"
-                            @click="_updateIcon(record?.id, flag.key, !flag.active)"
-                        />
-                    </div>
-                </div>
             </div>
 
-            <!-- Footer -->
-            <div class="absolute bottom-2 left-3 flex items-center gap-2">
-                <!-- Color indicator only -->
-                <div v-if="record.color" class="flex items-center" title="Color">
-                    <div class="w-3 h-3 rounded"
-                         :style="{ backgroundColor: record.color }">
+            <!-- Footer with proper spacing -->
+            <div class="absolute bottom-0 left-0 right-0 h-12 px-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-lg">
+                <!-- Left side with Color icon and ID -->
+                <div class="flex items-center gap-2">
+                    <!-- Color indicator moved here -->
+                    <div v-if="record.color" class="flex items-center" title="Color">
+                        <div class="w-2 h-2 rounded"
+                             :style="{ backgroundColor: record.color }">
+                        </div>
                     </div>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">id: {{ record.id }}</span>
+                </div>
+                
+                <!-- Right side - Action buttons -->
+                <div class="flex items-center gap-1">
+                    <button 
+                        @click="$emit('show', record?.id)"
+                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                    >
+                        View
+                    </button>
+                    <button 
+                        @click="$emit('edit', record?.id)"
+                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                    >
+                        Edit
+                    </button>
+                    <button 
+                        @click="$emit('delete', record?.id)"
+                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                    >
+                        Delete
+                    </button>
                 </div>
             </div>
         </div>

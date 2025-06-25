@@ -535,6 +535,7 @@ const { getStatusColor } = Badges;
                         <RecordCardDefault 
                             v-if="viewMode === 'default'"
                             :record="record"
+                            :meta="records.meta"
                             :module="_module"
                             :table="_table"
                             :db="_db"
@@ -545,11 +546,11 @@ const { getStatusColor } = Badges;
                             @delete="handleDelete"
                         />
                         
-
                         <!-- Compact Card View -->
                         <RecordCardCompact
                             v-if="viewMode === 'compact'"
                             :record="record"
+                            :meta="records.meta"
                             :module="_module"
                             :table="_table"
                             :db="_db"

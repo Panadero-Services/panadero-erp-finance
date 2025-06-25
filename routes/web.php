@@ -318,14 +318,14 @@ Route::middleware([
         ]);
     })->name('project/plan')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    Route::get('project/work', function () { 
+ Route::get('project/work', function () { 
         return Inertia::render('project/Work', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('project/work')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    Route::get('project/budget', function () { 
+ Route::get('project/budget', function () { 
         return Inertia::render('project/Budget', [
             'page'=> Page::with('sections')->where('title','Mood')->first(),
             'baseSections' => Section::where('page_id','0')->get()
@@ -447,17 +447,17 @@ Route::middleware([
     // ========================================
     // TEST ROUTES
     // ========================================
-    Route::get('test/{id?}', function($id=1){
-        return [
-            UserResource::make(User::where('id',$id)->first()),
-            PostResource::make(Post::where('id',$id)->first()),
-            CommentResource::make(Comment::where('id',$id)->first())
-        ];
-    });
+Route::get('test/{id?}', function($id=1){
+    return [
+    UserResource::make(User::where('id',$id)->first()),
+        PostResource::make(Post::where('id',$id)->first()),
+        CommentResource::make(Comment::where('id',$id)->first())
+    ];
+});
 
-    Route::get('test_user', function (){
-        return Post::take(5)->get();
-    });
+Route::get('test_user', function (){
+    return Post::take(5)->get();
+});
 
     // ========================================
     // DEBUGGING ROUTES

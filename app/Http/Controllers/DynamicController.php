@@ -58,16 +58,7 @@ class DynamicController extends Controller
         // Create resource collection
         $resourceClass = "App\\Http\\Resources\\" . Str::studly(Str::singular($table)) . "Resource";
         
-        if (class_exists($resourceClass)) {
-            $records = $resourceClass::collection($query->paginate($perPage)->appends($request->query()));
-        } else {
-            // Use DynamicResource for models without specific Resource classes
-            $records = \App\Http\Resources\DynamicResource::collection(
-                $query->paginate($perPage)->appends($request->query())
-            );
-        }
-
-        // Add meta data
+        // Get meta data
         $meta = [];
         
         if (method_exists($modelClass, 'validationRules')) {
@@ -94,10 +85,28 @@ class DynamicController extends Controller
             $meta['status_mapping'] = $modelClass::getStatusMapping();
         }
 
-        // Add meta data to the resource collection
-        if ($records instanceof \Illuminate\Http\Resources\Json\ResourceCollection) {
-            $records->additional(['meta' => $meta]);
+        // Add boolean fields from the model using an instance
+        $modelInstance = new $modelClass();
+        if (method_exists($modelInstance, 'getCasts')) {
+            $casts = $modelInstance->getCasts();
+            $meta['boolean_fields'] = collect($casts)
+                ->filter(function ($cast, $field) {
+                    return $cast === 'boolean';
+                })
+                ->keys()
+                ->toArray();
         }
+
+        // Create the collection with meta data
+        $paginator = $query->paginate($perPage)->appends($request->query());
+        if (class_exists($resourceClass)) {
+            $records = $resourceClass::collection($paginator);
+        } else {
+            $records = \App\Http\Resources\DynamicResource::collection($paginator);
+        }
+
+        // Add meta data to the collection level
+        $records->additional(['meta' => $meta]);
 
         // Get page configuration
         $page = \App\Models\Page::with('sections')->where('title', "{$module}/{$table}")->first();

@@ -1,5 +1,15 @@
 <script setup>
 import { computed } from 'vue';
+import { 
+  DocumentCheckIcon,
+  GlobeAltIcon,
+  StarIcon,
+  LockClosedIcon,
+  UserIcon,
+  LightBulbIcon,
+  CheckCircleIcon,
+  ArchiveBoxIcon
+} from '@heroicons/vue/24/solid'
 
 // Props
 const props = defineProps({
@@ -181,6 +191,23 @@ const statusIcons = {
   stone: '🪨'
 };
 
+// Add this after the statusIcons mapping and before the computed properties
+const booleanIcons = {
+  'is_published': 'DocumentCheckIcon', // Paper with checkmark - represents published state
+  'is_public': 'GlobeAltIcon', // Globe icon - represents public visibility
+  'is_featured': 'StarIcon', // Star - represents featured status
+  'is_locked': 'LockClosedIcon', // Lock - represents locked state
+  'is_self': 'UserIcon', // User - represents self-owned/personal items
+  'is_smart': 'LightBulbIcon', // Lightbulb - represents smart/intelligent features
+  'is_active': 'CheckCircleIcon', // Checkmark in circle - represents active state
+  'is_archived': 'ArchiveBoxIcon' // Archive box - represents archived state
+};
+
+// Add a helper function to get the icon for a boolean field
+const getBooleanIcon = (fieldName) => {
+  return booleanIcons[fieldName] || 'QuestionMarkCircleIcon'; // Default fallback icon
+};
+
 // Computed properties
 const colorKey = computed(() => {
   // First check the provided status mapping
@@ -254,7 +281,9 @@ const colorDotStyle = computed(() => {
 // Expose for external use
 defineExpose({
   getStatusColor,
-  statusColors
+  statusColors,
+  booleanIcons,
+  getBooleanIcon
 });
 </script>
 
