@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('status', 32)->default('idle');
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('project_id')->constrained('projects');
-            $table->json('json');
+            $table->json('options');
             $table->json('links');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();

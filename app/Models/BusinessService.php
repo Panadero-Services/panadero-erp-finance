@@ -329,17 +329,15 @@ class BusinessService extends Model
                 'required' => true
             ],
             'options' => [
-                'type' => 'textarea',
+                'type' => 'json',
                 'label' => 'Options',
                 'col_span' => 8,
-                'rows' => 2,
                 'help' => 'Use this to store service options in JSON format'
             ],
             'links' => [
-                'type' => 'textarea',
+                'type' => 'links',
                 'label' => 'Links',
                 'col_span' => 8,
-                'rows' => 2,
                 'help' => 'Link this service to other services with different relationships'
             ],
             'is_active' => [

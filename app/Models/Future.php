@@ -24,14 +24,14 @@ class Future extends Model
         'status',
         'user_id',
         'project_id',
-        'json',
+        'options',
         'links',
         'is_active',
         'is_locked'
     ];
 
     protected $casts = [
-        'json' => 'array',
+        'options' => 'array',
         'links' => 'array',
         'is_active' => 'boolean',
         'is_locked' => 'boolean',
@@ -59,7 +59,7 @@ class Future extends Model
             'icon' => 'nullable|string|max:80',
             'status' => 'required|string|min:1|max:32',
             'project_id' => 'required|integer|exists:projects,id',
-            'json' => 'required',
+            'options' => 'required',
             'links' => 'required',
             'is_active' => 'boolean',
             'is_locked' => 'boolean',
@@ -72,7 +72,7 @@ class Future extends Model
             'item',
             'title',
             'description',
-            'json',
+            'options',
             'links'
         ];
     }
@@ -164,18 +164,16 @@ class Future extends Model
                 'default' => 'idle',
                 'required' => true
             ],
-            'json' => [
-                'type' => 'textarea',
-                'label' => 'JSON',
+            'options' => [
+                'type' => 'json',
+                'label' => 'Options',
                 'col_span' => 8,
-                'rows' => 2,
                 'help' => 'Use this to store unstructured data'
             ],
             'links' => [
-                'type' => 'textarea',
+                'type' => 'links',
                 'label' => 'Links',
                 'col_span' => 8,
-                'rows' => 2,
                 'help' => 'Link this post to other posts with different relationships'
             ],
             'switches' => [

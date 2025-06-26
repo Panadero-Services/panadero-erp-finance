@@ -25,7 +25,7 @@ class FutureResource extends JsonResource
             'status' => $this->status,
             'user' => new UserResource($this->whenLoaded('user')),
             'project' => new ProjectResource($this->whenLoaded('project')),
-            'json' => $this->json,
+            'options' => $this->options,
             'links' => $this->links,
             'is_active' => $this->is_active,
             'is_locked' => $this->is_locked,

@@ -26,7 +26,7 @@ class FutureSeeder extends Seeder
 
         for ($i = 1; $i <= 50; $i++) {
             Future::create([
-                'item' => 'future-' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'item' => 'F-' . str_pad($i, 3, '0', STR_PAD_LEFT),
                 'title' => 'Future Feature ' . $i,
                 'description' => 'This is a detailed description for future feature ' . $i . '. It includes various aspects and considerations for implementation.',
                 'color' => $colors[array_rand($colors)],
@@ -35,7 +35,7 @@ class FutureSeeder extends Seeder
                 'status' => $statuses[array_rand($statuses)],
                 'user_id' => $users->random()->id,
                 'project_id' => $projects->random()->id,
-                'json' => [
+                'options' => [
                     'priority' => rand(1, 5),
                     'complexity' => rand(1, 5),
                     'estimated_hours' => rand(4, 40),
@@ -44,7 +44,7 @@ class FutureSeeder extends Seeder
                 'links' => [
                     [
                         'type' => 'relates_to',
-                        'link_id' => '1',
+                        'link_id' => 1,
                         'link_title' => 'Future Feature 1'
                     ]
                 ],

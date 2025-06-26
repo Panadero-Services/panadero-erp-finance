@@ -653,6 +653,23 @@ const removeJsonItem = (i) => {
 const hasJsonFields = computed(() => {
   return Object.values(props.meta.form_fields || {}).some(field => field.type === 'json');
 });
+
+// Add this computed property in the script section, right after the existing props definition
+const jsonFields = computed(() => {
+  const fields = {};
+  if (props.meta.form_fields) {
+    Object.entries(props.meta.form_fields).forEach(([fieldName, config]) => {
+      if (config.type === 'json') {
+        fields[fieldName] = {
+          ...config,
+          name: fieldName
+        };
+      }
+    });
+  }
+  return fields;
+});
+
 </script>
 
 <template>
@@ -688,23 +705,24 @@ const hasJsonFields = computed(() => {
               Main
             </button>
             
-            <!-- JSON Tab - for any field with type 'json' -->
+            <!-- JSON Fields (currently only 'options') -->
             <button
-              v-if="hasJsonFields"
-              @click="activeTab = 'json'"
+              v-for="(field, fieldName) in jsonFields"
+              :key="fieldName"
+              @click="activeTab = fieldName"
               :class="[
                 'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
-                activeTab === 'json'
+                activeTab === fieldName
                   ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
                   : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
               ]"
             >
-              JSON
+              {{ field.label }}
             </button>
-            
-            <!-- Links Tab - special case for relations -->
+
+            <!-- Special Links Tab -->
             <button
-              v-if="meta.form_fields?.links"
+              v-if="meta.form_fields?.links?.type === 'links'"
               @click="activeTab = 'links'"
               :class="[
                 'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
@@ -714,20 +732,6 @@ const hasJsonFields = computed(() => {
               ]"
             >
               Links
-            </button>
-            
-            <!-- Options Tab -->
-            <button
-              v-if="meta.form_fields?.options"
-              @click="activeTab = 'options'"
-              :class="[
-                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
-                activeTab === 'options'
-                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
-              ]"
-            >
-              Options
             </button>
           </div>
           
@@ -1000,24 +1004,6 @@ const hasJsonFields = computed(() => {
                       </button>
                     </div>
                   </div>
-
-                  <!-- Debug Panel (common style for all tabs) -->
-                  <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
-                    <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
-                    <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
-Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
-{{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-{{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
-activeTab = {{ activeTab }}
-Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-                    </pre>
-                  </div>
-                </div>
-                
-                <!-- Empty state -->
-                <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
-                  <div class="text-sm">No JSON data yet</div>
-                  <div class="text-xs mt-1">Add some JSON items using the form above</div>
                 </div>
               </div>
             </div>
@@ -1072,18 +1058,6 @@ Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form
                       </button>
                     </div>
                   </div>
-
-                  <!-- Debug Panel (common style for all tabs) -->
-                  <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
-                    <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
-                    <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
-Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
-{{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-{{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
-activeTab = {{ activeTab }}
-Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-                    </pre>
-                  </div>
                 </div>
               </div>
             </div>
@@ -1137,18 +1111,6 @@ Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form
                         </svg>
                       </button>
                     </div>
-                  </div>
-
-                  <!-- Debug Panel (common style for all tabs) -->
-                  <div class="mt-4 mb-16 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-md border border-blue-100 dark:border-blue-800">
-                    <div class="text-[10px] font-medium text-blue-800 dark:text-blue-200 mb-1">Debug content:</div>
-                    <pre class="text-[9px] leading-[14px] text-blue-700 dark:text-blue-300 whitespace-pre-wrap">
-Debug: {{ activeTab }} count = {{ (activeTab === 'json' ? [form.json] : (activeTab === 'links' ? links : options)).length }}
-{{ activeTab }} type = {{ typeof (activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-{{ activeTab }} value = {{ JSON.stringify(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options), null, 2) }}
-activeTab = {{ activeTab }}
-Condition check: {{ activeTab }} exists = {{ Boolean(activeTab === 'json' ? form.json : (activeTab === 'links' ? links : options)) }}
-                    </pre>
                   </div>
                 </div>
               </div>

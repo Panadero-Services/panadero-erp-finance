@@ -1,11 +1,40 @@
 <script setup>
 import {computed, ref, onMounted} from 'vue'
-import { FireIcon, HeartIcon, TvIcon, UserIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, LockClosedIcon, LockOpenIcon, PencilSquareIcon, WrenchIcon } from '@heroicons/vue/24/outline'
+import { 
+    FingerPrintIcon,
+    WrenchIcon,
+    ArrowPathIcon,
+    CloudArrowUpIcon,
+    LockClosedIcon,
+    LockOpenIcon,
+    UserIcon,
+    HeartIcon,
+    FireIcon,
+    TvIcon
+} from '@heroicons/vue/24/outline';
+// import { 
+//     DocumentCheckIcon,
+//     GlobeAltIcon,
+//     StarIcon,
+//     LockClosedIcon,
+//     UserIcon,
+//     LightBulbIcon,
+//     CheckCircleIcon,
+//     ArchiveBoxIcon,
+//     QuestionMarkCircleIcon
+// } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
   icon: String,
   activated: Boolean,
   error: Boolean
+});
+
+// Add debug log
+console.log('CategorySectionIcon props:', {
+  icon: props.icon,
+  activated: props.activated,
+  error: props.error
 });
 
 const _icon = computed(() => {
@@ -17,6 +46,21 @@ const _icon = computed(() => {
   __icon +=  props.activated ? "text-indigo-700 dark:text-indigo-400 " : "text-gray-300 dark:text-gray-600 ";
   return __icon;
 });
+
+const getIconForFlag = (flag) => {
+    const iconMapping = {
+        'is_active': 'LockOpen',
+        'is_locked': 'LockClosed',
+        'is_featured': 'Fire',
+        'is_public': 'CloudArrowUp',
+        'is_published': 'CloudArrowUp',
+        'is_smart': 'FingerPrint',
+        'is_self': 'User',
+        'is_archived': 'ArrowPath',
+        'default': 'User'
+    };
+    return iconMapping[flag] || iconMapping.default;
+};
 </script>
 <template>
       <div class="flex mb-2 gap-x-2 justify-end">

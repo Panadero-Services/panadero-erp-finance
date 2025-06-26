@@ -188,11 +188,20 @@ const cardConfig = computed(() => ({
     title: 'title',
     description: 'description',
     body: 'description',
-    flags: ['is_active', 'is_locked'],
+    // Get flags from meta data's boolean_fields
+    flags: props.records?.meta?.boolean_fields || [
+        'is_published',
+        'is_public',
+        'is_featured',
+        'is_locked',
+        'is_self',
+        'is_smart',
+        'is_active',
+        'is_archived'
+    ],
     tabs: ['content', 'status', 'author'],
     showUser: true,
     showTags: true,
-    // Dynamic table configuration from model metadata
     columns: props.records?.meta?.table_columns || [],
     statusMapping: props.records?.meta?.status_mapping || {}
 }));
@@ -479,7 +488,7 @@ const { getStatusColor } = Badges;
 
         <template #default>
             <!-- Main Section : Cards / Rows -->
-            <div :id="table" class="w-full min-h-[800px] min-w-full mt-2">
+            <div :id="table" class="w-full min-h-[800px] min-w-full mt-2 px-6">
                 <!-- Rows View - Table Format -->
                 <div v-if="viewMode === 'rows'" class="bg-white dark:bg-gray-900 py-6 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <h2 class="px-4 text-base/7 font-semibold text-gray-900 dark:text-white sm:px-6 lg:px-8">{{ table }} - table</h2>
@@ -522,7 +531,7 @@ const { getStatusColor } = Badges;
 
                 <!-- Card Views (Default and Compact) -->
                 <div v-else :class="[
-                    viewMode === 'default' ? 'grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4' : '',
+                    viewMode === 'default' ? 'grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6' : '',
                     viewMode === 'compact' ? 'flex flex-wrap gap-1' : ''
                 ]">
                     <div v-for="record in records.data" :key="record.id" 
