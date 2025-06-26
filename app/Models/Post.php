@@ -3,6 +3,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 use App\Models\Tag;
 use App\Models\User;
@@ -10,10 +12,11 @@ use App\Models\Comment;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Traits\HasSlug;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSlug;
 
     protected $fillable = [
         'user_id',
@@ -82,7 +85,7 @@ class Post extends Model
             'options' => 'nullable|array',
             'links' => 'nullable|array',
             'category_id' => 'nullable|integer|exists:categories,id',
-            'slug' => 'required|string|unique:posts,slug',
+            'slug' => 'nullable|string|max:128',  // Changed from 'required' to 'nullable'
             'is_published' => 'boolean',
             'is_public' => 'boolean',
             'is_featured' => 'boolean',
@@ -342,7 +345,7 @@ class Post extends Model
                 'type' => 'textarea',
                 'label' => 'Content',
                 'col_span' => 5,
-                'sequence' => 7,
+                'sequence' => 8,
                 'rows' => 6,
                 'required' => true
             ],
@@ -350,14 +353,14 @@ class Post extends Model
                 'type' => 'json',
                 'label' => 'Options',
                 'col_span' => 3,
-                'sequence' => 8,
+                'sequence' => 9,
                 'help' => 'Use this to store structured data as JSON'
             ],
             'links' => [
                 'type' => 'textarea',
                 'label' => 'Links',
                 'col_span' => 8,
-                'sequence' => 9,
+                'sequence' => 10,
                 'rows' => 3,
                 'help' => 'Link this post to other posts with different relationships'
             ],
@@ -366,7 +369,7 @@ class Post extends Model
                 'type' => 'label',
                 'label' => 'switches',
                 'col_span' => 8,
-                'sequence' => 10,
+                'sequence' => 11,
                 'help' => 'This label seperates the switches from the rest'
             ],
 

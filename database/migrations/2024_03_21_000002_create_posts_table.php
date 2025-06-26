@@ -30,7 +30,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('post_type_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('slug')->unique();
+            $table->string('slug', 128);
+            $table->unique(['slug', 'user_id']);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrentOnUpdate()->useCurrent();
             $table->boolean('is_published')->default(false);

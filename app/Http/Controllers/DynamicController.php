@@ -129,11 +129,8 @@ class DynamicController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Get the table name from the URL path instead of route name
         $path = $request->path();
         $pathParts = explode('/', $path);
-        
-        // Extract table name from /api/{table}/{id}
         $table = $pathParts[1] ?? null;
         
         if (!$table) {
@@ -143,7 +140,6 @@ class DynamicController extends Controller
             ], 400);
         }
         
-        // Convert table name to model class
         $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
         
         if (!class_exists($modelClass)) {
@@ -154,38 +150,38 @@ class DynamicController extends Controller
         }
         
         $model = $modelClass::findOrFail($id);
-
-        // Filter request data to only include record fields (no metadata)
         $fillableFields = $model->getFillable();
         $data = $request->only($fillableFields);
-        
-        // Always include the ID for the update
         $data['id'] = $id;
 
-        // Ensure user_id is integer if it exists
-        if (isset($data['user_id'])) {
-            $data['user_id'] = (int) $data['user_id'];
-        }
-
-        // Convert boolean strings to actual booleans for all boolean fields
+        // Handle type casting
         $casts = $model->getCasts();
         foreach ($casts as $field => $cast) {
-            if ($cast === 'boolean' && isset($data[$field])) {
-                if (is_string($data[$field])) {
-                    $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
+            if (isset($data[$field])) {
+                switch ($cast) {
+                    case 'boolean':
+                        $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
+                        break;
+                    case 'integer':
+                        $data[$field] = (int) $data[$field];
+                        break;
+                    case 'array':
+                    case 'json':
+                        if (is_string($data[$field])) {
+                            $data[$field] = json_decode($data[$field], true);
+                        }
+                        break;
                 }
             }
         }
         
         try {
-            // Validate using model's validation rules AFTER data conversion
             if (method_exists($modelClass, 'validationRules')) {
                 \Validator::make($data, $modelClass::validationRules())->validate();
             }
             
             $model->update($data);
             
-            // Return JSON response for API routes
             return response()->json([
                 'success' => true,
                 'message' => Str::studly(Str::singular($table)) . ' updated successfully',
