@@ -30,13 +30,6 @@ const props = defineProps({
   error: Boolean
 });
 
-// Add debug log
-console.log('CategorySectionIcon props:', {
-  icon: props.icon,
-  activated: props.activated,
-  error: props.error
-});
-
 const _icon = computed(() => {
   let __icon = "transition hover:-translate-y-0.5 duration-300 h-3 w-3 hover:text-green-500 dark:hover:text-green-400 ";
   if(props.error) {

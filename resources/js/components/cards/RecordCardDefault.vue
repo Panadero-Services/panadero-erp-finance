@@ -56,10 +56,6 @@ const props = defineProps({
     }
 });
 
-// Add this debug log at the start of the component
-console.log('Record data:', props.record);
-console.log('Config:', props.config);
-
 // Add rich field formatters from RecordCardRows
 const defaultFieldFormatters = {
     date: (value) => {
@@ -153,23 +149,13 @@ const initials = computed(() => {
     return names[0].charAt(0).toUpperCase();
 });
 
-// Enhanced status flags with modern styling
+// Enhanced status flags with modern styling - now using meta.boolean_fields
 const statusFlags = computed(() => {
-    // Make sure we're using all flags
-    const allFlags = [
-        'is_published',
-        'is_public',
-        'is_featured',
-        'is_locked',
-        'is_self',
-        'is_smart',
-        'is_active',
-        'is_archived'
-    ];
-
-    return allFlags.map(flag => {
+    // Use meta.boolean_fields instead of hardcoded flags
+    const booleanFields = props.meta?.boolean_fields || [];
+    
+    return booleanFields.map(flag => {
         const value = props.record?.[flag];
-        console.log(`Processing flag ${flag}:`, value);
         
         return {
             key: flag,
@@ -228,7 +214,12 @@ const navigateToLink = (link) => {
 
 // Computed property for content fields
 const contentFields = computed(() => {
-    return props.meta?.content_fields || props.meta?.getContentFields || ['description', 'body'];
+    return props.meta?.content_fields || ['description', 'body'];
+});
+
+// Get the main content field (first element from content_fields)
+const mainContentField = computed(() => {
+    return contentFields.value[0] || 'description';
 });
 
 // Add this method to handle viewing a link
@@ -249,6 +240,32 @@ const submit = async () => {
         return;
     }
     // ... rest of submit function
+};
+
+// Add copy to clipboard function
+const copyToClipboard = async (text) => {
+    try {
+        await navigator.clipboard.writeText(text);
+        // You could add a toast notification here
+        console.log('Copied to clipboard');
+    } catch (err) {
+        // Fallback for older browsers or when clipboard API is not available
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            console.log('Copied to clipboard (fallback)');
+        } catch (fallbackErr) {
+            console.error('Failed to copy: ', fallbackErr);
+        }
+        document.body.removeChild(textArea);
+    }
 };
 </script>
 
@@ -271,11 +288,11 @@ const submit = async () => {
                 <!-- Row 2: Icons and Updated time -->
                 <div class="flex justify-between items-center mb-2">
                     <!-- Updated time aligned with title -->
-                    <p class="text-[10px] text-gray-500 dark:text-gray-400 ml-8 -mt-1">
+                    <p class="text-[10px] text-gray-500 dark:text-gray-400 ml-8 -mt-3">
                         {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago
                     </p>
-                    <!-- Icons on right -->
-                    <div class="flex gap-1 items-center pr-2">
+                    <!-- Icons on right - only show if there are boolean fields -->
+                    <div v-if="meta?.boolean_fields?.length" class="flex gap-1 items-center pr-2 mt-0.5">
                         <CategorySectionIcon 
                             v-for="flag in statusFlags"
                             :key="flag.key"
@@ -288,13 +305,13 @@ const submit = async () => {
                 </div>
 
                 <!-- Row 3: Tabs - keep border only for selected tab -->
-                <div class="flex -mx-3 px-2 justify-between items-center">
-                    <div class="flex">
-                        <button v-for="tab in ['content', 'meta', 'bit', 'links']" 
+                <div class="flex -mx-3 px-2 justify-between items-center -mt-0.5">
+                    <div class="flex ml-[10px]">
+                        <button v-for="tab in ['content', 'record', 'meta', 'links']" 
                                 :key="tab"
                                 @click="activeTab = tab"
                                 :class="[
-                                    'px-2 py-1 text-[11px] font-medium transition-colors duration-200 whitespace-nowrap',
+                                    'px-1 py-1 text-[11px] font-medium transition-colors duration-200 whitespace-nowrap',
                                     activeTab === tab 
                                         ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' 
                                         : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -320,78 +337,191 @@ const submit = async () => {
             </div>
 
             <!-- Content area -->
-            <div class="flex-1 overflow-y-auto">
+            <div class="flex-1 overflow-y-auto bg-white dark:bg-transparent -mx-3 px-3 pt-1">
                 <!-- Content tab -->
-                <div v-if="activeTab === 'content'" class="grid grid-cols-2 gap-2 px-1">
-                    <!-- Description -->
-                    <div v-if="record?.[config.description]" 
-                         class="col-span-2 bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                <div v-if="activeTab === 'content'" class="space-y-2 px-1">
+                    <!-- Main content field (full width) -->
+                    <div v-if="record?.[mainContentField] && meta?.content_fields?.includes(mainContentField)" 
+                         class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
                         <div class="flex items-start gap-2 px-2 py-1">
                             <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400 shrink-0">
-                                Description
+                                {{ mainContentField.charAt(0).toUpperCase() + mainContentField.slice(1) }}
                             </span>
                             <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
-                                {{ record[config.description] }}
+                                {{ record[mainContentField] }}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Other fields -->
-                    <template v-for="col in columns" :key="col.key">
-                        <div v-if="!['description'].includes(col.key)" 
-                             class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-                            <div class="flex items-center justify-between px-2 py-1.5">
-                                <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
-                                    {{ col.label }}
-                                </span>
-                                <div class="flex items-center">
-                                    <div v-if="col.formatter === 'boolean'" class="flex items-center">
-                                        <div class="w-1.5 h-1.5 rounded-full"
-                                             :class="record[col.key] ? 'bg-green-500' : 'bg-red-500'">
+                    <!-- Other content fields -->
+                    <div v-if="meta?.content_fields?.length > 1" class="grid grid-cols-2 gap-2">
+                        <template v-for="fieldName in meta.content_fields" :key="fieldName">
+                            <div v-if="fieldName !== mainContentField" 
+                                 class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center justify-between px-2 py-1.5">
+                                    <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                                        {{ fieldName.charAt(0).toUpperCase() + fieldName.slice(1) }}
+                                    </span>
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 ml-[5px] leading-tight">
+                                        <!-- Boolean field formatting -->
+                                        <div v-if="meta?.boolean_fields?.includes(fieldName)" class="flex items-center">
+                                            <div class="w-1.5 h-1.5 rounded-full"
+                                                 :class="record[fieldName] ? 'bg-green-500' : 'bg-red-500'">
+                                            </div>
+                                            <span class="ml-1">
+                                                {{ record[fieldName] ? 'Yes' : 'No' }}
+                                            </span>
                                         </div>
-                                        <span class="ml-1 text-[10px] text-gray-500 dark:text-gray-400">
-                                            {{ record[col.key] ? 'Yes' : 'No' }}
-                                        </span>
-                                    </div>
-                                    <div v-else-if="col.formatter === 'color'" class="flex items-center">
-                                        <div class="w-2.5 h-2.5 rounded-sm"
-                                             :style="{ backgroundColor: record[col.key] }">
-                                        </div>
-                                        <span class="ml-1.5 text-[10px] text-gray-500 dark:text-gray-400">
-                                            {{ record[col.key] }}
-                                        </span>
-                                    </div>
-                                    <div v-else-if="col.key.includes('date') || col.formatter === 'date'">
-                                        <span class="text-[10px] text-gray-500 dark:text-gray-400">
-                                            {{ new Date(record[col.key]).toLocaleDateString() }}
-                                        </span>
-                                    </div>
-                                    <div v-else class="text-[10px] text-gray-500 dark:text-gray-400">
-                                        {{ record[col.key] || '-' }}
+                                        <!-- Object field formatting -->
+                                        <template v-else-if="typeof record[fieldName] === 'object' && record[fieldName] !== null">
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(record[fieldName]) ? `${record[fieldName].length} items` : `${Object.keys(record[fieldName]).length} properties` }}
+                                            </span>
+                                        </template>
+                                        <!-- Regular field formatting -->
+                                        <template v-else>
+                                            {{ record[fieldName] !== null && record[fieldName] !== undefined ? record[fieldName] : '-' }}
+                                        </template>
                                     </div>
                                 </div>
                             </div>
+                        </template>
+                    </div>
+
+                    <!-- Object/Array fields (full width) -->
+                    <div v-if="meta?.content_fields?.length > 1" class="space-y-1.5">
+                        <template v-for="fieldName in meta.content_fields" :key="fieldName">
+                            <div v-if="fieldName !== mainContentField && record?.[fieldName] && typeof record[fieldName] === 'object' && !(Array.isArray(record[fieldName]) && record[fieldName].length <= 3)" 
+                                 class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="px-2 py-1.5">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                                            {{ fieldName.charAt(0).toUpperCase() + fieldName.slice(1) }}
+                                        </div>
+                                        <button 
+                                            @click="copyToClipboard(JSON.stringify(record[fieldName], null, 2))"
+                                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                            title="Copy JSON content"
+                                        >
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(record[fieldName]) ? `${record[fieldName].length} items` : `${Object.keys(record[fieldName]).length} properties` }}
+                                            </span>
+                                            <pre class="whitespace-pre-wrap">{{ JSON.stringify(record[fieldName], null, 2) }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Record tab -->
+                <div v-else-if="activeTab === 'record'" class="space-y-2 px-1">
+                    <!-- Main record field (first field from record) - only if it's an object/array -->
+                    <div v-if="record && Object.keys(record).length > 0 && typeof record[Object.keys(record)[0]] === 'object' && record[Object.keys(record)[0]] !== null" 
+                         class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-start gap-2 px-2 py-1">
+                            <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400 shrink-0">
+                                {{ Object.keys(record)[0].charAt(0).toUpperCase() + Object.keys(record)[0].slice(1) }}
+                            </span>
+                            <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
+                                {{ record[Object.keys(record)[0]] || '-' }}
+                            </div>
                         </div>
-                    </template>
+                    </div>
+
+                    <!-- All record fields in grid (including first field if not object/array) -->
+                    <div v-if="record && Object.keys(record).length > 0" class="grid grid-cols-2 gap-2">
+                        <template v-for="(value, fieldName) in record" :key="fieldName">
+                            <div v-if="typeof value !== 'object' || value === null || (Array.isArray(value) && value.length <= 3)" 
+                                 class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center justify-between px-2 py-1.5">
+                                    <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                                        {{ fieldName.charAt(0).toUpperCase() + fieldName.slice(1) }}
+                                    </span>
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 ml-[5px] leading-tight">
+                                        <!-- Boolean field formatting -->
+                                        <div v-if="meta?.boolean_fields?.includes(fieldName)" class="flex items-center">
+                                            <div class="w-1.5 h-1.5 rounded-full"
+                                                 :class="value ? 'bg-green-500' : 'bg-red-500'">
+                                            </div>
+                                            <span class="ml-1">
+                                                {{ value ? 'Yes' : 'No' }}
+                                            </span>
+                                        </div>
+                                        <!-- Object field formatting -->
+                                        <template v-else-if="typeof value === 'object' && value !== null">
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
+                                            </span>
+                                        </template>
+                                        <!-- Regular field formatting -->
+                                        <template v-else>
+                                            {{ value !== null && value !== undefined ? value : '-' }}
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Object/Array fields (full width) -->
+                    <div v-if="record && Object.keys(record).length > 0" class="space-y-1.5">
+                        <template v-for="(value, fieldName) in record" :key="fieldName">
+                            <div v-if="typeof value === 'object' && value !== null && !(Array.isArray(value) && value.length <= 3)" 
+                                 class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="px-2 py-1.5">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                                            {{ fieldName.charAt(0).toUpperCase() + fieldName.slice(1) }}
+                                        </div>
+                                        <button 
+                                            @click="copyToClipboard(JSON.stringify(value, null, 2))"
+                                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                            title="Copy JSON content"
+                                        >
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
+                                            </span>
+                                            <pre class="whitespace-pre-wrap">{{ JSON.stringify(value, null, 2) }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
 
                 <!-- Meta tab -->
-                <div v-else-if="activeTab === 'meta'" class="space-y-1.5">
-                    <template v-if="meta">
+                <div v-else-if="activeTab === 'meta'" class="space-y-3">
+                    <!-- Part 1: Non-JSON/Array fields in 2 columns -->
+                    <div v-if="meta" class="grid grid-cols-2 gap-2">
                         <template v-for="(value, key) in meta" :key="key">
-                            <div class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
-                                <div class="flex items-start gap-2 px-2 py-1.5">
-                                    <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400 shrink-0">
+                            <div v-if="typeof value !== 'object' || (Array.isArray(value) && value.length <= 3)" 
+                                 class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="flex items-center justify-between px-2 py-1.5">
+                                    <span class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
                                         {{ key }}
                                     </span>
-                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-normal">
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 ml-[5px] leading-tight">
                                         <template v-if="typeof value === 'object'">
-                                            <div class="flex items-center gap-2">
-                                                <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                                                    {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
-                                                </span>
-                                                <pre class="whitespace-pre-wrap">{{ JSON.stringify(value, null, 2) }}</pre>
-                                            </div>
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
+                                            </span>
                                         </template>
                                         <template v-else>
                                             {{ value }}
@@ -400,34 +530,43 @@ const submit = async () => {
                                 </div>
                             </div>
                         </template>
-                    </template>
-                    <div v-else class="text-[10px] text-gray-500 dark:text-gray-400 text-center py-2">
-                        No meta data available
                     </div>
-                </div>
 
-                <!-- Bit tab -->
-                <div v-else-if="activeTab === 'bit'" class="grid grid-cols-3 gap-2">
-                    <div v-for="flag in meta?.boolean_fields || []" 
-                         :key="flag"
-                         class="flex items-center justify-between p-2 rounded"
-                         :class="`bg-${getStatusColor(flag)}-50 dark:bg-${getStatusColor(flag)}-900/20`">
-                        <div class="flex items-center gap-2">
-                            <component 
-                                :is="getIconForFlag(flag)"
-                                class="h-3.5 w-3.5 stroke-[1.5]"
-                                :class="`text-${getStatusColor(flag)}-600 dark:text-${getStatusColor(flag)}-400`"
-                            />
-                            <span class="text-[10px] font-medium" 
-                                  :class="`text-${getStatusColor(flag)}-700 dark:text-${getStatusColor(flag)}-300`">
-                                {{ flag.replace('is_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
-                            </span>
-                        </div>
-                        <CategorySectionIcon 
-                            :icon="record.icon"
-                            :activated="true" 
-                            :error="false" 
-                        />
+                    <!-- Part 2: JSON/Array fields in 1 column -->
+                    <div v-if="meta" class="space-y-1.5">
+                        <template v-for="(value, key) in meta" :key="key">
+                            <div v-if="typeof value === 'object' && !(Array.isArray(value) && value.length <= 3)" 
+                                 class="bg-gray-50 dark:bg-gray-700/50 rounded border border-gray-200 dark:border-gray-700">
+                                <div class="px-2 py-1.5">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="text-[10px] font-medium text-blue-700 dark:text-blue-400">
+                                            {{ key }}
+                                        </div>
+                                        <button 
+                                            @click="copyToClipboard(JSON.stringify(value, null, 2))"
+                                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                            title="Copy JSON content"
+                                        >
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-1.5 py-0.5 text-[9px] rounded bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                {{ Array.isArray(value) ? `${value.length} items` : `${Object.keys(value).length} properties` }}
+                                            </span>
+                                            <pre class="whitespace-pre-wrap">{{ JSON.stringify(value, null, 2) }}</pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div v-if="!meta" class="text-[10px] text-gray-500 dark:text-gray-400 text-center py-2">
+                        No meta data available
                     </div>
                 </div>
 
@@ -460,7 +599,7 @@ const submit = async () => {
             </div>
 
             <!-- Card Footer -->
-            <div class="h-12 -mx-3 -mb-3 px-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+            <div class="h-12 -mx-3 -mb-3 px-3 flex items-center justify-between bg-white dark:bg-gray-800 rounded-b-lg">
                 <!-- Left side with Color icon and ID -->
                 <div class="flex items-center gap-2">
                     <!-- Color indicator -->
@@ -469,7 +608,7 @@ const submit = async () => {
                              :style="{ backgroundColor: record.color }">
                         </div>
                     </div>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">id: {{ record.id }}</span>
+                    <span class="text-xxs text-gray-500 dark:text-gray-400">id: {{ record.id }}</span>
                 </div>
                 
                 <!-- Right side - Action buttons -->

@@ -85,6 +85,10 @@ class DynamicController extends Controller
             $meta['status_mapping'] = $modelClass::getStatusMapping();
         }
 
+        if (method_exists($modelClass, 'getContentFields')) {
+            $meta['content_fields'] = $modelClass::getContentFields();
+        }
+
         // Add boolean fields from the model using an instance
         $modelInstance = new $modelClass();
         if (method_exists($modelInstance, 'getCasts')) {

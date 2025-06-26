@@ -435,7 +435,7 @@ class Post extends Model
      */
     public static function getContentFields(): array {
         return [
-            'title', 'body', 'options', 'links'
+             'body', 'is_active', 'is_archived', 'is_smart'
         ];
     }
 }

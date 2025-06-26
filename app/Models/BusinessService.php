@@ -352,7 +352,7 @@ class BusinessService extends Model
     public static function getContentFields(): array
     {
         return [
-            'description', 'version', 'icon', 'path'
+            'description', 'version', 'icon', 'is_active', 'progress'
         ];
     }
 } 
