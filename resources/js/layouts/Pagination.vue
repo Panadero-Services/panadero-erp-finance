@@ -10,7 +10,7 @@
 </script>
 
 <template>
-  <div class="flex items-center justify-between border-t border-gray-200 px-4 py-3 sm:px-6">
+  <div class="flex items-center justify-between px-4 py-3 sm:px-6">
     <div class="flex flex-1 justify-between sm:hidden">
       <Link v-if="previousUrl" :href="previousUrl" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</Link>
       <span v-else class="relative inline-flex items-center rounded-md border border-gray-300 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-400 cursor-not-allowed">Previous</span>

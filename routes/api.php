@@ -22,6 +22,7 @@ use OpenAI\ValueObjects\Transporter\Payload;
 use GuzzleHttp\Client as GuzzleClient;
 use App\Http\Resources\UserResource;
 use App\Http\Controllers\ModelConfigController;
+use App\Http\Controllers\DynamicController;
 
 Route::apiResource('providers', ProviderController::class);
 
@@ -193,3 +194,6 @@ Route::post('/ai/chat', function (Request $request) {
 
 // Add this at the end or in the appropriate section for API resources
 Route::get('/resource/{table}', [\App\Http\Controllers\ResourceController::class, 'index']);
+
+// Add this with your other API routes
+Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);

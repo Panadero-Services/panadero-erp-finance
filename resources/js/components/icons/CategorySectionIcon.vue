@@ -10,7 +10,10 @@ import {
     UserIcon,
     HeartIcon,
     FireIcon,
-    TvIcon
+    TvIcon,
+    EyeIcon,
+    PencilSquareIcon,
+    TrashIcon
 } from '@heroicons/vue/24/outline';
 // import { 
 //     DocumentCheckIcon,
@@ -67,6 +70,9 @@ const getIconForFlag = (flag) => {
         <HeartIcon v-if="icon=='Heart'" :class="_icon" />
         <FireIcon v-if="icon=='Fire'" :class="_icon" />
         <TvIcon v-if="icon=='Tv'" :class="_icon" />
+        <EyeIcon v-if="icon=='Eye'" :class="_icon" />
+        <PencilSquareIcon v-if="icon=='PencilSquare'" :class="_icon" />
+        <TrashIcon v-if="icon=='Trash'" :class="_icon" />
       </div>
 </template>
 

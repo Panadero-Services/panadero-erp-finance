@@ -254,4 +254,92 @@ class DynamicController extends Controller
         
         return response()->json($records);
     }
+
+    /**
+     * Update a single field value for any model
+     * Used primarily for quick updates like icons, status, etc.
+     */
+    public function updateField(Request $request, $table, $id)
+    {
+        try {
+            // Convert table name to model class
+            $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
+            
+            if (!class_exists($modelClass)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model {$modelClass} not found"
+                ], 404);
+            }
+
+            // Validate basic required fields
+            $request->validate([
+                'field' => 'required|string',
+                'value' => 'required'
+            ]);
+
+            $field = $request->field;
+            $value = $request->value;
+
+            // Get model instance
+            $model = $modelClass::findOrFail($id);
+
+            // Check if field is fillable
+            if (!in_array($field, $model->getFillable())) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Field {$field} is not fillable in {$table}"
+                ], 422);
+            }
+
+            // Handle type casting based on model's cast definitions
+            $casts = $model->getCasts();
+            if (isset($casts[$field])) {
+                switch ($casts[$field]) {
+                    case 'boolean':
+                        $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+                        break;
+                    case 'integer':
+                        $value = (int) $value;
+                        break;
+                    case 'array':
+                    case 'json':
+                        if (is_string($value)) {
+                            $value = json_decode($value, true);
+                        }
+                        break;
+                }
+            }
+
+            // Update the field
+            $model->update([$field => $value]);
+
+            // Optional: Add a small delay if needed for UI feedback
+            if ($request->has('delay')) {
+                sleep(1);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$table}: {$field} updated to {$value} for ID: {$id}",
+                'data' => [
+                    'id' => $id,
+                    'field' => $field,
+                    'value' => $value,
+                    'table' => $table
+                ]
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Record not found in {$table} with ID: {$id}"
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
 } 

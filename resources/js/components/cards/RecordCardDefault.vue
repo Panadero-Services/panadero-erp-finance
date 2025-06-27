@@ -16,6 +16,7 @@ import {
     QuestionMarkCircleIcon
 } from '@heroicons/vue/24/outline';
 import ShowRecordDefault from "@/components/modals/ShowRecordDefault.vue";
+import axios from 'axios';
 
 const props = defineProps({
     module: String,
@@ -80,9 +81,9 @@ const defaultFieldFormatters = {
 };
 
 // variables
-const _iconChangedField = ref('iconChanged');
-const _iconChangedId = ref(0);
-const _iconChangedValue = ref(false);
+const _iconChangedField = ref('');
+const _iconChangedId = ref(null);
+const _iconChangedValue = ref(null);
 const _true = true;
 const _false = false;
 const activeTab = ref('content');
@@ -103,34 +104,45 @@ const _body = computed(() => {
 // Update icon handler
 const _updateIcon = async (_id, _field, _value) => {    
     try {
-    const i = {
-        id: _id,
-        field: _field,
-        value: _value
-    };
-    _iconChangedField.value = `${_field} updated`;
-    _iconChangedId.value = _id;
-    _iconChangedValue.value = _value;
-    
-        if (!props.db) throw new Error('Database connection not available');
-    
-    const _response = await props.db.postUpdateIcon(props.table, i);
+        // Store local state for UI feedback
+        _iconChangedField.value = `${_field} updated`;
+        _iconChangedId.value = _id;
+        _iconChangedValue.value = _value;
+        
+        if (!props.table) throw new Error('Table name is required');
+
+        // Use the new generic field update endpoint
+        const response = await axios.patch(`/api/${props.table}/${_id}/field`, {
+            field: _field,
+            value: _value,
+            delay: true
+        });
 
         // Log action with enhanced data
-    const _logData = {
-        action: "recordcard.updateicon",
-        user_id: usePage().props.auth.user.id || 'no_uid',
-        module: props.module, 
-        node: 'none',
-        team: usePage().props.auth.user.current_team.name || 'no_team',
-        project: 'none', 
-        content: _response.data,
-            json: JSON.stringify(i),
-        tags: `${props.module}, ${props.table}`,
+        const _logData = {
+            action: "recordcard.updateicon",
+            user_id: usePage().props.auth.user.id || 'no_uid',
+            module: props.module, 
+            node: 'none',
+            team: usePage().props.auth.user.current_team.name || 'no_team',
+            project: 'none', 
+            content: response.data,
+            json: JSON.stringify({ id: _id, field: _field, value: _value }),
+            tags: `${props.module}, ${props.table}`,
         };
-        await props.db.logAction(_logData);
+
+        // If db prop exists, log the action
+        if (props.db) {
+            await props.db.logAction(_logData);
+        }
+
+        // Optional: Add success feedback
+        console.log('Icon updated successfully:', response.data);
+
     } catch (error) {
         console.error('Error updating icon:', error);
+        // Optional: Add error feedback to UI
+        _iconChangedField.value = 'Error updating icon';
     }
 }
 
@@ -267,6 +279,27 @@ const copyToClipboard = async (text) => {
         document.body.removeChild(textArea);
     }
 };
+
+// In the script section, simplify to just handle any boolean field
+const handleIconToggle = async (field) => {
+    try {
+        const currentValue = props.record[field];
+        const newValue = !currentValue;
+        
+        // Make API call to update the field
+        const response = await axios.patch(`/api/${props.table}/${props.record.id}/field`, {
+            field: field,
+            value: newValue
+        });
+
+        // Update local state if successful
+        if (response.data.success) {
+            props.record[field] = newValue;
+        }
+    } catch (error) {
+        console.error('Error toggling icon:', error);
+    }
+};
 </script>
 
 <template>
@@ -297,9 +330,11 @@ const copyToClipboard = async (text) => {
                             v-for="flag in statusFlags"
                             :key="flag.key"
                             :icon="flag.icon"
-                            :activated="flag.active"
+                            :activated="record[flag.key]"
                             :error="false"
-                            :title="flag.label"
+                            :title="flag.key.replace('is_', '')"
+                            @click="handleIconToggle(flag.key)"
+                            class="cursor-pointer"
                         />
                     </div>
                 </div>
