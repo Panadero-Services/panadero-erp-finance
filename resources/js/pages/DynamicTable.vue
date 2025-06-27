@@ -88,7 +88,8 @@ const keyIndex = ref(0);
 const viewModes = [
     { id: 'default', label: 'Default' },
     { id: 'compact', label: 'Compact' },
-    { id: 'rows', label: 'Rows' }
+    { id: 'rows', label: 'Rows' },
+    { id: 'grid', label: 'Grid' }
 ];
 
 let _poolTimer; 
@@ -285,6 +286,7 @@ const handleViewModeChange = (mode) => {
         // Set different per_page based on view mode
         const perPageMap = {
             'compact': 60,
+            'grid': 48,
             'rows': 24,
             'default': 10
         };
@@ -316,9 +318,9 @@ const selectViewMode = (modeId) => {
     showAppearanceOptions.value = false;
 };
 
-// Keyboard shortcuts for ⌘4, ⌘5, ⌘6
+// Keyboard shortcuts for ⌘4, ⌘5, ⌘6, ⌘7
 const handleAppearanceShortcuts = (event) => {
-  if ((event.metaKey || event.ctrlKey) && ['4', '5', '6'].includes(event.key)) {
+  if ((event.metaKey || event.ctrlKey) && ['4', '5', '6', '7'].includes(event.key)) {
     event.preventDefault();
     const idx = parseInt(event.key, 10) - 4;
     if (viewModes[idx]) {
@@ -532,12 +534,14 @@ const { getStatusColor } = Badges;
                 <!-- Card Views (Default and Compact) -->
                 <div v-else :class="[
                     viewMode === 'default' ? 'grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6' : '',
-                    viewMode === 'compact' ? 'flex flex-wrap gap-1' : ''
+                    viewMode === 'compact' ? 'flex flex-wrap gap-1' : '',
+                    viewMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-12 gap-2' : ''
                 ]">
                     <div v-for="record in records.data" :key="record.id" 
                          :class="[
                              viewMode === 'default' ? 'text-sm' : '',
-                             viewMode === 'compact' ? 'text-xs' : ''
+                             viewMode === 'compact' ? 'text-xs' : '',
+                             viewMode === 'grid' ? 'text-xs' : ''
                          ]">
                         
                         <!-- Default Card View -->
@@ -557,7 +561,7 @@ const { getStatusColor } = Badges;
                         
                         <!-- Compact Card View -->
                         <RecordCardCompact
-                            v-if="viewMode === 'compact'"
+                            v-if="viewMode === 'compact' || viewMode === 'grid'"
                             :record="record"
                             :meta="records.meta"
                             :module="_module"

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { formatDistance } from 'date-fns';
 import CategorySectionIcon from '@/components/icons/CategorySectionIcon.vue';
 import { usePage } from '@inertiajs/vue3';
+import Badges from '@/components/colors/Badges.vue';
 import { 
     EyeIcon,
     PencilIcon,
@@ -117,11 +118,20 @@ const formatTitle = (title) => {
 </script>
 
 <template>
-    <div class="relative block w-80 h-[60px] m-1">
+    <div class="relative block w-80 h-[64px] m-1 ">
         <!-- Main Card Container -->
-        <div class="h-full flex rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="h-full flex rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden ">
+          
+
+
+
+
+
+
+
+
             <!-- Left Avatar - Full Height -->
-            <div class="w-6 min-w-[1.5rem] flex items-center justify-center px-0 bg-gradient-to-br from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-800">
+            <div class="w-6 min-w-[1.5rem] flex items-center justify-center px-0 bg-gradient-to-br from-blue-500 to-indigo-600 via-indigo-700 dark:from-blue-600 dark:to-indigo-800">
                 <span class="text-[9px] font-medium text-blue-200 transform -rotate-90 uppercase whitespace-nowrap px-0">
                     {{ record.item || (record?.[config.title] && formatTitle(record[config.title])) || 'U' }}
                 </span>
@@ -130,19 +140,54 @@ const formatTitle = (title) => {
             <!-- Right Content -->
             <div class="flex-1 flex flex-col bg-white dark:bg-gray-800">
                 <!-- Top Row: Title with strict 80% width and single line clamp -->
-                <div class="h-[30px] flex items-center px-3">
-                    <div class="w-4/5 flex-none">
-                        <h3 class="text-xs font-medium text-gray-900 dark:text-white line-clamp-1">
+                <div class="h-[25px] flex items-center px-3 mt-1">
+                    <div class="w-4/5 flex">
+
+
+
+
+
+
+                        <h3 class="text-xs font-medium text-gray-900 dark:text-white line-clamp-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" 
+                            @click="$emit('show', record?.id ?? 0)">                            
+
+
+    
+
                             {{ record?.[config.title] }}
-                            <span v-if="record.version" class="text-[10px] text-gray-500 dark:text-gray-400 ml-1">
-                                v{{ record.version }}
-                            </span>
+
                         </h3>
                     </div>
+                    <div class="w-1/5 flex-none text-xxxs text-right text-gray-900 dark:text-white ">
+                        {{ record?.version || 'id' + record?.id}}
+                    </div>
+
                 </div>
 
+
+                <!-- Middle Row: Title with strict 80% width and single line clamp -->
+                <div class="h-[10px] flex items-center px-3 flex">
+                    
+                    <div class="w-2/5 ">
+
+
+
+
+
+                        <span  class="text-xxxs text-gray-500 dark:text-gray-400 ">
+                        {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago
+                        </span>
+                    </div>
+
+                </div>
+
+
+
+
+
+
                 <!-- Bottom Row: Completely Independent -->
-                <div class="h-[30px] flex items-center px-3">
+                <div class="h-[25px] flex items-center px-3 mt-2">
                     <!-- Left Side: Icons -->
                     <div class="flex-1 min-w-0 overflow-hidden">
                         <div class="flex items-center space-x-1 translate-y-[1px]">
@@ -152,33 +197,62 @@ const formatTitle = (title) => {
                                 :icon="flag.icon"
                                 :activated="record[flag.key]"
                                 :error="false"
-                                class="h-3 w-3"
+                                size="2.5"
                             />
                         </div>
                     </div>
 
+
+
+
+                 <!-- Status Badge -->
+                        <div v-if="record?.status" class="w-1/5 scale-75 -mt-2">
+                            <Badges 
+                                :status="record.status"
+                                size="xxs"
+                                variant="badge"
+                            />
+                        </div>  
+
+                        <!-- Color indicator -->
+                        <div v-else-if="record?.color" class="scale-75 -mt-2" title="Color">
+                            <div class="w-2.5 h-2.5 rounded-sm"
+                                 :style="{ backgroundColor: record.color }">
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+
                     <!-- Right Side: Action Icons -->
-                    <div class="flex-none flex items-center space-x-1">
+                    <div class="flex-none flex items-center space-x-1 w-1/5 justify-end -mr-0.5">
                         <CategorySectionIcon 
                             icon="Eye"
-                            :activated="false"
+                            :activated="true"
                             :error="false"
-                            class="h-3 w-3 text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                                size="2.5"
                             @click="$emit('show', record?.id ?? 0)"
                         />
                         <CategorySectionIcon 
                             v-if="!(set?.self==='nope')"
                             icon="PencilSquare"
-                            :activated="false"
+                            :activated="true"
                             :error="false"
-                            class="h-3 w-3 text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                            size="2.5"
+                            activatedColor="text-green-600 dark:text-green-400"
                             @click="$emit('edit', record?.id ?? 0)"
                         />
                         <CategorySectionIcon 
                             icon="Trash"
-                            :activated="false"
+                            :activated="true"
                             :error="false"
-                            class="h-3 w-3 text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                            size="2.5"
+                            activatedColor="text-red-600 dark:text-red-400"
                             @click="$emit('delete', record?.id ?? 0)"
                         />
                     </div>

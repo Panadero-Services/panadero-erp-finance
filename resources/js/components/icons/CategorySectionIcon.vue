@@ -30,17 +30,33 @@ import {
 const props = defineProps({
   icon: String,
   activated: Boolean,
-  error: Boolean
+  error: Boolean,
+  size: {
+    type: String,
+    default: '3'
+  },
+  activatedColor: {
+    type: String,
+    default: 'text-indigo-600 dark:text-indigo-400'
+  },
+  nonActivatedColor: {
+    type: String,
+    default: 'text-gray-400 dark:text-gray-600'
+  },
+  errorColor: {
+    type: String,
+    default: 'text-red-600 dark:text-red-400'
+  }
 });
 
+let __icon = `transition hover:-translate-y-0.5 duration-300 h-${props.size} w-${props.size} hover:text-green-500 dark:hover:text-green-400 `;
+
 const _icon = computed(() => {
-  let __icon = "transition hover:-translate-y-0.5 duration-300 h-3 w-3 hover:text-green-500 dark:hover:text-green-400 ";
-  if(props.error) {
-    __icon += "text-red-700 dark:text-red-400 ";
-    return __icon;
-  }
-  __icon +=  props.activated ? "text-indigo-700 dark:text-indigo-400 " : "text-gray-300 dark:text-gray-600 ";
-  return __icon;
+  const baseClasses = `transition hover:-translate-y-0.5 duration-300 h-${props.size} w-${props.size} hover:text-green-500 dark:hover:text-green-400`;
+  const colorClasses = props.activated ? props.activatedColor : props.nonActivatedColor;
+  const errorClasses = props.error ? props.errorColor : '';
+  
+  return `${baseClasses} ${colorClasses} ${errorClasses}`;
 });
 
 const getIconForFlag = (flag) => {
