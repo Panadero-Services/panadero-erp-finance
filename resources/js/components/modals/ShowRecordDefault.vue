@@ -343,6 +343,7 @@ onMounted(() => {
 </script>
 
 <template>
+
   <ModalLayout
     :record="record" 
     :title="record.title || record.name || 'Record Details'"
@@ -364,6 +365,7 @@ onMounted(() => {
     @navigate="navigateToRelated"
     @close="$emit('close')"
   >
+
     <!-- Content Tab -->
     <template v-if="getTabContent(activeTab) === 'content'">
       <div :class="['space-y-4', fontSizeClass]">

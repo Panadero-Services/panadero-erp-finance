@@ -15,6 +15,7 @@ const props = defineProps({
   table: String,
   superSelfAdmin: Boolean,
   db: Object,
+  meta: Object,
 });
 
 const emit = defineEmits(['close', 'changeRecord']);
@@ -80,6 +81,34 @@ const links = computed(() => {
 });
 
 const link = ref({ link_id: '', type: 'relates_to', link_title: '' });
+
+const optionsFormat = computed(() => {
+  // Get custom format from meta if available
+  const customFormat = props.meta?.options_format;
+  
+  // Default format
+  const defaultFormat = [
+    { name: 'name', type: 'text', label: 'Name', required: true },
+    { name: 'url', type: 'text', label: 'URL', required: true },
+    { name: 'route', type: 'text', label: 'Route', required: false }
+  ];
+
+  console.log('Meta options_format:', customFormat); // Debug log
+  console.log('Using format:', customFormat || defaultFormat); // Debug log
+
+  // Return custom format if available, otherwise use default
+  return customFormat || defaultFormat;
+});
+
+// Replace the existing newOption ref
+const newOption = ref(() => {
+  // Create an empty object with all fields from the format
+  const obj = {};
+  optionsFormat.value.forEach(field => {
+    obj[field.name] = '';
+  });
+  return obj;
+});
 
 // Methods
 const addLink = () => {
@@ -189,6 +218,23 @@ const _footer = {
   base: "fixed left-1/2 transform -translate-x-1/2 w-full max-w-4xl p-4 bg-gray-100 dark:bg-gray-900 rounded-b-xl dark:border-gray-600",
   switches: "fixed bottom-12 bg-gray-100 dark:bg-gray-900  border-t dark:border-gray-600",
   buttons: "flex bottom-0 justify-end space-x-4 border-b",
+};
+
+const addOption = () => {
+  // Check if all required fields are filled
+  const isValid = optionsFormat.value.every(field => 
+    !field.required || (newOption.value[field.name] && newOption.value[field.name].trim() !== '')
+  );
+  
+  if (isValid) {
+    const newOptions = [...options.value, { ...newOption.value }];
+    form.options = newOptions;
+    
+    // Reset newOption with empty values
+    optionsFormat.value.forEach(field => {
+      newOption.value[field.name] = '';
+    });
+  }
 };
 </script>
 

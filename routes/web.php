@@ -514,6 +514,9 @@ Route::get('test_user', function (){
         ]);
     })->name('api.status');
 
+    // Add this route in routes/web.php
+    Route::delete('/api/{table}/{id}', [DynamicController::class, 'destroy'])->name('dynamic.destroy');
+
 });
 
 // ========================================

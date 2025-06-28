@@ -365,4 +365,37 @@ class Future extends Model
         
         return [];
     }
+
+
+// For a model with color options
+public static function optionsFormat(): array
+{
+    return [
+        [
+            'name' => 'name',
+            'type' => 'text',
+            'label' => 'Color Name',
+            'required' => true
+        ],
+        [
+            'name' => 'hex',
+            'type' => 'color',
+            'label' => 'Color Code',
+            'required' => true
+        ],
+        [
+            'name' => 'opacity',
+            'type' => 'number',
+            'label' => 'Opacity',
+            'min' => 0,
+            'max' => 1,
+            'step' => 0.1,
+            'required' => false
+        ]
+    ];
+}
+
+
+
+    
 } 

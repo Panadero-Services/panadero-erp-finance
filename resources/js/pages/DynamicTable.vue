@@ -2,6 +2,7 @@
 import { ref, provide, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useForm, router } from "@inertiajs/vue3";
 import axios from 'axios';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -16,9 +17,10 @@ import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 import { useDbStore } from '@/stores/db';
 
-// Add ShowRecordDefault import
+// Modals impor default
 import ShowRecordDefault from "@/components/modals/ShowRecordDefault.vue";
-//import ShowRecordCompact from "@/components/modals/ShowRecordCompact.vue";
+import EditRecordDefault from '@/components/modals/EditRecordDefault.vue';
+import DeleteRecordDefault from '@/components/modals/DeleteRecordDefault.vue';
 
 // Add this import with the other imports
 import { Bars3Icon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
@@ -36,7 +38,6 @@ import Pagination from '@/layouts/Pagination.vue';
 import RecordCardDefault from '@/components/cards/RecordCardDefault.vue';
 import RecordCardCompact from '@/components/cards/RecordCardCompact.vue';
 import RecordCardRows from '@/components/cards/RecordCardRows.vue';
-import EditRecordDefault from '@/components/modals/EditRecordDefault.vue';
 
 import Search from '@/components/inputs/Search.vue';
 import Button from '@/components/buttons/Button0.vue';
@@ -98,6 +99,12 @@ let _pulse = ref(false);
 const darkMode = ref(false);
 
 provide('pulse', _pulse);
+
+// Add these refs
+const showDeleteDialog = ref(false);
+const recordToDelete = ref(null);
+const isDeleting = ref(false);
+const deleteError = ref(null);
 
 // functions
 const _loopTimer = async () => {
@@ -217,7 +224,15 @@ const handleShow = (id) => {
 };
 
 const handleDelete = (id) => {
-    console.log('Delete record:', id);
+    const record = props.records.data.find(x => x.id === id);
+    if (!record) {
+        console.error('Record not found:', id);
+        return;
+    }
+    
+    recordToDelete.value = record;
+    showDeleteDialog.value = true;
+    deleteError.value = null;
 };
 
 const handleSearch = (searchData) => {
@@ -371,6 +386,40 @@ onUnmounted(() => {
 
 // You can also use the exposed function directly
 const { getStatusColor } = Badges;
+
+// Update the delete handling
+const confirmDelete = async () => {
+    if (!recordToDelete.value) return;
+    
+    try {
+        isDeleting.value = true;
+        deleteError.value = null;
+        
+        // Use Inertia's visit method with delete
+        router.visit(`/api/${props.table}/${recordToDelete.value.id}`, {
+            method: 'delete',
+            onSuccess: () => {
+                showDeleteDialog.value = false;
+                recordToDelete.value = null;
+            },
+            preserveScroll: true
+        });
+        
+    } catch (error) {
+        deleteError.value = error.message;
+    } finally {
+        isDeleting.value = false;
+    }
+};
+
+// Make sure cancelDelete is properly defined
+const cancelDelete = () => {
+    if (!isDeleting.value) {
+        showDeleteDialog.value = false;
+        recordToDelete.value = null;
+        deleteError.value = null;
+    }
+};
 </script>
 
 <template>
@@ -492,7 +541,7 @@ const { getStatusColor } = Badges;
             <!-- Main Section : Cards / Rows -->
             <div :id="table" class="w-full min-h-[800px] min-w-full mt-2 px-6">
                 <!-- Rows View - Table Format -->
-                <div v-if="viewMode === 'rows'" class="bg-white dark:bg-gray-900 py-6 border border-gray-200 dark:border-gray-700 rounded-lg">
+                <div v-if="viewMode === 'rows'  || viewMode === 'grid'" class="bg-white dark:bg-gray-900 py-6 border border-gray-200 dark:border-gray-700 rounded-lg">
                     <h2 class="px-4 text-base/7 font-semibold text-gray-900 dark:text-white sm:px-6 lg:px-8">{{ table }} - table</h2>
                     <div class="mt-4 overflow-x-auto">
                         <table class="w-full whitespace-nowrap text-left">
@@ -561,7 +610,7 @@ const { getStatusColor } = Badges;
                         
                         <!-- Compact Card View -->
                         <RecordCardCompact
-                            v-if="viewMode === 'compact' || viewMode === 'grid'"
+                            v-if="viewMode === 'compact'"
                             :record="record"
                             :meta="records.meta"
                             :module="_module"
@@ -582,6 +631,18 @@ const { getStatusColor } = Badges;
         </template>
 
         <template #footer>
+
+            
         </template>
     </AppToolbarLayout>
+
+    <DeleteRecordDefault
+        :show="showDeleteDialog"
+        :record="recordToDelete || {}"
+        :is-deleting="isDeleting"
+        :error="deleteError"
+        :title-field="cardConfig.title"
+        @close="cancelDelete"
+        @confirm="confirmDelete"
+    />
 </template> 

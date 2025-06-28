@@ -17,6 +17,8 @@ import {
 } from '@heroicons/vue/24/outline';
 import ShowRecordDefault from "@/components/modals/ShowRecordDefault.vue";
 import axios from 'axios';
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
     module: String,
@@ -89,6 +91,9 @@ const _false = false;
 const activeTab = ref('content');
 const showViewModal = ref(false);
 const selectedLink = ref(null);
+const showDeleteDialog = ref(false);
+const isDeleting = ref(false);
+const deleteError = ref(null);
 
 // Process HTML content if needed
 const processHtml = (html) => {
@@ -105,12 +110,12 @@ const _body = computed(() => {
 const _updateIcon = async (_id, _field, _value) => {    
     try {
         // Store local state for UI feedback
-        _iconChangedField.value = `${_field} updated`;
-        _iconChangedId.value = _id;
-        _iconChangedValue.value = _value;
-        
+    _iconChangedField.value = `${_field} updated`;
+    _iconChangedId.value = _id;
+    _iconChangedValue.value = _value;
+    
         if (!props.table) throw new Error('Table name is required');
-
+    
         // Use the new generic field update endpoint
         const response = await axios.patch(`/api/${props.table}/${_id}/field`, {
             field: _field,
@@ -119,21 +124,21 @@ const _updateIcon = async (_id, _field, _value) => {
         });
 
         // Log action with enhanced data
-        const _logData = {
-            action: "recordcard.updateicon",
-            user_id: usePage().props.auth.user.id || 'no_uid',
-            module: props.module, 
-            node: 'none',
-            team: usePage().props.auth.user.current_team.name || 'no_team',
-            project: 'none', 
+    const _logData = {
+        action: "recordcard.updateicon",
+        user_id: usePage().props.auth.user.id || 'no_uid',
+        module: props.module, 
+        node: 'none',
+        team: usePage().props.auth.user.current_team.name || 'no_team',
+        project: 'none', 
             content: response.data,
             json: JSON.stringify({ id: _id, field: _field, value: _value }),
-            tags: `${props.module}, ${props.table}`,
+        tags: `${props.module}, ${props.table}`,
         };
 
         // If db prop exists, log the action
         if (props.db) {
-            await props.db.logAction(_logData);
+        await props.db.logAction(_logData);
         }
 
         // Optional: Add success feedback
@@ -662,7 +667,7 @@ const handleIconToggle = async (field) => {
                     </button>
                     <button 
                         @click="$emit('delete', record?.id)"
-                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
+                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-red-600 dark:text-red-400 ring-red-300 dark:ring-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:ring-red-600 dark:hover:ring-red-400 transition-colors duration-200"
                     >
                         Delete
                     </button>
@@ -670,4 +675,63 @@ const handleIconToggle = async (field) => {
             </div>
         </div>
     </div>
+
+    <!-- Add the delete dialog right after the main card div -->
+    <TransitionRoot as="template" :show="showDeleteDialog">
+        <Dialog class="relative z-10" @close="showDeleteDialog = false">
+            <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="fixed inset-0 bg-gray-500/75 dark:bg-gray-900/80 transition-opacity" />
+            </TransitionChild>
+
+            <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                        <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900 sm:mx-0 sm:size-10">
+                                    <ExclamationTriangleIcon class="size-6 text-red-600 dark:text-red-400" aria-hidden="true" />
+                                </div>
+                                <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                                    <DialogTitle as="h3" class="text-base font-semibold text-gray-900 dark:text-gray-100">
+                                        Delete {{ props.record?.[props.config?.title] || 'Record' }}
+                                    </DialogTitle>
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            Are you sure you want to delete this record? All of its data will be permanently removed. This action cannot be undone.
+                                        </p>
+                                        <!-- Error message -->
+                                        <p v-if="deleteError" class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                            {{ deleteError }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-5 sm:ml-10 sm:mt-4 sm:flex sm:pl-4">
+                                <button 
+                                    type="button" 
+                                    class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto" 
+                                    @click="handleDelete"
+                                    :disabled="isDeleting"
+                                >
+                                    <svg v-if="isDeleting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    {{ isDeleting ? 'Deleting...' : 'Delete' }}
+                                </button>
+                                <button 
+                                    type="button" 
+                                    class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 sm:ml-3 sm:mt-0 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed" 
+                                    @click="showDeleteDialog = false"
+                                    :disabled="isDeleting"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </DialogPanel>
+                    </TransitionChild>
+                </div>
+            </div>
+        </Dialog>
+    </TransitionRoot>
 </template> 

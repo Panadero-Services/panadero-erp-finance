@@ -441,4 +441,35 @@ class Post extends Model
              'body', 'is_active', 'is_archived', 'is_smart'
         ];
     }
+
+
+// For a model with API endpoint options
+public static function optionsFormat(): array
+{
+    return [
+        [
+            'name' => 'endpoint',
+            'type' => 'text',
+            'label' => 'API Endpoint',
+            'required' => true
+        ],
+        [
+            'name' => 'method',
+            'type' => 'select',
+            'label' => 'HTTP Method',
+            'options' => ['GET', 'POST', 'PUT', 'DELETE'],
+            'required' => true
+        ],
+        [
+            'name' => 'headers',
+            'type' => 'json',
+            'label' => 'Headers',
+            'required' => false
+        ]
+    ];
+}
+
+
+
+    
 }

@@ -5,9 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class DynamicController extends Controller
 {
+    protected function getModelClass($table)
+    {
+        // Convert table name to singular studly case
+        // e.g., 'blog_posts' -> 'BlogPost'
+        $modelName = Str::studly(Str::singular($table));
+        $modelClass = "App\\Models\\{$modelName}";
+
+        // Check if the model exists
+        if (!class_exists($modelClass)) {
+            Log::error("Model not found", [
+                'table' => $table,
+                'modelClass' => $modelClass
+            ]);
+            return null;
+        }
+
+        return $modelClass;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -60,6 +80,11 @@ class DynamicController extends Controller
         
         // Get meta data
         $meta = [];
+
+        // Add options format if available
+        if (method_exists($modelClass, 'optionsFormat')) {
+            $meta['options_format'] = $modelClass::optionsFormat();
+        }
         
         if (method_exists($modelClass, 'validationRules')) {
             $meta['validation_rules'] = $modelClass::validationRules();
@@ -340,6 +365,29 @@ class DynamicController extends Controller
                 'success' => false,
                 'message' => $e->getMessage()
             ], 500);
+        }
+    }
+    public function destroy($table, $id)
+    {
+        try {
+            $modelClass = $this->getModelClass($table);
+            if (!$modelClass) {
+                return back()->with('error', "Model for table '{$table}' not found");
+            }
+
+            $model = $modelClass::findOrFail($id);
+            $model->delete();
+
+            // Return to the previous page with a success message
+            return back()->with('success', 'Record deleted successfully');
+        } catch (\Exception $e) {
+            Log::error('Delete error', [
+                'table' => $table,
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Failed to delete record: ' . $e->getMessage());
         }
     }
 } 

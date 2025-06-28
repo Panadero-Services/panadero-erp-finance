@@ -222,13 +222,6 @@ const formatTitle = (title) => {
                         </div>
 
 
-
-
-
-
-
-
-
                     <!-- Right Side: Action Icons -->
                     <div class="flex-none flex items-center space-x-1 w-1/5 justify-end -mr-0.5">
                         <CategorySectionIcon 
