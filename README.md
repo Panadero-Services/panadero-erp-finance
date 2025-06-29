@@ -64,15 +64,3 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## Development Guidelines
-
-This project follows the Minimal Impact Approach for all code changes. See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
-
-Key principles:
-- One change at a time
-- Preserve existing functionality
-- Follow established patterns
-- Verify before expanding
-
-All contributors are expected to follow these guidelines unless explicitly directed otherwise.

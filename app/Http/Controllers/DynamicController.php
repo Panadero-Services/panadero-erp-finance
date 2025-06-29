@@ -374,21 +374,20 @@ class DynamicController extends Controller
             if (!$modelClass) {
                 return back()->with('error', "Model for table '{$table}' not found");
             }
-    
+
             $model = $modelClass::findOrFail($id);
-            
-            try {
-                $model->delete();
-                return back()->with('success', 'Record deleted successfully');
-            } catch (\PDOException $e) {
-                // Handle foreign key constraint violation
-                if ($e->getCode() == 23000) {
-                    return back()->with('error', 'Cannot delete this record because it is referenced by other records');
-                }
-                throw $e;
-            }
+            $model->delete();
+
+            // Return to the previous page with a success message
+            return back()->with('success', 'Record deleted successfully');
         } catch (\Exception $e) {
-            return back()->with('error', 'Error deleting record: ' . $e->getMessage());
+            Log::error('Delete error', [
+                'table' => $table,
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Failed to delete record: ' . $e->getMessage());
         }
     }
 } 

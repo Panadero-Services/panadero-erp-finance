@@ -379,7 +379,6 @@ const addLink = () => {
 };
 
 const removeLink = (i) => {
-  logDelete('link', i, links.value);
   const newLinks = [...links.value];
   newLinks.splice(i, 1);
   form.links = newLinks;
@@ -416,9 +415,10 @@ const updateLinksFromJson = (event) => {
 };
 
 // Options handling - always work with arrays
+const newOption = ref({ name: '', url: '', route: '' });
 const options = computed(() => {
-  // Get the options format from meta if available
-  const optionsFormat = props.meta.options_format || [];
+  // Add debugging
+  console.log('options computed - form.options:', form.options, 'type:', typeof form.options);
   
   // Always return an array
   if (Array.isArray(form.options)) {
@@ -433,6 +433,7 @@ const options = computed(() => {
   } else if (form.options === null || form.options === undefined) {
     return [];
   } else {
+    // If it's an object but not an array, try to convert it
     try {
       return [form.options];
     } catch {
@@ -441,41 +442,15 @@ const options = computed(() => {
   }
 });
 
-// Fix newOption initialization
-const newOption = ref({});  // Start with empty object
-
-// Initialize in onMounted to ensure we have meta data
-onMounted(() => {
-  // Initialize newOption with fields from meta
-  newOption.value = (props.meta.options_format || []).reduce((acc, field) => {
-    acc[field.name] = '';
-    return acc;
-  }, {});
-});
-
 const addOption = () => {
-  // Get required fields from meta
-  const requiredFields = (props.meta.options_format || [])
-    .filter(field => field.required)
-    .map(field => field.name);
-  
-  // Validate required fields
-  const isValid = requiredFields.every(field => newOption.value[field]);
-  
-  if (isValid) {
+  if (newOption.value.name && newOption.value.url) {
     const newOptions = [...options.value, { ...newOption.value }];
-    form.options = newOptions;
-    
-    // Reset using meta format
-    newOption.value = (props.meta.options_format || []).reduce((acc, field) => {
-      acc[field.name] = '';
-      return acc;
-    }, {});
+    form.options = newOptions; // Store as array, not string
+    newOption.value = { name: '', url: '', route: '' };
   }
 };
 
 const removeOption = (i) => {
-  logDelete('option', i, options.value);
   const newOptions = [...options.value];
   newOptions.splice(i, 1);
   form.options = newOptions;
@@ -695,59 +670,6 @@ const jsonFields = computed(() => {
   return fields;
 });
 
-// Update the generic logging function to handle both console and user feedback
-const logDelete = (type, index, array, response = null) => {
-  const getStatusText = (status) => {
-    const statusMap = {
-      200: 'OK',
-      201: 'Created',
-      202: 'Accepted',
-      204: 'No Content',
-      303: 'See Other',
-      400: 'Bad Request',
-      401: 'Unauthorized',
-      403: 'Forbidden',
-      404: 'Not Found',
-      422: 'Unprocessable Entity',
-      500: 'Internal Server Error'
-    };
-    return statusMap[status] || 'Unknown Status';
-  };
-
-  const logData = {
-    index,
-    removedItem: array[index],
-    beforeDelete: array,
-    afterDelete: array.filter((_, i) => i !== index),
-    timestamp: new Date().toISOString(),
-    response: response ? {
-      success: response.data?.success,
-      message: response.data?.message,
-      status: response.status,
-      statusText: getStatusText(response.status),
-      redirect: response.headers?.location || null
-    } : 'No backend call'
-  };
-
-  // Console logging
-  console.log(`Deleting ${type}:`, logData);
-
-  // User feedback via Inertia
-  if (response?.data?.message) {
-    router.visit(window.location.pathname, {
-      data: { 
-        message: response.data.message,
-        type: response.data.success ? 'success' : 'error',
-        status: `${response.status} ${getStatusText(response.status)}`
-      },
-      preserveScroll: true,
-      replace: true
-    });
-  }
-
-  return logData;
-};
-
 </script>
 
 <template>
@@ -757,10 +679,6 @@ const logDelete = (type, index, array, response = null) => {
     <div :class="[_window.base, _window.padding, _window.motion, _window.light, _window.dark]">
       <div class="h-full flex flex-col">
 
-<div>
-  
-  
-</div>
         <!-- Modal Header with Tabs -->
         <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div>
@@ -1155,33 +1073,21 @@ const logDelete = (type, index, array, response = null) => {
                 
                 <!-- Options Manager moved inline -->
                 <div class="flex items-center space-x-2 flex-1 ml-4">
-                  <template v-for="field in (props.meta.options_format || [])" :key="field.name">
-                    <!-- Select input -->
-                    <select
-                      v-if="field.type === 'select'"
-                      v-model="newOption[field.name]"
-                      class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    >
-                      <option value="">Select {{ field.label }}</option>
-                      <option v-for="opt in field.options" :key="opt" :value="opt">{{ opt }}</option>
-                    </select>
-                    
-                    <!-- JSON input -->
-                    <textarea
-                      v-else-if="field.type === 'json'"
-                      v-model="newOption[field.name]"
-                      :placeholder="field.label"
-                      class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    ></textarea>
-                    
-                    <!-- Default text input -->
-                    <input
-                      v-else
-                      v-model="newOption[field.name]"
-                      :placeholder="field.label"
-                      class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    />
-                  </template>
+                  <input
+                    v-model="newOption.name"
+                    placeholder="Option name"
+                    class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    v-model="newOption.url"
+                    placeholder="URL"
+                    class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <input
+                    v-model="newOption.route"
+                    placeholder="Route"
+                    class="text-xs rounded px-2 py-1 w-1/3 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
                   <button @click.prevent="addOption" :class="[_button.active]">
                     Add
                   </button>
@@ -1196,15 +1102,9 @@ const logDelete = (type, index, array, response = null) => {
                     <div v-for="(optionItem, i) in options" :key="i" 
                          class="flex items-center justify-between p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-700">
                       <div class="flex-1 min-w-0">
-                        <template v-for="field in (props.meta.options_format || [])" :key="field.name">
-                          <div :class="[
-                            'text-xs truncate',
-                            'text-gray-500 dark:text-gray-400'
-                          ]">
-                            <span class="font-medium">{{ field.label }}:</span>
-                            {{ field.type === 'json' ? JSON.stringify(optionItem[field.name]) : optionItem[field.name] || 'unknown' }}
-                          </div>
-                        </template>
+                        <div class="text-xs font-medium text-gray-900 dark:text-gray-200 truncate">{{ optionItem?.name || 'unknown' }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ optionItem?.url || 'unknown' }}</div>
+                        <div class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ optionItem?.route || 'unknown' }}</div>
                       </div>
                       <button @click.prevent="removeOption(i)" class="ml-2 text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 flex-shrink-0">
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

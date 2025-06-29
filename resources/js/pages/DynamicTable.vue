@@ -3,7 +3,6 @@ import { ref, provide, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useForm, router } from "@inertiajs/vue3";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { RequestValidator } from '@/utils/requestValidator';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -224,26 +223,16 @@ const handleShow = (id) => {
     _show(id);
 };
 
-// Add the generic logging function
-const logDelete = (type, index, record) => {
-  console.log(`Deleting ${type}:`, {
-    id: record.id,
-    title: record.title || record.name || record.id,
-    record: record,
-    timestamp: new Date().toISOString()
-  });
-};
-
-// Update the handleDelete function
 const handleDelete = (id) => {
-  const record = props.records.data.find(x => x.id === id);
-  if (!record) {
-    console.error('Record not found:', id);
-    return;
-  }
-  logDelete('record', id, record);
-  recordToDelete.value = record;
-  showDeleteDialog.value = true;
+    const record = props.records.data.find(x => x.id === id);
+    if (!record) {
+        console.error('Record not found:', id);
+        return;
+    }
+    
+    recordToDelete.value = record;
+    showDeleteDialog.value = true;
+    deleteError.value = null;
 };
 
 const handleSearch = (searchData) => {
@@ -406,29 +395,16 @@ const confirmDelete = async () => {
         isDeleting.value = true;
         deleteError.value = null;
         
-        // Pre-validate the request
-        const validation = RequestValidator.validateRequest();
-        if (!validation.isValid) {
-            deleteError.value = validation.error;
-            RequestValidator.handleInvalidRequest();
-            return;
-        }
-        
-        // Proceed with delete
-        router.delete(`/api/${props.table}/${recordToDelete.value.id}`, {
-            onSuccess: (page) => {
-                if (page?.props?.flash?.success) {
-                    showDeleteDialog.value = false;
-                    recordToDelete.value = null;
-                }
-                deleteError.value = page?.props?.flash?.error || null;
-            },
-            onError: (errors) => {
-                console.error('Delete error:', errors);
-                deleteError.value = errors.message || 'An error occurred while deleting';
+        // Use Inertia's visit method with delete
+        router.visit(`/api/${props.table}/${recordToDelete.value.id}`, {
+            method: 'delete',
+            onSuccess: () => {
+                showDeleteDialog.value = false;
+                recordToDelete.value = null;
             },
             preserveScroll: true
         });
+        
     } catch (error) {
         deleteError.value = error.message;
     } finally {
@@ -444,27 +420,6 @@ const cancelDelete = () => {
         deleteError.value = null;
     }
 };
-
-// Example usage in any component
-async function fetchData() {
-    try {
-        const data = await SessionHandler.makeRequest('/api/your-endpoint');
-        console.log(data);
-    } catch (error) {
-        console.error('Request failed:', error);
-    }
-}
-
-async function deleteItem(id) {
-    try {
-        await SessionHandler.makeRequest(`/api/items/${id}`, 'DELETE');
-        if (window.$toast) {
-            window.$toast.success('Item deleted successfully');
-        }
-    } catch (error) {
-        console.error('Delete failed:', error);
-    }
-}
 </script>
 
 <template>
