@@ -1,5 +1,7 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps({
     show: {
@@ -10,23 +12,69 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    isDeleting: {
-        type: Boolean,
-        default: false
+    table: {
+        type: String,
+        required: true
     },
     error: {
         type: String,
-        default: null
+        default: ''
     },
-    titleField: {
-        type: String,
-        default: 'title'
+    isDeleting: {
+        type: Boolean,
+        default: false
     }
 });
 
 const emit = defineEmits(['close', 'confirm']);
 
-const handleConfirm = () => {
+const validationStatus = ref({
+    session: {
+        title: 'Session',
+        checks: {
+            csrf: { name: 'CSRF Token', valid: false },
+            active: { name: 'Session Active', valid: false }
+        }
+    },
+    request: {
+        title: 'Request',
+        checks: {
+            xsrf: { name: 'XSRF Token', valid: false },
+            headers: { name: 'Headers', valid: false }
+        }
+    },
+    permission: {
+        title: 'Permission',
+        checks: {
+            auth: { name: 'Auth', valid: false },
+            access: { name: 'Access', valid: false }
+        }
+    }
+});
+
+onMounted(() => {
+    const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    const xsrf = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1];
+    
+    // Update validation statuses
+    validationStatus.value.session.checks.csrf.valid = Boolean(csrf);
+    validationStatus.value.session.checks.active.valid = Boolean(csrf);
+    validationStatus.value.request.checks.xsrf.valid = Boolean(xsrf);
+    validationStatus.value.request.checks.headers.valid = Boolean(xsrf);
+    validationStatus.value.permission.checks.auth.valid = Boolean(csrf && xsrf);
+    validationStatus.value.permission.checks.access.valid = Boolean(csrf && xsrf);
+
+    console.log('Tokens:', { 
+        csrf: Boolean(csrf) ? 'Yes' : 'No',
+        xsrf: Boolean(xsrf) ? 'Yes' : 'No'
+    });
+});
+
+const handleDelete = () => {
+    console.log('Tokens:', {
+        csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+        xsrf: document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1]
+    });
     emit('confirm');
 };
 
@@ -40,21 +88,32 @@ const handleClose = () => {
 <template>
     <TransitionRoot as="template" :show="show">
         <Dialog as="div" class="relative z-10" @close="handleClose">
-            <TransitionChild
-                as="template"
-                enter="ease-out duration-300"
-                enter-from="opacity-0"
-                enter-to="opacity-100"
-                leave="ease-in duration-200"
-                leave-from="opacity-100"
-                leave-to="opacity-0"
-            >
-                <div class="fixed inset-0 bg-gray-500/75 dark:bg-gray-900/80 transition-opacity" />
-            </TransitionChild>
-
             <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
                 <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
                     <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                        <!-- Validation Status Grid -->
+                        <div class="grid grid-cols-3 gap-4 mb-6 border-b pb-4">
+                            <div v-for="(section, sectionKey) in validationStatus" 
+                                 :key="sectionKey" 
+                                 class="text-center">
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                    {{ section.title }}
+                                </h4>
+                                <div class="space-y-1">
+                                    <div v-for="(check, checkKey) in section.checks" 
+                                         :key="checkKey"
+                                         class="flex items-center justify-center text-xs">
+                                        <CheckCircleIcon v-if="check.valid" 
+                                            class="h-4 w-4 text-green-500 mr-1" />
+                                        <XCircleIcon v-else 
+                                            class="h-4 w-4 text-red-500 mr-1" />
+                                        {{ check.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Confirmation Content -->
                         <div class="sm:flex sm:items-start">
                             <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20 sm:mx-0 sm:h-10 sm:w-10">
                                 <svg class="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -63,25 +122,26 @@ const handleClose = () => {
                             </div>
                             <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                                 <DialogTitle as="h3" class="text-base font-semibold text-gray-900 dark:text-gray-100">
-                                    Delete {{ record[titleField] || 'Record' }}
+                                    Delete Record
                                 </DialogTitle>
                                 <div class="mt-2">
                                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                                        Are you sure you want to delete this record? All of its data will be permanently removed. This action cannot be undone.
+                                        Are you sure you want to delete this record? This action cannot be undone.
                                     </p>
-                                    <!-- Error message -->
-                                    <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                    <p v-if="error" class="mt-2 text-sm text-red-600 dark:text-red-400 font-medium">
                                         {{ error }}
                                     </p>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Action Buttons -->
                         <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
                             <button
                                 type="button"
                                 class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto disabled:opacity-50"
                                 :disabled="isDeleting"
-                                @click="handleConfirm"
+                                @click="handleDelete"
                             >
                                 <svg v-if="isDeleting" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

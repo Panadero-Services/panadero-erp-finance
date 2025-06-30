@@ -166,7 +166,6 @@ Route::middleware([
 
 
     
-
     // ========================================
     // POSTS TABLE
     // ========================================
@@ -270,6 +269,17 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('home/sandbox');
+
+
+    // ========================================
+    // MIDDLEWARE
+    // ========================================
+    Route::get('home/middleware', function () {
+        return Inertia::render('home/Middleware', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/middleware');
 
     Route::get('home/tiers', function () {
         return Inertia::render('home/Tiers', [

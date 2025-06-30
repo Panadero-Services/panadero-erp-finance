@@ -46,6 +46,7 @@ if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route
 if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('home/tiers'),route: 'home/tiers', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Futures',url: route('home.futures'),route: 'home.futures', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Landing',url: route('home/landing'),route: 'home/landing'});
+if (props.set.domainFunction === 'home') menu.push( { name: 'Midddleware',url: route('home/middleware'),route: 'home/middleware'});
 
 if (props.set.domainFunction === 'erp') menu.push( { name: 'ERP',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'erp') menu.push( { name: 'Resources',url: route('erp/resources'),route: 'erp/resources', when:() => usePage().props.auth.user });

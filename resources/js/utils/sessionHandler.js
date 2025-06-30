@@ -1,48 +1,38 @@
+import { router } from '@inertiajs/vue3'
+
 export const SessionHandler = {
     checkSession() {
-        // Add debugging
-        console.log('Checking session cookies:', {
-            session: document.cookie.includes('i3v1_self_saas_session='),
-            xsrf: document.cookie.includes('XSRF-TOKEN=')
-        });
-
-        // Get all required session elements
-        const sessionCookie = document.cookie.includes('i3v1_self_saas_session=');
-        const xsrfToken = document.cookie.includes('XSRF-TOKEN=');
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-        // Debug tokens
-        console.log('CSRF Token from meta:', csrfToken);
+        // Check XSRF token in cookies
+        const hasXsrf = document.cookie.includes('XSRF-TOKEN');
+        const xsrfToken = document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1];
         
-        if (!sessionCookie) {
-            return {
-                isValid: false,
-                error: 'Session cookie is missing',
-                details: { sessionCookie, xsrfToken, csrfToken }
-            };
-        }
+        // Check CSRF token in meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const hasCsrf = !!csrfToken;
 
-        if (!xsrfToken) {
-            return {
-                isValid: false,
-                error: 'XSRF token is missing',
-                details: { sessionCookie, xsrfToken, csrfToken }
-            };
-        }
-
-        if (!csrfToken) {
-            return {
-                isValid: false,
-                error: 'CSRF token is missing',
-                details: { sessionCookie, xsrfToken, csrfToken }
-            };
-        }
-
-        return {
-            isValid: true,
-            csrfToken: csrfToken,
-            details: { sessionCookie, xsrfToken, csrfToken }
+        // Detailed validation result
+        const validation = {
+            isValid: hasXsrf && hasCsrf,
+            token: csrfToken,
+            xsrfToken: xsrfToken,
+            details: {
+                xsrfCheck: {
+                    isValid: hasXsrf,
+                    message: hasXsrf ? 'XSRF token found' : 'XSRF token missing'
+                },
+                csrfCheck: {
+                    isValid: hasCsrf,
+                    message: hasCsrf ? 'CSRF token found' : 'CSRF token missing'
+                }
+            },
+            error: null
         };
+
+        if (!validation.isValid) {
+            validation.error = 'Authentication required - missing tokens';
+        }
+
+        return validation;
     },
 
     // Helper method to add session headers to any request
@@ -54,8 +44,8 @@ export const SessionHandler = {
         }
 
         return {
-            'X-CSRF-TOKEN': session.csrfToken,
-            'X-XSRF-TOKEN': document.cookie.split('; ').find(row => row.startsWith('XSRF-TOKEN='))?.split('=')[1],
+            'X-CSRF-TOKEN': session.token,
+            'X-XSRF-TOKEN': session.xsrfToken,
             'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
         };
@@ -112,4 +102,27 @@ export const SessionHandler = {
             return { isValid: false, error: 'Failed to refresh session' };
         });
     }
+};
+
+// Move the working delete handler here
+const originalDelete = router.delete;
+router.delete = function(url, options = {}) {
+    const validation = SessionHandler.checkSession();
+    
+    if (!validation.isValid) {
+        if (window.$toast) {
+            window.$toast.error('Delete failed - Please try again', {
+                timeout: 5000
+            });
+        }
+        return Promise.reject(new Error(validation.error));
+    }
+
+    options.headers = {
+        ...options.headers,
+        'X-CSRF-TOKEN': validation.token,
+        'X-Requested-With': 'XMLHttpRequest'
+    };
+
+    return originalDelete.call(this, url, options);
 }; 

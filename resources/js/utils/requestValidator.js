@@ -1,29 +1,43 @@
 import { router } from '@inertiajs/vue3'
 
 export const RequestValidator = {
-    validateRequest() {
-        // Check CSRF token
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (!token) {
-            return {
-                isValid: false,
-                error: 'CSRF token is missing'
-            };
-        }
+    validateRequest(requestData = {}) {
+        // Validate request method
+        const method = requestData.method || 'GET';
+        const isValidMethod = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(method.toUpperCase());
+        
+        // Validate URL format
+        const url = requestData.url || '';
+        const isValidUrl = url.startsWith('/') || url.startsWith('http');
+        
+        // Validate data format for POST/PUT/PATCH
+        const data = requestData.data;
+        const isValidData = !data || (typeof data === 'object' && !Array.isArray(data));
 
-        // Check XSRF token
-        const xsrfToken = document.cookie.includes('XSRF-TOKEN=');
-        if (!xsrfToken) {
-            return {
-                isValid: false,
-                error: 'XSRF token is missing'
-            };
-        }
-
-        return {
-            isValid: true,
-            token
+        const validation = {
+            isValid: isValidMethod && isValidUrl && isValidData,
+            details: {
+                methodCheck: {
+                    isValid: isValidMethod,
+                    message: isValidMethod ? `Method ${method} is valid` : `Invalid method: ${method}`
+                },
+                urlCheck: {
+                    isValid: isValidUrl,
+                    message: isValidUrl ? 'URL format is valid' : 'Invalid URL format'
+                },
+                dataCheck: {
+                    isValid: isValidData,
+                    message: isValidData ? 'Data format is valid' : 'Invalid data format'
+                }
+            },
+            error: null
         };
+
+        if (!validation.isValid) {
+            validation.error = 'Request validation failed';
+        }
+
+        return validation;
     },
 
     handleInvalidRequest() {
@@ -37,7 +51,7 @@ export const RequestValidator = {
 // Extend Inertia router to include validation
 const originalDelete = router.delete;
 router.delete = function(url, options = {}) {
-    const validation = RequestValidator.validateRequest();
+    const validation = RequestValidator.validateRequest({ url, method: 'DELETE' });
     
     if (!validation.isValid) {
         if (window.$toast) {

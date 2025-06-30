@@ -76,3 +76,8 @@ Key principles:
 - Verify before expanding
 
 All contributors are expected to follow these guidelines unless explicitly directed otherwise.
+
+// Layer 1: Session/Auth Check
+- Checks XSRF-TOKEN exists in cookies
+- Checks CSRF token exists in meta tag
+- Returns { isValid: true/false, token: csrfToken }
