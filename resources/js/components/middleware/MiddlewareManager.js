@@ -11,6 +11,7 @@ export class MiddlewareManager {
         this.registry.set('Authentication', new AuthenticationMiddleware());
         this.registry.set('Authorization', new AuthorizationMiddleware());
         this.registry.set('Request', new RequestValidationMiddleware());
+        this.registry.set('Request2', new RequestValidationMiddleware());
 
         console.log('MiddlewareManager: Initialized middleware:', Array.from(this.registry.keys()));
     }

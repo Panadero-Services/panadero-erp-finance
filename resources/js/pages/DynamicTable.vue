@@ -168,28 +168,29 @@ const checkMiddleware = async (record) => {
                 'Content-Type': 'application/json',
                 'X-XSRF-TOKEN': document.cookie.match(/XSRF-TOKEN=(.*)/)?.[1],
                 'X-Requested-With': 'XMLHttpRequest'
+            },
+            context: {
+                hasAccess: _set.hasAccess,
+                permissions: _set.permissions || [],
+                roles: _set.roles || [],
+                requiredPermissions: ['delete']
             }
         };
 
-        const { results } = await middlewareManager.processRequest(request);
+        const results = await middlewareManager.processRequest(request);
         console.log('Middleware Results:', results);
 
-        if (results?.[0]?.middleware === 'Authentication') {
-            const authResult = results[0].result;
-            console.log('Middleware Auth Result:', authResult);
-            
-            // Update auth status based on current state
-            authStatus.value = {
-                ...authResult,
-                isValid: currentAuth?.authenticated ?? false,
-                token: currentAuth?.csrf ? 'present' : undefined,
-                session: currentAuth?.sessionActive ? 'active' : 'expired',
-                checks: {
-                    ...authResult.checks,
-                    csrf: currentAuth?.csrf ?? false
-                }
-            };
-        }
+        // Update middleware results following the consistent pattern
+        middlewareResults.value = results.map(result => ({
+            middleware: result.middleware,
+            result: {
+                isValid: result.result.isValid,
+                checks: result.result.checks,
+                ...result.result.getAdditionalData ? result.result.getAdditionalData() : {}
+            }
+        }));
+
+        showDeleteDialog.value = true;
     } catch (error) {
         console.error('Error in middleware check:', error);
     }

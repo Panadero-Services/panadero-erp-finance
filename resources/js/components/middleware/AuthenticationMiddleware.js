@@ -20,7 +20,9 @@ export class AuthenticationMiddleware extends BaseMiddleware {
             userValid: !!auth?.user,
             csrfValid: !!csrf,
             xsrfValid: !!xsrfToken,
-            sessionValid: !!auth?.user
+            sessionValid: !!auth?.user,
+            MetaMask:  request.context?.isMetaMask,
+            selfName:  request.context?.selfName
         };
     }
 

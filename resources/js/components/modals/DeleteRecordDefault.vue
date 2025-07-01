@@ -1,22 +1,13 @@
 <script setup>
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue';
-import { XCircleIcon, CheckCircleIcon } from '@heroicons/vue/20/solid';
+import MiddlewareResults from '@/components/middleware/MiddlewareResults.vue';
 
 const props = defineProps({
     show: Boolean,
     record: Object,
-    authStatus: {
-        type: Object,
-        default: () => ({
-            isValid: false,
-            token: undefined,
-            session: null,
-            checks: {}
-        })
-    },
     middlewareResults: {
         type: Array,
-        default: () => []  // Simple empty array as default
+        default: () => []
     },
     isDeleting: Boolean
 });
@@ -61,69 +52,8 @@ defineEmits(['close', 'confirm']);
                                 </p>
                             </div>
 
-                            <!-- Dynamic three columns layout -->
-                            <div class="mt-4 grid grid-cols-3 gap-4">
-                                <div v-for="layer in middlewareResults" 
-                                     :key="layer.middleware" 
-                                     class="rounded-lg border p-4">
-                                    <!-- Layer Header -->
-                                    <div class="flex items-center justify-between mb-3">
-                                        <h4 class="text-xs font-medium">{{ layer.middleware }}</h4>
-                                        <span :class="[
-                                            'px-2 py-1 text-xxs rounded-full',
-                                            layer.result.isValid 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-red-100 text-red-800'
-                                        ]">
-                                            {{ layer.result.isValid ? 'Valid' : 'Invalid' }}
-                                        </span>
-                                    </div>
-
-                                    <!-- Dynamic Checks -->
-                                    <template v-if="layer.result.checks">
-                                        <div v-for="(value, key) in layer.result.checks" 
-                                             :key="key"
-                                             class="flex items-center justify-between text-xs border-t pt-2">
-                                            <span class="text-gray-600">{{ key }}</span>
-                                            <div class="flex items-center space-x-2">
-                                                <span :class="value ? 'text-green-600' : 'text-red-600'">
-                                                    {{ value ? ` valid` : ` invalid` }}
-                                                </span>
-                                                <XCircleIcon v-if="!value" class="h-4 w-4 text-red-500" />
-                                                <CheckCircleIcon v-else class="h-4 w-4 text-green-500" />
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <!-- Special Status Checks -->
-                                    <template v-if="layer.result.session">
-                                        <div class="flex items-center justify-between text-xs border-t pt-2">
-                                            <span class="text-gray-600">Session Status</span>
-                                            <div class="flex items-center space-x-2">
-                                                <span :class="layer.result.session === 'active' ? 'text-green-600' : 'text-red-600'">
-                                                    {{ layer.result.session === 'active' ? 'Session active' : 'Session expired' }}
-                                                </span>
-                                                <XCircleIcon v-if="layer.result.session !== 'active'" class="h-4 w-4 text-red-500" />
-                                                <CheckCircleIcon v-else class="h-4 w-4 text-green-500" />
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                    <!-- Token Status -->
-                                    <template v-if="'token' in layer.result">
-                                        <div class="flex items-center justify-between text-xs border-t pt-2">
-                                            <span class="text-gray-600">Token Status</span>
-                                            <div class="flex items-center space-x-2">
-                                                <span :class="layer.result.token ? 'text-green-600' : 'text-red-600'">
-                                                    {{ layer.result.token ? 'Token valid' : 'Token missing' }}
-                                                </span>
-                                                <XCircleIcon v-if="!layer.result.token" class="h-4 w-4 text-red-500" />
-                                                <CheckCircleIcon v-else class="h-4 w-4 text-green-500" />
-                                            </div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
+                            <!-- Use the middleware results component -->
+                            <MiddlewareResults :middleware-results="middlewareResults" />
 
                             <div class="mt-4 flex justify-end space-x-3">
                                 <button
