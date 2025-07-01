@@ -33,6 +33,7 @@ use App\Http\Controllers\TestPhotoUploadController;
 use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\DynamicController;
+use App\Http\Controllers\Auth\AuthCheckController;
 
 // Resource imports
 use App\Http\Resources\PostResource;
@@ -526,6 +527,9 @@ Route::get('test_user', function (){
 
     // Add this route in routes/web.php
     Route::delete('/api/{table}/{id}', [DynamicController::class, 'destroy'])->name('dynamic.destroy');
+
+    // Add this route for auth check
+    Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
 
 });
 

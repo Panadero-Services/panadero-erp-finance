@@ -1,62 +1,50 @@
-import { BaseMiddleware } from './BaseMiddleware';
+import { BaseMiddleware } from '@/components/middleware/BaseMiddleware';
+import { usePage } from '@inertiajs/vue3';
 
 export class AuthenticationMiddleware extends BaseMiddleware {
-    async handle(request) {
-        const validation = {
-            isValid: false,
-            layer: 'authentication',
-            details: {
-                session: {
-                    isValid: false,
-                    message: 'Session validation'
-                },
-                csrf: {
-                    isValid: false,
-                    message: 'CSRF token validation'
-                },
-                token: {
-                    isValid: false,
-                    message: 'API token validation'
-                },
-                access: {
-                    isValid: false,
-                    message: 'Access validation'
-                }
-            },
-            error: null
-        };
-
-        try {
-            // Session Check
-            const hasSession = document.cookie.includes('laravel_session');
-            validation.details.session.isValid = hasSession;
-
-            // CSRF Token Check
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-            validation.details.csrf.isValid = !!csrfToken;
-
-            // API Token Check (if applicable)
-            const apiToken = request.headers?.['Authorization'];
-            validation.details.token.isValid = !request.requiresToken || !!apiToken;
-
-            // Access Check (Basic user access)
-            const userId = document.querySelector('meta[name="user-id"]')?.getAttribute('content');
-            validation.details.access.isValid = !!userId;
-
-            // Overall validation
-            validation.isValid = Object.values(validation.details)
-                                     .every(check => check.isValid);
-
-            if (!validation.isValid) {
-                validation.error = 'Authentication failed';
-                return validation;
-            }
-
-            return await super.handle(request);
-
-        } catch (error) {
-            validation.error = `Authentication error: ${error.message}`;
-            return validation;
-        }
+    constructor() {
+        super();
+        this.name = 'Authentication';
     }
-} 
+
+    getChecks(request) {
+        const page = usePage();
+        const auth = page.props.auth;
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        const xsrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+
+        return {
+            userValid: !!auth?.user,
+            csrfValid: !!csrf,
+            xsrfValid: !!xsrfToken,
+            sessionValid: !!auth?.user
+        };
+    }
+
+    getAdditionalData(request) {
+        const page = usePage();
+        const auth = page.props.auth;
+        
+        return {
+            user: auth?.user || null,
+            session: auth?.user ? 'active' : 'expired',
+            token: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+        };
+    }
+
+    async handle(request) {
+        const checks = this.getChecks(request);
+        const additionalData = this.getAdditionalData(request);
+
+        return {
+            isValid: Object.values(checks).every(Boolean),
+            checks,
+            ...additionalData
+        };
+    }
+}
+
+export default AuthenticationMiddleware; 

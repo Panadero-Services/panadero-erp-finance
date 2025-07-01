@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { middlewareManager } from '@/components/middleware/MiddlewareManager';
 
 // Keep original test request
 const testRequest = ref({
@@ -144,28 +145,12 @@ const middlewareChain = ref([
 const testResults = ref([]);
 
 // Enhanced runTests function that works with both original and scenario testing
-const runTests = () => {
+const runTests = async () => {
     testResults.value = [];
     let currentRequest = selectedScenario.value ? { ...selectedScenario.value.request } : { ...testRequest.value };
     
-    for (const middleware of middlewareChain.value) {
-        if (middleware.active) {
-            const result = middleware.test(currentRequest);
-            testResults.value.push({
-                middleware: middleware.name,
-                result: result,
-                timestamp: new Date()
-            });
-            
-            // Stop chain if validation fails
-            if (!result.isValid) {
-                break;
-            }
-            
-            // Update request for next middleware
-            currentRequest = { ...currentRequest, ...result };
-        }
-    }
+    const { results } = await middlewareManager.processRequest(currentRequest);
+    testResults.value = results;
 };
 </script>
 

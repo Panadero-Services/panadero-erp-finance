@@ -3,7 +3,9 @@ import { ref, provide, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useForm, router } from "@inertiajs/vue3";
 import axios from 'axios';
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import { SessionHandler } from '@/utils/sessionHandler';
+import { middlewareManager } from '@/components/middleware/MiddlewareManager';
+import { middlewareRegistry } from '@/components/middleware/Registry';
+import { BaseMiddleware } from '@/components/middleware/BaseMiddleware.js';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -28,6 +30,11 @@ import { Bars3Icon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
 
 // Add Badges component import
 import Badges from '@/components/colors/Badges.vue';
+
+// Add the computed property for development mode
+const isDevelopment = computed(() => {
+    return import.meta.env.MODE === 'development';
+});
 
 const _set = useSettingsStore();
 const _contract = useContractStore();
@@ -102,10 +109,91 @@ const darkMode = ref(false);
 provide('pulse', _pulse);
 
 // Add these refs
-const recordToDelete = ref({});
+const recordToDelete = ref(null);
 const showDeleteDialog = ref(false);
 const isDeleting = ref(false);
-const deleteError = ref('');
+const authStatus = ref({
+    isValid: false,
+    token: undefined,
+    session: null,
+    checks: {}
+});
+
+// Simplified middleware status structure matching actual response
+const middlewareResults = ref({
+    authentication: {
+        isValid: false,
+        token: undefined,
+        session: null,
+        checks: {}
+    }
+});
+
+// Use existing Laravel/Inertia auth check
+const debugAuthState = async () => {
+    try {
+        // Check if we have Inertia page props with auth info
+        const page = usePage();
+        const auth = page.props.auth;
+        const jetstream = page.props.jetstream;
+        
+        console.log('Current Auth State:', {
+            auth,
+            jetstream,
+            csrf: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+        });
+
+        return {
+            authenticated: !!auth?.user,
+            user: auth?.user,
+            csrf: true, // CSRF is handled by Inertia automatically
+            sessionActive: true // If we can access the page, session is active
+        };
+    } catch (error) {
+        console.error('Auth Debug Error:', error);
+        return null;
+    }
+};
+
+const checkMiddleware = async (record) => {
+    try {
+        // Get current auth state
+        const currentAuth = await debugAuthState();
+        console.log('Current Auth State:', currentAuth);
+
+        const request = {
+            method: 'DELETE',
+            path: `/api/${props.table}/${record.id}`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': document.cookie.match(/XSRF-TOKEN=(.*)/)?.[1],
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        };
+
+        const { results } = await middlewareManager.processRequest(request);
+        console.log('Middleware Results:', results);
+
+        if (results?.[0]?.middleware === 'Authentication') {
+            const authResult = results[0].result;
+            console.log('Middleware Auth Result:', authResult);
+            
+            // Update auth status based on current state
+            authStatus.value = {
+                ...authResult,
+                isValid: currentAuth?.authenticated ?? false,
+                token: currentAuth?.csrf ? 'present' : undefined,
+                session: currentAuth?.sessionActive ? 'active' : 'expired',
+                checks: {
+                    ...authResult.checks,
+                    csrf: currentAuth?.csrf ?? false
+                }
+            };
+        }
+    } catch (error) {
+        console.error('Error in middleware check:', error);
+    }
+};
 
 // functions
 const _loopTimer = async () => {
@@ -234,35 +322,101 @@ const logDelete = (type, index, record) => {
   });
 };
 
-// Update the handleDelete function
-const handleDelete = (id) => {
-    const record = props.records.data.find(r => r.id === id);
-    if (record) {
-        recordToDelete.value = record;
-        showDeleteDialog.value = true;
+// Update the handleDelete function with more logging
+const handleDelete = async (id) => {
+    console.log('DynamicTable: handleDelete called with id:', id);
+    
+    const request = {
+        method: 'DELETE',
+        path: `/api/${props.table}/${id}`,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        context: {
+            isMetaMask: _set.isMetaMask,
+            hasAccess: _set.hasAccess,
+            selfName: !(_set.self=='nope'),
+            // ... any other store data needed
+        }
+    };
+
+    // Get results directly as array
+    const results = await middlewareManager.processRequest(request);
+    console.log('DynamicTable: Middleware results:', results);
+
+    if (!Array.isArray(results)) {
+        console.error('Invalid middleware results:', results);
+        return;
+    }
+
+    recordToDelete.value = props.records.data.find(r => r.id === id);
+    middlewareResults.value = results;
+    showDeleteDialog.value = true;
+};
+
+const processRequest = async (request) => {
+    try {
+        const { success, results, error } = await middlewareManager.processRequest(request);
+        
+        if (!success) {
+            console.error('Middleware chain failed:', error || results);
+            return false;
+        }
+
+        // Log middleware results if needed
+        results.forEach(result => {
+            console.log(`${result.middleware}:`, result.result);
+        });
+
+        // Get the final processed request (last result in chain)
+        const finalResult = results[results.length - 1];
+        return finalResult ? { ...request, ...finalResult.result } : false;
+    } catch (error) {
+        console.error('Process request error:', error);
+        return false;
     }
 };
 
-const handleSearch = (searchData) => {
+const handleSearch = async (searchData) => {
     if (searchData.query.length > 1 || searchData.query.length === 0) {
-        // Build search parameters
-        const searchParams = {
-            search: searchData.query || undefined,
-            search_fields: searchData.query && searchData.fields.length > 0 ? searchData.fields.join(',') : undefined,
-            per_page: perPage.value, // Use stored perPage value
+        const request = {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json'
+            },
+            body: {
+                action: 'search',
+                data: {
+                    query: searchData.query,
+                    fields: searchData.fields,
+                    per_page: perPage.value
+                }
+            }
         };
-        
-        // Remove undefined values
-        Object.keys(searchParams).forEach(key => 
-            searchParams[key] === undefined && delete searchParams[key]
-        );
-        
-        // Use Inertia router to make the request
-        router.get(window.location.pathname, searchParams, {
-            preserveState: true,
-            preserveScroll: true,
-            replace: true
-        });
+
+        const processedRequest = await processRequest(request);
+        if (processedRequest) {
+            // Build search parameters from processed request
+            const searchParams = {
+                search: processedRequest.body.data.query || undefined,
+                search_fields: processedRequest.body.data.fields?.join(','),
+                per_page: processedRequest.body.data.per_page
+            };
+
+            // Remove undefined values
+            Object.keys(searchParams).forEach(key => 
+                searchParams[key] === undefined && delete searchParams[key]
+            );
+
+            // Make the request
+            router.get(window.location.pathname, searchParams, {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true
+            });
+        }
     }
 };
 
@@ -381,6 +535,9 @@ const syncPerPageFromStorage = () => {
 };
 
 onMounted(() => {
+    console.log('DynamicTable: Component mounted');
+    console.log('DynamicTable: Middleware manager state:', middlewareManager);
+    configureMiddleware();
     // Sync perPage from localStorage on page load
     syncPerPageFromStorage();
     
@@ -395,37 +552,41 @@ onUnmounted(() => {
 // You can also use the exposed function directly
 const { getStatusColor } = Badges;
 
-// Update the delete handling
+// Update the confirmDelete function
 const confirmDelete = async () => {
-    if (!recordToDelete.value?.id) return;
+    if (!recordToDelete.value) return;
     
     try {
         isDeleting.value = true;
-        const response = await fetch(`/api/${props.table}/${recordToDelete.value.id}`, {
+        await fetch(`/api/${props.table}/${recordToDelete.value.id}`, {
             method: 'DELETE',
-            headers: SessionHandler.getSessionHeaders()
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+            },
         });
         
-        const data = await response.json();
-        
-        if (data.success) {
-            showDeleteDialog.value = false;
-            router.reload({ preserveScroll: true });
-        } else {
-            deleteError.value = data.message;
-            isDeleting.value = false;
-        }
+        showDeleteDialog.value = false;
+        recordToDelete.value = null;
+        router.reload({ preserveScroll: true });
     } catch (error) {
-        deleteError.value = 'Failed to delete record';
+        console.error('Delete Error:', error);
+    } finally {
         isDeleting.value = false;
     }
 };
 
-const cancelDelete = () => {
+const handleClose = () => {
     showDeleteDialog.value = false;
-    deleteError.value = ''; // Clear error when closing
-    isDeleting.value = false; // Reset deleting state
-    recordToDelete.value = {};
+    recordToDelete.value = null;
+    isDeleting.value = false;
+    // Reset auth status
+    authStatus.value = {
+        isValid: false,
+        token: undefined,
+        session: null,
+        checks: {}
+    };
 };
 
 // Example usage in any component
@@ -448,6 +609,51 @@ async function deleteItem(id) {
         console.error('Delete failed:', error);
     }
 }
+
+// Update the configureMiddleware function
+const configureMiddleware = () => {
+    try {
+        // Example: Configure middleware based on user roles or permissions
+        const userPermissions = _set.permissions || [];
+        
+        if (userPermissions.includes('admin')) {
+            middlewareManager.setMiddlewareActive('Authorization', false); // Skip auth for admins
+        }
+
+        // Example: Add request logging for development
+        if (isDevelopment.value) {
+            class LoggingMiddleware extends BaseMiddleware {
+                async handle(request) {
+                    console.log('Request:', request);
+                    return request;
+                }
+            }
+            
+            // Register the logging middleware
+            middlewareManager.registerMiddleware('Logging', new LoggingMiddleware());
+        }
+    } catch (error) {
+        console.error('Error configuring middleware:', error);
+    }
+};
+
+// Middleware chain monitoring
+const middlewareChainStatus = computed(() => {
+    const chain = middlewareManager.getMiddlewareChain();
+    return chain ? chain.map(middleware => ({
+        name: middleware.name || 'Unknown',
+        status: middleware.status || 'pending',
+        type: middleware.type || 'middleware'
+    })) : [];
+});
+
+// Add method to toggle middleware
+const toggleMiddleware = (name) => {
+    const middleware = middlewareChainStatus.value.find(m => m.name === name);
+    if (middleware) {
+        middlewareManager.setMiddlewareActive(name, !middleware.active);
+    }
+};
 </script>
 
 <template>
@@ -664,12 +870,40 @@ async function deleteItem(id) {
         </template>
     </AppToolbarLayout>
 
+    <!-- Add this debugging info -->
+    <div v-if="isDevelopment" class="hidden">
+        Debug Info:
+        showDeleteDialog: {{ showDeleteDialog }}
+        recordToDelete: {{ recordToDelete?.id }}
+        isDeleting: {{ isDeleting }}
+    </div>
+
+    <!-- Update the modal component -->
     <DeleteRecordDefault
+        v-if="showDeleteDialog && middlewareResults"
         :show="showDeleteDialog"
         :record="recordToDelete"
-        :table="props.table"
-        :error="deleteError"
-        @close="cancelDelete"
+        :middleware-results="middlewareResults"
+        :is-deleting="false"
+        @close="handleClose"
         @confirm="confirmDelete"
     />
+
+    <!-- Add middleware status indicators if needed -->
+    <div v-if="isDevelopment" 
+         class="flex space-x-2 items-center text-xs">
+        <div v-for="status in middlewareChainStatus" 
+             :key="status.name"
+             @click="toggleMiddleware(status.name)"
+             class="cursor-pointer flex items-center space-x-1 px-2 py-1 rounded"
+             :style="{ borderColor: status.active ? 'green' : 'red' }"
+             :class="[
+                'border',
+                status.active ? 'opacity-100' : 'opacity-50'
+             ]">
+            <div :style="{ backgroundColor: status.active ? 'green' : 'red' }"
+                 class="w-2 h-2 rounded-full"></div>
+            <span>{{ status.name }}</span>
+        </div>
+    </div>
 </template> 

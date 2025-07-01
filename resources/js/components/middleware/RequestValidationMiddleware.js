@@ -1,88 +1,91 @@
-import { BaseMiddleware } from './BaseMiddleware';
+import { BaseMiddleware } from '@/components/middleware/BaseMiddleware';
 
 export class RequestValidationMiddleware extends BaseMiddleware {
-    async handle(request) {
-        const validation = {
-            isValid: false,
-            layer: 'request',
-            details: {
-                headers: {
-                    isValid: false,
-                    message: 'Headers validation'
-                },
-                integrity: {
-                    isValid: false,
-                    message: 'Data integrity validation'
-                },
-                schema: {
-                    isValid: false,
-                    message: 'Schema validation'
-                },
-                sanitization: {
-                    isValid: false,
-                    message: 'Data sanitization'
-                }
-            },
-            error: null
-        };
-
-        try {
-            // Headers Validation
-            validation.details.headers.isValid = this.validateHeaders(request.headers);
-
-            // Data Integrity Check
-            validation.details.integrity.isValid = this.checkDataIntegrity(request.data);
-
-            // Schema Validation
-            validation.details.schema.isValid = await this.validateSchema(
-                request.data,
-                request.schema
-            );
-
-            // Data Sanitization
-            validation.details.sanitization.isValid = this.sanitizeData(request.data);
-
-            // Overall validation
-            validation.isValid = Object.values(validation.details)
-                                     .every(check => check.isValid);
-
-            if (!validation.isValid) {
-                validation.error = 'Request validation failed';
-                return validation;
-            }
-
-            return await super.handle(request);
-
-        } catch (error) {
-            validation.error = `Request validation error: ${error.message}`;
-            return validation;
-        }
+    constructor() {
+        super();
+        this.name = 'Request';
     }
 
-    validateHeaders(headers = {}) {
+    getChecks(request) {
+        return {
+            dataFormat: this.validateDataFormat(request),
+            requiredFields: this.validateRequiredFields(request),
+            methodAllowed: this.validateMethod(request),
+            contentType: this.validateContentType(request)
+        };
+    }
+
+    getAdditionalData(request) {
+        return {
+            validatedData: this.sanitizeData(request),
+            method: request.method,
+            path: request.path,
+            headers: this.getValidatedHeaders(request)
+        };
+    }
+
+    validateDataFormat(request) {
+        if (!request.data) return true;
+        return typeof request.data === 'object' && !Array.isArray(request.data);
+    }
+
+    validateRequiredFields(request) {
+        const requiredFields = request.context?.requiredFields || [];
+        if (requiredFields.length === 0) return true;
+        
+        return requiredFields.every(field => 
+            request.data && Object.prototype.hasOwnProperty.call(request.data, field)
+        );
+    }
+
+    validateMethod(request) {
+        const allowedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+        return allowedMethods.includes(request.method?.toUpperCase());
+    }
+
+    validateContentType(request) {
+        const contentType = request.headers?.['Content-Type'];
+        if (!contentType) return false;
+        return contentType.includes('application/json');
+    }
+
+    getValidatedHeaders(request) {
         const requiredHeaders = [
+            'Content-Type',
             'X-Requested-With',
-            'Accept',
-            'Content-Type'
+            'Accept'
         ];
 
-        return requiredHeaders.every(header => headers[header]);
+        const validatedHeaders = {};
+        requiredHeaders.forEach(header => {
+            validatedHeaders[header] = {
+                present: !!request.headers?.[header],
+                value: request.headers?.[header] || null
+            };
+        });
+
+        return validatedHeaders;
     }
 
-    checkDataIntegrity(data) {
-        if (!data) return true;
-        return typeof data === 'object' && !Array.isArray(data);
+    sanitizeData(request) {
+        if (!request.data) return null;
+        const sanitized = JSON.parse(JSON.stringify(request.data));
+        Object.keys(sanitized).forEach(key => {
+            if (typeof sanitized[key] === 'string') {
+                sanitized[key] = sanitized[key].trim();
+            }
+        });
+        return sanitized;
     }
 
-    async validateSchema(data, schema) {
-        if (!schema) return true;
-        // Implement your schema validation logic here
-        return true;
-    }
+    async handle(request) {
+        const checks = this.getChecks(request);
+        const additionalData = this.getAdditionalData(request);
 
-    sanitizeData(data) {
-        if (!data) return true;
-        // Implement your data sanitization logic here
-        return true;
+        return {
+            isValid: Object.values(checks).every(Boolean),
+            checks,
+            ...additionalData
+        };
     }
 } 
