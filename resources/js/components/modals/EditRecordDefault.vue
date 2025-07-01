@@ -36,6 +36,10 @@ const props = defineProps({
   meta: {
     type: Object,
     default: () => ({})
+  },
+  middlewareResults: {
+    type: Array,
+    default: () => []
   }
 });
 
@@ -786,7 +790,21 @@ const logDelete = (type, index, array, response = null) => {
             >
               Main
             </button>
-            
+
+            <!-- Add just this new Middleware tab -->
+            <button
+              v-if="props.middlewareResults?.length > 0"
+              @click="activeTab = 'middleware'"
+              :class="[
+                'px-3 py-2 text-xs font-medium focus:outline-none transition-colors duration-200',
+                activeTab === 'middleware'
+                  ? 'border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-yellow-300'
+              ]"
+            >
+              Middleware
+            </button>
+
             <!-- JSON Fields (currently only 'options') -->
             <button
               v-for="(field, fieldName) in jsonFields"
