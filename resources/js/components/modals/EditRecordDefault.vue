@@ -10,6 +10,7 @@ import TheButton from "@/panadero/components/TheButton.vue";
 import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import Badges from '@/components/colors/Badges.vue';
+import MiddlewareResults from '@/components/middleware/MiddlewareResults.vue';
 
 const page = usePage();
 
@@ -762,8 +763,6 @@ const logDelete = (type, index, array, response = null) => {
       <div class="h-full flex flex-col">
 
 <div>
-  
-  
 </div>
         <!-- Modal Header with Tabs -->
         <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
@@ -1234,6 +1233,11 @@ const logDelete = (type, index, array, response = null) => {
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Middleware Tab -->
+          <div v-else-if="activeTab === 'middleware'" class="p-4">
+            <MiddlewareResults :middleware-results="props.middlewareResults" />
           </div>
         </div>
 

@@ -85,13 +85,17 @@ const showActionButtons = ref(localStorage.getItem(`${_table}_showActionButtons`
 const showSearchInput = ref(localStorage.getItem(`${_table}_showSearchInput`) !== 'false');
 
 // UI State
-const showAppearanceOptions = ref(false);
+const showAppearanceOptions = ref(false); 
+
 const appearanceBtn = ref(null);
 const appearancePopupStyle = ref({ top: '0px', left: '0px' });
 const editRecordMode = ref(false);
 const showRecordMode = ref(false);
 const _activeRecord = ref(null);
 const keyIndex = ref(0);
+// Add this with your other refs in DynamicTable.vue
+const editMiddlewareResults = ref([]);
+
 
 // Constants
 const viewModes = [
@@ -259,6 +263,8 @@ const handleRecordChange = (recordData) => {
     loadRecord(recordData.type, recordData.id);
 };
 
+
+
 const _whatever = async (id) => {
     try {
         const record = props.records.data.find(x => x.id === id);
@@ -266,6 +272,37 @@ const _whatever = async (id) => {
             console.error('Record not found:', id);
             return;
         }
+
+        // Add middleware check before showing edit modal
+        const request = {
+            method: 'PUT',
+            path: `/api/${props.table}/${id}`,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-XSRF-TOKEN': document.cookie.match(/XSRF-TOKEN=(.*)/)?.[1],
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            context: {
+                hasAccess: _set.hasAccess,
+                permissions: _set.permissions || [],
+                roles: _set.roles || [],
+                requiredPermissions: ['edit']
+            }
+        };
+
+        // Process middleware
+        const results = await middlewareManager.processRequest(request);
+        console.log('Edit middleware results:', results);
+
+        // Update middleware results
+        editMiddlewareResults.value = results.map(result => ({
+            middleware: result.middleware,
+            result: {
+                isValid: result.result.isValid,
+                checks: result.result.checks,
+                ...result.result.getAdditionalData ? result.result.getAdditionalData() : {}
+            }
+        }));
         
         _activeRecord.value = {
             ...record
@@ -276,6 +313,9 @@ const _whatever = async (id) => {
         console.error('Error in _whatever:', error);
     }
 }
+
+
+
 
 const _superSelfAdmin = computed(() => {
     return _set.superSelfAdmins.includes(_set.self);
@@ -685,6 +725,7 @@ const toggleMiddleware = (name) => {
                     :superSelfAdmin="_superSelfAdmin"
                     :db="_db"
                     :meta="props.records.meta"
+                    :middleware-results="editMiddlewareResults"
                     @close="_close"
                     @changeRecord="handleRecordChange"
                 />
