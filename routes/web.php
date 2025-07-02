@@ -70,6 +70,26 @@ Route::get('home/welcome', function () {
     ]);
 })->name('home/welcome');
 
+Route::get('admin/permissions', function () {
+    \Log::info('Accessing user permissions page');
+    return Inertia::render('admin/Permissions', [
+        'page' => Page::with('sections')->where('title', 'admin/Permissions')->first(),
+        'baseSections' => Section::where('page_id', '0')->get()
+    ]);
+})->name('admin/permissions');
+
+Route::get('admin/roles', function () {
+    \Log::info('Accessing user roles page');
+    return Inertia::render('admin/Roles', [
+        'page' => Page::with('sections')->where('title', 'admin/Roles')->first(),
+        'baseSections' => Section::where('page_id', '0')->get()
+    ]);
+})->name('admin/roles');
+
+
+
+
+
 Route::get('home/welkom', function () {
     return Inertia::render('home/Welkom', [
         'page'=> Page::with('sections')->where('title','home/Welkom')->first(),
@@ -275,12 +295,12 @@ Route::middleware([
     // ========================================
     // MIDDLEWARE
     // ========================================
-    Route::get('home/middleware', function () {
-        return Inertia::render('home/Middleware', [
+    Route::get('admin/middleware', function () {
+        return Inertia::render('admin/Middleware', [
             'page'=> Page::with('sections')->where('title','Tiers')->first(),
             'baseSections' => Section::where('page_id','0')->get()
         ]);
-    })->name('home/middleware');
+    })->name('admin/middleware');
 
     Route::get('home/tiers', function () {
         return Inertia::render('home/Tiers', [
@@ -531,6 +551,17 @@ Route::get('test_user', function (){
     // Add this route for auth check
     Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
 
+    // Add this route for user permissions
+/*
+    Route::get('/admin/permissions', function () {
+        \Log::info('Accessing user permissions page');
+        return Inertia::render('admin/Permissions', [
+            'page' => Page::with('sections')->where('title', 'admin/Permissions')->first(),
+            'baseSections' => Section::where('page_id', '0')->get()
+        ]);
+    })->name('admin.permissions');
+*/
+
 });
 
 // ========================================
@@ -596,3 +627,13 @@ Modules
 6 adminSection
 7 
 */
+
+// Add this route outside the auth middleware group
+Route::get('/auth-test', function () {
+    return response()->json([
+        'is_authenticated' => auth()->check(),
+        'user' => auth()->user(),
+        'session_id' => session()->getId(),
+        'session_data' => session()->all()
+    ]);
+});

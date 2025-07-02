@@ -23,6 +23,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use App\Http\Resources\UserResource;
 use App\Http\Controllers\ModelConfigController;
 use App\Http\Controllers\DynamicController;
+use App\Http\Controllers\UserPermissionController;
 
 Route::apiResource('providers', ProviderController::class);
 
@@ -195,5 +196,16 @@ Route::post('/ai/chat', function (Request $request) {
 // Add this at the end or in the appropriate section for API resources
 Route::get('/resource/{table}', [\App\Http\Controllers\ResourceController::class, 'index']);
 
+// Add these routes BEFORE the dynamic catch-all route
+Route::middleware(['auth:sanctum', 'web'])->group(function () {
+    // User permissions management routes
+    Route::get('/user-permissions/users', [UserPermissionController::class, 'index']);
+    Route::get('/user-permissions/users/search', [UserPermissionController::class, 'search']);
+    Route::get('/user-permissions/roles', [UserPermissionController::class, 'roles']);
+    Route::put('/user-permissions/users/{user}/roles', [UserPermissionController::class, 'updateRoles']);
+});
+
+// Keep your existing dynamic catch-all route AFTER these specific routes
+Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')->middleware('web');
 // Add this with your other API routes
 Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);

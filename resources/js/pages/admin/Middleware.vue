@@ -28,7 +28,7 @@ const _db = useDbStore();
 // components
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
 
-_set.domainFunction = "erp";
+_set.domainFunction = "admin";
 
 const props = defineProps({
     page: Object,

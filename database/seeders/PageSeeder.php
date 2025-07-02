@@ -522,8 +522,8 @@ class PageSeeder extends Seeder
             ],
             [
                 'id' => 32,
-                'title' => 'home/Middlware', // <-- this shoud match the actual file
-                'file' => 'home/Middleware.vue',
+                'title' => 'admin/Middleware', // <-- this shoud match the actual file
+                'file' => 'admin/Middleware.vue',
                 'icon' => 'view-dashboard-outline',
                 'image' => 'h-80 text-4xl text-black bg-contain bg-[url(../images/new2.jpg)]',
                 'slogan' => 'Default Home Slogan1234',
@@ -541,7 +541,48 @@ class PageSeeder extends Seeder
                 'animate' => 1,
                 'max_width' => 1,
             ],
-
+            [
+                'id' => 33,
+                'title' => 'admin/Permissions', // <-- this shoud match the actual file
+                'file' => 'admin/Permissions.vue',
+                'icon' => 'view-dashboard-outline',
+                'image' => 'h-80 text-4xl text-black bg-contain bg-[url(../images/new2.jpg)]',
+                'slogan' => 'Default Admin Slogan1234',
+                'type' => 'Admin',
+                'settings' => 'Admin',
+                'user_id' => 1,
+                'project_id' => 1,
+                'created_at' => '2024-12-07 22:31:41',
+                'updated_at' => '2025-05-20 21:31:48',
+                'is_active' => 1,
+                'sidebar' => 1,
+                'header' => 1,
+                'footer' => 0,
+                'public' => 1,
+                'animate' => 1,
+                'max_width' => 1,
+            ],
+            [
+                'id' => 34,
+                'title' => 'admin/Roles', // <-- this shoud match the actual file
+                'file' => 'admin/Role.vue',
+                'icon' => 'view-dashboard-outline',
+                'image' => 'h-80 text-4xl text-black bg-contain bg-[url(../images/new2.jpg)]',
+                'slogan' => 'Default Admin Slogan1234',
+                'type' => 'Admin',
+                'settings' => 'Admin',
+                'user_id' => 1,
+                'project_id' => 1,
+                'created_at' => '2024-12-07 22:31:41',
+                'updated_at' => '2025-05-20 21:31:48',
+                'is_active' => 1,
+                'sidebar' => 1,
+                'header' => 1,
+                'footer' => 0,
+                'public' => 1,
+                'animate' => 1,
+                'max_width' => 1,
+            ],
 
 
         ];

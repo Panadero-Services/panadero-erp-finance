@@ -175,7 +175,7 @@ const checkMiddleware = async (record) => {
             },
             context: {
                 hasAccess: _set.hasAccess,
-                permissions: _set.permissions || [],
+                permissions: _set.permissions,
                 roles: _set.roles || [],
                 requiredPermissions: ['delete']
             }
@@ -284,7 +284,7 @@ const _whatever = async (id) => {
             },
             context: {
                 hasAccess: _set.hasAccess,
-                permissions: _set.permissions || [],
+                permissions: _set.permissions,
                 roles: _set.roles || [],
                 requiredPermissions: ['edit']
             }
@@ -313,9 +313,6 @@ const _whatever = async (id) => {
         console.error('Error in _whatever:', error);
     }
 }
-
-
-
 
 const _superSelfAdmin = computed(() => {
     return _set.superSelfAdmins.includes(_set.self);
@@ -378,6 +375,7 @@ const handleDelete = async (id) => {
         context: {
             isMetaMask: _set.isMetaMask,
             hasAccess: _set.hasAccess,
+            permissions: _set.permissions || ['canDo'],
             selfName: !(_set.self=='nope'),
             // ... any other store data needed
         }
@@ -397,6 +395,8 @@ const handleDelete = async (id) => {
     showDeleteDialog.value = true;
 };
 
+
+// this routine uses middleware and is accessed by handleSearchNew
 const processRequest = async (request) => {
     try {
         const { success, results, error } = await middlewareManager.processRequest(request);
@@ -420,7 +420,7 @@ const processRequest = async (request) => {
     }
 };
 
-const handleSearch = async (searchData) => {
+const handleSearchNew = async (searchData) => {
     if (searchData.query.length > 1 || searchData.query.length === 0) {
         const request = {
             headers: {
@@ -460,6 +460,37 @@ const handleSearch = async (searchData) => {
         }
     }
 };
+
+
+const handleSearch = (searchData) => {
+    if (searchData.query.length > 1 || searchData.query.length === 0) {
+       // Build search parameters
+        const searchParams = {
+            search: searchData.query || undefined,
+            search_fields: searchData.query && searchData.fields.length > 0 ? searchData.fields.join(',') : undefined,
+            per_page: perPage.value // Use stored perPage value
+        };
+        
+        // Remove undefined values
+        Object.keys(searchParams).forEach(key => 
+            searchParams[key] === undefined && delete searchParams[key]
+        );
+        
+        // Use Inertia router to make the request
+        router.get(window.location.pathname, searchParams, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    }
+};
+
+
+
+
+
+
+
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 

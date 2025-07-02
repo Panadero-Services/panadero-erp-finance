@@ -33,6 +33,7 @@ export const useSettingsStore = defineStore('settings', () => {
     // temporary 
     const hasAccess = true;
     const hasPermissions = true;
+    const permissions = ['canDoAll'];
     const requiredPermissions = true;
 
     const wrenchMode = ref(false); // native.. bcuz of i3v2-bots fork
@@ -142,6 +143,6 @@ export const useSettingsStore = defineStore('settings', () => {
         setLanguage, web3Toggle, game3Toggle, darkToggle, setSelf, resetSelf, pageDetailToggle,
         _connect, _disconnect, _getNextSelf, initSettings, initMM, initialize, setProjectType,
         setResetProject, reset, fill, wrenchMode,
-        hasAccess, hasPermissions, requiredPermissions
+        hasAccess, hasPermissions, requiredPermissions, permissions
     };
 });

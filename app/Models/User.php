@@ -109,4 +109,18 @@ class User extends Authenticatable //implements MustVerifyEmail
         return $this->roles()->whereIn('name', $roles)->exists();
     }
 
+    public function hasPermission(string $permission): bool
+    {
+        return $this->roles->contains(function ($role) use ($permission) {
+            return $role->hasPermission($permission);
+        });
+    }
+
+    public function hasAnyPermission(array $permissions): bool
+    {
+        return $this->roles->contains(function ($role) use ($permissions) {
+            return $role->hasAnyPermission($permissions);
+        });
+    }
+
 }

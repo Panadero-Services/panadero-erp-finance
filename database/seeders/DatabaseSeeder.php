@@ -8,8 +8,6 @@ use App\Models\Comment;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -17,105 +15,79 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->withPersonalTeam()->create();
+        // Create roles
+        $memberRole = Role::create(['name'=> 'member']);
+        $editorRole = Role::create(['name'=> 'editor']);
+        $adminRole = Role::create(['name'=> 'admin']);
+        $developerRole = Role::create(['name'=> 'developer']);
+        $masterRole = Role::create(['name'=> 'master']);
 
-//        User::factory()->withPersonalTeam()->create([
-//            'name' => 'Test User',
-//            'email' => 'test@example.com',
-//        ]);
+        // Add the ProviderSeeder
+        $this->call(ProviderSeeder::class);
 
+        // Call other seeders
+        $this->call([
+            UserSeeder::class,
+            CategorySeeder::class,
+            PostTypeSeeder::class,
+            TagSeeder::class,
+            PostSeeder::class,
+            Web3ChainSeeder::class,
+            Web3ProjectSeeder::class,
+            Web3TypeSeeder::class,
+            Web3RecordSeeder::class,
+            ProjectSeeder::class,
+            PageSeeder::class,
+            UpdatePagesSeeder::class,
+            SectionsSeeder::class,
+            StateDatasetSeeder::class,
+            BusinessServiceSeeder::class,
+            FeatureSeeder::class,
+            FutureSeeder::class,
+        ]);
 
-/*
-        $users = User::factory(10)->create();
-        $posts = Post::factory(300)->recycle($users)->create();
-        $comments = Comment::factory(200)->recycle($users)->recycle($posts)->create();
+        // Get all users and roles
+        $users = User::all();
+        $roles = Role::all();
 
-        $lieuwe = User::factory()
-            ->has(Post::factory(45))
-            ->has(Comment::factory(120)->recycle($posts))
-            ->create([
-                'name' => 'lieuwe Bakker',
-                'email' => 'lbakker@me.com',
-                'current_team_id' => 1,
-            ]);
-*/
-    
-    $memberRole = Role::create(['name'=> 'member']);
-    $editorRole = Role::create(['name'=> 'editor']);
-    $adminRole = Role::create(['name'=> 'admin']);
-    $developerRole = Role::create(['name'=> 'developer']);
-    $masterRole = Role::create(['name'=> 'master']);
+        // First, give member role to all users
+        foreach ($users as $user) {
+            $user->roles()->attach($memberRole);
+        }
 
-    // Comment out user creation to avoid duplicates
-    // $memberUser = User::factory()
-    //             ->create([
-    //                 'name' => 'Member',
-    //                 'email' => 'member@example.com'
-    //             ]);
+        // Then, give all roles to lbakker@me.com
+        $adminUser = User::where('email', 'lbakker@me.com')->first();
+        if ($adminUser) {
+            // Detach existing roles first to avoid duplicates
+            $adminUser->roles()->detach();
+            // Attach all roles
+            $adminUser->roles()->attach($roles);
+        }
 
-    // $memberUser->roles()->attach($memberRole);
+        // Then, give all roles to jawsome.orbit@gmail.com
+        $adminUser = User::where('email', 'jawsome.orbit@gmail.com')->first();
+        if ($adminUser) {
+            // Detach existing roles first to avoid duplicates
+            $adminUser->roles()->detach();
+            // Attach all roles
+            $adminUser->roles()->attach($roles);
+        }
 
-    // $editorUser = User::factory()
-    //             ->create([
-    //                 'name' => 'Editor',
-    //                 'email' => 'editor@example.com'
-    //             ]);
-                
-    // $editorUser->roles()->attach($editorRole);
+        // Add this line after creating roles
+        $this->call(PermissionSeeder::class);
 
-//    $user = User::factory()->create(['id' => 1, 'name' => 'Admin', 'email' => 'admin@example.com']);
-                
-    // $adminUser->roles()->attach($adminRole);
+        // Create demo team
+        $demoTeam = \App\Models\Team::create([
+            'name' => 'demo', 
+            'id' => 1, 
+            'user_id' => 1, 
+            'personal_team' => 1
+        ]);
 
-    // $memberEditorUser = User::factory()
-    //             ->create([
-    //                 'name' => 'Member/Editor',
-    //                 'email' => 'me@example.com'
-    //             ]);
-                
-    // $memberEditorUser->roles()->attach($memberRole);
-    // $memberEditorUser->roles()->attach($editorRole);
-
-    // Comment out post creation to avoid using undefined variables
-    // $posts = Post::factory(10)->recycle($editorUser)->create();
-    // $posts = Post::factory(10)->recycle($memberEditorUser)->create();
-
-    // Add the ProviderSeeder
-    $this->call(ProviderSeeder::class);
-
-    $this->call([
-        // Comment out the UserSeeder to avoid duplicate users
-        UserSeeder::class,
-        CategorySeeder::class,
-        PostTypeSeeder::class,
-        TagSeeder::class,
-        PostSeeder::class,
-        Web3ChainSeeder::class,
-        Web3ProjectSeeder::class,
-        Web3TypeSeeder::class,
-        Web3RecordSeeder::class,
-        ProjectSeeder::class,
-        PageSeeder::class,
-        UpdatePagesSeeder::class,
-        SectionsSeeder::class,
-        StateDatasetSeeder::class,
-        BusinessServiceSeeder::class,
-        FeatureSeeder::class,
-        FutureSeeder::class,
-    ]);
-
-    $users = User::all();
-    $roles = Role::all();
-
-    foreach ($users as $user) {
-        $user->roles()->attach($roles);
-    }
-
-    $demoTeam = \App\Models\Team::create(['name' => 'demo', 'id' => 1, 'user_id' => 1, 'personal_team' => 1]);
-
-    $users = User::all();
-    foreach ($users as $user) {
-        $user->update(['current_team_id' => 1]);
-    }
+        // Set current team for all users
+        $users = User::all();
+        foreach ($users as $user) {
+            $user->update(['current_team_id' => 1]);
+        }
     }
 }

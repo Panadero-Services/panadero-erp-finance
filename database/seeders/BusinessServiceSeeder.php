@@ -36,6 +36,22 @@ class BusinessServiceSeeder extends Seeder
                 'path' => '/'
             ],
             [
+                'item' => 'Admin',
+                'title' => 'i3-Admin',
+                'description' => 'Administration module for i3-Framework.',
+                'color' => 'indigo',
+                'version' => 'v1.0.01',
+                'icon' => 'I3FrameworkIcon',
+                'options' => [
+                    ['name' => 'Permissions', 'url' => '/admin/permissions', 'route' => 'admin/permissions'],
+                    ['name' => 'Roles', 'url' => '/admin/roles', 'route' => 'admin/roles'],
+                    ['name' => 'Middleware', 'url' => '/admin/middleware', 'route' => 'admin/middleware']
+                ],
+                'status' => 'ready',
+                'progress' => 30,
+                'path' => '/'
+            ],
+            [
                 'item' => 'CMS',
                 'title' => 'Content Management',
                 'description' => 'Efficiently manage and organize your content, from articles to posts, with an intuitive interface.',

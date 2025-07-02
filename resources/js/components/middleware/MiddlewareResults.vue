@@ -54,7 +54,7 @@ const props = defineProps({
                         </span>
                         <XCircleIcon v-if="layer.result.session !== 'active'" class="h-4 w-4 text-red-500" />
                         <CheckCircleIcon v-else class="h-4 w-4 text-green-500" />
-                    </div>
+            </div>
                 </div>
             </template>
 
@@ -68,7 +68,7 @@ const props = defineProps({
                         </span>
                         <XCircleIcon v-if="!layer.result.token" class="h-4 w-4 text-red-500" />
                         <CheckCircleIcon v-else class="h-4 w-4 text-green-500" />
-                    </div>
+                </div>
                 </div>
             </template>
         </div>

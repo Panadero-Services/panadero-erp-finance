@@ -44,35 +44,35 @@ defineEmits(['close', 'confirm']);
                         <DialogPanel class="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                             <DialogTitle as="h3" class="text-sm font-medium leading-6 text-gray-900">
                                 Delete {{ record?.title }}
-                            </DialogTitle>
+                                </DialogTitle>
 
-                            <div class="mt-2">
+                                <div class="mt-2">
                                 <p class="text-xs text-gray-500">
                                     Are you sure you want to delete this record? This action cannot be undone.
-                                </p>
+                                    </p>
                             </div>
 
                             <!-- Use the middleware results component -->
                             <MiddlewareResults :middleware-results="middlewareResults" />
 
                             <div class="mt-4 flex justify-end space-x-3">
-                                <button
-                                    type="button"
+                            <button
+                                type="button"
                                     class="inline-flex justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50"
                                     :disabled="isDeleting || !middlewareResults.every(m => m.result.isValid)"
                                     @click="$emit('confirm')"
                                 >
-                                    {{ isDeleting ? 'Deleting...' : 'Delete' }}
-                                </button>
-                                <button
-                                    type="button"
+                                {{ isDeleting ? 'Deleting...' : 'Delete' }}
+                            </button>
+                            <button
+                                type="button"
                                     class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 focus-visible:ring-offset-2"
                                     @click="$emit('close')"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </DialogPanel>
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </DialogPanel>
                     </TransitionChild>
                 </div>
             </div>
