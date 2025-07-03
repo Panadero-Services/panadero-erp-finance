@@ -154,6 +154,15 @@ class DynamicController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Check authorization
+        if (!auth()->check() || !auth()->user()->hasRole('admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized: Admin role required',
+                'error_code' => 'INSUFFICIENT_PERMISSIONS'
+            ], 403);
+        }
+
         $path = $request->path();
         $pathParts = explode('/', $path);
         $table = $pathParts[1] ?? null;

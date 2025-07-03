@@ -203,6 +203,11 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
     Route::get('/user-permissions/users/search', [UserPermissionController::class, 'search']);
     Route::get('/user-permissions/roles', [UserPermissionController::class, 'roles']);
     Route::put('/user-permissions/users/{user}/roles', [UserPermissionController::class, 'updateRoles']);
+    
+    // Role permissions management routes
+    Route::get('/permissions', [UserPermissionController::class, 'permissions']);
+    Route::get('/user-permissions/roles/search', [UserPermissionController::class, 'searchRoles']);
+    Route::put('/user-permissions/roles/{role}/permissions', [UserPermissionController::class, 'updateRolePermissions']);
 });
 
 // Keep your existing dynamic catch-all route AFTER these specific routes

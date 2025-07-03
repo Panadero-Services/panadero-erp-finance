@@ -30,14 +30,31 @@ axios.interceptors.request.use(config => {
     return Promise.reject(error);
 });
 
-// Response interceptor for handling 401 errors
+// Response interceptor for handling errors
 axios.interceptors.response.use(
     response => response,
     error => {
+        // Don't retry 403 errors - they're authorization failures
+        if (error.response?.status === 403) {
+            console.warn('Access forbidden:', error.response.data?.message || 'Insufficient permissions');
+            return Promise.reject(error);
+        }
+        
         if (error.response?.status === 401) {
             // Silent handling of auth errors
+            console.warn('Authentication required');
+            return Promise.reject(error);
         }
+        
         if (error.response?.status === 419) {
+            // Only retry CSRF token errors once to prevent infinite loops
+            if (error.config._retry) {
+                console.error('CSRF token refresh failed after retry');
+                return Promise.reject(error);
+            }
+            
+            error.config._retry = true;
+            
             // Refresh CSRF token and retry the request
             return axios.get('/sanctum/csrf-cookie')
                 .then(() => {
@@ -49,8 +66,13 @@ axios.interceptors.response.use(
                     const config = error.config;
                     config.headers['X-CSRF-TOKEN'] = token;
                     return axios(config);
+                })
+                .catch(retryError => {
+                    console.error('Failed to refresh CSRF token:', retryError);
+                    return Promise.reject(error);
                 });
         }
+        
         return Promise.reject(error);
     }
 );

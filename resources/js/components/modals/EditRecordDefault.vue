@@ -271,10 +271,18 @@ const submit = async () => {
     console.error('API call failed:', error);
     console.error('Error response:', error.response);
     
-    // Handle validation errors silently
+    // Handle authorization errors
+    if (error.response?.status === 403) {
+        console.error('Permission denied:', error.response.data?.message);
+        // Show user-friendly error message
+
+        return;
+    }
+    
+    // Handle validation errors
     if (error.response?.status === 422) {
-      console.log('Validation failed:', error.response.data);
-      // Validation failed - could add user notification here if needed
+        console.log('Validation failed:', error.response.data);
+        // Could add user notification here
     }
   }
 };

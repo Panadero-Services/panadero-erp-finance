@@ -21,6 +21,15 @@ const permissionGroups = {
   'settings': 4
 };
 
+// Status mapping for role badges
+const roleStatusMapping = {
+  'master': 'purple',
+  'admin': 'blue', 
+  'developer': 'green',
+  'editor': 'yellow',
+  'member': 'gray'
+};
+
 const permissionDescriptions = {
   // User permissions
   'view-users': 'Can view user list',
@@ -82,7 +91,7 @@ onMounted(async () => {
 
 const loadRoles = async () => {
   try {
-    const response = await axios.get('/api/roles');
+    const response = await axios.get('/api/user-permissions/roles');
     roles.value = response.data;
   } catch (error) {
     console.error('Error loading roles:', error);
@@ -105,7 +114,7 @@ const searchRoles = async () => {
   }
   
   try {
-    const response = await axios.get(`/api/roles/search?q=${encodeURIComponent(searchQuery.value)}`);
+    const response = await axios.get(`/api/user-permissions/roles/search?q=${encodeURIComponent(searchQuery.value)}`);
     roles.value = response.data;
   } catch (error) {
     console.error('Error searching roles:', error);
@@ -126,7 +135,7 @@ const closeEditModal = () => {
 
 const saveRolePermissions = async () => {
   try {
-    await axios.put(`/api/roles/${selectedRole.value.id}/permissions`, {
+    await axios.put(`/api/user-permissions/roles/${selectedRole.value.id}/permissions`, {
       permissions: selectedPermissions.value
     });
     await loadRoles();
