@@ -12,6 +12,12 @@ class PermissionSeeder extends Seeder
     {
         // Define default permissions by group
         $permissions = [
+            'global' => [
+                'global-view' => 'Can view global',
+                'global-create' => 'Can create global',
+                'global-edit' => 'Can edit global',
+                'global-delete' => 'Can delete global',
+            ],
             'users' => [
                 'view-users' => 'Can view user list',
                 'create-users' => 'Can create new users',

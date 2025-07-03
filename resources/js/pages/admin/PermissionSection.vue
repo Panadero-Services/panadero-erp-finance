@@ -13,8 +13,9 @@ const showEditModal = ref(false);
 const selectedRole = ref(null);
 const selectedPermissions = ref([]);
 
-// Permission hierarchy for sorting
+// Permission hierarchy for sorting - include ALL groups from the database
 const permissionGroups = {
+  'global': 0,  // Add this - it was missing!
   'users': 1,
   'roles': 2,
   'articles': 3,

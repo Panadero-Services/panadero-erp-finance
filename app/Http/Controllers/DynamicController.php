@@ -154,11 +154,11 @@ class DynamicController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Check authorization
-        if (!auth()->check() || !auth()->user()->hasRole('admin')) {
+        // Check authorization for specific permission
+        if (!auth()->check() || !auth()->user()->hasPermission('global-edit')) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized: Admin role required',
+                'message' => 'Unauthorized: global-edit permission required',
                 'error_code' => 'INSUFFICIENT_PERMISSIONS'
             ], 403);
         }

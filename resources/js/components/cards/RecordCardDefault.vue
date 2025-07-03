@@ -667,7 +667,7 @@ const handleIconToggle = async (field) => {
                     </button>
                     <button 
                         @click="$emit('delete', record?.id)"
-                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-red-600 dark:text-red-400 ring-red-300 dark:ring-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:ring-red-600 dark:hover:ring-red-400 transition-colors duration-200"
+                        class="w-12 rounded px-1.5 py-0.5 text-[10px] ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover:text-gray-700 dark:hover:ring-indigo-400"
                     >
                         Delete
                     </button>
