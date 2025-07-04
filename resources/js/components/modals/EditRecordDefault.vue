@@ -769,9 +769,9 @@ const logDelete = (type, index, array, response = null) => {
     </div>
     <div :class="[_window.base, _window.padding, _window.motion, _window.light, _window.dark]">
       <div class="h-full flex flex-col">
-{{middlewareResults}}
-      <div>
-      </div>
+
+<div>
+</div>
         <!-- Modal Header with Tabs -->
         <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
           <div>
