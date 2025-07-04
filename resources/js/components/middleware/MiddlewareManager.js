@@ -28,17 +28,21 @@ export class MiddlewareManager {
                 const result = await this.processMiddleware(middleware, request);
                 results.push({
                     middleware: middleware.name,
-                    isValid: result.isValid,
-                    checks: result.checks || {},
-                    validatedData: result.validatedData
+                    result: {
+                        isValid: result.isValid,
+                        checks: result.checks || {},
+                        validatedData: result.validatedData
+                    }
                 });
             } catch (error) {
                 console.error(`Error in ${middleware.name}:`, error);
                 results.push({
                     middleware: middleware.name,
-                    isValid: false,
-                    checks: {},
-                    error: error.message
+                    result: {
+                        isValid: false,
+                        checks: {},
+                        error: error.message
+                    }
                 });
             }
         }
