@@ -240,6 +240,8 @@ const _show = async (id) => {
             record: _activeRecord.value,
             keyIndex: keyIndex.value
         });
+
+
     } catch (error) {
         console.error('Error showing record:', error);
     }
@@ -395,7 +397,6 @@ const handleDelete = async (id) => {
     showDeleteDialog.value = true;
 };
 
-
 // this routine uses middleware and is accessed by handleSearchNew
 const processRequest = async (request) => {
     try {
@@ -461,7 +462,6 @@ const handleSearchNew = async (searchData) => {
     }
 };
 
-
 const handleSearch = (searchData) => {
     if (searchData.query.length > 1 || searchData.query.length === 0) {
        // Build search parameters
@@ -484,13 +484,6 @@ const handleSearch = (searchData) => {
         });
     }
 };
-
-
-
-
-
-
-
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 

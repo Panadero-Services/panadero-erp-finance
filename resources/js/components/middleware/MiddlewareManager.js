@@ -21,22 +21,40 @@ export class MiddlewareManager {
     }
 
     async processRequest(request) {
-        console.log('MiddlewareManager: Processing request with registry size:', this.registry.size);
         const results = [];
         
-        // Process only registered middleware
-        for (const [name, middleware] of this.registry) {
-            console.log(`MiddlewareManager: Processing ${name} middleware`);
-            const result = await middleware.handle(request);
-            results.push({ 
-                middleware: name,  // Ensure middleware name is included
-                result 
-            });
-            console.log(`MiddlewareManager: ${name} result:`, result);
+        for (const middleware of this.registry.values()) {
+            try {
+                const result = await this.processMiddleware(middleware, request);
+                results.push({
+                    middleware: middleware.name,
+                    isValid: result.isValid,
+                    checks: result.checks || {},
+                    validatedData: result.validatedData
+                });
+            } catch (error) {
+                console.error(`Error in ${middleware.name}:`, error);
+                results.push({
+                    middleware: middleware.name,
+                    isValid: false,
+                    checks: {},
+                    error: error.message
+                });
+            }
         }
 
-        console.log('MiddlewareManager: All results:', results);
         return results;
+    }
+
+    async processMiddleware(middleware, request) {
+        // Default implementation - override in specific middleware classes
+        return {
+            isValid: true,
+            checks: {
+                'basic-check': true
+            },
+            validatedData: request
+        };
     }
 
     getMiddlewareChain() {

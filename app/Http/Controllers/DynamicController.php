@@ -6,56 +6,100 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class DynamicController extends Controller
 {
-    protected function getModelClass($table)
-    {
-        // Convert table name to singular studly case
-        // e.g., 'blog_posts' -> 'BlogPost'
-        $modelName = Str::studly(Str::singular($table));
-        $modelClass = "App\\Models\\{$modelName}";
-
-        // Check if the model exists
-        if (!class_exists($modelClass)) {
-            Log::error("Model not found", [
-                'table' => $table,
-                'modelClass' => $modelClass
-            ]);
-            return null;
-        }
-
-        return $modelClass;
-    }
-
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request, $module, $table)
     {
-        // Convert table name to model class
+        // Check permissions
+        $validPermission = $this->checkPermissions();
+        
+        // Get and validate model class
+        $modelClass = $this->getModelClass($table);
+        
+        // Build query with relationships and search
+        $query = $this->buildQuery($modelClass, $request);
+        
+        // Get metadata from model
+        $meta = $this->getModelMetadata($modelClass);
+        
+        // Get records with pagination if permitted
+        $records = $this->getRecords($query, $modelClass, $validPermission, $request);
+        
+        // Get page configuration
+        $pageConfig = $this->getPageConfiguration($module, $table);
+        
+        // Return Inertia view
+        return $this->renderView($module, $table, $records, $pageConfig);
+    }
+
+    /**
+     * Check user permissions
+     */
+    private function checkPermissions(): bool
+    {
+        return auth()->check() && auth()->user()->hasAnyPermission(['global-view', 'view-users']);
+    }
+
+    /**
+     * Get and validate model class
+     */
+    private function getModelClass(string $table): string
+    {
         $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
         
         if (!class_exists($modelClass)) {
             abort(404, "Model {$modelClass} not found");
         }
         
+        return $modelClass;
+    }
+
+    /**
+     * Build query with relationships and search
+     */
+    private function buildQuery(string $modelClass, Request $request)
+    {
         $query = $modelClass::query();
         
-        // Add relationships if they exist
+        // Add relationships
+        $this->addRelationships($query, $modelClass);
+        
+        // Add search conditions
+        $this->addSearchConditions($query, $modelClass, $request);
+        
+        // Add default ordering
+        $query->orderBy('created_at', 'desc');
+        
+        return $query;
+    }
+
+    /**
+     * Add relationships to query
+     */
+    private function addRelationships($query, string $modelClass): void
+    {
         if (method_exists($modelClass, 'user')) {
             $query->with('user');
         }
         if (method_exists($modelClass, 'project')) {
             $query->with('project');
         }
-        
-        // Get allowed searchable columns from the model
+    }
+
+    /**
+     * Add search conditions to query
+     */
+    private function addSearchConditions($query, string $modelClass, Request $request): void
+    {
         $allowedSearchFields = method_exists($modelClass, 'getSearchableColumns') 
             ? $modelClass::getSearchableColumns() 
             : [];
 
-        // Handle search functionality
         if ($request->has('search') && $request->search) {
             $searchTerm = $request->search;
             $searchFields = $request->get('search_fields', implode(',', $allowedSearchFields));
@@ -68,84 +112,121 @@ class DynamicController extends Controller
                 }
             });
         }
+    }
 
-        // Order by most recent first
-        $query->orderBy('created_at', 'desc');
-
-        // Get per_page from request, default to 12
-        $perPage = $request->get('per_page', 12);
-
-        // Create resource collection
-        $resourceClass = "App\\Http\\Resources\\" . Str::studly(Str::singular($table)) . "Resource";
-        
-        // Get meta data
+    /**
+     * Get all metadata from model
+     */
+    private function getModelMetadata(string $modelClass): array
+    {
         $meta = [];
+        $metaMethods = [
+            'optionsFormat' => 'options_format',
+            'validationRules' => 'validation_rules',
+            'formFields' => 'form_fields',
+            'linksTable' => 'links_table',
+            'getSearchableColumns' => 'searchable_columns',
+            'getTableColumns' => 'table_columns',
+            'getStatusMapping' => 'status_mapping',
+            'getContentFields' => 'content_fields'
+        ];
 
-        // Add options format if available
-        if (method_exists($modelClass, 'optionsFormat')) {
-            $meta['options_format'] = $modelClass::optionsFormat();
-        }
-        
-        if (method_exists($modelClass, 'validationRules')) {
-            $meta['validation_rules'] = $modelClass::validationRules();
-        }
-        
-        if (method_exists($modelClass, 'formFields')) {
-            $meta['form_fields'] = $modelClass::formFields();
-        }
-        
-        if (method_exists($modelClass, 'linksTable')) {
-            $meta['links_table'] = $modelClass::linksTable();
-        }
-        
-        if (method_exists($modelClass, 'getSearchableColumns')) {
-            $meta['searchable_columns'] = $modelClass::getSearchableColumns();
-        }
-        
-        if (method_exists($modelClass, 'getTableColumns')) {
-            $meta['table_columns'] = $modelClass::getTableColumns();
-        }
-        
-        if (method_exists($modelClass, 'getStatusMapping')) {
-            $meta['status_mapping'] = $modelClass::getStatusMapping();
+        foreach ($metaMethods as $method => $key) {
+            if (method_exists($modelClass, $method)) {
+                $meta[$key] = $modelClass::$method();
+            }
         }
 
-        if (method_exists($modelClass, 'getContentFields')) {
-            $meta['content_fields'] = $modelClass::getContentFields();
-        }
-
-        // Add boolean fields from the model using an instance
+        // Add boolean fields
         $modelInstance = new $modelClass();
         if (method_exists($modelInstance, 'getCasts')) {
-            $casts = $modelInstance->getCasts();
-            $meta['boolean_fields'] = collect($casts)
-                ->filter(function ($cast, $field) {
-                    return $cast === 'boolean';
-                })
+            $meta['boolean_fields'] = collect($modelInstance->getCasts())
+                ->filter(fn($cast) => $cast === 'boolean')
                 ->keys()
                 ->toArray();
         }
 
-        // Create the collection with meta data
-        $paginator = $query->paginate($perPage)->appends($request->query());
-        if (class_exists($resourceClass)) {
-            $records = $resourceClass::collection($paginator);
+        return $meta;
+    }
+
+    /**
+     * Get records with pagination if permitted
+     */
+    private function getRecords($query, string $modelClass, bool $validPermission, Request $request)
+    {
+        $perPage = $request->get('per_page', 12);
+        $resourceClass = "App\\Http\\Resources\\" . Str::studly(Str::singular($modelClass)) . "Resource";
+        
+        if ($validPermission) {
+            // Get paginated data when permission is valid
+            $paginator = $query->paginate($perPage)->appends($request->query());
+            $records = class_exists($resourceClass)
+                ? $resourceClass::collection($paginator)
+                : \App\Http\Resources\DynamicResource::collection($paginator);
         } else {
-            $records = \App\Http\Resources\DynamicResource::collection($paginator);
+            // Create empty paginator for no permission case
+            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
+                collect([]), // empty collection
+                0,          // total
+                $perPage,   // per page
+                1,          // current page
+                [
+                    'path' => request()->url(),
+                    'pageName' => 'page'
+                ]
+            );
+
+            // Create resource collection from empty paginator
+            $records = class_exists($resourceClass)
+                ? $resourceClass::collection($emptyPaginator)
+                : \App\Http\Resources\DynamicResource::collection($emptyPaginator);
         }
 
-        // Add meta data to the collection level
-        $records->additional(['meta' => $meta]);
+        // Add meta data
+        $meta = $this->getModelMetadata($modelClass);
+        
+        // Get pagination data
+        $paginationData = $records->response()->getData(true);
+        
+        // Add additional data with consistent structure
+        $records->additional([
+            'meta' => array_merge($meta, [
+                'current_page' => $paginationData['meta']['current_page'] ?? 1,
+                'from' => $paginationData['meta']['from'] ?? null,
+                'last_page' => $paginationData['meta']['last_page'] ?? 1,
+                'links' => $paginationData['meta']['links'] ?? [],
+                'path' => $paginationData['meta']['path'] ?? request()->url(),
+                'per_page' => $paginationData['meta']['per_page'] ?? $perPage,
+                'to' => $paginationData['meta']['to'] ?? null,
+                'total' => $paginationData['meta']['total'] ?? 0,
+            ])
+        ]);
 
-        // Get page configuration
-        $page = \App\Models\Page::with('sections')->where('title', "{$module}/{$table}")->first();
-        $baseSections = \App\Models\Section::where('page_id', '0')->get();
+        return $records;
+    }
 
-        $vueComponent = Str::studly($table);
-        return Inertia::render("{$module}/{$vueComponent}", [
+    /**
+     * Get page configuration
+     */
+    private function getPageConfiguration(string $module, string $table): array
+    {
+        return [
+            'page' => \App\Models\Page::with('sections')
+                ->where('title', "{$module}/{$table}")
+                ->first(),
+            'baseSections' => \App\Models\Section::where('page_id', '0')->get()
+        ];
+    }
+
+    /**
+     * Render the Inertia view
+     */
+    private function renderView(string $module, string $table, $records, array $pageConfig)
+    {
+        return Inertia::render("{$module}/" . Str::studly($table), [
             'records' => $records,
-            'page' => $page,
-            'baseSections' => $baseSections
+            'page' => $pageConfig['page'],
+            'baseSections' => $pageConfig['baseSections']
         ]);
     }
 
