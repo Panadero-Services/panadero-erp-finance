@@ -11,10 +11,11 @@ use App\Models\User;
 use App\Models\Project;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Traits\HasPermissions;
 
 class Future extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPermissions;
 
     protected $fillable = [
         'item',
@@ -368,8 +369,42 @@ class Future extends Model
         return [];
     }
 
+
+// For a model with color options
+public static function optionsFormat(): array
+{
+    return [
+        [
+            'name' => 'name',
+            'type' => 'text',
+            'label' => 'Color Name',
+            'required' => true
+        ],
+        [
+            'name' => 'hex',
+            'type' => 'color',
+            'label' => 'Color Code',
+            'required' => true
+        ],
+        [
+            'name' => 'opacity',
+            'type' => 'number',
+            'label' => 'Opacity',
+            'min' => 0,
+            'max' => 1,
+            'step' => 0.1,
+            'required' => false
+        ]
+    ];
+}
+
+
+
+    
+
     /**
      * Define permission-based access for futures
+     * Override the trait's default implementation
      */
     public static function getPermissionAccess(): array
     {
@@ -403,55 +438,5 @@ class Future extends Model
         ];
     }
 
-    /**
-     * Scope a query to only include futures the user can read based on their permissions
-     */
-    public function scopeReadable(Builder $query, $userPermissions = null): Builder
-    {
-        $user = Auth::user();
-        
-        if (!$user) {
-            return $query->where('id', 0);
-        }
-
-        if (!$userPermissions) {
-            $userPermissions = $user->roles()
-                ->with('permissions')
-                ->get()
-                ->pluck('permissions')
-                ->flatten()
-                ->pluck('name')
-                ->unique();
-        }
-
-        if ($userPermissions->contains('canReadAll')) {
-            return $query;
-        }
-
-        return $query->where(function($q) use ($userPermissions, $user) {
-            foreach ($userPermissions as $permission) {
-                $permissionAccess = self::getPermissionAccess()[$permission] ?? null;
-                if ($permissionAccess) {
-                    $conditions = $permissionAccess['conditions'];
-                    
-                    $q->orWhere(function($subQ) use ($conditions, $user) {
-                        if ($conditions['owner_only'] ?? false) {
-                            $subQ->where('user_id', $user->id);
-                        }
-                        
-                        if ($conditions['respect_lock'] ?? false) {
-                            $subQ->where(function ($lockQ) use ($user) {
-                                $lockQ->where('is_locked', false)
-                                     ->orWhere('user_id', $user->id);
-                            });
-                        }
-                        
-                        if ($conditions['status_allowed'] ?? false) {
-                            $subQ->whereIn('status', $conditions['status_allowed']);
-                        }
-                    });
-                }
-            }
-        });
-    }
+   
 } 

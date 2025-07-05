@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use App\Models\User;
-
+use App\Models\Traits\HasPermissions;
 
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -299,6 +299,33 @@ class Project extends Model
                 'col_span' => 1,
                 'sequence' => 8,
                 'default' => true
+            ]
+        ];
+    }
+
+    /**
+     * Define permission-based access for projects
+     */
+    public static function getPermissionAccess(): array
+    {
+        return [
+            'canReadAll' => [
+                'description' => 'Full access to read all projects',
+                'conditions' => []
+            ],
+            'canReadActive' => [
+                'description' => 'Access to read active projects',
+                'conditions' => [
+                    'active_only' => true,
+                    'respect_lock' => true
+                ]
+            ],
+            'canReadOwn' => [
+                'description' => 'Access to read own projects',
+                'conditions' => [
+                    'owner_only' => true,
+                    'respect_lock' => true
+                ]
             ]
         ];
     }

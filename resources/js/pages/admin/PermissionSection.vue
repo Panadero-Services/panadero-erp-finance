@@ -33,22 +33,47 @@ const roleStatusMapping = {
 
 const permissionDescriptions = {
   // User permissions
-  'view-users': 'Can view user list',
-  'create-users': 'Can create new users',
-  'edit-users': 'Can edit user details',
-  'delete-users': 'Can delete users',
+  'viewUsers': 'Can view user list',
+  'createUsers': 'Can create new users',
+  'editUsers': 'Can edit user details',
+  'deleteUsers': 'Can delete users',
   // Role permissions
-  'view-roles': 'Can view roles',
-  'create-roles': 'Can create new roles',
-  'edit-roles': 'Can edit roles',
-  'delete-roles': 'Can delete roles',
+  'viewRoles': 'Can view roles',
+  'createRoles': 'Can create new roles',
+  'editRoles': 'Can edit roles',
+  'deleteRoles': 'Can delete roles',
   // Article permissions
-  'view-articles': 'Can view articles',
-  'create-articles': 'Can create articles',
-  'edit-articles': 'Can edit articles',
-  'delete-articles': 'Can delete articles',
+  'viewArticles': 'Can view articles',
+  'createArticles': 'Can create articles',
+  'editArticles': 'Can edit articles',
+  'deleteArticles': 'Can delete articles',
+  // Post permissions
+  'viewPosts': 'Can view posts',
+  'createPosts': 'Can create posts',
+  'editPosts': 'Can edit posts',
+  'deletePosts': 'Can delete posts',
+  // Project permissions
+  'viewProjects': 'Can view projects',
+  'createProjects': 'Can create projects',
+  'editProjects': 'Can edit projects',
+  'deleteProjects': 'Can delete projects',
+  // Future permissions
+  'viewFutures': 'Can view futures',
+  'createFutures': 'Can create futures',
+  'editFutures': 'Can edit futures',
+  'deleteFutures': 'Can delete futures',
   // Settings permissions
-  'manage-settings': 'Can manage application settings'
+  'manageSettings': 'Can manage application settings',
+  // Global permissions
+  'globalView': 'Can view global records',
+  'globalCreate': 'Can create global records',
+  'globalEdit': 'Can edit global records',
+  'globalDelete': 'Can delete global records',
+  'canReadAll': 'Full access to read all records',
+  'canReadUnlocked': 'Access to read all unlocked records',
+  'canReadProject': 'Access to read all project records',
+  'canReadByStatus': 'Access to read specific status records',
+  'canReadOwn': 'Access to read own records only'
 };
 
 // Status mapping for permission badges
@@ -57,11 +82,13 @@ const permissionStatusMapping = {
   'create': 'green',
   'edit': 'yellow',
   'delete': 'red',
-  'manage': 'purple'
+  'manage': 'purple',
+  'global': 'purple',
+  'canRead': 'blue'
 };
 
 const getPermissionColor = (permission) => {
-  const action = permission.split('-')[0];
+  const action = permission.split(/(?=[A-Z])/)[0];
   return permissionStatusMapping[action] || 'gray';
 };
 

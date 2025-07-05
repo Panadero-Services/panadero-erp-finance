@@ -13,10 +13,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Traits\HasSlug;
+use App\Models\Traits\HasPermissions;
 
 class Post extends Model
 {
-    use HasFactory, HasSlug;
+    use HasFactory, HasSlug, HasPermissions;
 
     protected $fillable = [
         'user_id',
@@ -469,7 +470,40 @@ public static function optionsFormat(): array
     ];
 }
 
-
+/**
+ * Define permission-based access for posts
+ */
+public static function getPermissionAccess(): array
+{
+    return [
+        'canReadAll' => [
+            'description' => 'Full access to read all posts',
+            'conditions' => []
+        ],
+        'canReadPublished' => [
+            'description' => 'Access to read published posts',
+            'conditions' => [
+                'published_only' => true,
+                'respect_lock' => true
+            ]
+        ],
+        'canReadOwn' => [
+            'description' => 'Access to read own posts',
+            'conditions' => [
+                'owner_only' => true,
+                'respect_lock' => true
+            ]
+        ],
+        'canReadPublic' => [
+            'description' => 'Access to read public posts',
+            'conditions' => [
+                'published_only' => true,
+                'public_only' => true,
+                'respect_lock' => true
+            ]
+        ]
+    ];
+}
 
     
 }

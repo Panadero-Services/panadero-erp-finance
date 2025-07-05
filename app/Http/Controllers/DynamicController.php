@@ -15,9 +15,6 @@ class DynamicController extends Controller
      */
     public function index(Request $request, $module, $table)
     {
-        // Check permissions
-        $validPermission = $this->checkPermissions();
-        
         // Get and validate model class
         $modelClass = $this->getModelClass($table);
         
@@ -27,22 +24,14 @@ class DynamicController extends Controller
         // Get metadata from model
         $meta = $this->getModelMetadata($modelClass);
         
-        // Get records with pagination if permitted
-        $records = $this->getRecords($query, $modelClass, $validPermission, $request);
+        // Get records with pagination - permission filtering is handled by scopeReadable()
+        $records = $this->getRecords($query, $modelClass, $request);
         
         // Get page configuration
         $pageConfig = $this->getPageConfiguration($module, $table);
         
         // Return Inertia view
         return $this->renderView($module, $table, $records, $pageConfig);
-    }
-
-    /**
-     * Check user permissions
-     */
-    private function checkPermissions(): bool
-    {
-        return auth()->check() && auth()->user()->hasAnyPermission(['global-view', 'view-users']);
     }
 
     /**
@@ -165,37 +154,18 @@ class DynamicController extends Controller
     }
 
     /**
-     * Get records with pagination if permitted
+     * Get records with pagination
      */
-    private function getRecords($query, string $modelClass, bool $validPermission, Request $request)
+    private function getRecords($query, string $modelClass, Request $request)
     {
         $perPage = $request->get('per_page', 12);
         $resourceClass = "App\\Http\\Resources\\" . Str::studly(Str::singular($modelClass)) . "Resource";
         
-        if ($validPermission) {
-            // Get paginated data when permission is valid
-            $paginator = $query->paginate($perPage)->appends($request->query());
-            $records = class_exists($resourceClass)
-                ? $resourceClass::collection($paginator)
-                : \App\Http\Resources\DynamicResource::collection($paginator);
-        } else {
-            // Create empty paginator for no permission case
-            $emptyPaginator = new \Illuminate\Pagination\LengthAwarePaginator(
-                collect([]), // empty collection
-                0,          // total
-                $perPage,   // per page
-                1,          // current page
-                [
-                    'path' => request()->url(),
-                    'pageName' => 'page'
-                ]
-            );
-
-            // Create resource collection from empty paginator
-            $records = class_exists($resourceClass)
-                ? $resourceClass::collection($emptyPaginator)
-                : \App\Http\Resources\DynamicResource::collection($emptyPaginator);
-        }
+        // Get paginated data - permission filtering already applied by scopeReadable()
+        $paginator = $query->paginate($perPage)->appends($request->query());
+        $records = class_exists($resourceClass)
+            ? $resourceClass::collection($paginator)
+            : \App\Http\Resources\DynamicResource::collection($paginator);
 
         // Add meta data
         $meta = $this->getModelMetadata($modelClass);
@@ -250,15 +220,6 @@ class DynamicController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Check authorization for specific permission
-        if (!auth()->check() || !auth()->user()->hasPermission('global-edit')) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized: global-edit permission required',
-                'error_code' => 'INSUFFICIENT_PERMISSIONS'
-            ], 403);
-        }
-
         $path = $request->path();
         $pathParts = explode('/', $path);
         $table = $pathParts[1] ?? null;
@@ -280,6 +241,16 @@ class DynamicController extends Controller
         }
         
         $model = $modelClass::findOrFail($id);
+        
+        // Use the standardized permission check
+        if (!$model->canBeEditedBy(auth()->user())) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized: insufficient permissions to edit this record',
+                'error_code' => 'INSUFFICIENT_PERMISSIONS'
+            ], 403);
+        }
+        
         $fillableFields = $model->getFillable();
         $data = $request->only($fillableFields);
         $data['id'] = $id;
@@ -472,6 +443,10 @@ class DynamicController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($table, $id)
     {
         try {
@@ -484,6 +459,15 @@ class DynamicController extends Controller
             }
     
             $model = $modelClass::findOrFail($id);
+            
+            // Use the standardized permission check
+            if (!$model->canBeDeletedBy(auth()->user())) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized: insufficient permissions to delete this record',
+                    'error_code' => 'INSUFFICIENT_PERMISSIONS'
+                ], 403);
+            }
             
             try {
                 $model->delete();
