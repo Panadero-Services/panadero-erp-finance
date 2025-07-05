@@ -7,8 +7,6 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 
 class DynamicController extends Controller
 {
@@ -44,7 +42,7 @@ class DynamicController extends Controller
      */
     private function checkPermissions(): bool
     {
-        return auth()->check();  // Only check if user is logged in
+        return auth()->check() && auth()->user()->hasAnyPermission(['global-view', 'view-users']);
     }
 
     /**
@@ -78,7 +76,7 @@ class DynamicController extends Controller
             ->pluck('name')
             ->unique();
         
-        // Always apply readable scope if it exists
+        // Apply readable scope with all user permissions
         if (method_exists($modelClass, 'scopeReadable')) {
             $query->readable($userRolePermissions);
         }

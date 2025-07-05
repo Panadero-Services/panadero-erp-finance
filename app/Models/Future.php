@@ -384,13 +384,6 @@ class Future extends Model
                     'respect_lock' => true
                 ]
             ],
-            'canReadProject' => [
-                'description' => 'Access to read all project futures',
-                'conditions' => [
-                    'project_based' => true,
-                    'respect_lock' => true
-                ]
-            ],
             'canReadByStatus' => [
                 'description' => 'Access to read specific status futures',
                 'conditions' => [
@@ -419,7 +412,7 @@ class Future extends Model
         
         if (!$user) {
             return $query->where('id', 0);
-        } you 
+        }
 
         if (!$userPermissions) {
             $userPermissions = $user->roles()
@@ -452,7 +445,6 @@ class Future extends Model
                                      ->orWhere('user_id', $user->id);
                             });
                         }
-                        
                         
                         if ($conditions['status_allowed'] ?? false) {
                             $subQ->whereIn('status', $conditions['status_allowed']);
