@@ -419,7 +419,7 @@ class Future extends Model
         
         if (!$user) {
             return $query->where('id', 0);
-        }
+        } you 
 
         if (!$userPermissions) {
             $userPermissions = $user->roles()
@@ -452,6 +452,7 @@ class Future extends Model
                                      ->orWhere('user_id', $user->id);
                             });
                         }
+                        
                         
                         if ($conditions['status_allowed'] ?? false) {
                             $subQ->whereIn('status', $conditions['status_allowed']);
