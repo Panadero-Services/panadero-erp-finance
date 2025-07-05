@@ -476,7 +476,7 @@ public static function optionsFormat(): array
 public static function getPermissionAccess(): array
 {
     return [
-        'canReadAll' => [
+        'globalRead' => [
             'description' => 'Full access to read all posts',
             'conditions' => []
         ],

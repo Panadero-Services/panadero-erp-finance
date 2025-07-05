@@ -398,10 +398,6 @@ public static function optionsFormat(): array
     ];
 }
 
-
-
-    
-
     /**
      * Define permission-based access for futures
      * Override the trait's default implementation
@@ -422,9 +418,7 @@ public static function optionsFormat(): array
             'canReadByStatus' => [
                 'description' => 'Access to read specific status futures',
                 'conditions' => [
-                    'project_based' => true,
-                    'respect_lock' => true,
-                    'status_allowed' => ['idle', 'in_progress', 'review']
+                    'status_allowed' => ['idle', 'in_progress', 'blocked']
                 ]
             ],
             'canReadOwn' => [

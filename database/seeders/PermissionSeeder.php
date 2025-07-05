@@ -13,10 +13,20 @@ class PermissionSeeder extends Seeder
         // Define default permissions by group
         $permissions = [
             'global' => [
-                'canReadAll' => [
+                 
+                'globalRead' => [
                     'description' => 'Full access to read all records',
                     'conditions' => json_encode([])
                 ],
+                'globalEdit' => [
+                    'description' => 'Full access to edit all records',
+                    'conditions' => json_encode([])
+                ],   
+                'globalDelete' => [
+                    'description' => 'Full access to delete all records',
+                    'conditions' => json_encode([])
+                ],   
+
                 'canReadUnlocked' => [
                     'description' => 'Access to read all unlocked records',
                     'conditions' => json_encode(['respect_lock' => true])

@@ -26,7 +26,7 @@ abstract class BaseModel extends Model
         $tableName = (new static)->getTable();
         
         return [
-            'canReadAll' => [
+            'globalRead' => [
                 'description' => "Full access to read all {$tableName}",
                 'conditions' => []
             ],

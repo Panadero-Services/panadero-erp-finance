@@ -65,11 +65,10 @@ const permissionDescriptions = {
   // Settings permissions
   'manageSettings': 'Can manage application settings',
   // Global permissions
-  'globalView': 'Can view global records',
+  'globalRead': 'Can view global records',
   'globalCreate': 'Can create global records',
   'globalEdit': 'Can edit global records',
   'globalDelete': 'Can delete global records',
-  'canReadAll': 'Full access to read all records',
   'canReadUnlocked': 'Access to read all unlocked records',
   'canReadProject': 'Access to read all project records',
   'canReadByStatus': 'Access to read specific status records',

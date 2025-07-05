@@ -309,7 +309,7 @@ class Project extends Model
     public static function getPermissionAccess(): array
     {
         return [
-            'canReadAll' => [
+            'globalRead' => [
                 'description' => 'Full access to read all projects',
                 'conditions' => []
             ],

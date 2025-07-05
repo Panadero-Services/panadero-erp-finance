@@ -18,7 +18,7 @@ trait HasPermissions
         $tableName = (new static)->getTable();
         
         return [
-            'canReadAll' => [
+            'globalRead' => [
                 'description' => "Full access to read all {$tableName}",
                 'conditions' => [] // No conditions means full access
             ],
@@ -169,7 +169,7 @@ trait HasPermissions
             ->unique();
 
         // Full access check
-        if ($userPermissions->contains('canReadAll')) {
+        if ($userPermissions->contains('globalRead')) {
             return true;
         }
 
