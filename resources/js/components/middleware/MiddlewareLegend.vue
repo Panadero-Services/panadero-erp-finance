@@ -13,6 +13,14 @@ const middlewareChain = [
         color: '#F87171',
     },
     {
+        name: 'SelfAuthentication',
+        color: '#9333EA',
+    },
+    {
+        name: 'SonarAuthentication',
+        color: '#0EA5E9',
+    },
+    {
         name: 'Rate Limit',
         color: '#FBBF24',
     },

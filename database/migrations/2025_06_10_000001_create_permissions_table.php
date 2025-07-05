@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->string('description')->nullable();
+            $table->json('conditions')->nullable();
             $table->string('group')->nullable(); // For grouping permissions by feature/module
             $table->timestamps();
         });

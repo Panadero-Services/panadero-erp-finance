@@ -13,41 +13,113 @@ class PermissionSeeder extends Seeder
         // Define default permissions by group
         $permissions = [
             'global' => [
-                'global-view' => 'Can view global',
-                'global-create' => 'Can create global',
-                'global-edit' => 'Can edit global',
-                'global-delete' => 'Can delete global',
+                'global-view' => [
+                    'description' => 'Can view global',
+                    'conditions' => json_encode([])
+                ],
+                'global-create' => [
+                    'description' => 'Can create global',
+                    'conditions' => json_encode([])
+                ],
+                'global-edit' => [
+                    'description' => 'Can edit global',
+                    'conditions' => json_encode([])
+                ],
+                'global-delete' => [
+                    'description' => 'Can delete global',
+                    'conditions' => json_encode([])
+                ],
+                'canReadAll' => [
+                    'description' => 'Full access to read all futures',
+                    'conditions' => json_encode([])
+                ],
+                'canReadUnlocked' => [
+                'description' => 'Access to read all unlocked futures',
+                'conditions' => json_encode(['respect_lock' => true])
+            ],
+            'canReadProject' => [
+                'description' => 'Access to read all project futures',
+                'conditions' => json_encode(['project_based' => true, 'respect_lock' => true])
+            ],
+            'canReadByStatus' => [
+                'description' => 'Access to read specific status futures',
+                'conditions' => json_encode(['project_based' => true, 'respect_lock' => true, 'status_allowed' => ['idle', 'in_progress', 'review']])
+            ],
+            'canReadOwn' => [
+                'description' => 'Access to read own futures only',
+                'conditions' => json_encode(['owner_only' => true, 'respect_lock' => true, 'status_allowed' => ['completed', 'review']])
+            ]
             ],
             'users' => [
-                'view-users' => 'Can view user list',
-                'create-users' => 'Can create new users',
-                'edit-users' => 'Can edit user details',
-                'delete-users' => 'Can delete users',
+                'view-users' => [
+                    'description' => 'Can view user list',
+                    'conditions' => json_encode([])
+                ],
+                'create-users' => [
+                    'description' => 'Can create new users',
+                    'conditions' => json_encode([])
+                ],
+                'edit-users' => [
+                    'description' => 'Can edit user details',
+                    'conditions' => json_encode([])
+                ],
+                'delete-users' => [
+                    'description' => 'Can delete users',
+                    'conditions' => json_encode([])
+                ],
             ],
             'roles' => [
-                'view-roles' => 'Can view roles',
-                'create-roles' => 'Can create new roles',
-                'edit-roles' => 'Can edit roles',
-                'delete-roles' => 'Can delete roles',
+                'view-roles' => [
+                    'description' => 'Can view roles',
+                    'conditions' => json_encode([])
+                ],
+                'create-roles' => [
+                    'description' => 'Can create new roles',
+                    'conditions' => json_encode([])
+                ],
+                'edit-roles' => [
+                    'description' => 'Can edit roles',
+                    'conditions' => json_encode([])
+                ],
+                'delete-roles' => [
+                    'description' => 'Can delete roles',
+                    'conditions' => json_encode([])
+                ],
             ],
             'articles' => [
-                'view-articles' => 'Can view articles',
-                'create-articles' => 'Can create articles',
-                'edit-articles' => 'Can edit articles',
-                'delete-articles' => 'Can delete articles',
+                'view-articles' => [
+                    'description' => 'Can view articles',
+                    'conditions' => json_encode([])
+                ],
+                'create-articles' => [
+                    'description' => 'Can create articles',
+                    'conditions' => json_encode([])
+                ],
+                'edit-articles' => [
+                    'description' => 'Can edit articles',
+                    'conditions' => json_encode([])
+                ],
+                'delete-articles' => [
+                    'description' => 'Can delete articles',
+                    'conditions' => json_encode([])
+                ],
             ],
             'settings' => [
-                'manage-settings' => 'Can manage application settings',
+                'manage-settings' => [
+                    'description' => 'Can manage application settings',
+                    'conditions' => json_encode([])
+                ],
             ],
         ];
 
         // Create permissions
         foreach ($permissions as $group => $groupPermissions) {
-            foreach ($groupPermissions as $name => $description) {
+            foreach ($groupPermissions as $name => $config) {
                 Permission::create([
                     'name' => $name,
-                    'description' => $description,
+                    'description' => $config['description'],
                     'group' => $group,
+                    'conditions' => $config['conditions']
                 ]);
             }
         }

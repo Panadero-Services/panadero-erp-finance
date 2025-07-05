@@ -38,6 +38,12 @@ export const useSettingsStore = defineStore('settings', () => {
 
     const wrenchMode = ref(false); // native.. bcuz of i3v2-bots fork
 
+    async function setBanner() {
+        banner.value = { active: true, msg: "new msg initiated...", style: "success" }
+        await delay(10);
+        banner.value = { msg: ' ' + self.value, style: 'success', active: false };
+    }
+
 
     function setLanguage() {
         language.value = language.value === 'EN' ? 'NL' : 'EN';
@@ -142,7 +148,7 @@ export const useSettingsStore = defineStore('settings', () => {
         banner, assets, projectType, layout, project, colors,
         setLanguage, web3Toggle, game3Toggle, darkToggle, setSelf, resetSelf, pageDetailToggle,
         _connect, _disconnect, _getNextSelf, initSettings, initMM, initialize, setProjectType,
-        setResetProject, reset, fill, wrenchMode,
+        setResetProject, reset, fill, wrenchMode, setBanner,
         hasAccess, hasPermissions, requiredPermissions, permissions
     };
 });

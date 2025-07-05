@@ -42,6 +42,32 @@ const middlewareChain = ref([
         ]
     },
     {
+        name: 'SelfAuthentication',
+        order: 11,
+        color: '#9333EA', // purple-600
+        checks: ['WalletConnected', 'HasSelf', 'IsSelfListed'],
+        description: 'Validates self-identity through wallet and listing status',
+        responsibilities: [
+            'Wallet verification - Checks wallet connection status',
+            'Self identity - Validates self identity verification',
+            'Listing validation - Confirms self listing status',
+            'Identity management - Handles self identity lifecycle'
+        ]
+    },
+    {
+        name: 'SonarAuthentication',
+        order: 12,
+        color: '#0EA5E9', // sky-500
+        checks: ['WalletConnected', 'hasSonar', 'IsSonarListed'],
+        description: 'Validates Sonar identity through wallet and listing status',
+        responsibilities: [
+            'Wallet verification - Checks wallet connection status',
+            'Sonar identity - Validates Sonar identity verification',
+            'Listing validation - Confirms Sonar listing status',
+            'Identity management - Handles Sonar identity lifecycle'
+        ]
+    },
+    {
         name: 'Rate Limit',
         order: 15,
         color: '#FBBF24', // yellow
@@ -100,6 +126,31 @@ const selectedMiddleware = ref(middlewareChain.value[0]); // Default to first it
 
 <template>
     <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <!-- Header with Title and Legend -->
+        <div class="flex justify-between items-start mb-8">
+            <!-- Title -->
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                Middleware Architecture
+            </h2>
+
+            <!-- Legend -->
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md">
+                <h4 class="text-sm font-medium mb-3 text-gray-900 dark:text-white">Legend</h4>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+                    <div v-for="middleware in middlewareChain" 
+                         :key="middleware.name"
+                         class="flex items-center text-xs group">
+                        <div class="w-3 h-3 rounded-full"
+                             :style="{ backgroundColor: middleware.color }">
+                        </div>
+                        <span class="ml-2 text-gray-600 dark:text-gray-300">
+                            {{ middleware.name }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="flex max-w-7xl mx-auto">
             <!-- Left Column -->
             <div class="w-[520px] border-r dark:border-gray-700 pr-6 flex-shrink-0">

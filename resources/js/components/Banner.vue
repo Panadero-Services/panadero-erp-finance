@@ -5,14 +5,19 @@ import { usePage } from '@inertiajs/vue3';
 const page = usePage();
 const show = ref(true);
 const style = ref('success');
-const message = ref('');
+// Test with a hardcoded message
+const message = ref('This is a test banner message');
 
 // Add auto-close timer
 let autoCloseTimer = null;
 
 watchEffect(async () => {
-    style.value = page.props.jetstream.flash?.bannerStyle || 'success';
-    message.value = page.props.jetstream.flash?.banner || '';
+    console.log('Jetstream Flash:', page.props.jetstream?.flash);
+    console.log('Banner Style:', page.props.jetstream?.flash?.bannerStyle);
+    console.log('Banner Message:', page.props.jetstream?.flash?.banner);
+    
+    style.value = page.props.jetstream?.flash?.bannerStyle || 'success';
+    message.value = page.props.jetstream?.flash?.banner || '';
     show.value = true;
 
     // Clear any existing timer
@@ -35,7 +40,7 @@ onUnmounted(() => {
     }
 });
 
-console.log('hi');
+console.log('hi banner');
 console.log(show.value );
 
 </script>

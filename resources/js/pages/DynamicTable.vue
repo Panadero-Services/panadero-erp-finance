@@ -240,6 +240,8 @@ const _show = async (id) => {
             record: _activeRecord.value,
             keyIndex: keyIndex.value
         });
+
+
     } catch (error) {
         console.error('Error showing record:', error);
     }
@@ -294,13 +296,18 @@ const _whatever = async (id) => {
         const results = await middlewareManager.processRequest(request);
         console.log('Edit middleware results:', results);
 
-        // Update middleware results
+        // Update middleware results with safe access to properties
         editMiddlewareResults.value = results.map(result => ({
             middleware: result.middleware,
             result: {
-                isValid: result.result.isValid,
-                checks: result.result.checks,
-                ...result.result.getAdditionalData ? result.result.getAdditionalData() : {}
+                isValid: result.result?.isValid || false,
+                checks: result.result?.checks || {},
+                ...(result.result?.validatedData ? { validatedData: result.result.validatedData } : {}),
+                ...(result.result?.user ? { user: result.result.user } : {}),
+                ...(result.result?.session ? { session: result.result.session } : {}),
+                ...(result.result?.token ? { token: result.result.token } : {}),
+                ...(result.result?.permissions ? { permissions: result.result.permissions } : {}),
+                ...(result.result?.roles ? { roles: result.result.roles } : {})
             }
         }));
         
@@ -395,7 +402,6 @@ const handleDelete = async (id) => {
     showDeleteDialog.value = true;
 };
 
-
 // this routine uses middleware and is accessed by handleSearchNew
 const processRequest = async (request) => {
     try {
@@ -461,7 +467,6 @@ const handleSearchNew = async (searchData) => {
     }
 };
 
-
 const handleSearch = (searchData) => {
     if (searchData.query.length > 1 || searchData.query.length === 0) {
        // Build search parameters
@@ -484,13 +489,6 @@ const handleSearch = (searchData) => {
         });
     }
 };
-
-
-
-
-
-
-
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
@@ -962,21 +960,27 @@ const toggleMiddleware = (name) => {
         @confirm="confirmDelete"
     />
 
-    <!-- Add middleware status indicators if needed -->
+    <!-- Update the middleware status indicators section -->
     <div v-if="isDevelopment" 
-         class="flex space-x-2 items-center text-xs">
-        <div v-for="status in middlewareChainStatus" 
-             :key="status.name"
-             @click="toggleMiddleware(status.name)"
-             class="cursor-pointer flex items-center space-x-1 px-2 py-1 rounded"
-             :style="{ borderColor: status.active ? 'green' : 'red' }"
-             :class="[
-                'border',
-                status.active ? 'opacity-100' : 'opacity-50'
-             ]">
-            <div :style="{ backgroundColor: status.active ? 'green' : 'red' }"
-                 class="w-2 h-2 rounded-full"></div>
-            <span>{{ status.name }}</span>
+         class="fixed bottom-4 right-4 flex flex-col space-y-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg">
+        <h3 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Middleware Chain</h3>
+        <div class="flex flex-col space-y-1">
+            <div v-for="status in middlewareChainStatus" 
+                 :key="status.name"
+                 @click="toggleMiddleware(status.name)"
+                 class="cursor-pointer flex items-center justify-between px-2 py-1 rounded text-xs"
+                 :class="[
+                    'border',
+                    status.active ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                 ]">
+                <div class="flex items-center space-x-2">
+                    <div :class="[
+                        'w-2 h-2 rounded-full',
+                        status.active ? 'bg-green-500' : 'bg-red-500'
+                    ]"></div>
+                    <span class="text-gray-700 dark:text-gray-300">{{ status.name }}</span>
+                </div>
+            </div>
         </div>
     </div>
 </template> 

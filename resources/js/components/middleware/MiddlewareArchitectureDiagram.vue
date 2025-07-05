@@ -24,6 +24,18 @@ const props = defineProps({
                 checks: ['Session', 'CSRF', 'Tokens', 'Access']
             },
             {
+                name: 'SelfAuthentication',
+                order: 11,
+                color: '#9333EA', // purple-600
+                checks: ['WalletConnected', 'HasSelf', 'IsSelfListed']
+            },
+            {
+                name: 'SonarAuthentication',
+                order: 12,
+                color: '#0EA5E9', // sky-500
+                checks: ['WalletConnected', 'haSonar', 'IsSonarListed']
+            },
+            {
                 name: 'Rate Limit',
                 order: 15,
                 color: '#FBBF24', // yellow
