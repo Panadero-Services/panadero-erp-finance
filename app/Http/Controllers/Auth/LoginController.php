@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
 {
@@ -34,6 +35,11 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // If coming from expired session, show message
+        if ($request->get('logout') === 'expired') {
+            session()->flash('message', 'Your session expired. Please log in again.');
+        }
+        
         $this->validate($request, [
             'email' => 'required|email',
             'password' => 'required|min:8',
@@ -50,12 +56,18 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        // Clear all sessions
         Auth::logout();
-
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
+        
+      // Clear all local storage and session storage
+      localStorage.clear();
+      sessionStorage.clear();
 
-        return redirect('/');
+        // Clear any cached data
+        Cache::flush();
+        
+        return redirect('/login');
     }
 } 
