@@ -2,6 +2,8 @@
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import axios from 'axios'
+import { useSessionStore } from '@/stores/session'
+import { middlewareManager } from '@/components/middleware/MiddlewareManager'
 
 // Icons
 import {
@@ -25,6 +27,9 @@ import RightProjectSection from "@/sections/RightProjectSection.vue"
 import TeamSection from "@/sections/TeamSection.vue"
 import RightUserSection from "@/sections/RightUserSection.vue"
 
+// Initialize session store
+const sessionStore = useSessionStore();
+
 // Props
 const props = defineProps({
   title: String,
@@ -41,30 +46,11 @@ const myTeamRight = ref(null)
 const myUserRight = ref(null)
 const myFooterSlide = ref(null)
 
-// Reactive variable to hold the remaining time until token expiration
-const remainingTime = ref(null);
-
-// Store the initial expiration time
-const expirationTime = ref(Date.now() + (2 * 60 * 60 * 1000)); // 2 hours from now
-
-// Add computed property for progress percentage
-const progressPercentage = computed(() => {
-  if (remainingTime.value === null) return 100;
-  return (remainingTime.value / (2 * 60 * 60)) * 100; // 2 hours in seconds
-});
-
-// Add computed property for progress bar color
-const progressBarColor = computed(() => {
-  if (progressPercentage.value > 60) return 'bg-green-500 dark:bg-green-600';
-  if (progressPercentage.value > 30) return 'bg-yellow-500 dark:bg-yellow-500';
-  return 'bg-red-500 dark:bg-red-600';
-});
-
-const progressTextColor = computed(() => {
-  if (progressPercentage.value > 60) return 'text-green-500 dark:text-green-600';
-  if (progressPercentage.value > 30) return 'text-yellow-500 dark:text-yellow-500';
-  return 'text-red-500 dark:text-red-600';
-});
+// Use session store computed properties
+const progressPercentage = computed(() => sessionStore.progressPercentage);
+const progressBarColor = computed(() => sessionStore.progressBarColor);
+const progressTextColor = computed(() => sessionStore.progressTextColor);
+const _tooltip = computed(() => sessionStore.tooltip);
 
 // Generic toggle utility
 const toggleRef = (refVar) => { refVar.value.open = !refVar.value.open }
@@ -104,90 +90,39 @@ const _sideSpacing = "mx-3"
 
 const page = usePage();
 
-// Check token expiration every minute
-const checkTokenExpiration = () => {
-  const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-  
-  if (token) {
-    try {
-      const currentTime = Date.now();
-      const remainingSeconds = Math.max(0, Math.floor((expirationTime.value - currentTime) / 1000));
-      remainingTime.value = remainingSeconds;
-      
-      if (currentTime >= expirationTime.value || (expirationTime.value - currentTime) < 60000) {
-        // Clear any stored data
-        sessionStorage.clear();
-        localStorage.clear();
-        
-        // Refresh CSRF token before redirect
-        axios.get('/sanctum/csrf-cookie').then(() => {
-        // Force redirect to login
-        window.location.replace('/login');
-        }).catch(() => {
-          // If CSRF refresh fails, still redirect
-          window.location.replace('/login');
-        });
-      }
-    } catch (error) {
-      console.error('Error checking token expiration:', error);
-      remainingTime.value = null;
-    }
-  } else {
-    remainingTime.value = null;
-  }
-};
-
-// Set up intervals
-let tokenCheckInterval;
-let countdownInterval;
-
 onMounted(() => {
   console.log('Component mounted');
-  if (!page.props.auth.user) {
-    const currentPath = window.location.pathname;
-    sessionStorage.setItem('intendedDestination', currentPath);
+  
+  // Initialize middleware system
+  middlewareManager.init();
+  
+  // Check authentication using existing middleware
+  const authCheck = middlewareManager.checkAuth();
+  if (!authCheck.userValid) {
+    console.log('User not authenticated - redirecting to login');
     window.location.href = '/login';
-  } else {
-    const intendedDestination = sessionStorage.getItem('intendedDestination');
-    if (intendedDestination) {
-      sessionStorage.removeItem('intendedDestination');
-      window.location.href = intendedDestination;
-    }
+    return;
   }
 
-  // Set initial time to 2 hours (7200 seconds)
-  remainingTime.value = 2 * 60 * 60;
-  
-  // Check token immediately on mount
-  checkTokenExpiration();
-  
-  // Update countdown every second
-  countdownInterval = setInterval(() => {
-    if (remainingTime.value > 0) {
-      remainingTime.value--;
-    }
-  }, 1000);
-  
-  // Check token validity every minute
-  tokenCheckInterval = setInterval(checkTokenExpiration, 60000);
+  // Check if user has required properties
+  if (!page.props.auth.user.current_team) {
+    console.log('User missing current_team - redirecting to login');
+    window.location.href = '/login';
+    return;
+  }
+
+  // Handle intended destination
+  const intendedDestination = sessionStorage.getItem('intendedDestination');
+  if (intendedDestination) {
+    sessionStorage.removeItem('intendedDestination');
+    window.location.href = intendedDestination;
+  }
 });
 
 onUnmounted(() => {
-  // Clean up intervals when component is unmounted
-  if (tokenCheckInterval) {
-    clearInterval(tokenCheckInterval);
-  }
-  if (countdownInterval) {
-    clearInterval(countdownInterval);
-  }
+  // Cleanup middleware
+  middlewareManager.cleanup();
 });
-
-
-const _tooltip = computed(() => {
-  //return "Asdf";
-return "Auto log off: "+ Math.floor(remainingTime.value / 60) +"m " +remainingTime.value % 60 +"s";
-});
-
 
 </script>
 
@@ -196,146 +131,155 @@ return "Auto log off: "+ Math.floor(remainingTime.value / 60) +"m " +remainingTi
     <div class="bg-slate-100 text-black/50 dark:bg-slate-950 dark:text-white/50 h-screen w-screen font-roboto">
       <Head :title="title" />
 
-      <!-- Header Section -->
-      <template v-if="$slots.header">
-        <div :class="_sideSpacing">
-          <Banner />
+      <!-- Only render content if user is authenticated -->
+      <template v-if="page.props.auth?.user && page.props.auth.user.current_team">
+        <!-- Header Section -->
+        <template v-if="$slots.header">
+          <div :class="_sideSpacing">
+            <Banner />
 
-          <slot name="header" />
-          <div v-for="section in baseSections" :key="section.file">
-                <HeaderSection
-                  v-if="section.file === 'HeaderSection' && set.layout.header"
-                  :page="page"
-                  :set="set"
-                  :contract="contract"
-                  :section="section"
-                />
-                <SubHeaderSection
-                  v-if="section.file === 'SubHeaderSection' && set.layout.subHeader"
-                  :page="page"
-                  :set="set"
-                  :contract="contract"
-                  :section="section"
-                />
+            <slot name="header" />
+            <div v-for="section in baseSections" :key="section.file">
+                  <HeaderSection
+                    v-if="section.file === 'HeaderSection' && set.layout.header"
+                    :page="page"
+                    :set="set"
+                    :contract="contract"
+                    :section="section"
+                  />
+                  <SubHeaderSection
+                    v-if="section.file === 'SubHeaderSection' && set.layout.subHeader"
+                    :page="page"
+                    :set="set"
+                    :contract="contract"
+                    :section="section"
+                  />
+            </div>
+
+            <!-- Right-side slideout panels -->
+            <RightProjectSection ref="myProjectRight" :set="set" />
+            <TeamSection ref="myTeamRight" :set="set" />
+            <RightUserSection ref="myUserRight" :user="page.props.auth.user" />
+            <FooterSlideSection ref="myFooterSlide" :set="set" />
           </div>
+        </template>
 
-          <!-- Right-side slideout panels -->
-          <RightProjectSection ref="myProjectRight" :set="set" />
-          <TeamSection ref="myTeamRight" :set="set" />
-          <RightUserSection ref="myUserRight" :user="$page.props.auth.user" />
-          <FooterSlideSection ref="myFooterSlide" :set="set" />
-        </div>
-
-      </template>
-
-      <!-- Intro Slot -->
-      <template v-if="$slots.intro">
-        
-          <!-- Optionally display remaining time -->
-          <div v-if="remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
+        <!-- Intro Slot -->
+        <template v-if="$slots.intro">
+          <!-- Session timer display using store -->
+          <div v-if="sessionStore.remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
             <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
               <div :title="_tooltip"
                 :class="[progressBarColor, 'h-full transition-all duration-500 ease-out']"
                 :style="{ width: `${progressPercentage}%`, minWidth: '2px' }"
               ></div>
-            </div><span v-if="remainingTime<4000" class="-mt-1 text-xxs font-bold"  :class="['h-full transition-all duration-500 ease-out', progressTextColor]">{{_tooltip}}</span>
+            </div>
+            <span v-if="sessionStore.remainingTime < 4000" class="-mt-1 text-xxs font-bold" :class="['h-full transition-all duration-500 ease-out', progressTextColor]">{{_tooltip}}</span>
           </div>
+        </template>
 
-      </template>
+        <!-- Main Content -->
+        <template v-if="$slots.default">
+          <div class="bg-gray-50 dark:bg-black flex">
 
-      <!-- Main Content -->
-      <template v-if="$slots.default">
-
-        <div class="bg-gray-50 dark:bg-black flex">
-
-          <!-- Sidebar -->
-          <div
-            v-if="set.layout.sidebar"
-            class="flex bg-gray-100 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800"
-          >
-            <nav class="flex flex-1 flex-col mx-3" aria-label="Sidebar">
-              <ul :class="['space-y-1 mt-1', _extended ? 'w-32' : 'w-12']" role="list">
-                <!-- Optional SubHeader Toggle -->
-                <H2Icon
-                  v-if="!set.layout.subHeader"
-                  @click="set.layout.subHeader = true"
-                  class="w-10 px-3 pb-3 mx-2"
-                  :class="_indigo"
-                />
-                <!-- Toolbar Items -->
-                <li
-                  v-for="item in _toolbarItems"
-                  :key="item.name"
-                  class="-ml-1"
-                >
-                  <span
-                    v-if="item.active"
-                    @click="item.href"
-                    class="flex pt-3 cursor-pointer"
+            <!-- Sidebar -->
+            <div
+              v-if="set.layout.sidebar"
+              class="flex bg-gray-100 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800"
+            >
+              <nav class="flex flex-1 flex-col mx-3" aria-label="Sidebar">
+                <ul :class="['space-y-1 mt-1', _extended ? 'w-32' : 'w-12']" role="list">
+                  <!-- Optional SubHeader Toggle -->
+                  <H2Icon
+                    v-if="!set.layout.subHeader"
+                    @click="set.layout.subHeader = true"
+                    class="w-10 px-3 pb-3 mx-2"
                     :class="_indigo"
+                  />
+                  <!-- Toolbar Items -->
+                  <li
+                    v-for="item in _toolbarItems"
+                    :key="item.name"
+                    class="-ml-1"
                   >
-                    <component :is="item.icon" class="w-10 px-3 mx-1" />
                     <span
-                      v-if="_extended"
-                      class="-ml-1 text-xs text-gray-800 dark:text-gray-300"
+                      v-if="item.active"
+                      @click="item.href"
+                      class="flex pt-3 cursor-pointer"
+                      :class="_indigo"
                     >
-                      {{ item.name }}
+                      <component :is="item.icon" class="w-10 px-3 mx-1" />
+                      <span
+                        v-if="_extended"
+                        class="-ml-1 text-xs text-gray-800 dark:text-gray-300"
+                      >
+                        {{ item.name }}
+                      </span>
                     </span>
-                  </span>
-                </li>
-              </ul>
-            </nav>
-          </div>
-      
-        <div>
+                  </li>
+                </ul>
+              </nav>
+            </div>
         
-          <!-- Intro Slot Content - Independent -->
-          <div class="w-full">
-              <slot name="intro" />
+          <div>
+          
+            <!-- Intro Slot Content - Independent -->
+            <div class="w-full">
+                <slot name="intro" />
+            </div>
+
+            <!-- Main Slot Content - Independent -->
+            <div class="w-full">
+                <slot name="default" />
+            </div>
+
           </div>
 
-          <!-- Main Slot Content - Independent -->
-          <div class="w-full">
-              <slot name="default" />
+          </div>
+        </template>
+
+        <!-- Footer -->
+        <template v-if="$slots.footer">
+          <slot name="footer" />
+          <FooterSection
+            v-if="set.layout.footer"
+            :set="set"
+            :contract="contract"
+          />
+          <DeveloperSection
+            v-if="set.layout.developer"
+            @click="set.layout.developer = false"
+            :set="set"
+            :contract="contract"
+          />
+          <div
+            v-else
+            @click="set.layout.developer = true"
+            class="text-green-500 center cursor-pointer"
+          >
+            DEVELOPER-SECTION
           </div>
 
-        </div>
+          <!-- Show toggle for subHeader if nothing else is active -->
+          <H2Icon
+            v-if="!set.layout.subHeader && !set.layout.header && !set.layout.sidebar"
+            @click="set.layout.subHeader = true"
+            class="w-10 px-2.5 pb-3 mx-2"
+            :class="_indigo"
+          />
 
-        </div>
+        </template>
       </template>
 
-      <!-- Footer -->
-      <template v-if="$slots.footer">
-        <slot name="footer" />
-        <FooterSection
-          v-if="set.layout.footer"
-          :set="set"
-          :contract="contract"
-        />
-        <DeveloperSection
-          v-if="set.layout.developer"
-          @click="set.layout.developer = false"
-          :set="set"
-          :contract="contract"
-        />
-        <div
-          v-else
-          @click="set.layout.developer = true"
-          class="text-green-500 center cursor-pointer"
-        >
-          DEVELOPER-SECTION
+      <!-- Show loading or redirect message if not authenticated -->
+      <template v-else>
+        <div class="flex items-center justify-center h-screen">
+          <div class="text-center">
+            <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+            <p class="mt-4 text-gray-600">Redirecting to login...</p>
+          </div>
         </div>
-
-        <!-- Show toggle for subHeader if nothing else is active -->
-        <H2Icon
-          v-if="!set.layout.subHeader && !set.layout.header && !set.layout.sidebar"
-          @click="set.layout.subHeader = true"
-          class="w-10 px-2.5 pb-3 mx-2"
-          :class="_indigo"
-        />
-
       </template>
-
 
     </div>
   </html>

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 // Model imports
 use App\Models\Post;
@@ -637,3 +638,10 @@ Route::get('/auth-test', function () {
         'session_data' => session()->all()
     ]);
 });
+
+Route::post('/force-logout', function () {
+    Auth::logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return response()->json(['success' => true]);
+})->name('force.logout');

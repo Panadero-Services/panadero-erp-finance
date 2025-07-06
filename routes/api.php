@@ -214,3 +214,15 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
 Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')->middleware('web');
 // Add this with your other API routes
 Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
+
+Route::get('/auth/verify-session', function () {
+    if (!auth()->check()) {
+        return response()->json(['valid' => false], 401);
+    }
+    
+    return response()->json([
+        'valid' => true,
+        'user' => auth()->user()->name,
+        'session_id' => session()->getId()
+    ]);
+})->middleware('auth:sanctum');

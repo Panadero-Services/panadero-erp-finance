@@ -14,6 +14,29 @@ export class MiddlewareManager {
         this.registry.set('Request2', new RequestValidationMiddleware());
 
         console.log('MiddlewareManager: Initialized middleware:', Array.from(this.registry.keys()));
+        
+        // Store singleton instance
+        MiddlewareManager.instance = this;
+    }
+
+    // Initialize the middleware system (only once)
+    init() {
+        if (this.isInitialized) {
+            console.log('MiddlewareManager: Already initialized, skipping...');
+            return;
+        }
+        
+        this.initCount++;
+        console.log(`MiddlewareManager: Initializing (attempt ${this.initCount})`);
+        
+        // Start session checking for auth middleware
+        const authMiddleware = this.registry.get('Authentication');
+        if (authMiddleware && authMiddleware.startSessionCheck) {
+            authMiddleware.startSessionCheck();
+        }
+        
+        this.isInitialized = true;
+        console.log('Middleware system initialized successfully');
     }
 
     register(middleware) {
@@ -58,6 +81,29 @@ export class MiddlewareManager {
 
     unregisterMiddleware(name) {
         this.registry.delete(name);
+    }
+
+    // New convenience methods
+    getAuth() {
+        return this.registry.get('Authentication');
+    }
+
+    getPermissions() {
+        return this.registry.get('Authorization');
+    }
+
+    checkAuth() {
+        const authMiddleware = this.getAuth();
+        return authMiddleware ? authMiddleware.getChecks({}) : { userValid: false };
+    }
+
+    // Cleanup method
+    cleanup() {
+        const authMiddleware = this.getAuth();
+        if (authMiddleware && authMiddleware.cleanup) {
+            authMiddleware.cleanup();
+        }
+        this.isInitialized = false;
     }
 }
 

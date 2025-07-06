@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { Head } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { Head, usePage } from '@inertiajs/vue3';
+import { middlewareManager } from '@/components/middleware/MiddlewareManager';
 //import DarkButton from '@/components/DarkButton.vue';
 import Banner from '@/components/Banner.vue';
 
@@ -16,6 +17,43 @@ const props = defineProps({
 });
 
 const _mainLayout = props.page.max_width ? "" : "container";
+
+// Get page instance
+const page = usePage();
+
+onMounted(() => {
+  console.log('WelkomLayout mounted');
+  
+  // Initialize middleware system
+  middlewareManager.init();
+  
+  // Check authentication using existing middleware
+  const authCheck = middlewareManager.checkAuth();
+  if (!authCheck.userValid) {
+    console.log('User not authenticated - redirecting to login');
+    window.location.href = '/login';
+    return;
+  }
+
+  // Check if user has required properties
+  if (!page.props.auth.user.current_team) {
+    console.log('User missing current_team - redirecting to login');
+    window.location.href = '/login';
+    return;
+  }
+
+  // Handle intended destination
+  const intendedDestination = sessionStorage.getItem('intendedDestination');
+  if (intendedDestination) {
+    sessionStorage.removeItem('intendedDestination');
+    window.location.href = intendedDestination;
+  }
+});
+
+onUnmounted(() => {
+  // Cleanup middleware
+  middlewareManager.cleanup();
+});
 
 </script>
 

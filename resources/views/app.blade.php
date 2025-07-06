@@ -15,6 +15,20 @@
         @routes
         @vite(['resources/js/app.js', "resources/js/pages/{$page['component']}.vue"])
         @inertiaHead
+        <script>
+        // Refresh CSRF token on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get fresh CSRF token
+            fetch('/sanctum/csrf-cookie', {
+                method: 'GET',
+                credentials: 'same-origin'
+            }).then(() => {
+                console.log('CSRF token refreshed on page load');
+            }).catch(error => {
+                console.error('CSRF refresh failed:', error);
+            });
+        });
+        </script>
     </head>
     <body class="font-sans antialiased">
         @inertia

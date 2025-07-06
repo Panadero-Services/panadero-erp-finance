@@ -4,10 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
-
 use Illuminate\Support\Facades\Auth;
-
-use Illuminate\Support\Facades\Session;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -39,16 +36,37 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        
         return array_merge(parent::share($request), [
-            // user roles
-            'auth.user.roles' => fn () => $request->user()
-                 ? $request->user()->roles->pluck('name')
-            : null,
-       'flash' => [
-            'success' => fn () => $request->session()->get('success'),
-            'error' => fn () => $request->session()->get('error'),
-        ],
-            
+            'auth' => [
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'current_team' => $user->currentTeam,
+                    'roles' => $user->roles->pluck('name'),
+                    'permissions' => $this->getUserPermissions($user),
+                    'session_lifetime' => config('session.lifetime') * 60, // in seconds
+                ] : null,
+                'session_valid' => $user ? true : false,
+                'csrf_token' => csrf_token(),
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ]);
+    }
+
+    private function getUserPermissions($user)
+    {
+        $permissions = collect();
+        
+        foreach ($user->roles as $role) {
+            $permissions = $permissions->merge($role->permissions);
+        }
+        
+        return $permissions->unique('name')->pluck('name');
     }
 }

@@ -8,71 +8,107 @@ function getCookie(name) {
     if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
+// Console suppressor to reduce network request noise
+// This runs early and persists across page refreshes
+(function() {
+    // Store original console methods
+    const originalLog = console.log;
+    const originalInfo = console.info;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    // Filter out network request logs
+    const filterNetworkLogs = (args) => {
+        const message = args.join(' ');
+        
+        // Filter out common network request patterns
+        const networkPatterns = [
+            /^GET\s+http/,
+            /^POST\s+http/,
+            /^PUT\s+http/,
+            /^DELETE\s+http/,
+            /^PATCH\s+http/,
+            /\[HTTP\/\d\.\d\s+\d+\s+\w+\s+\d+ms\]/,
+            /\[vite\]\s+connecting/,
+            /\[vite\]\s+connected/,
+            /ws:\/\/\[::1\]:5173/,
+            /http:\/\/\[::1\]:5173/,
+            /node_modules\/\.vite\/deps/,
+            /resources\/js\/.*\.vue/,
+            /resources\/js\/.*\.js/,
+            /vendor\/tightenco\/ziggy/
+        ];
+
+        return !networkPatterns.some(pattern => pattern.test(message));
+    };
+
+    // Override console methods
+    console.log = function(...args) {
+        if (filterNetworkLogs(args)) {
+            originalLog.apply(console, args);
+        }
+    };
+
+    console.info = function(...args) {
+        if (filterNetworkLogs(args)) {
+            originalInfo.apply(console, args);
+        }
+    };
+
+    // Keep warnings and errors as they are important
+    console.warn = originalWarn;
+    console.error = originalError;
+
+    // Add a method to restore original console behavior if needed
+    console.restoreConsole = function() {
+        console.log = originalLog;
+        console.info = originalInfo;
+        console.warn = originalWarn;
+        console.error = originalError;
+        delete console.restoreConsole;
+    };
+
+    // Add a method to temporarily show all logs
+    console.showAllLogs = function() {
+        console.log = originalLog;
+        console.info = originalInfo;
+        console.warn = originalWarn;
+        console.error = originalError;
+    };
+
+    // Add a method to re-enable filtering
+    console.enableFiltering = function() {
+        console.log = function(...args) {
+            if (filterNetworkLogs(args)) {
+                originalLog.apply(console, args);
+            }
+        };
+        console.info = function(...args) {
+            if (filterNetworkLogs(args)) {
+                originalInfo.apply(console, args);
+            }
+        };
+    };
+})();
+
 // Base configuration
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// CSRF token from meta tag
-const token = document.head.querySelector('meta[name="csrf-token"]');
-if (token) {
-    axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
-}
-
-// Request interceptor for XSRF token
+// Request interceptor for XSRF token - USE ONLY COOKIE TOKEN
 axios.interceptors.request.use(config => {
     // Get the latest XSRF token from cookie before each request
     const xsrfToken = getCookie('XSRF-TOKEN');
     if (xsrfToken) {
         config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+        
+        // Update meta tag with fresh token
+        const metaTag = document.head.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            metaTag.setAttribute('content', decodeURIComponent(xsrfToken));
+        }
     }
     return config;
 }, error => {
     return Promise.reject(error);
 });
-
-// Response interceptor for handling errors
-axios.interceptors.response.use(
-    response => response,
-    error => {
-        // Don't retry 403 errors - they're authorization failures
-        if (error.response?.status === 403) {
-            console.warn('Access forbidden:', error.response.data?.message || 'Insufficient permissions');
-            return Promise.reject(error);
-        }
-        
-        if (error.response?.status === 401) {
-            // Silent handling of auth errors
-            console.warn('Authentication required');
-            return Promise.reject(error);
-        }
-        
-        if (error.response?.status === 419) {
-            // Only retry CSRF token errors once to prevent infinite loops
-            if (error.config._retry) {
-                console.error('CSRF token refresh failed after retry');
-                return Promise.reject(error);
-            }
-            
-            error.config._retry = true;
-            
-            // Refresh CSRF token and retry the request
-            return axios.get('/sanctum/csrf-cookie')
-                .then(() => {
-                    // Get the new token
-                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                    // Update axios default header
-                    axios.defaults.headers.common['X-CSRF-TOKEN'] = token;
-                    // Retry the original request
-                    const config = error.config;
-                    config.headers['X-CSRF-TOKEN'] = token;
-                    return axios(config);
-                })
-                .catch(retryError => {
-                    console.error('Failed to refresh CSRF token:', retryError);
-                    return Promise.reject(error);
-                });
-        }
-        
-        return Promise.reject(error);
-    }
-);

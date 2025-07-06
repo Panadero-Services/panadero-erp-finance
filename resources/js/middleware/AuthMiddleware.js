@@ -1,56 +1,34 @@
-import { BaseMiddleware } from '@/components/middleware/BaseMiddleware';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 
-export class AuthenticationMiddleware extends BaseMiddleware {
+export class AuthMiddleware {
     constructor() {
-        super();
-        this.name = 'Authentication';
         this.checkInterval = 30000; // 30 seconds
         this.timer = null;
         this.isActive = true;
     }
 
-    getChecks(request) {
-        const page = usePage();
-        const auth = page.props.auth;
-        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        const xsrfToken = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('XSRF-TOKEN='))
-            ?.split('=')[1];
-
-        return {
-            userValid: !!auth?.user,
-            csrfValid: !!csrf,
-            xsrfValid: !!xsrfToken,
-            sessionValid: !!auth?.user,
-        };
+    // Initialize middleware
+    init() {
+        this.startSessionCheck();
+        this.setupAxiosInterceptors();
     }
 
-    getAdditionalData(request) {
+    // Check authentication status
+    checkAuth() {
         const page = usePage();
         const auth = page.props.auth;
         
         return {
-            user: auth?.user || null,
-            session: auth?.user ? 'active' : 'expired',
-            token: document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            isAuthenticated: !!auth?.user,
+            user: auth?.user,
+            sessionValid: auth?.session_valid,
+            csrfToken: auth?.csrf_token,
+            sessionLifetime: auth?.user?.session_lifetime || 7200
         };
     }
 
-    async handle(request) {
-        const checks = this.getChecks(request);
-        const additionalData = this.getAdditionalData(request);
-
-        return {
-            isValid: Object.values(checks).every(Boolean),
-            checks,
-            ...additionalData
-        };
-    }
-
-    // Start periodic session check (LOCAL ONLY - NO SERVER CALLS)
+    // Start periodic session check
     startSessionCheck() {
         if (this.timer) {
             clearInterval(this.timer);
@@ -59,20 +37,30 @@ export class AuthenticationMiddleware extends BaseMiddleware {
         this.timer = setInterval(() => {
             if (!this.isActive) return;
 
-            const checks = this.getChecks({});
+            const authStatus = this.checkAuth();
             
-            if (!checks.userValid) {
+            if (!authStatus.isAuthenticated) {
                 this.handleLogout('Session expired');
                 return;
             }
 
-            // REMOVED: Server verification that was causing refresh
-            // this.verifySessionWithServer();
+            // Optional: Check with server
+            this.verifySessionWithServer();
         }, this.checkInterval);
     }
 
-    // REMOVED: verifySessionWithServer method that was causing refresh
+    // Verify session with server
+    async verifySessionWithServer() {
+        try {
+            await axios.get('/api/auth/verify-session');
+        } catch (error) {
+            if (error.response?.status === 401 || error.response?.status === 419) {
+                this.handleLogout('Session invalidated by server');
+            }
+        }
+    }
 
+    // Setup axios interceptors for auth errors
     setupAxiosInterceptors() {
         axios.interceptors.response.use(
             response => response,
@@ -85,6 +73,7 @@ export class AuthenticationMiddleware extends BaseMiddleware {
         );
     }
 
+    // Handle logout
     handleLogout(reason = 'Session expired') {
         console.log(`Logging out: ${reason}`);
         
@@ -105,6 +94,7 @@ export class AuthenticationMiddleware extends BaseMiddleware {
         window.location.href = '/login';
     }
 
+    // Cleanup
     cleanup() {
         this.isActive = false;
         if (this.timer) {
@@ -114,4 +104,5 @@ export class AuthenticationMiddleware extends BaseMiddleware {
     }
 }
 
-export default AuthenticationMiddleware; 
+// Export singleton instance
+export const authMiddleware = new AuthMiddleware(); 

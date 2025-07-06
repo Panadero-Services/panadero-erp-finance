@@ -17,4 +17,12 @@ export default defineConfig({
             },
         }),
     ],
+    // Reduce console noise
+    logLevel: 'warn',
+    clearScreen: false,
+    server: {
+        hmr: {
+            overlay: false,
+        },
+    },
 });
