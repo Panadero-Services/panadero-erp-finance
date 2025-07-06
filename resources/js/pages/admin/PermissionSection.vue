@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SearchWithPopup from '@/components/inputs/SearchWithPopup.vue';
 import Modal from '@/components/Modal.vue';
 import Badges from '@/components/colors/Badges.vue';
+import AdvancedPermissionsModal from '@/components/modals/AdvancedPermissionsModal.vue';
 
 const roles = ref([]);
 const availablePermissions = ref([]);
@@ -258,64 +259,16 @@ const saveRolePermissions = async () => {
             </table>
           </div>
 
-          <!-- Edit Role Modal -->
-          <Modal :show="showEditModal" @close="closeEditModal" maxWidth="md">
-            <div class="p-4">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-3">
-                Edit Permissions for {{ selectedRole?.name }} Role
-              </h3>
-              
-              <div class="mt-3 space-y-2">
-                <template v-for="group in Object.keys(permissionGroups)" :key="group">
-                  <div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4 first:mt-0">
-                    {{ capitalizeFirst(group) }}
-                  </div>
-                  <div v-for="permission in availablePermissions.filter(p => p.group === group)"
-                       :key="permission.id" 
-                       class="flex items-center p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-150 border border-gray-100 dark:border-gray-600">
-                    <input
-                      type="checkbox"
-                      :id="'permission-' + permission.id"
-                      v-model="selectedPermissions"
-                      :value="permission.id"
-                      class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
-                    >
-                    <label :for="'permission-' + permission.id" class="ml-2 flex flex-col cursor-pointer flex-grow">
-                      <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {{ capitalizeFirst(permission.name) }}
-                      </span>
-                      <span class="text-xs text-gray-500 dark:text-gray-400">
-                        {{ getPermissionDescription(permission.name) }}
-                      </span>
-                    </label>
-                    <Badges
-                      :status="permission.name"
-                      :statusMapping="permissionStatusMapping"
-                      size="xxs"
-                      variant="badge"
-                    />
-                  </div>
-                </template>
-              </div>
-
-              <div class="mt-4 flex justify-end space-x-2">
-                <button
-                  @click="closeEditModal"
-                  type="button"
-                  class="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
-                >
-                  Cancel
-                </button>
-                <button
-                  @click="saveRolePermissions"
-                  type="button"
-                  class="px-3 py-1.5 text-xs font-medium border border-transparent rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500"
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          </Modal>
+          <!-- Advanced Permissions Modal -->
+          <AdvancedPermissionsModal
+            :show="showEditModal"
+            :role="selectedRole"
+            :available-permissions="availablePermissions"
+            :selected-permissions="selectedPermissions"
+            @close="closeEditModal"
+            @update:selectedPermissions="selectedPermissions = $event"
+            @save="saveRolePermissions"
+          />
         </div>
       </div>
     </div>
