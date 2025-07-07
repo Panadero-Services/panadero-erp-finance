@@ -165,8 +165,8 @@ Route::middleware([
         return app(DynamicController::class)->update($request, $id);
     })->name('projects.update')->middleware('web');
 
-    Route::get('/getproject', function() {
-        return app(DynamicController::class)->index(request(), 'project', 'projects');
+    Route::get('/getproject', function(Request $request) {
+        return app(DynamicController::class)->show($request, 'projects', $request->get('id'));
     })->name('getproject');
 
 

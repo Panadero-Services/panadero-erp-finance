@@ -1,5 +1,5 @@
 import { BaseMiddleware } from '@/components/middleware/BaseMiddleware';
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 import axios from 'axios';
 
 export class AuthenticationMiddleware extends BaseMiddleware {
@@ -52,23 +52,8 @@ export class AuthenticationMiddleware extends BaseMiddleware {
 
     // Start periodic session check (LOCAL ONLY - NO SERVER CALLS)
     startSessionCheck() {
-        if (this.timer) {
-            clearInterval(this.timer);
-        }
-
-        this.timer = setInterval(() => {
-            if (!this.isActive) return;
-
-            const checks = this.getChecks({});
-            
-            if (!checks.userValid) {
-                this.handleLogout('Session expired');
-                return;
-            }
-
-            // REMOVED: Server verification that was causing refresh
-            // this.verifySessionWithServer();
-        }, this.checkInterval);
+        // Don't start timer - session store handles this
+        console.log('Session checks handled by session store');
     }
 
     // REMOVED: verifySessionWithServer method that was causing refresh
@@ -101,8 +86,13 @@ export class AuthenticationMiddleware extends BaseMiddleware {
             sessionStorage.setItem('intendedDestination', currentPath);
         }
         
-        // Redirect to login
-        window.location.href = '/login';
+        // Use Inertia router instead of window.location
+        router.visit('/login', { 
+            method: 'get',
+            preserveState: false,
+            preserveScroll: false,
+            replace: true
+        });
     }
 
     cleanup() {

@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Head, usePage, router } from '@inertiajs/vue3'
 import axios from 'axios'
 import { useSessionStore } from '@/stores/session'
-import { middlewareManager } from '@/components/middleware/MiddlewareManager'
+//import { middlewareManager } from '@/components/middleware/MiddlewareManager'
 
 // Icons
 import {
@@ -92,36 +92,11 @@ const page = usePage();
 
 onMounted(() => {
   console.log('Component mounted');
-  
-  // Initialize middleware system
-  middlewareManager.init();
-  
-  // Check authentication using existing middleware
-  const authCheck = middlewareManager.checkAuth();
-  if (!authCheck.userValid) {
-    console.log('User not authenticated - redirecting to login');
-    window.location.href = '/login';
-    return;
-  }
-
-  // Check if user has required properties
-  if (!page.props.auth.user.current_team) {
-    console.log('User missing current_team - redirecting to login');
-    window.location.href = '/login';
-    return;
-  }
-
-  // Handle intended destination
-  const intendedDestination = sessionStorage.getItem('intendedDestination');
-  if (intendedDestination) {
-    sessionStorage.removeItem('intendedDestination');
-    window.location.href = intendedDestination;
-  }
+  sessionStore.updateSessionLifetime();
 });
 
 onUnmounted(() => {
   // Cleanup middleware
-  middlewareManager.cleanup();
 });
 
 </script>
@@ -137,6 +112,17 @@ onUnmounted(() => {
         <template v-if="$slots.header">
           <div :class="_sideSpacing">
             <Banner />
+
+            <!-- Session timer display using store -->
+            <div v-if="sessionStore.remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
+              <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
+                <div :title="_tooltip"
+                  :class="[progressBarColor, 'h-full transition-all duration-500 ease-out']"
+                  :style="{ width: `${progressPercentage}%`, minWidth: '2px' }"
+                ></div>
+              </div>
+              <span v-if="sessionStore.remainingTime < 4000" class="-mt-1 text-xxs font-bold" :class="['h-full transition-all duration-500 ease-out', progressTextColor]">{{_tooltip}}</span>
+            </div>
 
             <slot name="header" />
             <div v-for="section in baseSections" :key="section.file">
@@ -166,6 +152,7 @@ onUnmounted(() => {
 
         <!-- Intro Slot -->
         <template v-if="$slots.intro">
+          {{sessionStore}}
           <!-- Session timer display using store -->
           <div v-if="sessionStore.remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
             <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">

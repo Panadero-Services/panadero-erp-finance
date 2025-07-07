@@ -492,4 +492,29 @@ class DynamicController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get a single record by ID
+     */
+    public function show(Request $request, $table, $id)
+    {
+        // Get and validate model class
+        $modelClass = $this->getModelClass($table);
+        
+        // Get the record
+        $record = $modelClass::findOrFail($id);
+        
+        // Check if user can read this record
+        if (method_exists($record, 'canBeReadBy') && !$record->canBeReadBy(auth()->user())) {
+            abort(403, 'Unauthorized');
+        }
+        
+        // Get resource class
+        $resourceClass = "App\\Http\\Resources\\" . Str::studly(Str::singular($table)) . "Resource";
+        
+        // Return the record
+        return class_exists($resourceClass)
+            ? new $resourceClass($record)
+            : new \App\Http\Resources\DynamicResource($record);
+    }
 } 

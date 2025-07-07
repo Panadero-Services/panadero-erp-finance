@@ -8,7 +8,9 @@ import InputLabel from '@/components/InputLabel.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import TextInput from '@/components/TextInput.vue';
 import { useSettingsStore } from '@/stores/settings';
+import { useSessionStore } from '@/stores/session';
 
+const sessionStore = useSessionStore();
 const settings = useSettingsStore();
 
 defineProps({
@@ -27,6 +29,10 @@ const submit = () => {
         ...data,
         remember: form.remember ? 'on' : '',
     })).post(route('login'), {
+        onSuccess: () => {
+            // Initialize session after successful login
+            sessionStore.initializeSession();
+        },
         onFinish: () => form.reset('password'),
     });
 };

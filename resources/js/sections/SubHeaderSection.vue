@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted,  watch, inject } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
-import axios from 'axios';
 
 import Dropdown from '@/components/Dropdown.vue';
 import DropdownLink from '@/components/DropdownLink.vue';
@@ -11,14 +10,10 @@ import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
 import { HomeIcon, Bars3Icon, EllipsisVerticalIcon, WrenchIcon, H1Icon, H2Icon, BarsArrowDownIcon } from '@heroicons/vue/24/outline'
 
 import { useDbStore } from '@/stores/db';
-import { useSessionStore } from '@/stores/session'
-
 //import { useSettingsStore } from '@/stores/settings';
 
 const _db = useDbStore();
-
-// Initialize session store properly
-const sessionStore = useSessionStore();
+//const _set = useSettingsStore();
 
 const props = defineProps({
     set: Object
@@ -36,74 +31,7 @@ const switchToTeam = (team) => {
 };
 
 const logout = () => {
-    console.log('Logout with POST only');
-    
-    // Disable middleware
-    if (window.middlewareManager) {
-        window.middlewareManager.setMiddlewareActive('Authentication', false);
-        window.middlewareManager.setMiddlewareActive('Authorization', false);
-        window.middlewareManager.setMiddlewareActive('Request', false);
-        window.middlewareManager.setMiddlewareActive('Request2', false);
-        window.middlewareManager.cleanup();
-    }
-    
-    // Clear storage
-    localStorage.clear();
-    sessionStorage.clear();
-    
-    // Create a proper POST form
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/logout';
-    form.style.display = 'none';
-    
-    // Add CSRF token
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-    if (csrfToken) {
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_token';
-        csrfInput.value = csrfToken;
-        form.appendChild(csrfInput);
-    }
-    
-    // Add method override to ensure POST
-    const methodInput = document.createElement('input');
-    methodInput.type = 'hidden';
-    methodInput.name = '_method';
-    methodInput.value = 'POST';
-    form.appendChild(methodInput);
-    
-    // Submit form and prevent any redirects
-    document.body.appendChild(form);
-    
-    // Handle form submission
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        // Submit via fetch to handle the response
-        fetch('/logout', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken || '',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({}),
-            credentials: 'include'
-        })
-        .then(response => {
-            console.log('Logout successful:', response.status);
-            window.location.href = '/login';
-        })
-        .catch(error => {
-            console.log('Logout failed:', error);
-            window.location.href = '/login';
-        });
-    });
-    
-    form.submit();
+    router.post(route('logout'));
 };
 
 onMounted(async ()=> {
@@ -372,9 +300,11 @@ const _switchUnSelected = "ring-gray-200 dark:ring-gray-600 text-gray-400 dark:t
                             <div class="border-t border-gray-200 dark:border-gray-600" />
 
                             <!-- Authentication -->
-                            <DropdownLink @click="logout" as="button">
-                                Log Out
-                            </DropdownLink>
+                            <form @submit.prevent="logout">
+                                <DropdownLink as="button">
+                                    Log Out
+                                </DropdownLink>
+                            </form>
                         </template>
                     </Dropdown>
                 </div>

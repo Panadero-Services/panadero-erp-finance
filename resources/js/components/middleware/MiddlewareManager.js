@@ -32,7 +32,10 @@ export class MiddlewareManager {
         // Start session checking for auth middleware
         const authMiddleware = this.registry.get('Authentication');
         if (authMiddleware && authMiddleware.startSessionCheck) {
-            authMiddleware.startSessionCheck();
+            // Only start session check if not already running
+            if (!authMiddleware.timer) {
+                authMiddleware.startSessionCheck();
+            }
         }
         
         this.isInitialized = true;
