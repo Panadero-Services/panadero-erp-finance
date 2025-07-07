@@ -2,7 +2,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "vite --silent",
+        "dev": "vite",
         "build": "vite build",
         "ssh": "ssh -i bastion.pem ubuntu@15.188.147.145"
     },

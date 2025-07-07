@@ -215,6 +215,23 @@ Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')
 // Add this with your other API routes
 Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
 
+// Add the missing API routes for updating records
+Route::put('/api/futures/{id}', function(Request $request, $id) {
+    return app(DynamicController::class)->update($request, $id);
+})->name('futures.update')->middleware('auth:sanctum');
+
+Route::put('/api/projects/{id}', function(Request $request, $id) {
+    return app(DynamicController::class)->update($request, $id);
+})->name('projects.update')->middleware('auth:sanctum');
+
+Route::put('/api/business_services/{id}', function(Request $request, $id) {
+    return app(DynamicController::class)->update($request, $id);
+})->name('business_services.update')->middleware('auth:sanctum');
+
+Route::put('/api/posts/{id}', function(Request $request, $id) {
+    return app(DynamicController::class)->update($request, $id);
+})->name('posts.update')->middleware('auth:sanctum');
+
 Route::get('/auth/verify-session', function () {
     if (!auth()->check()) {
         return response()->json(['valid' => false], 401);

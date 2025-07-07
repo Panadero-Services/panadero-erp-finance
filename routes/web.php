@@ -36,6 +36,8 @@ use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\DynamicController;
 use App\Http\Controllers\Auth\AuthCheckController;
 
+use App\Http\Controllers\ProjectController;
+
 // Resource imports
 use App\Http\Resources\PostResource;
 use App\Http\Resources\ProjectResource;
@@ -150,10 +152,6 @@ Route::middleware([
         return app(DynamicController::class)->index(request(), 'home', 'futures');
     })->name('home.futures');
 
-    Route::put('/api/futures/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('futures.update')->middleware('web');
-
     // ========================================
     // PROJECTS TABLE
     // ========================================
@@ -161,15 +159,6 @@ Route::middleware([
         return app(DynamicController::class)->index(request(), 'project', 'projects');
     })->name('project/projects');
     
-    Route::put('/api/projects/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('projects.update')->middleware('web');
-
-    Route::get('/getproject', function(Request $request) {
-        return app(DynamicController::class)->show($request, 'projects', $request->get('id'));
-    })->name('getproject');
-
-
     // ========================================
     // BUSINESS SERVICES TABLE
     // ========================================
@@ -182,22 +171,12 @@ Route::middleware([
         return app(DynamicController::class)->index(request(), 'home', 'businessservices');
     })->name('home.businessservices');
 
-    Route::put('/api/business_services/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('business_services.update')->middleware('web');
-
-
-    
     // ========================================
     // POSTS TABLE
     // ========================================
     Route::get('/content/posts', function() {
         return app(DynamicController::class)->index(request(), 'content', 'posts');
     })->name('content/posts');
-
-    Route::put('/api/posts/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('posts.update')->middleware('web');
 
     // ========================================
     // USERS TABLE
@@ -552,18 +531,26 @@ Route::get('test_user', function (){
     // Add this route for auth check
     Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
 
-    // Add this route for user permissions
-/*
-    Route::get('/admin/permissions', function () {
-        \Log::info('Accessing user permissions page');
-        return Inertia::render('admin/Permissions', [
-            'page' => Page::with('sections')->where('title', 'admin/Permissions')->first(),
-            'baseSections' => Section::where('page_id', '0')->get()
-        ]);
-    })->name('admin.permissions');
-*/
+    // ========================================
+    // API UPDATE ROUTES
+    // ========================================
+    Route::put('/api/futures/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('futures.update');
 
-});
+    Route::put('/api/projects/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('projects.update');
+
+    Route::put('/api/business_services/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('business_services.update');
+
+    Route::put('/api/posts/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('posts.update');
+
+}); // This closes the authenticated middleware group
 
 // ========================================
 // CATCH-ALL ROUTE (Keep at the end)
@@ -645,3 +632,12 @@ Route::post('/force-logout', function () {
     session()->regenerateToken();
     return response()->json(['success' => true]);
 })->name('force.logout');
+
+// Move this route outside the auth middleware group
+Route::get('/getproject', function(Request $request) {
+    return app(ProjectController::class)->getProject($request, 'projects', $request->get('id'));
+})->name('getproject');
+
+// Keep your existing dynamic catch-all route AFTER these specific routes
+Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')->middleware('web');
+Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);

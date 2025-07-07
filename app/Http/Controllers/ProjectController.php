@@ -1,0 +1,292 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
+use Illuminate\Http\Request; 
+use App\Models\Project;
+use App\Models\Page;
+use App\Models\Section;
+use App\Http\Resources\ProjectResource;
+use Inertia\Inertia;
+
+class ProjectController extends Controller
+{
+   /** validated routines required by the framework other then dynamicController
+   */
+ 
+    // if the record does not exist in the database it will be created
+    // JaWsome.Orbit 18.01.25
+    public function getProject(Request $request){
+      //return $request;
+          //$user = Auth::user();
+          $id = $request->id;
+          $project = Project::where('id', $id)->first();
+          if($project==null){
+              $notFound =[
+                  'id' => $id,
+                  'title' => 'notfound', 
+                  'body' => 'this id is not found in the database', 
+                  'json' => '{}', 
+                  'is_active' => 0 ];
+              //Project::create($notFound);
+              sleep(3);
+              return $notFound;
+          }
+          return $project;
+  }
+ 
+   /** non-validated routines that may be required later
+   */
+
+   /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $query = Project::with('user');
+        
+        // Add search functionality
+        if ($request->has('search') && $request->search) {
+            $searchTerm = $request->search;
+            $searchFields = Project::getSearchableColumns();
+            
+            $query->where(function ($q) use ($searchTerm, $searchFields) {
+                foreach ($searchFields as $field) {
+                    $q->orWhere($field, 'like', '%' . $searchTerm . '%');
+                }
+            });
+        }
+        
+        $perPage = $request->get('per_page', 12);
+        
+        // Create resource collection with meta data from the model
+        $records = ProjectResource::collection($query->paginate($perPage)->appends($request->query()))
+            ->additional([
+                'meta' => [
+                    'validation_rules' => Project::validationRules(),
+                    'form_fields' => Project::formFields(),
+                    'links_table' => Project::linksTable(),
+                    'searchable_columns' => Project::getSearchableColumns(),
+                    'table_columns' => Project::getTableColumns(),
+                    'status_mapping' => Project::getStatusMapping(),
+                ]
+            ]);
+
+        return Inertia::render('project/Projects', [
+            'records' => $records,
+            'page' => Page::with('sections')->where('title', 'project/projects')->first(),
+            'baseSections' => Section::where('page_id', '0')->get()
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreProjectRequest $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request)
+    {
+        $project = Project::findOrFail($request->id);
+ 
+        \Log::info('Update request received', [
+            'id' => $project->id,
+            'data' => $request->all()
+        ]);
+
+        // Filter request data to only include record fields (no metadata)
+        $fillableFields = $project->getFillable();
+        $data = $request->only($fillableFields);
+        
+        // Always include the ID for the update
+        $data['id'] = $request->id;
+
+        // Convert json and links to arrays if they're strings
+        if (isset($data['json']) && is_string($data['json'])) {
+            $data['json'] = json_decode($data['json'], true) ?? [];
+        }
+        if (isset($data['links']) && is_string($data['links'])) {
+            $data['links'] = json_decode($data['links'], true) ?? [];
+        }
+        
+        // Ensure user_id is integer
+        if (isset($data['user_id'])) {
+            $data['user_id'] = (int) $data['user_id'];
+        }
+        
+        // Convert boolean strings to actual booleans
+        $booleanFields = [
+            'is_published', 'is_public', 'is_featured', 'is_locked', 
+            'is_self', 'is_smart', 'is_active', 'is_archived'
+        ];
+        
+        foreach ($booleanFields as $field) {
+            if (isset($data[$field])) {
+                if (is_string($data[$field])) {
+                    $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
+                }
+            }
+        }
+
+        \Log::info('Filtered data for update', [
+            'id' => $project->id,
+            'filtered_data' => $data
+        ]);
+
+        try {
+            // Validate using model's validation rules
+            $validated = $request->validate(Project::validationRules());
+            
+            $project->update($data);
+            
+            \Log::info('Project updated successfully', [
+                'id' => $project->id,
+                'updated_data' => $data
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Project updated successfully',
+                'data' => $project->fresh()
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error updating project', [
+                'id' => $project->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Error updating project: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Project $project)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function updateicon(Request $request, Project $project)
+    {
+        //        $request->validate([
+        //            'title' => 'required|string|max:128',
+        //            'image' => 'required|string|max:255',
+        //            'href' => 'required|string|max:255',
+        //            'self' => 'required|string|max:255',
+        //        ]);
+        $_id = $request->id;
+        $_field = $request->field;
+        $_value = $request->value;
+        Project::where('id', $_id)->update([$_field=>$_value]);
+        sleep(1);
+        return 'ProjectController: updateicon passed: ' . $_id . ' set '.$_field. ' to :'.$_value ;
+    }
+
+    /**
+     * Get labels from a model based on model, label and filter field
+     */
+    public function getLabels(Request $request)
+    {
+       
+        $model = $request->query('model', 'project');
+        $label = $request->query('label', 'title');
+        $filter = $request->query('filter', '');
+
+        try {
+            // Get the model class name
+            $modelClass = "App\\Models\\" . ucfirst($model);
+            
+            // Check if the class exists
+            if (!class_exists($modelClass)) {
+                return response()->json(['error' => 'Model not found'], 404);
+            }
+
+            // Get the model instance
+            $modelInstance = new $modelClass();
+
+            // Get searchable columns from model
+            $searchableColumns = $modelInstance->getSearchableColumns();
+            
+            // Build the query
+            $query = $modelInstance->newQuery();
+
+            // Add filters if provided
+            if ($filter) {
+                $query->where(function ($q) use ($filter, $searchableColumns) {
+                    foreach ($searchableColumns as $column) {
+                        if ($column === 'id') {
+                            $q->orWhere($column, $filter);
+                        } else {
+                            $q->orWhere($column, 'like', '%' . $filter . '%');
+                        }
+                    }
+                });
+            }
+
+            // Get the results with only the label field
+            $results = $query->get([$label]);
+
+            // Format results as array of label values
+            return response()->json($results->pluck($label)->toArray());
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error fetching labels', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getrecordbyid(Request $request)
+    {
+        // default API CALL
+        $caller =   $request->caller;       // this is the caller
+        $model = $request->model;     // this is the model
+        $id =    $request->id;        // this is the column
+        
+        $r=(object)NULL;
+        // check Valid Provider (model) calles
+        $model = 'App\Models\\'.$model;
+
+        $r = $model::where('id',$id)->get();
+
+        return response()->json($r);
+    }
+
+}

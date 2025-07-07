@@ -4,7 +4,7 @@ import { EnvelopeIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Ic
 
 import { usePage, Link } from '@inertiajs/vue3';
 import NavLink from '@/components/NavLink.vue';
-
+import { computed } from 'vue';
 
 const props = defineProps({
     set: Object, 
@@ -14,19 +14,33 @@ const props = defineProps({
     progress: Number
 });
 
+// Computed property to get the URL from options or provide a fallback
+const cardUrl = computed(() => {
+    // If f.url exists, use it
+    if (props.f.url) {
+        return props.f.url;
+    }
+    
+    // If options exist and have a URL, use the first one
+    if (props.f.options && props.f.options.length > 0 && props.f.options[0].url) {
+        return props.f.options[0].url;
+    }
+    
+    // Fallback to a default route
+    return '/home/dashboard';
+});
+
 //const _navigate = () =>  {
 //    router.push(props.f.url); 
 //}
 
 const _navigate = () => {
-    router.visit(props.f.url, {
+    router.visit(cardUrl.value, {
         preserveState: true,
         preserveScroll: true,
         replace: true
     });
 };
-
-
 
 // css
 const _basic = " text-xxs lg:text-xs font-normal leading-tight ";
@@ -36,11 +50,7 @@ const _icon = " w-4 h-4 mr-2 ";
 
 const _feature = "h-5 w-5 m-2 text-gray-500 dark:text-white";
 
-
-
 </script>
-
-
 
 <template>
     <!-- SELF Stakepool 2 Card -->
@@ -54,7 +64,7 @@ const _feature = "h-5 w-5 m-2 text-gray-500 dark:text-white";
                         <span class="font-bold text-sm text-gray-50 dark:text-gray-300">{{f.item}}</span>
                     </div>
 
-                    <Link :href="f.url" class="flex mt-4 pt-3 text-black dark:text-white text-xl text-center"> 
+                    <Link :href="cardUrl" class="flex mt-4 pt-3 text-black dark:text-white text-xl text-center"> 
                           <RectangleGroupIcon v-if="'I3FrameworkIcon'==f.icon" :class="_feature" aria-hidden="true" />
                           <PencilSquareIcon v-if="'ContentManagementIcon'==f.icon"  :class="_feature" aria-hidden="true" />
                           <BarsArrowUpIcon v-if="'ResourcePlanningIcon'==f.icon"  :class="_feature" aria-hidden="true" />

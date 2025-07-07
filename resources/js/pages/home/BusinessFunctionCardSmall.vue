@@ -17,6 +17,22 @@ const props = defineProps({
 
 const emit = defineEmits(['edit']);
 
+// Computed property to get the URL from options or provide a fallback
+const cardUrl = computed(() => {
+    // If f.url exists, use it
+    if (props.f.url) {
+        return props.f.url;
+    }
+    
+    // If options exist and have a URL, use the first one
+    if (props.f.options && props.f.options.length > 0 && props.f.options[0].url) {
+        return props.f.options[0].url;
+    }
+    
+    // Fallback to a default route
+    return '/home/dashboard';
+});
+
 const handleEdit = (event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -25,7 +41,7 @@ const handleEdit = (event) => {
 };
 
 const _navigate = () => {
-    router.visit(props.f.url, {
+    router.visit(cardUrl.value, {
         preserveState: true,
         preserveScroll: true,
         replace: true
@@ -41,7 +57,7 @@ const togglePopup = () => {
 const navigateTo = (url) => {
   const page = usePage();
   if (page.props.auth.user) {
-    router.visit(url || props.f.url, {
+    router.visit(url || cardUrl.value, {
       preserveState: true,
       preserveScroll: true,
       replace: true

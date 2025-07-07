@@ -95,20 +95,43 @@ function getCookie(name) {
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-// Request interceptor for XSRF token - USE ONLY COOKIE TOKEN
-axios.interceptors.request.use(config => {
-    // Get the latest XSRF token from cookie before each request
-    const xsrfToken = getCookie('XSRF-TOKEN');
-    if (xsrfToken) {
-        config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
-        
-        // Update meta tag with fresh token
-        const metaTag = document.head.querySelector('meta[name="csrf-token"]');
-        if (metaTag) {
-            metaTag.setAttribute('content', decodeURIComponent(xsrfToken));
+let csrfFetched = false;
+
+// Create a separate axios instance for CSRF cookie fetch
+const axiosNoIntercept = axios.create();
+
+axios.interceptors.request.use(async config => {
+    // Always fetch CSRF cookie for stateful requests
+    if (config.method !== 'get' || config.url.includes('/api/')) {
+        console.log('Fetching CSRF cookie for:', config.url);
+        try {
+            await axiosNoIntercept.get('/sanctum/csrf-cookie');
+            const xsrfToken = getCookie('XSRF-TOKEN');
+            if (xsrfToken) {
+                console.log('CSRF token set:', decodeURIComponent(xsrfToken));
+            } else {
+                console.error('No XSRF-TOKEN cookie found!');
+            }
+        } catch (error) {
+            console.error('Failed to fetch CSRF cookie:', error);
         }
     }
     return config;
 }, error => {
     return Promise.reject(error);
 });
+
+axios.interceptors.response.use(
+    response => {
+        console.log('=== RESPONSE SUCCESS ===');
+        console.log('Status:', response.status);
+        return response;
+    },
+    error => {
+        console.log('=== RESPONSE ERROR ===');
+        console.log('Status:', error.response?.status);
+        console.log('Data:', error.response?.data);
+        console.log('Headers:', error.response?.headers);
+        return Promise.reject(error);
+    }
+);

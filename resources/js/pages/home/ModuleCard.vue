@@ -2,8 +2,9 @@
 import ApplicationLogo from '@/components/logoSelf.vue';
 import { EnvelopeIcon } from '@heroicons/vue/24/outline'
 
-import { usePage } from '@inertiajs/vue3';
+import { usePage, router } from '@inertiajs/vue3';
 import NavLink from '@/components/NavLink.vue';
+import { computed } from 'vue';
 
 
 const props = defineProps({
@@ -13,8 +14,28 @@ const props = defineProps({
     featured: Boolean
 });
 
+// Computed property to get the URL from options or provide a fallback
+const cardUrl = computed(() => {
+    // If f.url exists, use it
+    if (props.f.url) {
+        return props.f.url;
+    }
+    
+    // If options exist and have a URL, use the first one
+    if (props.f.options && props.f.options.length > 0 && props.f.options[0].url) {
+        return props.f.options[0].url;
+    }
+    
+    // Fallback to a default route
+    return '/home/dashboard';
+});
+
 const _navigate = () =>  {
-    router.push(props.f.url); 
+    router.visit(cardUrl.value, {
+        preserveState: true,
+        preserveScroll: true,
+        replace: true
+    });
 }
 
 

@@ -21,11 +21,20 @@ export const useProjectStore = defineStore('project', () => {
         return new Promise((resolve, reject) => {
             const check = async () => {
                 try {
+                    // Get CSRF token
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    
                     const response = await axios.get("/getproject", {
                         params: {
                             id: _projectId,
                             provider: 'Project',
-                        }
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken || '',
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        },
+                        withCredentials: true
                     });
                     resolve(response.data);
                 } catch (err) {
