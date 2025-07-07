@@ -32,7 +32,8 @@ const _mainLayout = props.page.max_width ? "" : "container";
 const page = usePage();
 
 onMounted(() => {
-  console.log('Component mounted');
+  console.log('Component WelkomLayout mounted');
+  sessionStore.updateSessionLifetime();
 });
 
 onUnmounted(() => {
