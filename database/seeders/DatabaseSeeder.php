@@ -44,6 +44,8 @@ class DatabaseSeeder extends Seeder
             BusinessServiceSeeder::class,
             FeatureSeeder::class,
             FutureSeeder::class,
+            I1TablesDemoSeeder::class,
+            I1OrdersSeeder::class
         ]);
 
         // Get all users and roles

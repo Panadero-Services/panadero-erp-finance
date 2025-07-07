@@ -390,6 +390,13 @@ Route::middleware([
         ]);
     })->name('bento')->middleware(RoleAccessMiddleware::class.':admin,author');
 
+    Route::get('indigo1/orders', function () {
+        return Inertia::render('indigo1/Orders', [
+            'page'=> Page::with('sections')->where('title','indigo1/Orders')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('indigo1.orders')->middleware(RoleAccessMiddleware::class.':admin,author');
+
     Route::get('grid', function () {
         return Inertia::render('Grid', [
             'page'=> Page::with('sections')->where('title','Grid')->first(),
@@ -549,6 +556,13 @@ Route::get('test_user', function (){
     Route::put('/api/posts/{id}', function(Request $request, $id) {
         return app(DynamicController::class)->update($request, $id);
     })->name('posts.update');
+
+    // ========================================
+    // I1 ORDERS TABLE
+    // ========================================
+    Route::get('/indigo1/orders', function() {
+        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_orders');
+    })->name('indigo1.orders');
 
 }); // This closes the authenticated middleware group
 

@@ -261,8 +261,6 @@ onMounted(async () => {
   />
 </div>
 
-
-
 </template>
 
 <style>
@@ -284,8 +282,5 @@ onMounted(async () => {
     height: 100%;
     overflow: hidden;
 }
-
-
-
 
 </style>

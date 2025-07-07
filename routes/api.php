@@ -24,6 +24,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Controllers\ModelConfigController;
 use App\Http\Controllers\DynamicController;
 use App\Http\Controllers\UserPermissionController;
+use App\Models\I1Order;
 
 Route::apiResource('providers', ProviderController::class);
 
@@ -232,6 +233,10 @@ Route::put('/api/posts/{id}', function(Request $request, $id) {
     return app(DynamicController::class)->update($request, $id);
 })->name('posts.update')->middleware('auth:sanctum');
 
+Route::put('/api/i1_orders/{id}', function(Request $request, $id) {
+    return app(DynamicController::class)->update($request, $id);
+})->name('i1_orders.update')->middleware('auth:sanctum');
+
 Route::get('/auth/verify-session', function () {
     if (!auth()->check()) {
         return response()->json(['valid' => false], 401);
@@ -243,3 +248,7 @@ Route::get('/auth/verify-session', function () {
         'session_id' => session()->getId()
     ]);
 })->middleware('auth:sanctum');
+
+Route::get('i1_orders', function (){
+    return I1Order::take(50)->get();
+});
