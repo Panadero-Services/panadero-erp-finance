@@ -931,6 +931,7 @@ const toggleMiddleware = (name) => {
                 </div>
 
                 <!-- Index Section-->
+             
                 <Pagination :meta="records.meta" />
             </div>
         </template>
@@ -962,7 +963,7 @@ const toggleMiddleware = (name) => {
 
     <!-- Update the middleware status indicators section -->
     <div v-if="isDevelopment" 
-         class="fixed bottom-4 right-4 flex flex-col space-y-2 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg">
+         class="fixed bottom-4 right-4 flex flex-col space-y-2 bg-gray-100 border border-gray-300 dark:bg-gray-800 p-2 rounded-lg shadow-lg">
         <h3 class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Middleware Chain</h3>
         <div class="flex flex-col space-y-1">
             <div v-for="status in middlewareChainStatus" 
@@ -981,6 +982,7 @@ const toggleMiddleware = (name) => {
                     <span class="text-gray-700 dark:text-gray-300">{{ status.name }}</span>
                 </div>
             </div>
+            
         </div>
     </div>
 </template> 

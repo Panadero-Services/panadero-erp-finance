@@ -200,6 +200,15 @@ class Project extends Model
         ];
     }
 
+
+    public static function getContentFields(): array
+    {
+        return [
+            'description', 'color', 'status', 'is_active'
+        ];
+    }
+
+
     public static function getColorOptions(): array
     {
         return [

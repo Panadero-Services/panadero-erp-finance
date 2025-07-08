@@ -13,7 +13,7 @@ export class RequestValidationMiddleware extends BaseMiddleware {
             methodAllowed: this.validateMethod(request),
             contentType: this.validateContentType(request)
         };
-    }
+    } 
 
     getAdditionalData(request) {
         return {

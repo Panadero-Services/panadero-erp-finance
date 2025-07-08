@@ -57,9 +57,8 @@ class DynamicResource extends JsonResource
      */
     public function with($request)
     {
-        return [
-            'meta' => $this->meta
-        ];
+        // Only return meta if it was explicitly set
+        return $this->meta ? ['meta' => $this->meta] : [];
     }
 
     /**

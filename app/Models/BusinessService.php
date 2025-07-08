@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+use App\Models\Traits\HasPermissions;
+
 class BusinessService extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPermissions;
 
     protected $fillable = [
         'item',
@@ -355,4 +357,77 @@ class BusinessService extends Model
             'description', 'version', 'icon', 'is_active', 'progress'
         ];
     }
+
+  /**
+     * Define permission-based access for futures
+     * Override the trait's default implementation
+     */
+    public static function getPermissionAccess(): array
+    {
+        return [
+            'canReadAll' => [
+                'description' => 'Full access to read all futures',
+                'conditions' => [] // No conditions means full access
+            ],
+            'canReadUnlocked' => [
+                'description' => 'Access to read all unlocked futures',
+                'conditions' => [
+                    'respect_lock' => true
+                ]
+            ],
+            'canReadByStatus' => [
+                'description' => 'Access to read specific status futures',
+                'conditions' => [
+                    'status_allowed' => ['idle', 'in_progress', 'blocked']
+                ]
+            ],
+            'canReadOwn' => [
+                'description' => 'Access to read own futures only',
+                'conditions' => [
+                    'owner_only' => true,
+                    'respect_lock' => true,
+                    'status_allowed' => ['completed', 'review']
+                ]
+            ]
+        ];
+    }
+
+
+    public static function getTitleColumn(): string
+    {
+        return 'title';
+    }
+
+    public static function getUserIdColumn(): string
+    {
+        return 'user_id';
+    }
+
+
+// For a model with color options
+public static function optionsFormat(): array
+{
+    return [
+        [
+            'name' => 'name',
+            'type' => 'text',
+            'label' => ' Name',
+            'required' => true
+        ],
+        [
+            'name' => 'url',
+            'type' => 'text',
+            'label' => 'Url',
+            'required' => true
+        ],
+        [
+            'name' => 'route',
+            'type' => 'text',
+            'label' => 'Route',
+            'required' => true
+        ],
+    ];
+}
+
+
 } 

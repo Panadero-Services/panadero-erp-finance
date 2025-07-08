@@ -180,29 +180,31 @@ class DynamicController extends Controller
         $perPage = $request->get('per_page', 12);
         $resourceClass = "App\\Http\\Resources\\" . Str::studly(Str::singular($modelClass)) . "Resource";
         
-        // Get paginated data - permission filtering already applied by scopeReadable()
+        // Get paginated data
         $paginator = $query->paginate($perPage)->appends($request->query());
+        
+        // Get model metadata
+        $modelMeta = $this->getModelMetadata($modelClass);
+        
+        // Create the resource collection
         $records = class_exists($resourceClass)
             ? $resourceClass::collection($paginator)
             : \App\Http\Resources\DynamicResource::collection($paginator);
 
-        // Add meta data
-        $meta = $this->getModelMetadata($modelClass);
+        // Get clean pagination metadata
+        $paginationLinks = $paginator->linkCollection()->unique('url')->values();
         
-        // Get pagination data
-        $paginationData = $records->response()->getData(true);
-        
-        // Add additional data with consistent structure
+        // Add metadata with clean pagination data
         $records->additional([
-            'meta' => array_merge($meta, [
-                'current_page' => $paginationData['meta']['current_page'] ?? 1,
-                'from' => $paginationData['meta']['from'] ?? null,
-                'last_page' => $paginationData['meta']['last_page'] ?? 1,
-                'links' => $paginationData['meta']['links'] ?? [],
-                'path' => $paginationData['meta']['path'] ?? request()->url(),
-                'per_page' => $paginationData['meta']['per_page'] ?? $perPage,
-                'to' => $paginationData['meta']['to'] ?? null,
-                'total' => $paginationData['meta']['total'] ?? 0,
+            'meta' => array_merge($modelMeta, [
+                'current_page' => $paginator->currentPage(),
+                'from' => $paginator->firstItem(),
+                'last_page' => $paginator->lastPage(),
+                'path' => $paginator->path(),
+                'per_page' => $paginator->perPage(),
+                'to' => $paginator->lastItem(),
+                'total' => $paginator->total(),
+                'links' => $paginationLinks->toArray()
             ])
         ]);
 

@@ -491,6 +491,14 @@ class I1Order extends Model
                 'sortable' => true
             ],
             [
+                'key' => 'is_locked',
+                'label' => 'Locked',
+                'type' => 'boolean',
+                'width' => 'w-20',
+                'formatter' => 'boolean',
+                'sortable' => true
+            ],
+            [
                 'key' => 'created_at',
                 'label' => 'Created',
                 'type' => 'datetime',

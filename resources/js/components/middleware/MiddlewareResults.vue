@@ -33,7 +33,7 @@ const props = defineProps({
                 <div v-for="(value, key) in layer.result.checks" 
                      :key="key"
                      class="flex items-center justify-between text-xs border-t pt-2">
-                    <span class="text-gray-600">{{ key }}</span>
+                    <span class="text-gray-600 dark:text-gray-300">{{ key }}</span>
                     <div class="flex items-center space-x-2">
                         <span :class="value ? 'text-green-600' : 'text-red-600'">
                             {{ value ? ` valid` : ` invalid` }}
@@ -47,7 +47,7 @@ const props = defineProps({
             <!-- Special Status Checks -->
             <template v-if="layer.result.session">
                 <div class="flex items-center justify-between text-xs border-t pt-2">
-                    <span class="text-gray-600">Session Status</span>
+                    <span class="text-gray-600 dark:text-gray-300">Session Status</span>
                     <div class="flex items-center space-x-2">
                         <span :class="layer.result.session === 'active' ? 'text-green-600' : 'text-red-600'">
                             {{ layer.result.session === 'active' ? 'Session active' : 'Session expired' }}
@@ -61,7 +61,7 @@ const props = defineProps({
             <!-- Token Status -->
             <template v-if="'token' in layer.result">
                 <div class="flex items-center justify-between text-xs border-t pt-2">
-                    <span class="text-gray-600">Token Status</span>
+                    <span class="text-gray-600 dark:text-gray-300">Token Status</span>
                     <div class="flex items-center space-x-2">
                         <span :class="layer.result.token ? 'text-green-600' : 'text-red-600'">
                             {{ layer.result.token ? 'Token valid' : 'Token missing' }}
