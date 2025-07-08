@@ -26,7 +26,7 @@ const props = defineProps({
     auth: Object
 });
 
-const _mainLayout = props.page.max_width ? "" : "container";
+const _mainLayout = props.page?.max_width ? "" : "container";
 
 // Get page instance
 const page = usePage();

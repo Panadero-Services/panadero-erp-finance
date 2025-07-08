@@ -46,7 +46,7 @@ Route::prefix('bots')->group(function () {
 
 
 Route::get('test_user', function (){
-    return User::take(25)->get();
+    return Post::take(5)->get();
 });
 
 Route::get('whatever', function (){
@@ -57,9 +57,9 @@ Route::get('projects', function (){
     return Project::take(25)->get();
 });
 
-Route::get('futures', function (){
-    return Future::take(50)->get();
-});
+//Route::get('futures', function (){
+///    return Future::take(50)->get();
+//});
 
 Route::get('business_services', function (){
     return BusinessService::take(50)->get();
@@ -209,6 +209,43 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
     Route::get('/permissions', [UserPermissionController::class, 'permissions']);
     Route::get('/user-permissions/roles/search', [UserPermissionController::class, 'searchRoles']);
     Route::put('/user-permissions/roles/{role}/permissions', [UserPermissionController::class, 'updateRolePermissions']);
+
+    // Dynamic entity routes
+    Route::prefix('futures')->group(function () {
+        Route::get('/', [DynamicController::class, 'api'])
+            ->name('futures.index');
+        Route::put('/{id}', [DynamicController::class, 'update'])
+            ->name('futures.update');
+    });
+
+    Route::prefix('projects')->group(function () {
+        Route::get('/', [DynamicController::class, 'api'])
+            ->name('projects.index');
+        Route::put('/{id}', [DynamicController::class, 'update'])
+            ->name('projects.update');
+    });
+
+    Route::prefix('business_services')->group(function () {
+        Route::get('/', [DynamicController::class, 'api'])
+            ->name('business_services.index');
+        Route::put('/{id}', [DynamicController::class, 'update'])
+            ->name('business_services.update');
+    });
+
+    Route::prefix('posts')->group(function () {
+        Route::get('/', [DynamicController::class, 'api'])
+            ->name('posts.index');
+        Route::put('/{id}', [DynamicController::class, 'update'])
+            ->name('posts.update');
+    });
+
+    // I1Order routes
+    Route::prefix('i1-orders')->group(function () {  // URL-friendly version
+        Route::get('/', [DynamicController::class, 'api'])
+            ->name('api.i1orders.index');
+        Route::put('/{id}', [DynamicController::class, 'update'])
+            ->name('api.i1orders.update');
+    });
 });
 
 // Keep your existing dynamic catch-all route AFTER these specific routes
@@ -251,4 +288,28 @@ Route::get('/auth/verify-session', function () {
 
 Route::get('i1_orders', function (){
     return I1Order::take(50)->get();
+});
+
+Route::middleware(['auth:sanctum', 'web'])->group(function () {
+    Route::prefix('api')->group(function () {
+        // Define the entities that use dynamic controller
+        $entities = [
+            'futures',
+            'projects',
+            'business_services',
+            'posts'
+        ];
+
+        // Create routes for each entity
+        foreach ($entities as $entity) {
+            Route::prefix($entity)->group(function () use ($entity) {
+                Route::get('/', [DynamicController::class, 'api'])
+                    ->name("api.{$entity}.index");
+                Route::put('/{id}', [DynamicController::class, 'update'])
+                    ->name("api.{$entity}.update");
+                Route::patch('/{id}/field', [DynamicController::class, 'updateField'])
+                    ->name("api.{$entity}.field.update");
+            });
+        }
+    });
 });

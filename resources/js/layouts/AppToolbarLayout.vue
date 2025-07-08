@@ -142,7 +142,6 @@ onUnmounted(() => {
 
         <!-- Intro Slot -->
         <template v-if="$slots.intro">
-          {{sessionStore}}
           <!-- Session timer display using store -->
           <div v-if="sessionStore.remainingTime !== null" class="justify-=bg-gray-100 dark:bg-black flex items-center gap-2 text-xs text-gray-500">
             <div class="ml-6 -mt-1 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
@@ -151,7 +150,7 @@ onUnmounted(() => {
                 :style="{ width: `${progressPercentage}%`, minWidth: '2px' }"
               ></div>
             </div>
-            <span v-if="sessionStore.remainingTime < 4000" class="-mt-1 text-xxs font-bold" :class="['h-full transition-all duration-500 ease-out', progressTextColor]">{{_tooltip}}</span>
+            <span v-if="sessionStore.progressPercentage < 78" class="-mt-1 text-xxs font-bold" :class="['h-full transition-all duration-500 ease-out', progressTextColor]">{{_tooltip}}</span>
           </div>
         </template>
 

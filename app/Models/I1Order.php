@@ -17,6 +17,8 @@ class I1Order extends Model
 {
     use HasFactory, HasPermissions;
 
+    protected $table = 'i1_orders';
+
     protected $fillable = [
         'tpt_order_nr',
         'cust_order_nr',
@@ -400,92 +402,116 @@ class I1Order extends Model
     public static function getTableColumns(): array
     {
         return [
-            'id' => [
+            [
+                'key' => 'id',
                 'label' => 'ID',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'number',
-                'width' => '80px'
+                'width' => 'w-16',
+                'formatter' => 'text',
+                'sortable' => true
             ],
-            'tpt_order_nr' => [
+            [
+                'key' => 'tpt_order_nr',
                 'label' => 'TPT Order',
-                'sortable' => true,
-                'searchable' => true,
                 'type' => 'text',
-                'width' => '120px'
+                'width' => 'w-32',
+                'formatter' => 'text',
+                'sortable' => true,
+                'searchable' => true
             ],
-            'cust_order_nr' => [
+            [
+                'key' => 'cust_order_nr',
                 'label' => 'Customer Order',
-                'sortable' => true,
-                'searchable' => true,
                 'type' => 'text',
-                'width' => '120px'
+                'width' => 'w-32',
+                'formatter' => 'text',
+                'sortable' => true,
+                'searchable' => true
             ],
-            'i1_customer_id' => [
+            [
+                'key' => 'i1_customer_id',
                 'label' => 'Customer',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'relation',
+                'width' => 'w-40',
+                'formatter' => 'text',
+                'relationField' => 'name',
                 'relation' => 'customer',
-                'width' => '150px'
+                'sortable' => true
             ],
-            'i1_product_id' => [
+            [
+                'key' => 'i1_product_id',
                 'label' => 'Product',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'relation',
+                'width' => 'w-32',
+                'formatter' => 'text',
+                'relationField' => 'name',
                 'relation' => 'product',
-                'width' => '120px'
+                'sortable' => true
             ],
-            'order_qty' => [
+            [
+                'key' => 'order_qty',
                 'label' => 'Quantity',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'number',
-                'width' => '100px'
+                'width' => 'w-24',
+                'formatter' => 'number',
+                'sortable' => true
             ],
-            'i1_status_id' => [
+            [
+                'key' => 'i1_status_id',
                 'label' => 'Status',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'relation',
+                'width' => 'w-28',
+                'formatter' => 'status',
+                'relationField' => 'name',
                 'relation' => 'status',
-                'width' => '100px'
+                'sortable' => true
             ],
-            'r_date' => [
+            [
+                'key' => 'r_date',
                 'label' => 'Request Date',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'datetime',
-                'width' => '120px'
+                'width' => 'w-32',
+                'formatter' => 'date',
+                'sortable' => true
             ],
-            'e_date' => [
+            [
+                'key' => 'e_date',
                 'label' => 'Expected Date',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'datetime',
-                'width' => '120px'
+                'width' => 'w-32',
+                'formatter' => 'date',
+                'sortable' => true
             ],
-            'is_active' => [
+            [
+                'key' => 'is_active',
                 'label' => 'Active',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'boolean',
-                'width' => '80px'
+                'width' => 'w-20',
+                'formatter' => 'boolean',
+                'sortable' => true
             ],
-            'created_at' => [
+            [
+                'key' => 'created_at',
                 'label' => 'Created',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'datetime',
-                'width' => '120px'
+                'width' => 'w-32',
+                'formatter' => 'date',
+                'sortable' => true
             ],
-            'updated_at' => [
+            [
+                'key' => 'updated_at',
                 'label' => 'Updated',
-                'sortable' => true,
-                'searchable' => false,
                 'type' => 'datetime',
-                'width' => '120px'
+                'width' => 'w-32',
+                'formatter' => 'date',
+                'sortable' => true
+            ],
+            [
+                'key' => 'actions',
+                'label' => 'Actions',
+                'type' => 'actions',
+                'width' => 'w-24',
+                'formatter' => 'actions'
             ]
         ];
     }
@@ -493,11 +519,11 @@ class I1Order extends Model
     public static function getStatusMapping(): array
     {
         return [
-            'pending' => 'Pending',
-            'released' => 'Released',
-            'finished' => 'Finished',
-            'on-hold' => 'On Hold',
-            'history' => 'History'
+            '1' => 'Pending',
+            '2' => 'Released',
+            '3' => 'Finished',
+            '4' => 'On Hold',
+            '5' => 'History'
         ];
     }
 
@@ -506,7 +532,11 @@ class I1Order extends Model
         return [
             'tpt_order_nr',
             'cust_order_nr',
-            'comment'
+            'i1_product_id',
+            'order_qty',
+            'comment', 
+            'is_active',
+            'is_locked',
         ];
     }
 
@@ -573,12 +603,41 @@ class I1Order extends Model
     public static function getPermissionAccess(): array
     {
         return [
-            'view' => 'view_i1_orders',
-            'create' => 'create_i1_orders',
-            'edit' => 'edit_i1_orders',
-            'delete' => 'delete_i1_orders',
-            'export' => 'export_i1_orders',
-            'import' => 'import_i1_orders'
+            'globalRead' => [
+                'description' => 'Full access to read all orders',
+                'conditions' => [] // No conditions means full access
+            ],
+            'canReadUnlocked' => [
+                'description' => 'Access to read all unlocked orders',
+                'conditions' => [
+                    'respect_lock' => true
+                ]
+            ],
+            'canReadByStatus' => [
+                'description' => 'Access to read orders by status',
+                'conditions' => [
+                    'respect_lock' => true,
+                    'status_allowed' => [1, 2, 3] // Using status IDs
+                ]
+            ],
+            'canReadOwn' => [
+                'description' => 'Access to read own orders only',
+                'conditions' => [
+                    'owner_only' => true,
+                    'respect_lock' => true
+                ]
+            ]
         ];
     }
+
+    public static function getTitleColumn(): string
+    {
+        return 'tpt_order_nr';
+    }
+
+    public static function getUserIdColumn(): string
+    {
+        return 'i1_user_id';
+    }
+
 } 

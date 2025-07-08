@@ -70,6 +70,15 @@ export class RequestValidationMiddleware extends BaseMiddleware {
     sanitizeData(request) {
         if (!request.data) return null;
         const sanitized = JSON.parse(JSON.stringify(request.data));
+        
+        // Preserve meta information if it exists
+        if (sanitized.meta) {
+            return {
+                ...sanitized,
+                meta: request.data.meta // Keep original meta data
+            };
+        }
+        
         Object.keys(sanitized).forEach(key => {
             if (typeof sanitized[key] === 'string') {
                 sanitized[key] = sanitized[key].trim();

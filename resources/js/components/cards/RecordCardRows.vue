@@ -128,7 +128,40 @@ const fieldFormatters = computed(() => {
 
 // Update the columns computed to use record.meta.columns
 const columns = computed(() => {
-    return props.record?.meta?.columns || props.config.columns || [];
+    // First check if we have valid columns configuration
+    const metaColumns = props.record?.meta?.columns;
+    const configColumns = props.config?.columns;
+    
+    // Use meta columns if available and valid
+    if (Array.isArray(metaColumns) && metaColumns.length > 0) {
+        return metaColumns.map(col => {
+            // Ensure each column has a key
+            if (!col.key) {
+                console.warn('Column missing key:', col);
+                return { ...col, key: 'unknown' };
+            }
+            return col;
+        });
+    }
+    
+    // Use config columns if available and valid
+    if (Array.isArray(configColumns) && configColumns.length > 0) {
+        return configColumns.map(col => {
+            // Ensure each column has a key
+            if (!col.key) {
+                console.warn('Column missing key:', col);
+                return { ...col, key: 'unknown' };
+            }
+            return col;
+        });
+    }
+    
+    // If no valid columns found, return minimal default set
+    console.warn('No valid columns configuration found');
+    return [
+        { key: 'id', label: 'ID' },
+        { key: 'name', label: 'Name' }
+    ];
 });
 
 // Update the columnWidths computed to use the model's metadata
@@ -163,7 +196,7 @@ const getFieldValue = (column) => {
 <template>
     <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
         <td v-for="column in columns" 
-            :key="column.key" 
+            :key="column.key || 'unknown'" 
             :class="[
                 'py-2 px-2 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap',
                 column.width, // The width class from column definition

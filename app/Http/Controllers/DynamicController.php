@@ -53,7 +53,11 @@ class DynamicController extends Controller
      */
     private function buildQuery(string $modelClass, Request $request)
     {
+
         $query = $modelClass::query();
+        
+        // Debug initial count
+        \Log::info("Initial query count for {$modelClass}: " . $query->count());
         
         // Get all roles and their permissions for the current user
         $userRolePermissions = auth()->user()
@@ -65,11 +69,18 @@ class DynamicController extends Controller
             ->pluck('name')
             ->unique();
         
+        \Log::info("User permissions: " . $userRolePermissions->implode(', '));
+        
         // Apply readable scope with all user permissions
         if (method_exists($modelClass, 'scopeReadable')) {
             $query->readable($userRolePermissions);
+            \Log::info("After readable scope count: " . $query->count());
         }
-        
+
+        // Get available permissions for this model
+        $availablePermissions = $modelClass::getPermissionAccess();
+        \Log::info("Available permissions for I1Order: " . json_encode($availablePermissions));
+
         // Add relationships
         $this->addRelationships($query, $modelClass);
         
@@ -78,6 +89,11 @@ class DynamicController extends Controller
         
         // Add default ordering
         $query->orderBy('created_at', 'desc');
+        
+        // Debug final query
+        \Log::info("Final SQL: " . $query->toSql());
+        \Log::info("Final bindings: " . json_encode($query->getBindings()));
+        \Log::info("Final count: " . $query->count());
         
         return $query;
     }
@@ -132,7 +148,10 @@ class DynamicController extends Controller
             'getSearchableColumns' => 'searchable_columns',
             'getTableColumns' => 'table_columns',
             'getStatusMapping' => 'status_mapping',
-            'getContentFields' => 'content_fields'
+            'getContentFields' => 'content_fields',
+            'getPermissionAccess' => 'permission_access',
+            'getTitleColumn' => 'title_column',
+            'getUserIdColumn' => 'user_id_column'
         ];
 
         foreach ($metaMethods as $method => $key) {

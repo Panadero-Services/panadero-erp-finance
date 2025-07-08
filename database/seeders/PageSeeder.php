@@ -585,8 +585,8 @@ class PageSeeder extends Seeder
             ],
             [
                 'id' => 35,
-                'title' => 'indigo1/Orders',
-                'file' => 'indigo1/Orders.vue',
+                'title' => 'indigo1/I1Orders',
+                'file' => 'indigo1/I1Orders.vue',
                 'icon' => 'view-dashboard-outline',
                 'image' => 'h-80 text-4xl text-black bg-contain bg-[url(../images/new2.jpg)]',
                 'slogan' => 'Indigo1 Orders Management',

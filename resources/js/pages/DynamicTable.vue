@@ -138,8 +138,8 @@ const debugAuthState = async () => {
     try {
         // Check if we have Inertia page props with auth info
         const page = usePage();
-        const auth = page.props.auth;
-        const jetstream = page.props.jetstream;
+        const auth = page?.props?.auth;
+        const jetstream = page?.props?.jetstream;
         
         console.log('Current Auth State:', {
             auth,
@@ -327,7 +327,7 @@ const _superSelfAdmin = computed(() => {
 
 // Card configuration - Now dynamic
 const cardConfig = computed(() => ({
-    title: 'title',
+    title: props.records?.meta?.title_column || 'title',
     description: 'description',
     body: 'description',
     // Get flags from meta data's boolean_fields
@@ -727,7 +727,7 @@ const toggleMiddleware = (name) => {
 </script>
 
 <template>
-    <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
+    <AppToolbarLayout :title="page?.title || 'Dynamic Table'" :baseSections="baseSections || {}" :set="_set" :contract="_contract" :page="page">
         <template #header>
             <pulse v-model="_pulse" :animation="_set.animate"/>
 

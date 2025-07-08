@@ -143,19 +143,9 @@ const formatTitle = (title) => {
                 <div class="h-[25px] flex items-center px-3 mt-1">
                     <div class="w-4/5 flex">
 
-
-
-
-
-
                         <h3 class="text-xs font-medium text-gray-900 dark:text-white line-clamp-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" 
                             @click="$emit('show', record?.id ?? 0)">                            
-
-
-    
-
                             {{ record?.[config.title] }}
-
                         </h3>
                     </div>
                     <div class="w-1/5 flex-none text-xxxs text-right text-gray-900 dark:text-white ">

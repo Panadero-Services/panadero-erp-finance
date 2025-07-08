@@ -74,6 +74,13 @@ trait HasPermissions
             return $query->where('id', 0);
         }
 
+        // Get the user ID column name
+        $userIdColumn = method_exists(static::class, 'getUserIdColumn') 
+            ? static::getUserIdColumn() 
+            : 'user_id';
+
+        \Log::info("Using user ID column: {$userIdColumn}"); // Debug log
+
         if (!$userPermissions) {
             $userPermissions = $user->roles()
                 ->with('permissions')
@@ -85,7 +92,7 @@ trait HasPermissions
         }
 
         // Check for full access permission
-        if ($userPermissions->contains('canReadAll')) {
+        if ($userPermissions->contains('globalRead')) {
             return $query;
         }
 
@@ -100,46 +107,39 @@ trait HasPermissions
             return $query->where('id', 0);
         }
 
-        return $query->where(function($q) use ($relevantPermissions, $user, $availablePermissions) {
+        \Log::info("Building query with permissions: " . implode(', ', $relevantPermissions->toArray())); // Debug log
+
+        return $query->where(function($q) use ($relevantPermissions, $user, $availablePermissions, $userIdColumn) {
             foreach ($relevantPermissions as $permission) {
                 $permissionAccess = $availablePermissions[$permission] ?? null;
                 if ($permissionAccess) {
-                    $conditions = $permissionAccess['conditions'];
-                    
-                    $q->orWhere(function($subQ) use ($conditions, $user) {
+                    $conditions = is_string($permissionAccess['conditions']) 
+                        ? json_decode($permissionAccess['conditions'], true) 
+                        : $permissionAccess['conditions'];
+
+                    $q->orWhere(function($subQ) use ($conditions, $user, $userIdColumn) {
                         // Owner-only condition
                         if ($conditions['owner_only'] ?? false) {
-                            $subQ->where('user_id', $user->id);
+                            \Log::info("Adding owner condition with column: {$userIdColumn}"); // Debug log
+                            $subQ->where($userIdColumn, $user->id);
                         }
                         
                         // Lock respect condition
                         if ($conditions['respect_lock'] ?? false) {
-                            $subQ->where(function ($lockQ) use ($user) {
+                            $subQ->where(function ($lockQ) use ($user, $userIdColumn) {
                                 $lockQ->where('is_locked', false)
-                                     ->orWhere('user_id', $user->id);
+                                     ->orWhere($userIdColumn, $user->id);
                             });
                         }
                         
                         // Status-based filtering
                         if ($conditions['status_allowed'] ?? false) {
-                            $subQ->whereIn('status', $conditions['status_allowed']);
-                        }
-                        
-                        // Project-based filtering
-                        if ($conditions['project_based'] ?? false) {
-                            $subQ->whereHas('project', function($projectQ) use ($user) {
-                                $projectQ->where('user_id', $user->id);
-                            });
+                            $subQ->whereIn('i1_status_id', $conditions['status_allowed']);
                         }
                         
                         // Active status filtering
                         if ($conditions['active_only'] ?? false) {
                             $subQ->where('is_active', true);
-                        }
-                        
-                        // Published status filtering
-                        if ($conditions['published_only'] ?? false) {
-                            $subQ->where('is_published', true);
                         }
                     });
                 }
@@ -159,6 +159,11 @@ trait HasPermissions
         if (!$user) {
             return false;
         }
+
+        // Get the user ID column name
+        $userIdColumn = method_exists(static::class, 'getUserIdColumn') 
+            ? static::getUserIdColumn() 
+            : 'user_id';
 
         $userPermissions = $user->roles()
             ->with('permissions')
@@ -188,33 +193,30 @@ trait HasPermissions
         foreach ($relevantPermissions as $permission) {
             $permissionAccess = $availablePermissions[$permission] ?? null;
             if ($permissionAccess) {
-                $conditions = $permissionAccess['conditions'];
+                $conditions = is_string($permissionAccess['conditions']) 
+                    ? json_decode($permissionAccess['conditions'], true) 
+                    : $permissionAccess['conditions'];
                 
                 $canRead = true;
                 
                 // Owner check
                 if ($conditions['owner_only'] ?? false) {
-                    $canRead = $canRead && $this->user_id == $user->id;
+                    $canRead = $canRead && $this->{$userIdColumn} == $user->id;
                 }
                 
                 // Lock check
                 if ($conditions['respect_lock'] ?? false) {
-                    $canRead = $canRead && (!$this->is_locked || $this->user_id == $user->id);
+                    $canRead = $canRead && (!$this->is_locked || $this->{$userIdColumn} == $user->id);
                 }
                 
                 // Status check
                 if ($conditions['status_allowed'] ?? false) {
-                    $canRead = $canRead && in_array($this->status, $conditions['status_allowed']);
+                    $canRead = $canRead && in_array($this->i1_status_id, $conditions['status_allowed']);
                 }
                 
                 // Active check
                 if ($conditions['active_only'] ?? false) {
                     $canRead = $canRead && $this->is_active;
-                }
-                
-                // Published check
-                if ($conditions['published_only'] ?? false) {
-                    $canRead = $canRead && $this->is_published;
                 }
                 
                 if ($canRead) {

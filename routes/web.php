@@ -153,6 +153,24 @@ Route::middleware([
     })->name('home.futures');
 
     // ========================================
+    // I1 ORDERS TABLE
+    // ========================================
+    Route::get('indigo1/orders', function() {
+        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_orders');
+    })->name('indigo1.orders');
+
+/*
+    Route::get('indigo1/orders', function () {
+        return Inertia::render('indigo1/Orders', [
+            'page'=> Page::with('sections')->where('title','indigo1/Orders')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('indigo1.orders')->middleware(RoleAccessMiddleware::class.':admin,author');
+*/
+
+
+
+    // ========================================
     // PROJECTS TABLE
     // ========================================
     Route::get('/project/projects', function() {
@@ -390,12 +408,6 @@ Route::middleware([
         ]);
     })->name('bento')->middleware(RoleAccessMiddleware::class.':admin,author');
 
-    Route::get('indigo1/orders', function () {
-        return Inertia::render('indigo1/Orders', [
-            'page'=> Page::with('sections')->where('title','indigo1/Orders')->first(),
-            'baseSections' => Section::where('page_id','0')->get()
-        ]);
-    })->name('indigo1.orders')->middleware(RoleAccessMiddleware::class.':admin,author');
 
     Route::get('grid', function () {
         return Inertia::render('Grid', [
@@ -475,9 +487,7 @@ Route::get('test/{id?}', function($id=1){
     ];
 });
 
-Route::get('test_user', function (){
-    return Post::take(5)->get();
-});
+
 
     // ========================================
     // DEBUGGING ROUTES
@@ -538,31 +548,7 @@ Route::get('test_user', function (){
     // Add this route for auth check
     Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
 
-    // ========================================
-    // API UPDATE ROUTES
-    // ========================================
-    Route::put('/api/futures/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('futures.update');
 
-    Route::put('/api/projects/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('projects.update');
-
-    Route::put('/api/business_services/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('business_services.update');
-
-    Route::put('/api/posts/{id}', function(Request $request, $id) {
-        return app(DynamicController::class)->update($request, $id);
-    })->name('posts.update');
-
-    // ========================================
-    // I1 ORDERS TABLE
-    // ========================================
-    Route::get('/indigo1/orders', function() {
-        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_orders');
-    })->name('indigo1.orders');
 
 }); // This closes the authenticated middleware group
 
@@ -653,5 +639,32 @@ Route::get('/getproject', function(Request $request) {
 })->name('getproject');
 
 // Keep your existing dynamic catch-all route AFTER these specific routes
-Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')->middleware('web');
+//Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')->middleware('web');
 Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
+
+
+
+
+
+
+    // ========================================
+    // API UPDATE ROUTES
+    // ========================================
+    /*
+    Route::put('/api/futures/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('futures.update');
+
+    Route::put('/api/projects/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('projects.update');
+
+    Route::put('/api/business_services/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('business_services.update');
+
+    Route::put('/api/posts/{id}', function(Request $request, $id) {
+        return app(DynamicController::class)->update($request, $id);
+    })->name('posts.update');
+*/
+
