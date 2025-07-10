@@ -20,7 +20,7 @@ _set.domainFunction = "indigo1";
         :baseSections="baseSections"
         :records="records"
         module="indigo1"
-        table="i1_forwarders"
-        model="I1Forwarder"
+        table="i1_business_customers"
+        model="I1BusinessCustomer"
     />
-</template>
+</template> 

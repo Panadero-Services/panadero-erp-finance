@@ -75,6 +75,13 @@ if (props.set.domainFunction === 'ai') menu.push( { name: 'Providers',url: route
 if (props.set.domainFunction === 'ai') menu.push( { name: 'Processors',url: route('ai/processors'),route: 'ai/processors', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'ai') menu.push( { name: 'Executors',url: route('ai/executors'),route: 'ai/executors', when:() => usePage().props.auth.user });
 
+
+if (props.set.domainFunction === 'indigo1') menu.push( { name: 'i1Orders',url: route('indigo1.orders'),route: 'indigo1.orders', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'indigo1') menu.push( { name: 'i1Forwarders',url: route('indigo1.forwarders'),route: 'indigo1.forwarders', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'indigo1') menu.push( { name: 'i1Business-Customers',url: route('indigo1.business-customers'),route: 'indigo1.business.customers', when:() => usePage().props.auth.user });
+
+
+
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },
     { name: 'Posts',    url: route('content/posts'),    route: 'content/posts',     when:() => usePage().props.auth.user },

@@ -299,7 +299,11 @@ class I1Forwarder extends Model
         return [
             'identifier',
             'name',
-            'comment'
+            'comment', 
+            'city',
+            'i1_country_id', 
+            'is_active',
+            'is_locked'
         ];
     }
 
@@ -316,7 +320,8 @@ class I1Forwarder extends Model
                 break;
                 
             case 'user':
-                $users = User::where('is_active', true)->get();
+                // Remove the is_active condition since it doesn't exist
+                $users = User::all();
                 foreach ($users as $user) {
                     $options[$user->id] = $user->name;
                 }

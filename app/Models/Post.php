@@ -314,7 +314,7 @@ class Post extends Model
             'user_id' => [
                 'type' => 'select',
                 'label' => 'User',
-                'col_span' => 3,
+                'col_span' => 2,
                 'sequence' => 1,
                 'options' => User::pluck('name', 'id'),
                 'help' => 'Select the user who owns this post'
@@ -345,9 +345,9 @@ class Post extends Model
             'body' => [
                 'type' => 'textarea',
                 'label' => 'Content',
-                'col_span' => 5,
+                'col_span' => 8,
                 'sequence' => 8,
-                'rows' => 6,
+                'rows' => 3,
                 'required' => true
             ],
             'options' => [

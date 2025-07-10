@@ -1038,6 +1038,7 @@ const logDelete = (type, index, array, response = null) => {
                     ]"
                     :required="meta.validation_rules?.[String(fieldName)]?.includes('required')"
                   />
+
                   <textarea
                     v-else
                     :id="String(fieldName)"

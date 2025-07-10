@@ -239,13 +239,7 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
             ->name('posts.update');
     });
 
-    // I1Order routes
-    Route::prefix('i1-orders')->group(function () {  // URL-friendly version
-        Route::get('/', [DynamicController::class, 'api'])
-            ->name('api.i1orders.index');
-        Route::put('/{id}', [DynamicController::class, 'update'])
-            ->name('api.i1orders.update');
-    });
+
 });
 
 // Keep your existing dynamic catch-all route AFTER these specific routes
@@ -284,9 +278,7 @@ Route::get('/auth/verify-session', function () {
         'user' => auth()->user()->name,
         'session_id' => session()->getId()
     ]);
-})->middleware('auth:sanctum');
-
-Route::get('i1_orders', function (){
+})->middleware('auth:sanctum');Route::get('i1_orders', function (){
     return I1Order::take(50)->get();
 });
 
@@ -313,3 +305,4 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
         }
     });
 });
+

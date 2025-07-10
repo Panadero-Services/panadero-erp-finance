@@ -62,6 +62,15 @@ Route::get('home/landing', function () {
     ]);
 })->name('home/landing');
 
+// Add the new logistics landing route
+Route::get('home/logistics', function () {
+    return Inertia::render('home/LogisticsLanding', [
+        'page'=> Page::with('sections')->where('title','Logistics')->first(),
+        'baseSections' => Section::where('page_id','0')->get(),
+        'featuredPosts' => app(\App\Http\Controllers\PostController::class)->getFeaturedPosts()
+    ]);
+})->name('home/logistics');
+
 Route::get('home', function () {
     return redirect()->route('home/welkom');
 });
@@ -158,6 +167,20 @@ Route::middleware([
     Route::get('indigo1/orders', function() {
         return app(DynamicController::class)->index(request(), 'indigo1', 'i1_orders');
     })->name('indigo1.orders');
+
+    // ========================================
+    // I1 FORWARDERS TABLE
+    // ========================================
+    Route::get('indigo1/forwarders', function() {
+        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_forwarders');
+    })->name('indigo1.forwarders');
+
+    // ========================================
+    // I1 BUSINESS CUSTOMERS TABLE
+    // ========================================
+    Route::get('indigo1/business-customers', function() {
+        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_business_customers');
+    })->name('indigo1.business-customers');
 
 /*
     Route::get('indigo1/orders', function () {
