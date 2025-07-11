@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { MagnifyingGlassIcon, FunnelIcon } from '@heroicons/vue/24/outline';
-import Button0 from '@/components/buttons/button0.vue';
+import Button0 from '@/components/buttons/Button0.vue';
 
 const props = defineProps({
     searchableColumns: {
