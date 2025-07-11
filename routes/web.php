@@ -212,6 +212,11 @@ Route::middleware([
         return app(DynamicController::class)->index(request(), 'home', 'businessservices');
     })->name('home.businessservices');
 
+    // Add compatibility route for the old path
+    Route::get('/home/businessservices', function() {
+        return app(DynamicController::class)->index(request(), 'home', 'businessservices');
+    });
+
     // ========================================
     // POSTS TABLE
     // ========================================
