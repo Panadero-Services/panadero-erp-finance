@@ -160,7 +160,7 @@ const _functions = ref([]);
 const filter = ref('');
 
 onMounted(async () => {
-  const response = await axios.get('/business-services');
+  const response = await axios.get('/business_services');
   _functions.value = response.data;
 });
 
@@ -171,7 +171,7 @@ const refreshPage = () => { window.location.reload(); };
 const services = ref([]);
 
 onMounted(async () => {
-  const response = await axios.get('/business-services');
+  const response = await axios.get('/business_services');
   services.value = response.data;
 });
 

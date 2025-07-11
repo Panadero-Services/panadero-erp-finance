@@ -203,9 +203,9 @@ Route::middleware([
     // ========================================
     // BUSINESS SERVICES TABLE
     // ========================================
-    Route::get('/home/business-services', function() {
+    Route::get('/home/business_services', function() {
         return app(DynamicController::class)->index(request(), 'home', 'business_services');
-    })->name('home.business-services');
+    })->name('home.business_services');
 
     // ========================================
     // POSTS TABLE

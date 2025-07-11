@@ -22,14 +22,14 @@ class BusinessServiceSeeder extends Seeder
                 'version' => 'v1.1.08',
                 'icon' => 'I3FrameworkIcon',
                 'options' => [
-                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
-                    ['name' => 'Administration', 'url' => '/home/administration', 'route' => 'home/administration'],
-                    ['name' => 'Welcome', 'url' => '/home/welkom', 'route' => 'home/welkom'],
-                    ['name' => 'Tiers', 'url' => '/home/tiers', 'route' => 'home/tiers'],
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+                    ['name' => 'Administration', 'url' => '/home/administration', 'route' => 'home.administration'],
+                    ['name' => 'Welcome', 'url' => '/home/welkom', 'route' => 'home.welkom'],
+                    ['name' => 'Tiers', 'url' => '/home/tiers', 'route' => 'home.tiers'],
                     ['name' => 'Futures', 'url' => '/home/futures', 'route' => 'home.futures'],
-                    ['name' => 'Landing', 'url' => '/home/landing', 'route' => 'home/landing'],
-                    ['name' => 'BusinessServices', 'url' => '/home/businessservices', 'route' => 'home/businessservices'],
-                    ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home/sandbox']
+                    ['name' => 'Landing', 'url' => '/home/landing', 'route' => 'home.landing'],
+                    ['name' => 'BusinessServices', 'url' => '/home/business_services', 'route' => 'home.business_services'],
+                    ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home.sandbox']
                 ],
                 'status' => 'ready',
                 'progress' => 96,
