@@ -19,7 +19,7 @@ const _emitStatus = (_status) =>{
 // webhooks
 onMounted(async ()=> {
   //canvas = document.getElementById('bordCanvas');
-    othello(eval('othello'+props.id));
+    othello(document.getElementById('othello' + props.id));
 })
 
 // Start Othello 100 lines max script... find the hack100!
