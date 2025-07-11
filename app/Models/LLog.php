@@ -26,4 +26,5 @@ class Log extends Model
             'user_id' => 'nullable|integer',
         ];
     }
+    
 }
