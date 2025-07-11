@@ -14,39 +14,27 @@ class Web3TypeSeeder extends Seeder
     {
         $types = [
             [
-                'id' => 1,
                 'title' => 'token',
                 'content' => '',
                 'color' => 'gray',
-                'created_at' => null,
-                'updated_at' => null,
                 'is_active' => true
             ],
             [
-                'id' => 2,
                 'title' => 'contract',
                 'content' => '',
                 'color' => 'gray',
-                'created_at' => null,
-                'updated_at' => null,
                 'is_active' => true
             ],
             [
-                'id' => 3,
                 'title' => 'wallet',
                 'content' => '',
                 'color' => 'gray',
-                'created_at' => null,
-                'updated_at' => null,
                 'is_active' => true
             ],
             [
-                'id' => 4,
                 'title' => 'chain',
                 'content' => '',
                 'color' => 'gray',
-                'created_at' => null,
-                'updated_at' => null,
                 'is_active' => true
             ]
         ];
