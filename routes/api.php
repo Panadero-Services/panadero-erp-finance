@@ -211,6 +211,8 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
     Route::put('/user-permissions/roles/{role}/permissions', [UserPermissionController::class, 'updateRolePermissions']);
 
     // Dynamic entity routes
+    // Comment out or remove these specific routes
+    /*
     Route::prefix('futures')->group(function () {
         Route::get('/', [DynamicController::class, 'api'])
             ->name('futures.index');
@@ -238,6 +240,7 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
         Route::put('/{id}', [DynamicController::class, 'update'])
             ->name('posts.update');
     });
+    */
 
 
 });
@@ -248,6 +251,8 @@ Route::get('/api/{table}', [DynamicController::class, 'api'])->name('api.table')
 Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
 
 // Add the missing API routes for updating records
+// Comment out these specific update routes
+/*
 Route::put('/api/futures/{id}', function(Request $request, $id) {
     return app(DynamicController::class)->update($request, $id);
 })->name('futures.update')->middleware('auth:sanctum');
@@ -267,6 +272,29 @@ Route::put('/api/posts/{id}', function(Request $request, $id) {
 Route::put('/api/i1_orders/{id}', function(Request $request, $id) {
     return app(DynamicController::class)->update($request, $id);
 })->name('i1_orders.update')->middleware('auth:sanctum');
+*/
+
+// Keep only these generic routes
+Route::middleware(['auth:sanctum', 'web'])->group(function () {
+    // Generic dynamic routes
+    Route::prefix('api')->group(function () {
+        // List/Index
+        Route::get('{table}', [DynamicController::class, 'api'])
+            ->name('api.table');
+            
+        // Update
+        Route::put('{table}/{id}', [DynamicController::class, 'update'])
+            ->name('api.table.update');
+            
+        // Update single field
+        Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField'])
+            ->name('api.table.field.update');
+            
+        // Delete
+        Route::delete('{table}/{id}', [DynamicController::class, 'destroy'])
+            ->name('api.table.destroy');
+    });
+});
 
 Route::get('/auth/verify-session', function () {
     if (!auth()->check()) {
@@ -280,29 +308,5 @@ Route::get('/auth/verify-session', function () {
     ]);
 })->middleware('auth:sanctum');Route::get('i1_orders', function (){
     return I1Order::take(50)->get();
-});
-
-Route::middleware(['auth:sanctum', 'web'])->group(function () {
-    Route::prefix('api')->group(function () {
-        // Define the entities that use dynamic controller
-        $entities = [
-            'futures',
-            'projects',
-            'business_services',
-            'posts'
-        ];
-
-        // Create routes for each entity
-        foreach ($entities as $entity) {
-            Route::prefix($entity)->group(function () use ($entity) {
-                Route::get('/', [DynamicController::class, 'api'])
-                    ->name("api.{$entity}.index");
-                Route::put('/{id}', [DynamicController::class, 'update'])
-                    ->name("api.{$entity}.update");
-                Route::patch('/{id}/field', [DynamicController::class, 'updateField'])
-                    ->name("api.{$entity}.field.update");
-            });
-        }
-    });
 });
 
