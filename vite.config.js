@@ -21,35 +21,47 @@ export default defineConfig({
         chunkSizeWarningLimit: 3000,
         rollupOptions: {
             output: {
-                manualChunks: {
-                    // Core vendor chunks
-                    'vendor-vue': ['vue', '@inertiajs/vue3', '@vue/runtime-core', '@vue/runtime-dom'],
-                    'vendor-other': ['axios', 'lodash'],
+                manualChunks(id) {
+                    // Chunk for Vue and related packages
+                    if (id.includes('node_modules/vue') || 
+                        id.includes('node_modules/@vue') || 
+                        id.includes('node_modules/@inertiajs/vue3')) {
+                        return 'vendor-vue';
+                    }
                     
-                    // Main feature chunks
-                    'dashboard': [
-                        './resources/js/pages/Dashboard.vue',
-                        './resources/js/pages/ecommerce/EcommerceDashboard.vue',
-                        './resources/js/pages/erp/ErpDashboard.vue'
-                    ],
-                    'profile': [
-                        './resources/js/pages/Profile/Show.vue',
-                        './resources/js/pages/Profile/Partials/UpdateProfileInformationForm.vue',
-                        './resources/js/pages/Profile/Partials/UpdatePasswordForm.vue'
-                    ],
-                    'teams': [
-                        './resources/js/pages/Teams/Create.vue',
-                        './resources/js/pages/Teams/Show.vue'
-                    ],
-                    'ecommerce': [
-                        './resources/js/pages/Storefront.vue',
-                        './resources/js/pages/ecommerce/ProductOverview.vue',
-                        './resources/js/pages/ecommerce/CategoryOverview.vue'
-                    ],
-                    'games': [
-                        './resources/js/panadero/panadero-minigames/othello.vue',
-                        './resources/js/panadero/panadero-minigames/breakout.vue'
-                    ]
+                    // Chunk for other vendor packages
+                    if (id.includes('node_modules/')) {
+                        return 'vendor';
+                    }
+
+                    // Games chunk
+                    if (id.includes('panadero-minigames')) {
+                        return 'games';
+                    }
+
+                    // Dashboard chunk
+                    if (id.includes('/pages/Dashboard.vue') || 
+                        id.includes('/pages/ecommerce/EcommerceDashboard.vue') ||
+                        id.includes('/pages/erp/ErpDashboard.vue') ||
+                        id.includes('/pages/dashboard1/cards/')) {
+                        return 'dashboard';
+                    }
+
+                    // Profile chunk
+                    if (id.includes('/pages/Profile/')) {
+                        return 'profile';
+                    }
+
+                    // Teams chunk
+                    if (id.includes('/pages/Teams/')) {
+                        return 'teams';
+                    }
+
+                    // Ecommerce chunk
+                    if (id.includes('/pages/ecommerce/') ||
+                        id.includes('/pages/Storefront.vue')) {
+                        return 'ecommerce';
+                    }
                 }
             }
         }
