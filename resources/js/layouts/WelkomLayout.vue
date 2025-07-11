@@ -71,7 +71,7 @@ onUnmounted(() => {
 
             <!--:class="_mainLayout" -->
             <div >
-              {{sessionStore}}
+                <!-- Remove the direct sessionStore rendering -->
                 <slot />
             </div>
 
