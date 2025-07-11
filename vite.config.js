@@ -19,6 +19,7 @@ export default defineConfig({
     ],
     build: {
         chunkSizeWarningLimit: 3000,
+        minify: 'esbuild', // Use esbuild instead of terser
         rollupOptions: {
             output: {
                 manualChunks(id) {
@@ -48,17 +49,6 @@ export default defineConfig({
                     return 'main';
                 }
             }
-        },
-        target: 'esnext',
-        minify: 'terser',
-        terserOptions: {
-            compress: {
-                drop_console: false
-            },
-            format: {
-                comments: false
-            },
-            mangle: false // Disable mangling to prevent initialization issues
         }
     },
     optimizeDeps: {
