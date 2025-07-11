@@ -14,7 +14,7 @@ const props = defineProps({
         :baseSections="baseSections"
         :records="records"
         module="home"
-        table="business_services"
+        table="business-services"
         model="BusinessService"
     />
 </template>
