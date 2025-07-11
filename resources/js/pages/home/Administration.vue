@@ -160,25 +160,20 @@ const _functions = ref([]);
 const filter = ref('');
 
 onMounted(async () => {
-  try {
-    // Use the dynamic route pattern
-    const response = await axios.get('/api/business_services');
-    _functions.value = response.data;
-  } catch (error) {
-    console.error('Error fetching business services:', error);
-  }
+  const response = await axios.get('/business-services');
+  _functions.value = response.data;
 });
 
 const _button = "mt-2.5 mx-1 rounded px-2 py-1 text-xs ring-1 ring-inset text-gray-600 ring-gray-300 dark:text-gray-300 dark:ring-gray-600 hover:ring-gray-600 hover-text-gray-700 dark:hover:ring-indigo-400";
 
 const refreshPage = () => { window.location.reload(); };
 
-// Remove the duplicate services fetch
-// const services = ref([]);
-// onMounted(async () => {
-//   const response = await axios.get('/business-services');
-//   services.value = response.data;
-// });
+const services = ref([]);
+
+onMounted(async () => {
+  const response = await axios.get('/business-services');
+  services.value = response.data;
+});
 
 </script>
 
