@@ -2,7 +2,7 @@
     import { ref, watch } from 'vue';
     import { router } from '@inertiajs/vue3';
     import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
-    import Button0 from '@/components/buttons/button0.vue';
+    import Button0 from '@/components/buttons/Button0.vue';
 
     const props = defineProps({
       module: {
