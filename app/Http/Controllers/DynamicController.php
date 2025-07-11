@@ -237,21 +237,11 @@ class DynamicController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update a record for any model
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $table, $id)
     {
-        $path = $request->path();
-        $pathParts = explode('/', $path);
-        $table = $pathParts[1] ?? null;
-        
-        if (!$table) {
-            return response()->json([
-                'success' => false,
-                'message' => "Could not determine table name from path: {$path}"
-            ], 400);
-        }
-        
+        // Convert table name to model class
         $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
         
         if (!class_exists($modelClass)) {
@@ -274,7 +264,6 @@ class DynamicController extends Controller
         
         $fillableFields = $model->getFillable();
         $data = $request->only($fillableFields);
-        $data['id'] = $id;
 
         // Handle type casting
         $casts = $model->getCasts();
@@ -537,5 +526,80 @@ class DynamicController extends Controller
         return class_exists($resourceClass)
             ? new $resourceClass($record)
             : new \App\Http\Resources\DynamicResource($record);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request, $table)
+    {
+        try {
+            // Convert table name to model class
+            $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
+            
+            if (!class_exists($modelClass)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model {$modelClass} not found"
+                ], 404);
+            }
+            
+            // Get fillable fields
+            $model = new $modelClass();
+            $fillableFields = $model->getFillable();
+            $data = $request->only($fillableFields);
+            
+            // Handle type casting
+            $casts = $model->getCasts();
+            foreach ($casts as $field => $cast) {
+                if (isset($data[$field])) {
+                    switch ($cast) {
+                        case 'boolean':
+                            $data[$field] = filter_var($data[$field], FILTER_VALIDATE_BOOLEAN);
+                            break;
+                        case 'integer':
+                            $data[$field] = (int) $data[$field];
+                            break;
+                        case 'array':
+                        case 'json':
+                            if (is_string($data[$field])) {
+                                $data[$field] = json_decode($data[$field], true);
+                            }
+                            break;
+                    }
+                }
+            }
+            
+            // Add user_id if the model has it and user is authenticated
+            if (in_array('user_id', $fillableFields) && auth()->check()) {
+                $data['user_id'] = auth()->id();
+            }
+            
+            // Validate data if validation rules exist
+            if (method_exists($modelClass, 'validationRules')) {
+                \Validator::make($data, $modelClass::validationRules())->validate();
+            }
+            
+            // Create the record
+            $record = $modelClass::create($data);
+            
+            return response()->json([
+                'success' => true,
+                'message' => Str::studly(Str::singular($table)) . ' created successfully',
+                'data' => $record
+            ], 201);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error creating ' . Str::studly(Str::singular($table)) . ': ' . $e->getMessage()
+            ], 500);
+        }
     }
 } 

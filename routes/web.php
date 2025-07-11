@@ -34,7 +34,7 @@ use App\Http\Controllers\TestPhotoUploadController;
 use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\DynamicController;
-use App\Http\Controllers\Auth\AuthCheckController;
+//use App\Http\Controllers\Auth\AuthCheckController;
 
 use App\Http\Controllers\ProjectController;
 
@@ -565,11 +565,8 @@ Route::get('test/{id?}', function($id=1){
         ]);
     })->name('api.status');
 
-    // Add this route in routes/web.php
-    Route::delete('/api/{table}/{id}', [DynamicController::class, 'destroy'])->name('dynamic.destroy');
-
     // Add this route for auth check
-    Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
+    //Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
 
 
 
@@ -689,5 +686,5 @@ Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
     Route::put('/api/posts/{id}', function(Request $request, $id) {
         return app(DynamicController::class)->update($request, $id);
     })->name('posts.update');
-*/
+    */
 
