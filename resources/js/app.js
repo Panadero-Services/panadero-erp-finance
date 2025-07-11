@@ -12,16 +12,18 @@ const appName = import.meta.env.VITE_APP_NAME || 'indigo3';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob('./pages/**/*.vue')),
+    resolve: (name) => {
+        // Let Inertia handle the lazy loading
+        const pages = import.meta.glob('./pages/**/*.vue', { eager: false });
+        return pages[`./pages/${name}.vue`]();
+    },
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
             .use(pinia);
         
-        // Initialize session store globally
         const sessionStore = useSessionStore();
-        
         app.mount(el);
         sessionStore.initializeSession();
         

@@ -18,49 +18,63 @@ export default defineConfig({
         }),
     ],
     build: {
-        chunkSizeWarningLimit: 3000,
-        minify: 'esbuild', // Use esbuild instead of terser
+        chunkSizeWarningLimit: 4000, // Increase limit temporarily
+        minify: 'esbuild',
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    // Bundle all Vue-related code together
+                    // Group by major features
+                    if (id.includes('/pages/dashboard1/') || 
+                        id.includes('/pages/Dashboard.vue') ||
+                        id.includes('/pages/ecommerce/EcommerceDashboard.vue') ||
+                        id.includes('/pages/erp/ErpDashboard.vue')) {
+                        return 'feature-dashboard';
+                    }
+
+                    if (id.includes('/pages/ecommerce/') || 
+                        id.includes('/pages/Storefront.vue')) {
+                        return 'feature-ecommerce';
+                    }
+
+                    if (id.includes('/pages/admin/')) {
+                        return 'feature-admin';
+                    }
+
+                    if (id.includes('/pages/Teams/')) {
+                        return 'feature-teams';
+                    }
+
+                    if (id.includes('/pages/Profile/')) {
+                        return 'feature-profile';
+                    }
+
+                    if (id.includes('/pages/home/')) {
+                        return 'feature-home';
+                    }
+
+                    // Games
+                    if (id.includes('panadero-minigames')) {
+                        return 'feature-games';
+                    }
+
+                    // Vendor chunks
                     if (id.includes('node_modules/vue') || 
                         id.includes('node_modules/@vue') || 
                         id.includes('node_modules/@inertiajs')) {
                         return 'vendor-vue';
                     }
 
-                    // Other node_modules
-                    if (id.includes('node_modules')) {
+                    if (id.includes('node_modules/')) {
                         return 'vendor';
                     }
 
-                    // Keep profile components together
-                    if (id.includes('/Profile/')) {
-                        return 'profile';
-                    }
-
-                    // Games
-                    if (id.includes('panadero-minigames')) {
-                        return 'games';
-                    }
-
-                    // Everything else
+                    // Default chunk
                     return 'main';
                 }
             }
         }
     },
     optimizeDeps: {
-        include: ['vue', '@inertiajs/vue3', 'pinia'],
-        exclude: ['panadero-minigames']
-    },
-    // Reduce console noise
-    logLevel: 'warn',
-    clearScreen: false,
-    server: {
-        hmr: {
-            overlay: false,
-        },
-    },
+        include: ['vue', '@inertiajs/vue3', 'pinia']
+    }
 });
