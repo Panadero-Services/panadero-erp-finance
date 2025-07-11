@@ -22,52 +22,48 @@ export default defineConfig({
         rollupOptions: {
             output: {
                 manualChunks(id) {
-                    // Chunk for Vue and related packages
+                    // Bundle all Vue-related code together
                     if (id.includes('node_modules/vue') || 
                         id.includes('node_modules/@vue') || 
-                        id.includes('node_modules/@inertiajs/vue3')) {
+                        id.includes('node_modules/@inertiajs')) {
                         return 'vendor-vue';
                     }
-                    
-                    // Chunk for other vendor packages
-                    if (id.includes('node_modules/')) {
+
+                    // Other node_modules
+                    if (id.includes('node_modules')) {
                         return 'vendor';
                     }
 
-                    // Games chunk
+                    // Keep profile components together
+                    if (id.includes('/Profile/')) {
+                        return 'profile';
+                    }
+
+                    // Games
                     if (id.includes('panadero-minigames')) {
                         return 'games';
                     }
 
-                    // Dashboard chunk
-                    if (id.includes('/pages/Dashboard.vue') || 
-                        id.includes('/pages/ecommerce/EcommerceDashboard.vue') ||
-                        id.includes('/pages/erp/ErpDashboard.vue') ||
-                        id.includes('/pages/dashboard1/cards/')) {
-                        return 'dashboard';
-                    }
-
-                    // Profile chunk
-                    if (id.includes('/pages/Profile/')) {
-                        return 'profile';
-                    }
-
-                    // Teams chunk
-                    if (id.includes('/pages/Teams/')) {
-                        return 'teams';
-                    }
-
-                    // Ecommerce chunk
-                    if (id.includes('/pages/ecommerce/') ||
-                        id.includes('/pages/Storefront.vue')) {
-                        return 'ecommerce';
-                    }
+                    // Everything else
+                    return 'main';
                 }
             }
+        },
+        target: 'esnext',
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: false
+            },
+            format: {
+                comments: false
+            },
+            mangle: false // Disable mangling to prevent initialization issues
         }
     },
     optimizeDeps: {
-        include: ['vue', '@inertiajs/vue3', 'pinia']
+        include: ['vue', '@inertiajs/vue3', 'pinia'],
+        exclude: ['panadero-minigames']
     },
     // Reduce console noise
     logLevel: 'warn',
