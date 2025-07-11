@@ -26,7 +26,7 @@ const _emitStatus = (_status) =>{
 onMounted(async ()=> {
   //canvas = document.getElementById('bordCanvas');
     //othello(eval('breakout'+props.id));
-    breakout(eval('breakout'+props.id));
+    breakout(document.getElementById('breakout' + props.id));
 
 })
 

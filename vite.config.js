@@ -18,18 +18,29 @@ export default defineConfig({
         }),
     ],
     build: {
-        chunkSizeWarningLimit: 1000, // Increase the size limit to 1000kb
+        chunkSizeWarningLimit: 1500, // Increase limit further if needed
         rollupOptions: {
             output: {
-                manualChunks: {
-                    'panadero-games': [
-                        'resources/js/panadero/panadero-minigames/othello.vue',
-                        'resources/js/panadero/panadero-minigames/breakout.vue'
-                    ],
-                    'vendor': [
-                        'vue',
-                        // Add other major dependencies here
-                    ]
+                manualChunks: (id) => {
+                    // Group panadero game files
+                    if (id.includes('panadero/panadero-minigames/')) {
+                        return 'panadero-games';
+                    }
+                    // Group node_modules into vendor chunk
+                    if (id.includes('node_modules')) {
+                        if (id.includes('vue')) {
+                            return 'vendor-vue';
+                        }
+                        return 'vendor';
+                    }
+                    // Group components
+                    if (id.includes('/components/')) {
+                        return 'components';
+                    }
+                    // Group pages
+                    if (id.includes('/pages/')) {
+                        return 'pages';
+                    }
                 }
             }
         }
