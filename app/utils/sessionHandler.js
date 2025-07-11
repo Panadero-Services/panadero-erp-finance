@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/vue3'
+import { SessionHandler } from '@/utils/sessionHandler.js';
 
 export const SessionHandler = {
     checkSession() {
