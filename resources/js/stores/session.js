@@ -194,6 +194,11 @@ export const useSessionStore = defineStore('session', () => {
         isActive.value = false;
     };
 
+    const ensureFreshToken = async () => {
+        await refreshCsrfToken();
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    };
+
     return {
         // State
         sessionLifetime,
@@ -218,6 +223,7 @@ export const useSessionStore = defineStore('session', () => {
         refreshCsrfToken,
         updateFromLayout,
         stopSessionChecks,
-        updateSessionLifetime
+        updateSessionLifetime,
+        ensureFreshToken
     };
 }); 

@@ -11,6 +11,7 @@ import { router } from '@inertiajs/vue3';
 import axios from 'axios';
 import Badges from '@/components/colors/Badges.vue';
 import MiddlewareResults from '@/components/middleware/MiddlewareResults.vue';
+import { useSessionStore } from '@/stores/session';
 
 const page = usePage();
 

@@ -24,8 +24,12 @@ createInertiaApp({
             .use(pinia);
         
         const sessionStore = useSessionStore();
-        app.mount(el);
-        sessionStore.initializeSession();
+        
+        // Ensure fresh token before mounting
+        sessionStore.ensureFreshToken().then(() => {
+            app.mount(el);
+            sessionStore.initializeSession();
+        });
         
         return app;
     },
