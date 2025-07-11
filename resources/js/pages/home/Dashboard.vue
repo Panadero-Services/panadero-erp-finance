@@ -173,7 +173,7 @@ const refreshPage = () => { window.location.reload(); };
 onMounted(async () => {
   try {
     const [servicesResponse, featuresResponse] = await Promise.all([
-      axios.get('/business-services'),
+      axios.get('/api/business_services'),
       axios.get('/features')
     ]);
     services.value = servicesResponse.data;

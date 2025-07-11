@@ -233,6 +233,9 @@ Route::get('u', function (Request $request){
 | - etc. for ALL entities
 */
 
+
+
+
 Route::middleware(['auth:sanctum', 'web'])->group(function () {
     // Generic dynamic routes for ALL entities
     Route::get('{table}', [DynamicController::class, 'api'])

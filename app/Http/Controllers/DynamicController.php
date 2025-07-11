@@ -330,36 +330,18 @@ class DynamicController extends Controller
         
         $query = $modelClass::query();
         
-        // Get display fields from model metadata
-        $displayFields = ['id'];
-        if (method_exists($modelClass, 'formFields')) {
-            $formFields = $modelClass::formFields();
-            foreach ($formFields as $field) {
-                if (isset($field['type']) && in_array($field['type'], ['text', 'string', 'title', 'name'])) {
-                    $displayFields[] = $field['name'];
-                    break; // Use first text field as display
-                }
-            }
-        }
+        // Get all fillable fields dynamically
+        $modelInstance = new $modelClass();
+        $fillableFields = $modelInstance->getFillable();
         
-        // If no specific display field found, use common ones
-        if (count($displayFields) === 1) {
-            $commonFields = ['title', 'name', 'label', 'description'];
-            foreach ($commonFields as $field) {
-                if (in_array($field, $modelClass::getFillable())) {
-                    $displayFields[] = $field;
-                    break;
-                }
-            }
-        }
+        // Always include ID, then all fillable fields
+        $selectFields = array_merge(['id'], $fillableFields);
         
-        // Select only the needed fields
-        $query->select($displayFields);
+        // Select all available fields
+        $query->select($selectFields);
         
-        // Order by the display field
-        if (count($displayFields) > 1) {
-            $query->orderBy($displayFields[1], 'asc');
-        }
+        // Order by ID by default (or you can make this configurable)
+        $query->orderBy('id', 'asc');
         
         $records = $query->get();
         
