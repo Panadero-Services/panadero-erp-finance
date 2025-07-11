@@ -203,19 +203,9 @@ Route::middleware([
     // ========================================
     // BUSINESS SERVICES TABLE
     // ========================================
-    Route::get('/business-services', [BusinessServiceController::class, 'index'])->name('business-services.index');
-
-    // ========================================
-    // BUSINESS_SERVICES TABLE
-    // ========================================
-    Route::get('/home/businessservices', function() {
-        return app(DynamicController::class)->index(request(), 'home', 'businessservices');
-    })->name('home.businessservices');
-
-    // Add compatibility route for the old path
-    Route::get('/home/businessservices', function() {
-        return app(DynamicController::class)->index(request(), 'home', 'businessservices');
-    });
+    Route::get('/home/business-services', function() {
+        return app(DynamicController::class)->index(request(), 'home', 'business_services');
+    })->name('home.business-services');
 
     // ========================================
     // POSTS TABLE
