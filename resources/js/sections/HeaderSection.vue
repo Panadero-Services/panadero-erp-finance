@@ -44,7 +44,7 @@ menu.push( { name: 'Home',url: route('home/dashboard'),route: 'home/dashboard', 
 if (props.set.domainFunction === 'home') menu.push( { name: 'Admin',url: route('home/administration'),route: 'home/administration', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Welcome',url: route('home/welkom'),route: 'home/welkom', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Tiers',url: route('home/tiers'),route: 'home/tiers', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'home') menu.push( { name: 'Futures',url: route('home.futures'),route: 'home.futures', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'home') menu.push( { name: 'Futures',url: route('dynamic.table', { module: 'home', table: 'futures' }),route: 'dynamic.table', routeParams: { module: 'home', table: 'futures' }, when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'home') menu.push( { name: 'Landing',url: route('home/landing'),route: 'home/landing'});
 
 if (props.set.domainFunction === 'admin') menu.push( { name: 'Middleware',url: route('admin/middleware'),route: 'admin/middleware'});
@@ -58,7 +58,7 @@ if (props.set.domainFunction === 'erp') menu.push( { name: 'Mood',url: route('er
 
 // project
 if (props.set.domainFunction === 'project') menu.push( { name: 'Project',url: route('erp/dashboard'),route: 'erp/dashboard', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'project') menu.push( { name: 'Projects',url: route('project/projects'),route: 'project/projects', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'project') menu.push( { name: 'Projects',url: route('dynamic.table', { module: 'project', table: 'projects' }),route: 'dynamic.table', routeParams: { module: 'project', table: 'projects' }, when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Plan',url: route('project/plan'),route: 'project/plan', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Work',url: route('project/work'),route: 'project/work', when:() => usePage().props.auth.user });
 if (props.set.domainFunction === 'project') menu.push( { name: 'Budget',url: route('project/budget'),route: 'project/budget', when:() => usePage().props.auth.user });
@@ -76,15 +76,15 @@ if (props.set.domainFunction === 'ai') menu.push( { name: 'Processors',url: rout
 if (props.set.domainFunction === 'ai') menu.push( { name: 'Executors',url: route('ai/executors'),route: 'ai/executors', when:() => usePage().props.auth.user });
 
 
-if (props.set.domainFunction === 'indigo1') menu.push( { name: 'i1Orders',url: route('indigo1.orders'),route: 'indigo1.orders', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'indigo1') menu.push( { name: 'i1Forwarders',url: route('indigo1.forwarders'),route: 'indigo1.forwarders', when:() => usePage().props.auth.user });
-if (props.set.domainFunction === 'indigo1') menu.push( { name: 'i1Business-Customers',url: route('indigo1.business-customers'),route: 'indigo1.business.customers', when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'indigo1') menu.push( { name: 'Orders',url: route('dynamic.table', { module: 'indigo1', table: 'i1_orders' }),route: 'dynamic.table', routeParams: { module: 'indigo1', table: 'i1_orders' }, when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'indigo1') menu.push( { name: 'Forwarders',url: route('dynamic.table', { module: 'indigo1', table: 'i1_forwarders' }),route: 'dynamic.table', routeParams: { module: 'indigo1', table: 'i1_forwarders' }, when:() => usePage().props.auth.user });
+if (props.set.domainFunction === 'indigo1') menu.push( { name: 'Customers',url: route('dynamic.table', { module: 'indigo1', table: 'i1_business_customers' }),route: 'dynamic.table', routeParams: { module: 'indigo1', table: 'i1_business_customers' }, when:() => usePage().props.auth.user });
 
 
 
 const menuz = [
     //{ name: 'Tiers',    url: route('tiers'),    route: 'tiers' },
-    { name: 'Posts',    url: route('content/posts'),    route: 'content/posts',     when:() => usePage().props.auth.user },
+    { name: 'Posts',    url: route('dynamic.table', { module: 'content', table: 'posts' }),    route: 'dynamic.table', routeParams: { module: 'content', table: 'posts' },     when:() => usePage().props.auth.user },
     { name: 'Bento',    url: route('bento'),    route: 'bento',     when:() => usePage().props.auth.user },
     { name: 'Bots',     url: route('ai/bots'),     route: 'ai/bots',      when:() => usePage().props.auth.user },
    // { name: 'Planning', url: route('planning'), route: 'planning', when:() => usePage().props.auth.user },
@@ -96,6 +96,23 @@ const menuz = [
     { name: 'Table',    url: route('table'),    route: 'table',     when:() => usePage().props.auth.user },
     { name: 'Config',   url: route('config'),   route: 'config',    when:() => usePage().props.auth.user }
 ];
+
+// Active route detection function using Inertia's usePage
+const page = usePage();
+const isActiveRoute = (item) => {
+    if (item.routeParams) {
+        // For dynamic routes, check if the current route parameters match
+        const currentRoute = route().current();
+        const currentParams = route().params;
+        
+        return currentRoute === item.route && 
+               currentParams.module === item.routeParams.module && 
+               currentParams.table === item.routeParams.table;
+    } else {
+        // For regular routes, use the original logic
+        return route().current(item.route);
+    }
+};
 
 // css
 const _basic = " text-xxs lg:text-xs font-normal leading-tight ";
@@ -141,7 +158,12 @@ const _layout = {
 
                     <!-- Navigation Links -->
                     <template v-for="item in menu" :key="item.name">
-                        <NavLink v-if="item.when ? item.when() : true" :href="item.url" :active="route().current(item.route)" :class="_menu">
+                        <NavLink 
+                            v-if="item.when ? item.when() : true" 
+                            :href="item.url" 
+                            :active="isActiveRoute(item)" 
+                            :class="_menu"
+                        >
                             {{item.name}}
                         </NavLink>
                     </template>

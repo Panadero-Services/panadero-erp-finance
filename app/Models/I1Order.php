@@ -45,7 +45,8 @@ class I1Order extends Model
         'i1_status_id',
         'comment',
         'is_active',
-        'is_locked'
+        'is_locked',
+        'i1_user_id'
     ];
 
     protected $casts = [

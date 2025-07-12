@@ -222,8 +222,9 @@ class BusinessServiceSeeder extends Seeder
                 'icon' => 'TruckIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
-                    ['name' => 'Orders', 'url' => '/indigo1/orders', 'route' => 'indigo1.orders'],
-                    ['name' => 'Resources', 'url' => '/erp/resources', 'route' => 'erp/resources']
+                    ['name' => 'Orders', 'url' => '/indigo1/i1_orders', 'route' => 'indigo1.i1_orders'],
+                    ['name' => 'Forwarders', 'url' => '/indigo1/i1_forwarders', 'route' => 'indigo1.i1_forwarders'],
+                    ['name' => 'Customers', 'url' => '/indigo1/i1_business_customers', 'route' => 'indigo1.i1_business_customers']
                 ],
                 'status' => 'deprecated',
                 'progress' => 10,

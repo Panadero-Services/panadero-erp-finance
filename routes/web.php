@@ -155,32 +155,36 @@ Route::middleware([
     });
 
     // ========================================
-    // FUTURES TABLE
+    // FUTURES TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('/home/futures', function() {
-        return app(DynamicController::class)->index(request(), 'home', 'futures');
-    })->name('home.futures');
+    // OLD: Route::get('/home/futures', function() {
+    //     return app(DynamicController::class)->index(request(), 'home', 'futures');
+    // })->name('home.futures');
+    // NEW: Use dynamic route: /home/futures (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
 
     // ========================================
-    // I1 ORDERS TABLE
+    // I1 ORDERS TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('indigo1/orders', function() {
-        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_orders');
-    })->name('indigo1.orders');
+    // OLD: Route::get('indigo1/orders', function() {
+    //     return app(DynamicController::class)->index(request(), 'indigo1', 'i1_orders');
+    // })->name('indigo1.orders');
+    // NEW: Use dynamic route: /indigo1/i1_orders (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
 
     // ========================================
-    // I1 FORWARDERS TABLE
+    // I1 FORWARDERS TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('indigo1/forwarders', function() {
-        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_forwarders');
-    })->name('indigo1.forwarders');
+    // OLD: Route::get('indigo1/forwarders', function() {
+    //     return app(DynamicController::class)->index(request(), 'indigo1', 'i1_forwarders');
+    // })->name('indigo1.forwarders');
+    // NEW: Use dynamic route: /indigo1/i1_forwarders (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
 
     // ========================================
-    // I1 BUSINESS CUSTOMERS TABLE
+    // I1 BUSINESS CUSTOMERS TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('indigo1/business-customers', function() {
-        return app(DynamicController::class)->index(request(), 'indigo1', 'i1_business_customers');
-    })->name('indigo1.business-customers');
+    // OLD: Route::get('indigo1/business-customers', function() {
+    //     return app(DynamicController::class)->index(request(), 'indigo1', 'i1_business_customers');
+    // })->name('indigo1.business-customers');
+    // NEW: Use dynamic route: /indigo1/i1_business_customers (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
 
 /*
     Route::get('indigo1/orders', function () {
@@ -194,25 +198,28 @@ Route::middleware([
 
 
     // ========================================
-    // PROJECTS TABLE
+    // PROJECTS TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('/project/projects', function() {
-        return app(DynamicController::class)->index(request(), 'project', 'projects');
-    })->name('project/projects');
+    // OLD: Route::get('/project/projects', function() {
+    //     return app(DynamicController::class)->index(request(), 'project', 'projects');
+    // })->name('project/projects');
+    // NEW: Use dynamic route: /project/projects (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
     
     // ========================================
-    // BUSINESS SERVICES TABLE
+    // BUSINESS SERVICES TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('/home/business_services', function() {
-        return app(DynamicController::class)->index(request(), 'home', 'business_services');
-    })->name('home.business_services');
+    // OLD: Route::get('/home/business_services', function() {
+    //     return app(DynamicController::class)->index(request(), 'home', 'business_services');
+    // })->name('home.business_services');
+    // NEW: Use dynamic route: /home/business_services (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
 
     // ========================================
-    // POSTS TABLE
+    // POSTS TABLE - NOW HANDLED BY DYNAMIC ROUTE
     // ========================================
-    Route::get('/content/posts', function() {
-        return app(DynamicController::class)->index(request(), 'content', 'posts');
-    })->name('content/posts');
+    // OLD: Route::get('/content/posts', function() {
+    //     return app(DynamicController::class)->index(request(), 'content', 'posts');
+    // })->name('content/posts');
+    // NEW: Use dynamic route: /content/posts (handled by Route::get('/{module}/{table}', [DynamicController::class, 'index']))
 
     // ========================================
     // USERS TABLE
