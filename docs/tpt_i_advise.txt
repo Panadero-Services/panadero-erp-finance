@@ -1,0 +1,60 @@
+Here’s a clearer, polished version in English:
+
+---
+
+I strongly recommend continuing with the current data model for logistic order processing and inventory control. This model has been working reliably for the past 25 years. Its strength lies in its simplicity—it’s straightforward and does exactly what it needs to, no more and no less:
+
+**INCOMING ↔ INVENTORY CONTROL ↔ OUTGOING**
+
+When evaluating new software, this should be our top priority, since all downstream applications and APIs—ERP, production, customer management, accounting, planning—depend on this data schema.
+
+---
+
+### What Makes Things a Bit More Complex (Requires BASF Expertise)
+
+1. Recipe / Blend / Quality control
+2. Forecasting module
+
+If these modules are needed going forward, the current demo and preview already show excellent examples of how they should look in any new software.
+
+---
+
+### Core Question
+
+Can the new application work with our existing data model, or will it force us to adopt a new model?
+
+* If it brings its own model, that’s not necessarily bad—but we need a commitment that it won’t disrupt our existing applications. Ideally, it should include APIs or solutions that allow seamless integration or migration.
+
+Remember: over the past 30 years, applications may come and go, but the basic logistics workflow at TPT has remained constant. Applications are simply interfaces that come and go; the data model must endure.
+
+---
+
+### About Indigo
+
+* **Indigo 1**: A cluster of applications built around this predefined model. Each customer had their own environment and database.
+* **Indigo 2**: An enhanced, centralized version based on a single database. It’s more than a software package—it’s a monolithic framework that can be extended or tweaked modularly. It includes:
+
+  1. Customer portal
+  2. APIs for customer ERP
+  3. APIs for DCS
+  4. APIs for logistics and overhead control
+  5. Workflow integration with external applications
+  6. Data-warehouse backend
+  7. Agents/listeners for automated jobs (see Bjorn’s presentation)
+  8. Dashboards and reporting
+
+Built between 2016–2018 on Laravel 5 + MSSQL.
+
+---
+
+### Your Two Best Options
+
+**1. Adopt an existing software suite** that meets the above requirements and provides specialists to ensure full integration with Siemens and SAP. I haven’t explored options yet, but I’m confident such software exists.
+
+**2. Extend Indigo 2**—update it to Laravel’s latest version and Vue 3. I’d strongly recommend this approach: it’s only a couple of steps behind today’s tech, but leaps ahead in functionality. With Vue 3, you’ll deliver a top-tier user experience that will impress your customers and further strengthen TPT’s offering.
+
+Indigo 2 is an excellent boilerplate: well-documented code, a robust framework, and tailored to TPT’s processes. It’s a solid foundation to move forward.
+
+---
+
+Let me know if you’d like me to explore specific software suites or make a proposal for upgrading Indigo 2.
