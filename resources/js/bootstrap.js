@@ -45,13 +45,13 @@ function getCookie(name) {
     // Override console methods
     console.log = function(...args) {
         if (filterNetworkLogs(args)) {
-            originalLog.apply(console, args);
+            //originalLog.apply(console, args);
         }
     };
 
     console.info = function(...args) {
         if (filterNetworkLogs(args)) {
-            originalInfo.apply(console, args);
+            //originalInfo.apply(console, args);
         }
     };
 

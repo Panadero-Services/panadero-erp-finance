@@ -34,6 +34,7 @@
         "dhtmlx-gantt": "file:vendor/dhx_gantt",
         "dhx-gridpack-package": "file:gridpack_trial_9_0",
         "ethers": "^6.6.4",
+        "express": "^5.1.0",
         "heroicons": "^2.1.5",
         "internet-available": "^1.0.0",
         "mysql": "^2.18.1",

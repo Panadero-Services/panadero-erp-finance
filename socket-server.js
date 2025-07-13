@@ -1,22 +1,48 @@
 // socket-server.js
 import { Server } from 'socket.io';
+import express from 'express';
 import { createServer } from 'http';
+import cors from 'cors';
 
+const app = express();  // Create Express app
 const PORT = 3000;
-const httpServer = createServer();
+
+// Add CORS middleware to Express
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+
+const httpServer = createServer(app);  // Create HTTP server with Express
+
 const io = new Server(httpServer, {
     cors: {
-        origin: "*",
+        origin: "http://localhost:5173",
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: true
+        allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+        credentials: true,
+        transports: ['websocket', 'polling']
     }
 });
 
-// Game constants
-const GAME_WIDTH = 400;
-const GAME_HEIGHT = 400;
-const TICK_RATE = 60; // Server updates per second
+// Add middleware to handle CORS preflight
+io.engine.on("headers", (headers, req) => {
+    headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
+    headers["Access-Control-Allow-Credentials"] = true;
+});
+
+// Update game constants to match client
+const GAME_WIDTH = 800;  // Match client canvas size
+const GAME_HEIGHT = 600; // Match client canvas size
+const TICK_RATE = 60;
+
+// Add these at the top of the script
+const UPDATE_INTERVAL = 100; // Send updates every 100ms
+let lastState = null;
+let updateInterval = null;
+
+// Add connection tracking
+const activeConnections = new Set();
 
 // Game state
 const gameState = {
@@ -145,8 +171,8 @@ setInterval(gameLoop, 1000 / TICK_RATE);
 
 io.on('connection', (socket) => {
     console.log('Player connected:', socket.id);
-
-    // Initialize player
+    activeConnections.add(socket.id);
+    
     gameState.players.set(socket.id, {
         id: socket.id,
         x: Math.random() * GAME_WIDTH,
@@ -155,43 +181,29 @@ io.on('connection', (socket) => {
         velocity: { x: 0, y: 0 },
         thrust: false
     });
-    gameState.scores[socket.id] = 0;
 
-    // Handle player input
-    socket.on('player-input', (input) => {
-        const player = gameState.players.get(socket.id);
-        if (player) {
-            player.rotation = input.rotation;
-            player.thrust = input.thrust;
-        }
-    });
+    // Broadcast initial state to all clients
+    io.emit('player_state', Object.fromEntries(gameState.players));
 
-    // Handle shooting
-    socket.on('player-shoot', () => {
-        const player = gameState.players.get(socket.id);
-        if (player) {
-            const bulletId = `bullet-${Date.now()}-${Math.random()}`;
-            const angle = player.rotation * Math.PI / 180;
-            gameState.bullets.set(bulletId, {
-                id: bulletId,
-                playerId: socket.id,
-                x: player.x,
-                y: player.y,
-                velocity: {
-                    x: Math.cos(angle) * 5,
-                    y: Math.sin(angle) * 5
-                }
-            });
+    // Handle state updates from clients
+    socket.on('update_state', (state) => {
+        if (gameState.players.has(socket.id)) {
+            const player = gameState.players.get(socket.id);
+            Object.assign(player, state);
+            // Broadcast updated state to all clients
+            io.emit('player_state', Object.fromEntries(gameState.players));
         }
     });
 
     socket.on('disconnect', () => {
         console.log('Player disconnected:', socket.id);
+        activeConnections.delete(socket.id);
         gameState.players.delete(socket.id);
-        // Keep scores in case player reconnects
+        io.emit('player_state', Object.fromEntries(gameState.players));
     });
 });
 
+// Start the server
 httpServer.listen(PORT, () => {
-    console.log(`Game server running on port ${PORT}`);
+    console.log(`Socket.IO server running on port ${PORT}`);
 });
