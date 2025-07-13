@@ -119,6 +119,17 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
     }
 
 const _startGame = async () => {
+    if (!_set.isMetaMask) {
+        alert('Please install MetaMask to play!');
+        return;
+    }
+    if (_set.wallet === '0x0') {
+        await _set.initialize();
+        if (_set.wallet === '0x0') {
+            alert('Please connect your wallet to play!');
+            return;
+        }
+    }
     await _set.game3Toggle();
     if (_set.game3On) disableScroll();
     else enableScroll();

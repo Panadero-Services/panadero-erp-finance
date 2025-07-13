@@ -156,7 +156,7 @@ onUnmounted(() => {
 
         <!-- Main Content -->
         <template v-if="$slots.default">
-          <div class="bg-gray-50 dark:bg-black flex">
+          <div class="flex game-content">
 
             <!-- Sidebar -->
             <div
@@ -260,3 +260,10 @@ onUnmounted(() => {
     </div>
   </html>
 </template>
+
+<style>
+/* Remove any background colors from game area */
+.game-content {
+  background: none !important;
+}
+</style>

@@ -1,0 +1,49 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "ssh": "ssh -i bastion.pem ubuntu@15.188.147.145"
+    },
+    "devDependencies": {
+        "@inertiajs/vue3": "^1.0.14",
+        "@tailwindcss/forms": "^0.5.7",
+        "@tailwindcss/typography": "^0.5.10",
+        "@vitejs/plugin-vue": "^5.0.0",
+        "autoprefixer": "^10.4.16",
+        "axios": "^1.7.4",
+        "laravel-vite-plugin": "^1.0",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.4.0",
+        "typescript": "^5.8.3",
+        "vue": "^3.3.13"
+    },
+    "dependencies": {
+        "@dhx/diagram_6": "file:vendor/dhx_diagram_6",
+        "@dhx/kanban": "file:vendor/dhx_kanban",
+        "@dhx/spreadsheet": "file:vendor/dhx_spreadsheet_5.2.0",
+        "@dhx/suite": "file:vendor/dhx_suite",
+        "@headlessui/vue": "^1.7.23",
+        "@heroicons/vue": "^2.1.5",
+        "@metamask/detect-provider": "^2.0.0",
+        "date-fns": "^4.1.0",
+        "dhtmlx-gantt": "file:vendor/dhx_gantt",
+        "dhx-gridpack-package": "file:gridpack_trial_9_0",
+        "ethers": "^6.6.4",
+        "heroicons": "^2.1.5",
+        "internet-available": "^1.0.0",
+        "mysql": "^2.18.1",
+        "node-fetch": "^3.3.2",
+        "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
+        "panadero-grid": "github:Panadero-Services/panadero-grid",
+        "panadero-minigames": "github:lieuwebakker/panadero-minigames",
+        "panadero-mood": "github:Panadero-Services/panadero-mood",
+        "panadero-resourceplanning": "file:vendor/panadero/panadero-resourceplanning",
+        "panadero-self": "github:lieuwebakker/panadero-self",
+        "panadero-server": "github:lieuwebakker/panadero-server",
+        "panadero-sim": "github:lieuwebakker/panadero-sim",
+        "pinia": "^2.1.3",
+        "vite": "^5.4.10"
+    }
+}

@@ -292,6 +292,16 @@ Route::middleware([
     Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
 
     // ========================================
+    // SOLARSYS GAME ROUTES
+    // ========================================
+    Route::get('home/solarsys', function () {
+        return Inertia::render('home/SolarSys', [
+            'page'=> Page::with('sections')->where('title','SolarSys')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/solarsys');
+
+    // ========================================
     // PRICE ROUTES
     // ========================================
     Route::get('/getprice', [\App\Http\Controllers\PriceController::class, 'get'])->name('getprice');
@@ -690,3 +700,23 @@ Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
     })->name('posts.update');
     */
 
+    // ========================================
+    // GAME/SCORE ROUTES
+    // ========================================
+    Route::get('/getgame', [\App\Http\Controllers\GameController::class, 'get'])->name('getgame');
+    Route::post('/setgame', [\App\Http\Controllers\GameController::class, 'setgame'])->name('setgame');
+    Route::get('/getscore', [\App\Http\Controllers\ScoreController::class, 'getscore'])->name('getscore');
+    Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
+
+    // ========================================
+    // SOLARSYS GAME ROUTES
+    // ========================================
+    Route::get('home/solarsys', function () {
+        return Inertia::render('home/SolarSys', [
+            'page'=> Page::with('sections')->where('title','SolarSys')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('home/solarsys');
+
+    Route::post('/game-state', [GameStateController::class, 'update'])
+    ->middleware(['auth']);

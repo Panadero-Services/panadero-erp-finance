@@ -1,11 +1,13 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
+import Pusher from 'pusher-js';
 
 export default defineConfig({
     plugins: [
         laravel({
-            input: 'resources/js/app.js',
+            input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
         vue({
@@ -18,7 +20,7 @@ export default defineConfig({
         }),
     ],
     build: {
-        chunkSizeWarningLimit: 5000, // Increase limit for now
+        chunkSizeWarningLimit: 5000,
         minify: 'esbuild',
         rollupOptions: {
             output: {
@@ -31,5 +33,18 @@ export default defineConfig({
                 }
             }
         }
+    },
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+            'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/src')
+        }
+    },
+    optimizeDeps: {
+        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers']
+    },
+    define: {
+        'import.meta.env.VITE_PUSHER_APP_KEY': JSON.stringify(process.env.PUSHER_APP_KEY),
+        'import.meta.env.VITE_PUSHER_APP_CLUSTER': JSON.stringify(process.env.PUSHER_APP_CLUSTER),
     }
 });

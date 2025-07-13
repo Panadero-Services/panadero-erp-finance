@@ -6,6 +6,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { createPinia } from 'pinia';
 import { useSessionStore } from '@/stores/session';
+import SolarSysGame from 'panadero-solarsysinvaders';
 
 const pinia = createPinia();
 const appName = import.meta.env.VITE_APP_NAME || 'indigo3';
@@ -13,7 +14,6 @@ const appName = import.meta.env.VITE_APP_NAME || 'indigo3';
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => {
-        // Let Inertia handle the lazy loading
         const pages = import.meta.glob('./pages/**/*.vue', { eager: false });
         return pages[`./pages/${name}.vue`]();
     },
@@ -23,9 +23,11 @@ createInertiaApp({
             .use(ZiggyVue)
             .use(pinia);
         
+        // Register the game component globally
+        app.component('SolarSysGame', SolarSysGame);
+        
         const sessionStore = useSessionStore();
         
-        // Ensure fresh token before mounting
         sessionStore.ensureFreshToken().then(() => {
             app.mount(el);
             sessionStore.initializeSession();

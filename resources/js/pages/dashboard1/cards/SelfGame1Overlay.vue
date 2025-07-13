@@ -1,26 +1,19 @@
 <script setup>
-import {ref, defineEmits} from 'vue';
-import ApplicationLogo from '@/components/logoSelf.vue';
-import Stars from '@/panadero/Stars.vue';
-import Game from '@/panadero/Game.vue';
-
+import { ref } from 'vue';
+import SolarSysGame from 'panadero-solarsysinvaders';
 
 defineProps({
-    w : Number,
-    h : Number,
-    callSign : String
+    w: Number,
+    h: Number,
+    callSign: String
 });
 
 </script>
 
 <template>
-    <!-- SELF Game1 Overlay -->
-            <div class="absolute m-auto left-0 right-0 max-w-[1600px] max-w-[1200px] z-2 border border-gray-300 dark:border-gray-700 overscroll-none">
-                <div >
-                    <!-- StarOverlay 
-                     -->
-                    <Game :cvxWidth="w" :cvxHeight="h" :callSign="callSign" infPanel="true" :spriteSize="6"/>
-                </div>
-            </div>
-
+    <div class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+        <div class="relative w-full max-w-[1200px] aspect-[3/2] mx-4">
+            <SolarSysGame :multiplayer="true" />
+        </div>
+    </div>
 </template>
