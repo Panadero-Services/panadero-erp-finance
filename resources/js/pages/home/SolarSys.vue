@@ -5,7 +5,7 @@ import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 
-console.log('SolarSys loading, SolarSysGame:', SolarSysGame);
+console.log('SolarSys loading...');
 
 const settingsStore = useSettingsStore();
 const contractStore = useContractStore();
@@ -42,7 +42,10 @@ defineProps({
                     Loading game...
                 </div>
                 <div v-else class="game-wrapper">
-                    <SolarSysGame :multiplayer="true" />
+                    <SolarSysGame 
+                        :multiplayer="true"
+                        serverUrl="http://localhost:3000"
+                    />
                 </div>
          </div>
       </template>
@@ -54,6 +57,7 @@ defineProps({
     min-height: 100vh;
     background: #000;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -63,6 +67,20 @@ defineProps({
     height: 600px;
     border: 1px solid #333;
     position: relative;
+}
+
+.debug-panel {
+    position: absolute;
+    top: -80px;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
+    font-family: monospace;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    z-index: 1000;
 }
 
 .loading {

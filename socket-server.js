@@ -4,206 +4,99 @@ import express from 'express';
 import { createServer } from 'http';
 import cors from 'cors';
 
-const app = express();  // Create Express app
+const app = express();
 const PORT = 3000;
 
-// Add CORS middleware to Express
+// More permissive CORS for Express
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
 
-const httpServer = createServer(app);  // Create HTTP server with Express
+const httpServer = createServer(app);
 
+// More detailed Socket.IO configuration
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000"],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
         credentials: true,
         transports: ['websocket', 'polling']
-    }
+    },
+    pingTimeout: 60000,
+    pingInterval: 25000
 });
 
-// Add middleware to handle CORS preflight
-io.engine.on("headers", (headers, req) => {
-    headers["Access-Control-Allow-Origin"] = "http://localhost:5173";
-    headers["Access-Control-Allow-Credentials"] = true;
+// Debug middleware
+io.use((socket, next) => {
+    console.log('Connection attempt from:', socket.handshake.headers.origin);
+    console.log('Transport:', socket.conn.transport.name);
+    next();
 });
-
-// Update game constants to match client
-const GAME_WIDTH = 800;  // Match client canvas size
-const GAME_HEIGHT = 600; // Match client canvas size
-const TICK_RATE = 60;
-
-// Add these at the top of the script
-const UPDATE_INTERVAL = 100; // Send updates every 100ms
-let lastState = null;
-let updateInterval = null;
-
-// Add connection tracking
-const activeConnections = new Set();
-
-// Game state
-const gameState = {
-    players: new Map(),
-    bullets: new Map(),
-    enemies: new Map(),
-    scores: {},
-    frame: 0
-};
-
-// Game loop
-function gameLoop() {
-    // Update positions
-    gameState.players.forEach((player) => {
-        if (player.thrust) {
-            // Apply thrust in direction of rotation
-            player.velocity.x += Math.cos(player.rotation * Math.PI / 180) * 0.1;
-            player.velocity.y += Math.sin(player.rotation * Math.PI / 180) * 0.1;
-        }
-        
-        // Update position
-        player.x += player.velocity.x;
-        player.y += player.velocity.y;
-
-        // Apply drag
-        player.velocity.x *= 0.99;
-        player.velocity.y *= 0.99;
-
-        // Wrap around screen
-        player.x = (player.x + GAME_WIDTH) % GAME_WIDTH;
-        player.y = (player.y + GAME_HEIGHT) % GAME_HEIGHT;
-    });
-
-    // Update bullets
-    gameState.bullets.forEach((bullet, id) => {
-        bullet.x += bullet.velocity.x;
-        bullet.y += bullet.velocity.y;
-
-        // Remove bullets that are off screen
-        if (bullet.x < 0 || bullet.x > GAME_WIDTH || 
-            bullet.y < 0 || bullet.y > GAME_HEIGHT) {
-            gameState.bullets.delete(id);
-        }
-    });
-
-    // Spawn enemies occasionally
-    if (Math.random() < 0.02) {
-        spawnEnemy();
-    }
-
-    // Update enemies
-    gameState.enemies.forEach((enemy, id) => {
-        // Move enemies
-        enemy.x += enemy.velocity.x;
-        enemy.y += enemy.velocity.y;
-
-        // Wrap around screen
-        enemy.x = (enemy.x + GAME_WIDTH) % GAME_WIDTH;
-        enemy.y = (enemy.y + GAME_HEIGHT) % GAME_HEIGHT;
-    });
-
-    // Check collisions
-    checkCollisions();
-
-    // Broadcast game state to all players
-    io.emit('game-state-update', {
-        players: Array.from(gameState.players.values()),
-        bullets: Array.from(gameState.bullets.values()),
-        enemies: Array.from(gameState.enemies.values()),
-        scores: gameState.scores
-    });
-
-    gameState.frame++;
-}
-
-function spawnEnemy() {
-    const id = `enemy-${Date.now()}-${Math.random()}`;
-    gameState.enemies.set(id, {
-        id,
-        x: Math.random() * GAME_WIDTH,
-        y: Math.random() * GAME_HEIGHT,
-        velocity: {
-            x: (Math.random() - 0.5) * 2,
-            y: (Math.random() - 0.5) * 2
-        }
-    });
-}
-
-function checkCollisions() {
-    // Check bullet-enemy collisions
-    gameState.bullets.forEach((bullet, bulletId) => {
-        gameState.enemies.forEach((enemy, enemyId) => {
-            const dx = bullet.x - enemy.x;
-            const dy = bullet.y - enemy.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 20) { // Hit!
-                gameState.bullets.delete(bulletId);
-                gameState.enemies.delete(enemyId);
-                // Award points to shooter
-                gameState.scores[bullet.playerId] = 
-                    (gameState.scores[bullet.playerId] || 0) + 100;
-            }
-        });
-    });
-
-    // Check player-enemy collisions
-    gameState.players.forEach((player) => {
-        gameState.enemies.forEach((enemy, enemyId) => {
-            const dx = player.x - enemy.x;
-            const dy = player.y - enemy.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 30) { // Collision!
-                // Player loses points
-                gameState.scores[player.id] = 
-                    Math.max(0, (gameState.scores[player.id] || 0) - 50);
-                gameState.enemies.delete(enemyId);
-            }
-        });
-    });
-}
-
-// Start game loop
-setInterval(gameLoop, 1000 / TICK_RATE);
 
 io.on('connection', (socket) => {
     console.log('Player connected:', socket.id);
-    activeConnections.add(socket.id);
+    console.log('Origin:', socket.handshake.headers.origin);
     
-    gameState.players.set(socket.id, {
+    // Send initial game state
+    socket.emit('game_state', {
         id: socket.id,
-        x: Math.random() * GAME_WIDTH,
-        y: Math.random() * GAME_HEIGHT,
-        rotation: 0,
-        velocity: { x: 0, y: 0 },
-        thrust: false
+        status: 'init',
+        players: {}
     });
 
-    // Broadcast initial state to all clients
-    io.emit('player_state', Object.fromEntries(gameState.players));
+    // Add ping handler
+    socket.on('ping', () => {
+        socket.emit('pong');
+    });
 
-    // Handle state updates from clients
-    socket.on('update_state', (state) => {
-        if (gameState.players.has(socket.id)) {
-            const player = gameState.players.get(socket.id);
-            Object.assign(player, state);
-            // Broadcast updated state to all clients
-            io.emit('player_state', Object.fromEntries(gameState.players));
+    // Handle player state more robustly
+    socket.on('join_game', () => {
+        console.log('Player joined game:', socket.id);
+        
+        // Initialize player in game state if not exists
+        if (!gameState.players.has(socket.id)) {
+            gameState.players.set(socket.id, {
+                id: socket.id,
+                x: Math.random() * GAME_WIDTH,
+                y: Math.random() * GAME_HEIGHT,
+                rotation: 0,
+                velocity: { x: 0, y: 0 },
+                thrust: false
+            });
         }
+        
+        // Send initial state to the joining player
+        socket.emit('game_state', {
+            id: socket.id,
+            status: 'running',
+            players: Object.fromEntries(gameState.players)
+        });
+        
+        // Broadcast updated player list to all clients
+        io.emit('game_state', {
+            players: Object.fromEntries(gameState.players),
+            status: 'running'
+        });
     });
 
-    socket.on('disconnect', () => {
-        console.log('Player disconnected:', socket.id);
-        activeConnections.delete(socket.id);
-        gameState.players.delete(socket.id);
-        io.emit('player_state', Object.fromEntries(gameState.players));
+    socket.on('player_input', (input) => {
+        console.log('Player input:', socket.id, input);
+    });
+
+    socket.on('disconnect', (reason) => {
+        console.log('Player disconnected:', socket.id, 'Reason:', reason);
+    });
+
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
     });
 });
 
 // Start the server
 httpServer.listen(PORT, () => {
     console.log(`Socket.IO server running on port ${PORT}`);
+    console.log('Allowed origins:', ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000"]);
 });
