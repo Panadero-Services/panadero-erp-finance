@@ -186,7 +186,7 @@ const aiFeatures = [
       <!-- Main Heading -->
       <div class="text-center">
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white dark:text-gray-100">
-          INDIGO1 Enterprise Hub
+          INDIGO1 Enterprise Hub ioServer Part2
         </h1>
         <p class="mt-6 text-lg text-gray-300 dark:text-gray-400 max-w-3xl mx-auto">
           Trusted enterprise logistics platform powering multinational operations since 2006
