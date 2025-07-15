@@ -284,3 +284,4 @@ onMounted(() => {
     <button @click="generateAllSprites">Generate All Sprites</button>
   </div>
 </template>
+ 

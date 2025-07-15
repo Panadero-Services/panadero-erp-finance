@@ -1,5 +1,6 @@
 I will include this in every request.. so annoying but also mandatory because we are doing simple project for days without progrress; 
 Do not make mistakes,
+Do not overcomplicate
 Follow the proper processes, be very thorough in your analysis.
 Do not get distracted,
 Do not not overwrite working code,
