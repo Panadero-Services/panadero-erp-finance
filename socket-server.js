@@ -403,7 +403,7 @@ spawnCollectible();
 
 // More permissive CORS for Express
 app.use(cors({
-    origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000"],
+    origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000", "http://192.168.2.20:8000"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
@@ -413,7 +413,7 @@ const httpServer = createServer(app);
 // More detailed Socket.IO configuration
 const io = new Server(httpServer, {
     cors: {
-        origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000"],
+        origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000", "http://192.168.2.20:8000"],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
         credentials: true,

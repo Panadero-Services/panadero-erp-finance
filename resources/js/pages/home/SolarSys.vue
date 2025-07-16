@@ -5,6 +5,9 @@ import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 
+// Get the game server URL from environment
+const gameServerUrl = import.meta.env.VITE_GAME_SERVER_URL;
+
 console.log('SolarSys loading...');
 
 const settingsStore = useSettingsStore();
@@ -44,7 +47,7 @@ defineProps({
                 <div v-else class="game-wrapper">
                     <SolarSysGame 
                         :multiplayer="true"
-                        serverUrl="http://localhost:3000"
+                        :serverUrl="gameServerUrl"
                     />
                 </div>
          </div>
