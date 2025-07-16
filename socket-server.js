@@ -201,13 +201,70 @@ class ServerShip {
     }
 }
 
-// Then game state
+// At the top with other game state
 const gameState = {
     players: new Map(),
-    collectibles: new Map(),
     homePositions: new Map(),
+    bullets: new Map(),
+    collectibles: new Map(),  // Add this line to initialize collectibles
     lastUpdate: Date.now()
 };
+
+// Add bullet management functions
+function createBullet(playerId, ship) {
+    const bulletId = `bullet_${playerId}_${Date.now()}`;
+    console.log('Creating bullet:', { // Debug log
+        bulletId,
+        playerId,
+        shipPosition: { x: ship.x, y: ship.y },
+        shipAngle: ship.angle,
+        shipColor: ship.color
+    });
+    
+    const bullet = {
+        id: bulletId,
+        x: ship.x,
+        y: ship.y,
+        angle: ship.angle,
+        speed: 10,
+        color: ship.color,
+        playerId: playerId,
+        created: Date.now(),
+        lifespan: 2000
+    };
+    gameState.bullets.set(bulletId, bullet);
+    console.log('Current bullet count:', gameState.bullets.size); // Debug log
+}
+
+// Add bullet update function
+function updateBullets() {
+    const now = Date.now();
+    for (const [bulletId, bullet] of gameState.bullets) {
+        // Move bullet
+        bullet.x += Math.sin(bullet.angle) * bullet.speed;
+        bullet.y -= Math.cos(bullet.angle) * bullet.speed;
+        
+        // Remove expired bullets
+        if (now - bullet.created > bullet.lifespan) {
+            gameState.bullets.delete(bulletId);
+            continue;
+        }
+        
+        // Check collisions with ships
+        for (const [playerId, player] of gameState.players) {
+            if (playerId === bullet.playerId) continue; // Skip own ship
+            
+            const dx = player.ship.x - bullet.x;
+            const dy = player.ship.y - bullet.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 15) { // Ship hit!
+                gameState.bullets.delete(bulletId);
+                break;
+            }
+        }
+    }
+}
 
 // Function to create a home position
 function createHomePosition(id) {
@@ -343,6 +400,9 @@ function gameLoop() {
         }
     }
 
+    // Update bullets
+    updateBullets();
+
     // Check collectible collisions
     for (const [playerId, player] of gameState.players) {
         if (!player || !player.ship) continue;
@@ -388,6 +448,14 @@ function gameLoop() {
             ),
             homePositions: visibleHomes,
             collectibles: visibleCollectibles,
+            bullets: Array.from(gameState.bullets.values())  // Add this line
+                .filter(bullet => isInRange(  // Only send bullets in range
+                    playerShip.x, 
+                    playerShip.y, 
+                    bullet.x, 
+                    bullet.y, 
+                    VISIBILITY_RANGE
+                )),
             status: 'running'
         };
         
@@ -462,10 +530,15 @@ io.on('connection', (socket) => {
         )
     });
 
-    // Handle player input
+    // Update the player_input handler to properly handle shooting
     socket.on('player_input', (input) => {
+        console.log('Received player_input:', input); // Debug log
+        
         const player = gameState.players.get(socket.id);
-        if (!player) return;
+        if (!player || !player.ship) {
+            console.log('No player or ship found for socket:', socket.id); // Debug log
+            return;
+        }
         
         switch(input.type) {
             case 'rotate_left':
@@ -476,6 +549,34 @@ io.on('connection', (socket) => {
                 break;
             case 'thrust':
                 player.ship.engineOn = input.value;
+                break;
+            case 'shoot':
+                console.log('Processing shoot input:', { // Debug log
+                    playerId: socket.id,
+                    inSafeZone: isInSafeZone(player.ship.x, player.ship.y, socket.id),
+                    lastShot: player.lastShot,
+                    now: Date.now()
+                });
+                
+                // Only handle shooting on keydown (when value is true)
+                if (input.value === true) {
+                    // Don't allow shooting from safe zones
+                    if (isInSafeZone(player.ship.x, player.ship.y, socket.id)) {
+                        console.log('Shoot blocked - player in safe zone'); // Debug log
+                        return;
+                    }
+                    
+                    // Check shooting cooldown
+                    const now = Date.now();
+                    if (player.lastShot && now - player.lastShot < 250) {
+                        console.log('Shoot blocked - cooldown not finished'); // Debug log
+                        return;
+                    }
+                    
+                    player.lastShot = now;
+                    console.log('Creating bullet for player:', socket.id); // Debug log
+                    createBullet(socket.id, player.ship);
+                }
                 break;
             case 'warp_home':
                 player.ship.warpHome();
