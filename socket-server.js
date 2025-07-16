@@ -212,28 +212,42 @@ const gameState = {
 
 // Add bullet management functions
 function createBullet(playerId, ship) {
+    const bulletSpeed = ship.pattern === 'ufo' ? 5 : 10; // Half speed for UFO
     const bulletId = `bullet_${playerId}_${Date.now()}`;
-    console.log('Creating bullet:', { // Debug log
-        bulletId,
-        playerId,
-        shipPosition: { x: ship.x, y: ship.y },
-        shipAngle: ship.angle,
-        shipColor: ship.color
-    });
     
+    // Create the first bullet
     const bullet = {
         id: bulletId,
         x: ship.x,
         y: ship.y,
         angle: ship.angle,
-        speed: 10,
+        speed: bulletSpeed,
         color: ship.color,
         playerId: playerId,
         created: Date.now(),
-        lifespan: 2000
+        lifespan: 2000 // 2 seconds
     };
     gameState.bullets.set(bulletId, bullet);
-    console.log('Current bullet count:', gameState.bullets.size); // Debug log
+
+    // If it's a UFO, create a second bullet at a slight angle
+    if (ship.pattern === 'ufo') {
+        const bulletId2 = `bullet_${playerId}_${Date.now()}_2`;
+        const bullet2 = {
+            ...bullet,
+            id: bulletId2,
+            angle: ship.angle + 0.2 // Slight spread to the right
+        };
+        const bullet3 = {
+            ...bullet,
+            id: `bullet_${playerId}_${Date.now()}_3`,
+            angle: ship.angle - 0.2 // Slight spread to the left
+        };
+        gameState.bullets.set(bulletId2, bullet2);
+        gameState.bullets.set(bullet3.id, bullet3);
+    }
+
+    console.log('Creating bullet(s) for player:', playerId, 'Pattern:', ship.pattern);
+    console.log('Current bullet count:', gameState.bullets.size);
 }
 
 // Add bullet update function
@@ -285,9 +299,7 @@ function createHomePosition(id) {
 // Add function to check if a position is in any safe zone
 function isInSafeZone(x, y, playerId) {
     for (const [homeId, homePos] of gameState.homePositions) {
-        if (homeId === playerId) continue; // Skip player's own safe zone
-        
-        // Check if position is within another player's safe zone (300 units)
+        // Check if position is within any safe zone (300 units)
         const dx = Math.abs(x - homePos.x);
         const dy = Math.abs(y - homePos.y);
         if (dx <= 150 && dy <= 150) { // 300/2 = 150 units from center
@@ -563,12 +575,17 @@ io.on('connection', (socket) => {
                     // Don't allow shooting from safe zones
                     if (isInSafeZone(player.ship.x, player.ship.y, socket.id)) {
                         console.log('Shoot blocked - player in safe zone'); // Debug log
+                        // Send feedback to the player
+                        socket.emit('shoot_blocked', { reason: 'in_safe_zone' });
                         return;
                     }
                     
                     // Check shooting cooldown
                     const now = Date.now();
-                    if (player.lastShot && now - player.lastShot < 250) {
+                    // Longer cooldown for UFO (500ms) vs fighter (250ms)
+                    const cooldown = player.ship.pattern === 'ufo' ? 500 : 250;
+                    
+                    if (player.lastShot && now - player.lastShot < cooldown) {
                         console.log('Shoot blocked - cooldown not finished'); // Debug log
                         return;
                     }
