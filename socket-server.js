@@ -61,6 +61,31 @@ const SHIP_PATTERNS = {
     UFO: 'ufo'
 };
 
+// Add team tracking at the top with other game state
+const teamCounts = {
+    '#00FFFF': 0,  // Cyan
+    '#FF69B4': 0,  // Pink
+    '#FFFF00': 0   // Yellow
+};
+
+// Define the team balancing function BEFORE ServerShip class
+function assignBalancedTeam() {
+    // Get current min and max team counts
+    const minCount = Math.min(...Object.values(teamCounts));
+    const maxCount = Math.max(...Object.values(teamCounts));
+    
+    // If difference is already > 1, only choose from teams with minimum count
+    if (maxCount - minCount > 1) {
+        const availableColors = Object.entries(teamCounts)
+            .filter(([_, count]) => count === minCount)
+            .map(([color, _]) => color);
+        return availableColors[Math.floor(Math.random() * availableColors.length)];
+    }
+    
+    // Otherwise randomly choose from all teams
+    return SHIP_COLORS[Math.floor(Math.random() * SHIP_COLORS.length)];
+}
+
 // Define ServerShip class BEFORE it's used
 class ServerShip {
     constructor(x, y, playerId) {
@@ -78,9 +103,15 @@ class ServerShip {
         this.rotatingRight = false;
         this.engineOn = false;
         this.pattern = Math.random() < 0.5 ? SHIP_PATTERNS.FIGHTER : SHIP_PATTERNS.UFO;
-        this.color = SHIP_COLORS[Math.floor(Math.random() * SHIP_COLORS.length)];
+        
+        // Now this function exists when called
+        this.color = assignBalancedTeam();
+        teamCounts[this.color]++;  // Increment team count
+        
         this.radius = SHIP_RADIUS;
         this.isColliding = false;
+        this.lastCollisionTime = 0;  // Add collision cooldown tracker
+        this.collisionCooldown = 500;  // 500ms cooldown
         
         // Add debug log
         console.log(`New ship created for player ${playerId} with pattern: ${this.pattern}`);
@@ -111,41 +142,32 @@ class ServerShip {
         const nextX = this.x + this.velocity.x;
         const nextY = this.y + this.velocity.y;
         
-        // First check ship-to-ship collisions
+        // Ship-to-ship collisions
         let shipCollision = false;
         for (const [otherId, otherPlayer] of gameState.players) {
-            if (otherId === this.id) continue; // Skip self
+            if (otherId === this.id) continue;
             
             const otherShip = otherPlayer.ship;
             if (!otherShip) continue;
             
-            // If same color (same team), allow passage
             if (otherShip.color === this.color) continue;
             
-            // Check collision with other ship
             const dx = nextX - otherShip.x;
             const dy = nextY - otherShip.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            if (distance < SHIP_RADIUS * 2) {  // If ships are colliding
-                // Bounce off each other
+            if (distance < SHIP_RADIUS * 2) {
+                if (this.canTakeCollisionDamage()) {
+                    this.takeDamage(false);  // Non-bullet damage
+                }
                 this.velocity.x = -this.velocity.x;
                 this.velocity.y = -this.velocity.y;
                 shipCollision = true;
                 break;
             }
         }
-        
-        if (shipCollision) {
-            this.takeDamage(); // Take damage on ship collision
-            // Move slightly away from collision point
-            const BOUNCE_OFFSET = 5;
-            this.x += Math.cos(this.angle) * BOUNCE_OFFSET;
-            this.y += Math.sin(this.angle) * BOUNCE_OFFSET;
-            return;
-        }
 
-        // Then check safe zone collisions (existing code)
+        // Safe zone collisions
         for (const [homeId, homePos] of gameState.homePositions) {
             if (homeId === this.id) continue;
             
@@ -158,7 +180,9 @@ class ServerShip {
             const dy = Math.abs(nextY - homePos.y);
             
             if (dx <= 150 && dy <= 150) {
-                this.takeDamage(); // Take damage on safe zone collision
+                if (this.canTakeCollisionDamage()) {
+                    this.takeDamage(false);  // Non-bullet damage
+                }
                 const angle = Math.atan2(this.y - homePos.y, this.x - homePos.x);
                 const SAFE_OFFSET = 5;
                 this.x += Math.cos(angle) * SAFE_OFFSET;
@@ -171,8 +195,18 @@ class ServerShip {
         this.y = nextY;
     }
 
-    takeDamage() {
-        this.health = Math.max(0, this.health - 1);  // Decrease by 1, but not below 0
+    takeDamage(fromBullet = false) {
+        const now = Date.now();
+        
+        // If it's bullet damage, or if enough time has passed since last collision
+        if (fromBullet || (now - this.lastCollisionTime >= this.collisionCooldown)) {
+            this.health = Math.max(0, this.health - 1);
+            
+            // Only update collision time for non-bullet damage
+            if (!fromBullet) {
+                this.lastCollisionTime = now;
+            }
+        }
     }
 
     heal() {
@@ -211,6 +245,10 @@ class ServerShip {
         const dy = this.y - otherShip.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
         return distance < (this.radius + otherShip.radius) * 2;
+    }
+
+    canTakeCollisionDamage() {
+        return (Date.now() - this.lastCollisionTime) >= this.collisionCooldown;
     }
 }
 
@@ -285,7 +323,7 @@ function updateBullets() {
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (distance < SHIP_RADIUS) {
-                    player.ship.takeDamage();  // Take damage on bullet hit
+                    player.ship.takeDamage(true);  // Bullet damage - no cooldown
                     gameState.bullets.delete(bulletId);
                     break;
                 }
@@ -622,11 +660,25 @@ io.on('connection', (socket) => {
         }
     });
 
-    // When player disconnects, remove their home position
-    socket.on('disconnect', (reason) => {
-        console.log('Player disconnected:', socket.id, 'Reason:', reason);
+    // Add team balancing function
+    // This function is now defined above the ServerShip class
+    
+    // Add cleanup when player disconnects
+    socket.on('disconnect', () => {
+        const player = gameState.players.get(socket.id);
+        if (player && player.ship) {
+            // Decrement team count when player leaves
+            teamCounts[player.ship.color]--;
+        }
         gameState.players.delete(socket.id);
         gameState.homePositions.delete(socket.id);
+        console.log('Player disconnected:', socket.id);
+        console.log('Current team counts:', teamCounts);
+    });
+
+    // Add debug logging for team balance
+    socket.on('connect', () => {
+        console.log('New player connected. Current team counts:', teamCounts);
     });
 });
 
