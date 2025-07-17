@@ -28,10 +28,24 @@ createInertiaApp({
         
         const sessionStore = useSessionStore();
         
-        sessionStore.ensureFreshToken().then(() => {
-            app.mount(el);
-            sessionStore.initializeSession();
-        });
+        // Add timeout and error handling for session initialization
+        const initApp = async () => {
+            try {
+                await Promise.race([
+                    sessionStore.ensureFreshToken(),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Session init timeout')), 5000)
+                    )
+                ]);
+                app.mount(el);
+                sessionStore.initializeSession();
+            } catch (error) {
+                console.warn('Session initialization failed, mounting app anyway:', error);
+                app.mount(el);
+            }
+        };
+        
+        initApp();
         
         return app;
     },

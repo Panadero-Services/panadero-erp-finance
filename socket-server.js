@@ -12,8 +12,8 @@ const ROTATION_SPEED = 0.1;    // Radians per frame
 const THRUST_POWER = 0.2;      // Reduced for better control
 const FRICTION = 0.99;         // Velocity multiplier per frame
 const MAX_SPEED = 5;           // Maximum velocity
-const GAME_WIDTH = 800;
-const GAME_HEIGHT = 600;
+const GAME_WIDTH = 8000;
+const GAME_HEIGHT = 6000;
 const TICK_RATE = 60; // Physics updates per second
 
 // Add at the top with other constants
@@ -420,8 +420,8 @@ function spawnCollectible() {
     
     const collectible = {
         id,
-        x: Math.random() * GAME_WIDTH,
-        y: Math.random() * GAME_HEIGHT,
+        x: Math.random() * GAME_WIDTH,  // Now uses 8000 instead of 800
+        y: Math.random() * GAME_HEIGHT, // Now uses 6000 instead of 600
         ...type,
         createdAt: Date.now()
     };

@@ -19,6 +19,15 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+        host: '192.168.2.20', // <--- your LAN IP, not localhost or [::1]
+        port: 5173,
+        cors: true,
+        hmr: {
+            host: '192.168.2.20',
+            port: 5173,
+        },
+    },
     build: {
         chunkSizeWarningLimit: 5000,
         minify: 'esbuild',
