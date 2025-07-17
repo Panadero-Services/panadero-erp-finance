@@ -65,6 +65,9 @@ const SHIP_PATTERNS = {
 class ServerShip {
     constructor(x, y, playerId) {
         this.id = playerId;
+        this.callSign = playerId.slice(0, 4).toUpperCase();
+        this.health = 100;  // Initial health
+        this.maxHealth = 100;  // Maximum health
         this.homeX = x;
         this.homeY = y;
         this.x = x;
@@ -134,6 +137,7 @@ class ServerShip {
         }
         
         if (shipCollision) {
+            this.takeDamage(); // Take damage on ship collision
             // Move slightly away from collision point
             const BOUNCE_OFFSET = 5;
             this.x += Math.cos(this.angle) * BOUNCE_OFFSET;
@@ -154,9 +158,7 @@ class ServerShip {
             const dy = Math.abs(nextY - homePos.y);
             
             if (dx <= 150 && dy <= 150) {
-                this.velocity.x = -this.velocity.x;
-                this.velocity.y = -this.velocity.y;
-                
+                this.takeDamage(); // Take damage on safe zone collision
                 const angle = Math.atan2(this.y - homePos.y, this.x - homePos.x);
                 const SAFE_OFFSET = 5;
                 this.x += Math.cos(angle) * SAFE_OFFSET;
@@ -167,6 +169,14 @@ class ServerShip {
 
         this.x = nextX;
         this.y = nextY;
+    }
+
+    takeDamage() {
+        this.health = Math.max(0, this.health - 1);  // Decrease by 1, but not below 0
+    }
+
+    heal() {
+        this.health = this.maxHealth;  // Restore to max health
     }
 
     getState() {
@@ -182,7 +192,10 @@ class ServerShip {
             },
             color: this.color,
             pattern: this.pattern,
-            isColliding: this.isColliding
+            isColliding: this.isColliding,
+            callSign: this.callSign,
+            health: this.health,
+            maxHealth: this.maxHealth
         };
     }
 
@@ -266,15 +279,16 @@ function updateBullets() {
         
         // Check collisions with ships
         for (const [playerId, player] of gameState.players) {
-            if (playerId === bullet.playerId) continue; // Skip own ship
-            
-            const dx = player.ship.x - bullet.x;
-            const dy = player.ship.y - bullet.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 15) { // Ship hit!
-                gameState.bullets.delete(bulletId);
-                break;
+            if (player.ship && bullet.playerId !== playerId) {
+                const dx = bullet.x - player.ship.x;
+                const dy = bullet.y - player.ship.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < SHIP_RADIUS) {
+                    player.ship.takeDamage();  // Take damage on bullet hit
+                    gameState.bullets.delete(bulletId);
+                    break;
+                }
             }
         }
     }
@@ -390,7 +404,14 @@ function checkCollectibleCollision(ship, collectible) {
     const dx = ship.x - collectible.x;
     const dy = ship.y - collectible.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    return distance < (ship.radius + collectible.radius);
+    
+    if (distance < (ship.radius + collectible.radius)) {
+        if (collectible.type === 'diamond' && collectible.color === '#00FFFF') {  // Cyan diamond
+            ship.heal();  // Restore full health
+        }
+        return true;
+    }
+    return false;
 }
 
 function isInRange(playerX, playerY, objectX, objectY, range) {
