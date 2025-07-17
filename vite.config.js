@@ -20,12 +20,12 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: '192.168.2.20', // <--- your LAN IP, not localhost or [::1]
-        port: 5173,
+        host: process.env.VITE_SERVER_HOST || 'localhost',
+        port: parseInt(process.env.VITE_SERVER_PORT || '5173'),
         cors: true,
         hmr: {
-            host: '192.168.2.20',
-            port: 5173,
+            host: process.env.VITE_SERVER_HOST || 'localhost',
+            port: parseInt(process.env.VITE_SERVER_PORT || '5173'),
         },
     },
     build: {
