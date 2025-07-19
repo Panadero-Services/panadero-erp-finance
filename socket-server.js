@@ -101,6 +101,7 @@ class ServerShip {
         this.y = y;
         this.angle = -Math.PI / 2;
         this.velocity = { x: 0, y: 0 };
+        this.score = 0;
         this.rotatingLeft = false;
         this.rotatingRight = false;
         this.engineOn = false;
@@ -221,6 +222,7 @@ class ServerShip {
             home: { x: this.homeX, y: this.homeY },
             angle: this.angle,
             velocity: this.velocity,
+            score: this.score,
             controls: {
                 rotatingLeft: this.rotatingLeft,
                 rotatingRight: this.rotatingRight,
@@ -299,8 +301,8 @@ function createBullet(playerId, ship) {
         gameState.bullets.set(bullet3.id, bullet3);
     }
 
-    console.log('Creating bullet(s) for player:', playerId, 'Pattern:', ship.pattern);
-    console.log('Current bullet count:', gameState.bullets.size);
+    //console.log('Creating bullet(s) for player:', playerId, 'Pattern:', ship.pattern);
+    //console.log('Current bullet count:', gameState.bullets.size);
 }
 
 // Add bullet update function
@@ -482,8 +484,26 @@ function gameLoop() {
         
         for (const [collectibleId, collectible] of gameState.collectibles) {
             if (checkCollectibleCollision(player.ship, collectible)) {
+
+            
+ // Calculate points based on collectible type
+                const points = collectible.type === 'star' ? 3 : 1;
+                
+                // Update player's score in the game state
+                player.ship.score = (player.ship.score || 0) + points;
+                
+                // Remove the collectible
                 gameState.collectibles.delete(collectibleId);
-                console.log(`Player ${playerId} collected ${collectible.type}`);
+                
+                // Emit to the specific player that collected it
+                io.to(playerId).emit('collectible_collected', {
+                    type: collectible.type,
+                    points: points
+                });
+                
+                console.log(`Player ${playerId} collected ${collectible.type}, score: ${player.ship.score}`);
+
+
             }
         }
     }
@@ -605,7 +625,7 @@ io.on('connection', (socket) => {
 
     // Update the player_input handler to properly handle shooting
     socket.on('player_input', (input) => {
-        console.log('Received player_input:', input); // Debug log
+        //console.log('Received player_input:', input); // Debug log
         
         const player = gameState.players.get(socket.id);
         if (!player || !player.ship) {
@@ -624,18 +644,18 @@ io.on('connection', (socket) => {
                 player.ship.engineOn = input.value;
                 break;
             case 'shoot':
-                console.log('Processing shoot input:', { // Debug log
+                /*console.log('Processing shoot input:', { // Debug log
                     playerId: socket.id,
                     inSafeZone: isInSafeZone(player.ship.x, player.ship.y, socket.id),
                     lastShot: player.lastShot,
                     now: Date.now()
-                });
+                });*/
                 
                 // Only handle shooting on keydown (when value is true)
                 if (input.value === true) {
                     // Don't allow shooting from safe zones
                     if (isInSafeZone(player.ship.x, player.ship.y, socket.id)) {
-                        console.log('Shoot blocked - player in safe zone'); // Debug log
+                        //console.log('Shoot blocked - player in safe zone'); // Debug log
                         // Send feedback to the player
                         socket.emit('shoot_blocked', { reason: 'in_safe_zone' });
                         return;
@@ -647,12 +667,12 @@ io.on('connection', (socket) => {
                     const cooldown = player.ship.pattern === 'ufo' ? 500 : 250;
                     
                     if (player.lastShot && now - player.lastShot < cooldown) {
-                        console.log('Shoot blocked - cooldown not finished'); // Debug log
+                        //console.log('Shoot blocked - cooldown not finished'); // Debug log
                         return;
                     }
                     
                     player.lastShot = now;
-                    console.log('Creating bullet for player:', socket.id); // Debug log
+                    //console.log('Creating bullet for player:', socket.id); // Debug log
                     createBullet(socket.id, player.ship);
                 }
                 break;
