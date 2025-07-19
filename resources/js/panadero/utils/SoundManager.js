@@ -1,9 +1,10 @@
 class SoundManager {
     constructor() {
         this.sounds = {
-            shoot: new Audio('/sounds/shoot.mp3'),
+            shoot: new Audio('/sounds/collect.mp3'),
             explosion: new Audio('/sounds/explosion.mp3'),
             powerup: new Audio('/sounds/powerup.mp3'),
+            collect: new Audio('/sounds/collect.mp3'),
             background: new Audio('/sounds/background.mp3')
         };
 
