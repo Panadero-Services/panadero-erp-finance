@@ -46,7 +46,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': '/resources/js',
-            'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/src')
+            'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/client/src/index.js')
         }
     },
     optimizeDeps: {
