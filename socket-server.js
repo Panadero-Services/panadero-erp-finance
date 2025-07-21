@@ -8,10 +8,10 @@ const app = express();
 const PORT = 3000;
 
 // Add these constants at the top of socket-server.js
-const ROTATION_SPEED = 0.1;    // Radians per frame
-const THRUST_POWER = 0.2;      // Reduced for better control
-const FRICTION = 0.99;         // Velocity multiplier per frame
-const MAX_SPEED = 5;           // Maximum velocity
+const ROTATION_SPEED = 0.1;  // Radians per frame
+const THRUST_POWER = 0.2;    // Acceleration per frame
+const FRICTION = 0.99;       // Velocity retention per frame
+const MAX_SPEED = 10;        // Maximum velocity
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 const TICK_RATE = 60; // Physics updates per second
@@ -44,17 +44,34 @@ const SHIP_COLORS = [
     '#FFFF00'  // Yellow
 ];
 
+// In socket-server.js - add shape property
 const COLLECTIBLE_TYPES = [
-    { type: 'star', color: '#FFD700', points: 100, radius: 15 },
-    { type: 'diamond', color: '#00FFFF', points: 200, radius: 15 },
-    { type: 'orb', color: '#FF00FF', points: 300, radius: 15 }
+    { 
+        type: 'gold',
+        color: '#FFD700',
+        points: 100, 
+        radius: 15,
+        shape: 'star'  // ★ shape
+    },
+    { 
+        type: 'water', 
+        color: '#00FFFF',
+        points: 200,
+        radius: 15,
+        shape: 'droplet'  // 💧 shape
+    },
+    { 
+        type: 'kryptonite',
+        color: '#FF00FF',
+        points: 300,
+        radius: 15,
+        shape: 'crystal'  // ♦ shape
+    }
 ];
 
 const COLLECTIBLE_SPAWN_TIME = {
-    //MIN: 500,  // 30 seconds
-    //MAX: 600  // 2 minutes
-    MIN: 30000,  // 30 seconds
-    MAX: 120000  // 2 minutes
+    MIN: 500,   // 5.0 seconds
+    MAX: 600    // 6.0 seconds
 };
 
 // Add ship patterns at the top with other constants
@@ -72,20 +89,22 @@ const teamCounts = {
 
 // Define the team balancing function BEFORE ServerShip class
 function assignBalancedTeam() {
-    // Get current min and max team counts
+    // Log current state
+    console.log('Assigning team. Current counts:', teamCounts);
+    
+    // Get teams with minimum count
     const minCount = Math.min(...Object.values(teamCounts));
-    const maxCount = Math.max(...Object.values(teamCounts));
+    const teamsWithMinCount = Object.entries(teamCounts)
+        .filter(([_, count]) => count === minCount)
+        .map(([color, _]) => color);
     
-    // If difference is already > 1, only choose from teams with minimum count
-    if (maxCount - minCount > 1) {
-        const availableColors = Object.entries(teamCounts)
-            .filter(([_, count]) => count === minCount)
-            .map(([color, _]) => color);
-        return availableColors[Math.floor(Math.random() * availableColors.length)];
-    }
+    console.log('Teams with min count:', teamsWithMinCount);
     
-    // Otherwise randomly choose from all teams
-    return SHIP_COLORS[Math.floor(Math.random() * SHIP_COLORS.length)];
+    // Always pick from teams with lowest count
+    const selectedColor = teamsWithMinCount[Math.floor(Math.random() * teamsWithMinCount.length)];
+    console.log('Selected color:', selectedColor);
+    
+    return selectedColor;
 }
 
 // Define ServerShip class BEFORE it's used
@@ -99,8 +118,10 @@ class ServerShip {
         this.homeY = y;
         this.x = x;
         this.y = y;
-        this.angle = -Math.PI / 2;
+        this.angle = -Math.PI / 2;  // Start pointing up (-90 degrees)
         this.velocity = { x: 0, y: 0 };
+        // Add acceleration initialization
+        this.acceleration = { x: 0, y: 0 };  // <-- Add this line
         this.score = 0;
         this.rotatingLeft = false;
         this.rotatingRight = false;
@@ -116,6 +137,17 @@ class ServerShip {
         this.lastCollisionTime = 0;  // Add collision cooldown tracker
         this.collisionCooldown = 500;  // 500ms cooldown
         
+        // Add collection tracking
+        this.collections = {
+            gold: 0,
+            water: 0,
+            kryptonite: 0
+        };
+
+        // Add streak tracking
+        this.streak = [];  // Just track the last 5 collected
+        this.lastStreakTime = 0;  // Track when last streak was awarded
+
         // Add debug log
         console.log(`New ship created for player ${playerId} with pattern: ${this.pattern}`);
     }
@@ -123,18 +155,22 @@ class ServerShip {
     update(deltaTime) {
         const dt = Math.min(deltaTime, 32) / 16;
 
+        // Rotation
         if (this.rotatingLeft) this.angle -= ROTATION_SPEED * dt;
         if (this.rotatingRight) this.angle += ROTATION_SPEED * dt;
 
+        // Thrust - adjust angle to match visual orientation
         if (this.engineOn) {
-            const thrustAngle = this.angle - Math.PI/2;
+            const thrustAngle = this.angle - Math.PI / 2;
             this.velocity.x += Math.cos(thrustAngle) * THRUST_POWER * dt;
             this.velocity.y += Math.sin(thrustAngle) * THRUST_POWER * dt;
         }
 
-        this.velocity.x *= FRICTION;
-        this.velocity.y *= FRICTION;
+        // Apply friction
+        this.velocity.x *= Math.pow(FRICTION, dt);
+        this.velocity.y *= Math.pow(FRICTION, dt);
 
+        // Enforce speed limit
         const speed = Math.sqrt(this.velocity.x ** 2 + this.velocity.y ** 2);
         if (speed > MAX_SPEED) {
             const scale = MAX_SPEED / speed;
@@ -142,60 +178,8 @@ class ServerShip {
             this.velocity.y *= scale;
         }
 
-        const nextX = this.x + this.velocity.x;
-        const nextY = this.y + this.velocity.y;
-        
-        // Ship-to-ship collisions
-        let shipCollision = false;
-        for (const [otherId, otherPlayer] of gameState.players) {
-            if (otherId === this.id) continue;
-            
-            const otherShip = otherPlayer.ship;
-            if (!otherShip) continue;
-            
-            if (otherShip.color === this.color) continue;
-            
-            const dx = nextX - otherShip.x;
-            const dy = nextY - otherShip.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < SHIP_RADIUS * 2) {
-                if (this.canTakeCollisionDamage()) {
-                    this.takeDamage(false);  // Non-bullet damage
-                }
-                this.velocity.x = -this.velocity.x;
-                this.velocity.y = -this.velocity.y;
-                shipCollision = true;
-                break;
-            }
-        }
-
-        // Safe zone collisions
-        for (const [homeId, homePos] of gameState.homePositions) {
-            if (homeId === this.id) continue;
-            
-            const homeOwnerShip = gameState.players.get(homeId)?.ship;
-            if (!homeOwnerShip) continue;
-            
-            if (homeOwnerShip.color === this.color) continue;
-            
-            const dx = Math.abs(nextX - homePos.x);
-            const dy = Math.abs(nextY - homePos.y);
-            
-            if (dx <= 150 && dy <= 150) {
-                if (this.canTakeCollisionDamage()) {
-                    this.takeDamage(false);  // Non-bullet damage
-                }
-                const angle = Math.atan2(this.y - homePos.y, this.x - homePos.x);
-                const SAFE_OFFSET = 5;
-                this.x += Math.cos(angle) * SAFE_OFFSET;
-                this.y += Math.sin(angle) * SAFE_OFFSET;
-                return;
-            }
-        }
-
-        this.x = nextX;
-        this.y = nextY;
+        // Use the proven updateShipPosition function instead of direct position update
+        updateShipPosition(this.id, this);
     }
 
     takeDamage(fromBullet = false) {
@@ -233,7 +217,9 @@ class ServerShip {
             isColliding: this.isColliding,
             callSign: this.callSign,
             health: this.health,
-            maxHealth: this.maxHealth
+            maxHealth: this.maxHealth,
+            collections: this.collections,
+            streak: this.streak  // Add this
         };
     }
 
@@ -253,6 +239,82 @@ class ServerShip {
 
     canTakeCollisionDamage() {
         return (Date.now() - this.lastCollisionTime) >= this.collisionCooldown;
+    }
+
+    // Add new method to handle streak check
+    checkStreak(type) {
+        // MUST have exactly 5 in a row of same type
+        const hasStreak = this.streak.length === 5 && 
+                         this.streak.every(item => item === type);
+
+        // Points calculation MUST match streak status
+        const basePoints = type === 'gold' ? 3 : 1;
+        const bonus = hasStreak ? 10 : 0;
+
+        return {
+            hasStreak,
+            bonus,
+            total: basePoints + bonus
+        };
+    }
+
+    // New helper method for point calculation
+    calculatePoints(type) {
+        // First check if we're in a streak for this type
+        const hasStreak = this.streak.length >= 4 && 
+                         this.streak.slice(-4).every(item => item === type);
+
+        // Base points
+        let points = type === 'gold' ? 3 : 1;
+        
+        // If in a streak, add bonus to the base value
+        if (hasStreak) {
+            points += 10;  // Now water will be worth 11, gold 13, kryptonite 11
+        }
+
+        return points;
+    }
+
+    // Keep existing collectItem method but use helpers
+    collectItem(collectible) {
+        // In collectItem method
+        const lastCollected = this.streak[this.streak.length - 1];
+        const isSameType = collectible.type === lastCollected;
+
+        // First add new collection
+        if (!isSameType) {
+            this.streak = [];
+        }
+        this.streak.push(collectible.type);
+
+        // NOW check for streak AFTER adding 5th element
+        const hasStreak = this.streak.length === 5 && 
+                         this.streak.every(item => item === collectible.type);
+
+        // Calculate points including bonus if streak
+        const basePoints = collectible.type === 'gold' ? 3 : 1;
+        const bonus = hasStreak ? 10 : 0;
+        const total = basePoints + bonus;
+
+        // Clear streak after bonus awarded
+        if (hasStreak) {
+            // Add bonus to the collectible count
+            this.collections[collectible.type] += 10;  // Add bonus to collection
+            this.streak = [];  // Clear streak
+        }
+
+        // Update collections and score
+        this.collections[collectible.type]++;
+        this.score += total;
+
+        return {
+            score: this.score,
+            collections: this.collections,
+            streak: [...this.streak],
+            hasStreak,
+            bonus,
+            total: total
+        };
     }
 }
 
@@ -418,27 +480,64 @@ function updateShipPosition(playerId, ship) {
 }
 
 // Add collectible management functions
-function spawnCollectible() {
-    const id = 'collectible_' + Date.now();
-    const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
-    
-    const collectible = {
-        id,
-        x: Math.random() * GAME_WIDTH,
-        y: Math.random() * GAME_HEIGHT,
-        ...type,
-        createdAt: Date.now()
-    };
+// World size constants
+const WORLD_CONFIG = {
+    WIDTH: 20000,     // Much bigger world
+    HEIGHT: 16000,    // Proportional
+    MIN_FIELD_DISTANCE: 4000
+};
 
-    gameState.collectibles.set(id, collectible);
-    console.log('Spawned collectible:', collectible);
-    
-    // Schedule next spawn
-    const nextSpawnDelay = Math.random() * 
-        (COLLECTIBLE_SPAWN_TIME.MAX - COLLECTIBLE_SPAWN_TIME.MIN) + 
-        COLLECTIBLE_SPAWN_TIME.MIN;
-    
-    setTimeout(spawnCollectible, nextSpawnDelay);
+const FIELD_CONFIG = {
+    COUNT: 3,              // 3 fields
+    RADIUS: 1200,          // Field size
+    MAX_PER_FIELD: 100,    // Max 100 collectibles per field
+    SPAWN_INTERVAL: 3000   // Check spawn every 3 seconds
+};
+
+// Resource fields storage
+const resourceFields = new Map();
+
+// Helper function to check valid field position
+function isValidFieldPosition(x, y, existingFields) {
+    for (const field of existingFields.values()) {
+        const dx = x - field.x;
+        const dy = y - field.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < WORLD_CONFIG.MIN_FIELD_DISTANCE) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// Create or update field position
+function createOrUpdateField(fieldId) {
+    let x, y;
+    if (fieldId === 0) { // Fixed position for testing
+        x = 2000;
+        y = 2000;
+        console.log(`Field ${fieldId} positioned at:`, { x: Math.round(x), y: Math.round(y) });
+    } else { // Keep other fields random
+        do {
+            x = Math.random() * WORLD_CONFIG.WIDTH;
+            y = Math.random() * WORLD_CONFIG.HEIGHT;
+        } while (!isValidFieldPosition(x, y, resourceFields));
+        console.log(`Field ${fieldId} positioned at:`, { x: Math.round(x), y: Math.round(y) });
+    }
+
+    resourceFields.set(fieldId, {
+        id: fieldId,
+        x: x,
+        y: y,
+        radius: FIELD_CONFIG.RADIUS,
+        lastUpdate: Date.now()
+    });
+}
+
+// Now initialize the fields
+console.log('\n=== Initializing Resource Fields ===');
+for (let i = 0; i < FIELD_CONFIG.COUNT; i++) {
+    createOrUpdateField(i);
 }
 
 // Add collision check for collectibles
@@ -448,7 +547,8 @@ function checkCollectibleCollision(ship, collectible) {
     const distance = Math.sqrt(dx * dx + dy * dy);
     
     if (distance < (ship.radius + collectible.radius)) {
-        if (collectible.type === 'diamond' && collectible.color === '#00FFFF') {  // Cyan diamond
+        // Keep this healing effect for water (was diamond)
+        if (collectible.type === 'water' && collectible.color === '#00FFFF') {  // Changed from 'diamond'
             ship.heal();  // Restore full health
         }
         return true;
@@ -460,6 +560,35 @@ function isInRange(playerX, playerY, objectX, objectY, range) {
     const dx = playerX - objectX;
     const dy = playerY - objectY;
     return Math.sqrt(dx * dx + dy * dy) <= range;
+}
+
+// Add new helper function without modifying existing code
+function checkPathCollision(oldPos, newPos, collectible) {
+    // Increase interpolation points for better accuracy
+    const steps = Math.ceil(Math.sqrt(
+        Math.pow(newPos.x - oldPos.x, 2) + 
+        Math.pow(newPos.y - oldPos.y, 2)
+    ) / 10); // One check every 10 units
+
+    // Use velocity-based prediction
+    const predictedPath = [];
+    for(let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        // Cubic interpolation for smoother path
+        const checkX = oldPos.x + (newPos.x - oldPos.x) * (t * (2 - t));
+        const checkY = oldPos.y + (newPos.y - oldPos.y) * (t * (2 - t));
+        predictedPath.push({x: checkX, y: checkY});
+    }
+
+    // Check each point for collision
+    for(const point of predictedPath) {
+        const dx = point.x - collectible.x;
+        const dy = point.y - collectible.y;
+        if(Math.sqrt(dx * dx + dy * dy) < SHIP_RADIUS * 2) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // Update the game loop to include collectibles
@@ -484,26 +613,17 @@ function gameLoop() {
         
         for (const [collectibleId, collectible] of gameState.collectibles) {
             if (checkCollectibleCollision(player.ship, collectible)) {
-
-            
- // Calculate points based on collectible type
-                const points = collectible.type === 'star' ? 3 : 1;
+                const ship = player.ship;
+                const result = ship.collectItem(collectible);
                 
-                // Update player's score in the game state
-                player.ship.score = (player.ship.score || 0) + points;
+                // Log collection
+                console.log(`Player ${ship.callSign} collected ${collectible.type}:`, result);
                 
-                // Remove the collectible
+                // Remove collectible
                 gameState.collectibles.delete(collectibleId);
                 
-                // Emit to the specific player that collected it
-                io.to(playerId).emit('collectible_collected', {
-                    type: collectible.type,
-                    points: points
-                });
-                
-                console.log(`Player ${playerId} collected ${collectible.type}, score: ${player.ship.score}`);
-
-
+                // Notify player (keep existing format)
+                io.to(playerId).emit('collectible_collected', result);
             }
         }
     }
@@ -559,8 +679,67 @@ function gameLoop() {
 // Start game loop
 setInterval(gameLoop, 1000 / TICK_RATE);
 
-// Start spawning collectibles when server starts
-spawnCollectible();
+// Add spawn function
+function spawnCollectibleInField(field) {
+    // Count existing collectibles in this field
+    const fieldCollectibles = Array.from(gameState.collectibles.values())
+        .filter(c => {
+            const dx = c.x - field.x;
+            const dy = c.y - field.y;
+            return Math.sqrt(dx * dx + dy * dy) <= field.radius;
+        });
+
+    // Only spawn if under max
+    if (fieldCollectibles.length < FIELD_CONFIG.MAX_PER_FIELD) {
+        // Random angle
+        const angle = Math.random() * Math.PI * 2;
+        
+        // Use squared random for distance to favor center
+        // Math.pow(Math.random(), 3) will cluster more towards center
+        // Math.random() alone would give uniform distribution
+        const centerBias = Math.pow(Math.random(), 3);  // Cube makes center much more likely
+        const distance = centerBias * field.radius;
+        
+        // Pick random collectible type
+        const type = COLLECTIBLE_TYPES[Math.floor(Math.random() * COLLECTIBLE_TYPES.length)];
+        
+        const collectible = {
+            id: 'collectible_' + Date.now(),
+            x: field.x + Math.cos(angle) * distance,
+            y: field.y + Math.sin(angle) * distance,
+            ...type,
+            createdAt: Date.now()
+        };
+
+        gameState.collectibles.set(collectible.id, collectible);
+        
+        /*console.log(`Spawned ${type.type} in Field ${field.id} at:`, {
+            x: Math.round(collectible.x),
+            y: Math.round(collectible.y),
+            distanceFromCenter: Math.round(distance)
+        });*/
+    }
+}
+
+function scheduleNextSpawn() {
+    // Random time between MIN and MAX
+    const delay = Math.random() * (COLLECTIBLE_SPAWN_TIME.MAX - COLLECTIBLE_SPAWN_TIME.MIN) 
+                 + COLLECTIBLE_SPAWN_TIME.MIN;
+    
+    setTimeout(() => {
+        // Pick random field
+        const fieldId = Math.floor(Math.random() * FIELD_CONFIG.COUNT);
+        const field = resourceFields.get(fieldId);
+        
+        spawnCollectibleInField(field);
+        
+        // Schedule next spawn
+        scheduleNextSpawn();
+    }, delay);
+}
+
+// Start the spawn cycle
+scheduleNextSpawn();
 
 // More permissive CORS for Express
 app.use(cors({
@@ -689,8 +868,11 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         const player = gameState.players.get(socket.id);
         if (player && player.ship) {
-            // Decrement team count when player leaves
+            // Log before decrement
+            console.log('Before disconnect team counts:', {...teamCounts});
             teamCounts[player.ship.color]--;
+            // Log after decrement
+            console.log('After disconnect team counts:', {...teamCounts});
         }
         gameState.players.delete(socket.id);
         gameState.homePositions.delete(socket.id);
