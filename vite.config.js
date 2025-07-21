@@ -19,6 +19,15 @@ export default defineConfig({
             },
         }),
     ],
+    server: {
+        host: process.env.VITE_SERVER_HOST || 'localhost',
+        port: parseInt(process.env.VITE_SERVER_PORT || '5173'),
+        cors: true,
+        hmr: {
+            host: process.env.VITE_SERVER_HOST || 'localhost',
+            port: parseInt(process.env.VITE_SERVER_PORT || '5173'),
+        },
+    },
     build: {
         chunkSizeWarningLimit: 5000,
         minify: 'esbuild',
