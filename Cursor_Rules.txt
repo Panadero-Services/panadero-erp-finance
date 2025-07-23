@@ -1,9 +1,9 @@
 I will include this in every request.. so annoying but also mandatory because we are doing simple project for days without progrress; 
 Do not make mistakes,
-Do not overcomplicate
+Do not complicate, do not repeat yourself DRY
 Follow the proper processes, be very thorough in your analysis.
 Do not get distracted,
-Do not not overwrite working code,
+Do not not overwrite existing code,
 Do not delete working fuctionality,
 Do not change style if not asked to,
 Answer the question and do not do things I do not ask for.

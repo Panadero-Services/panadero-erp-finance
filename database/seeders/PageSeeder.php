@@ -604,6 +604,28 @@ class PageSeeder extends Seeder
                 'animate' => 1,
                 'max_width' => 1,
             ],
+            [
+                'id' => 36,
+                'title' => 'SolarSys',
+                'file' => 'home/SolarSys.vue',
+                'icon' => 'view-dashboard-outline',
+                'image' => 'h-80 text-4xl text-black bg-contain bg-[url(../images/new2.jpg)]',
+                'slogan' => 'Multiplayer Web3 Game',
+                'type' => 'home',
+                'settings' => 'home',
+                'user_id' => 1,
+                'project_id' => 1,
+                'created_at' => '2024-12-07 22:31:41',
+                'updated_at' => '2025-05-20 21:31:48',
+                'is_active' => 1,
+                'sidebar' => 1,
+                'header' => 1,
+                'footer' => 0,
+                'public' => 1,
+                'animate' => 1,
+                'max_width' => 1,
+            ],
+
         ];
 
         foreach ($pages as $data) {
