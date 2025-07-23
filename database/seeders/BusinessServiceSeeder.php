@@ -29,6 +29,7 @@ class BusinessServiceSeeder extends Seeder
                     ['name' => 'Futures', 'url' => '/home/futures', 'route' => 'home.futures'],
                     ['name' => 'Landing', 'url' => '/home/landing', 'route' => 'home.landing'],
                     ['name' => 'BusinessServices', 'url' => '/home/business_services', 'route' => 'home.business_services'],
+                    ['name' => 'SolarSys', 'url' => '/home/solarsys', 'route' => 'home.solarsys'],
                     ['name' => 'Sandbox', 'url' => '/home/sandbox', 'route' => 'home.sandbox']
                 ],
                 'status' => 'ready',

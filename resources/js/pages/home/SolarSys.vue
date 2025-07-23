@@ -1,18 +1,30 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import SolarSysGame from 'panadero-solarsysinvaders';
+import SolarSysGame, { GameServerSelector } from 'panadero-solarsysinvaders';
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
 
-// Get the game server URL from environment
-const gameServerUrl = import.meta.env.VITE_GAME_SERVER_URL;
+// Get the game server URL from environment - use network URL for all clients
+const defaultServerUrl = import.meta.env.VITE_GAME_SERVER_URL_NETWORK || import.meta.env.VITE_GAME_SERVER_URL;
+const gameServerUrl = ref(defaultServerUrl);
 
 console.log('SolarSys loading...');
+console.log('Default Game Server URL:', defaultServerUrl);
 
 const settingsStore = useSettingsStore();
 const contractStore = useContractStore();
 const mounted = ref(false);
+
+const handleServerChange = (newServerUrl) => {
+    console.log('Switching to server:', newServerUrl);
+    gameServerUrl.value = newServerUrl;
+    // Force game component to reconnect
+    mounted.value = false;
+    setTimeout(() => {
+        mounted.value = true;
+    }, 100);
+};
 
 onMounted(() => {
     console.log('SolarSys mounted');
@@ -41,6 +53,14 @@ defineProps({
     >
       <template #default>
             <div class="game-page">
+                <!-- Server Selector -->
+                <div class="server-selector-container">
+                    <GameServerSelector 
+                        :currentServer="gameServerUrl"
+                        @server-changed="handleServerChange"
+                    />
+                </div>
+
                 <div v-if="!mounted" class="loading">
                     Loading game...
                 </div>
@@ -63,6 +83,14 @@ defineProps({
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+.server-selector-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 9999;
 }
 
 .game-wrapper {
