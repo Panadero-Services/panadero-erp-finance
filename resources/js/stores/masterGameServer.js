@@ -12,6 +12,7 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
             total_games_played: 0,
             current_round: 1
         },
+        worlds: [],
         player: null,
         leaderboard: [],
         global_stats: {
@@ -32,14 +33,19 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
     const playerRank = computed(() => gameState.value.player?.rank || null);
     const playerHighScore = computed(() => gameState.value.player?.high_score || 0);
     const topPlayers = computed(() => gameState.value.leaderboard.slice(0, 5));
+    const availableWorlds = computed(() => gameState.value.worlds.filter(w => w.is_online && w.available_capacity > 0));
+    const currentWorld = computed(() => gameState.value.player?.current_world);
+    const playerResources = computed(() => gameState.value.player?.resources || {});
 
     // Actions
-    const fetchGameState = async () => {
+    const fetchGameState = async (playerName = null) => {
         try {
             isLoading.value = true;
             error.value = null;
             
+            const params = playerName ? { player_name: playerName } : {};
             const response = await axios.get('/master/game-state', {
+                params,
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -58,6 +64,129 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
         }
     };
 
+    const joinWorld = async (worldId, playerName, sessionId, playerState = {}) => {
+        try {
+            const response = await axios.post('/master/player/join-world', {
+                world_id: worldId,
+                player_name: playerName,
+                session_id: sessionId,
+                player_state: playerState
+            }, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            // Refresh game state after joining
+            await fetchGameState(playerName);
+            
+            console.log('Joined world successfully:', response.data);
+            return response.data;
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to join world';
+            console.error('Error joining world:', err);
+            throw err;
+        }
+    };
+
+    const leaveWorld = async (sessionId) => {
+        try {
+            const response = await axios.post('/master/player/leave-world', {
+                session_id: sessionId
+            }, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            // Refresh game state after leaving
+            await fetchGameState();
+            
+            console.log('Left world successfully:', response.data);
+            return response.data;
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to leave world';
+            console.error('Error leaving world:', err);
+            throw err;
+        }
+    };
+
+    const transferToWorld = async (playerName, targetWorldId, transferType = 'warp', resourcesToTransfer = {}, playerState = {}) => {
+        try {
+            const response = await axios.post('/master/player/transfer', {
+                player_name: playerName,
+                target_world_id: targetWorldId,
+                transfer_type: transferType,
+                resources_to_transfer: resourcesToTransfer,
+                player_state: playerState
+            }, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            // Refresh game state after transfer
+            await fetchGameState(playerName);
+            
+            console.log('World transfer completed:', response.data);
+            return response.data;
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to transfer to world';
+            console.error('Error transferring to world:', err);
+            throw err;
+        }
+    };
+
+    const updatePlayerResources = async (playerName, resources, operation = 'add') => {
+        try {
+            const response = await axios.post('/master/player/resources', {
+                player_name: playerName,
+                resources: resources,
+                operation: operation
+            }, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            // Refresh game state after resource update
+            await fetchGameState(playerName);
+            
+            console.log('Player resources updated:', response.data);
+            return response.data;
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to update resources';
+            console.error('Error updating resources:', err);
+            throw err;
+        }
+    };
+
+    const getPlayerResources = async (playerName) => {
+        try {
+            const response = await axios.get('/master/player/resources', {
+                params: { player_name: playerName },
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            return response.data;
+        } catch (err) {
+            error.value = err.response?.data?.message || 'Failed to get player resources';
+            console.error('Error getting player resources:', err);
+            throw err;
+        }
+    };
+
     const updateScore = async (scoreData) => {
         try {
             isLoading.value = true;
@@ -72,7 +201,7 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
             });
 
             // Refresh game state after score update
-            await fetchGameState();
+            await fetchGameState(scoreData.player_name);
             
             console.log('Score updated successfully:', response.data);
             return response.data;
@@ -104,9 +233,10 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
         }
     };
 
-    const fetchPlayerStats = async () => {
+    const fetchPlayerStats = async (playerName) => {
         try {
             const response = await axios.get('/master/player-stats', {
+                params: { player_name: playerName },
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -140,6 +270,7 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
 
     const submitGameResult = async (gameData) => {
         const scoreData = {
+            player_name: gameData.player_name,
             score: gameData.score || 0,
             stage: gameData.stage || 0,
             bonus: gameData.bonus || 0,
@@ -158,14 +289,14 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
     };
 
     // Initialize store
-    const initialize = async () => {
+    const initialize = async (playerName = null) => {
         console.log('Initializing Master Game Server store...');
-        await fetchGameState();
+        await fetchGameState(playerName);
         
         // Set up periodic refresh
         setInterval(async () => {
             if (isOnline.value) {
-                await fetchGameState();
+                await fetchGameState(playerName);
             }
         }, 30000); // Refresh every 30 seconds
     };
@@ -182,9 +313,17 @@ export const useMasterGameServerStore = defineStore('masterGameServer', () => {
         playerRank,
         playerHighScore,
         topPlayers,
+        availableWorlds,
+        currentWorld,
+        playerResources,
         
         // Actions
         fetchGameState,
+        joinWorld,
+        leaveWorld,
+        transferToWorld,
+        updatePlayerResources,
+        getPlayerResources,
         updateScore,
         fetchLeaderboard,
         fetchPlayerStats,

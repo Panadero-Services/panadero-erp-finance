@@ -12,6 +12,14 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // Add Master Server routes to CSRF exclusion
+        'master/*',
+        'master/worlds/*',
+        'master/player/*',
+        'master/events/*',
+        'master/update-score',
+        'master/leaderboard',
+        'master/player-stats',
+        'master/health',
     ];
 }

@@ -4,10 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Score;
-use App\Models\User;
+use App\Models\Player;
+use App\Models\GameWorld;
+use App\Models\PlayerResource;
+use App\Models\PlayerWorldSession;
+use App\Models\WorldTransfer;
+use App\Models\WorldEvent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Events\ScoreUpdated;
+use App\Events\WorldTransferCompleted;
+use App\Events\PlayerJoinedWorld;
+use App\Events\PlayerLeftWorld;
 
 class MasterGameServerController extends Controller
 {
@@ -26,11 +35,12 @@ class MasterGameServerController extends Controller
     }
 
     /**
-     * Get current game state and statistics
+     * Get comprehensive game state including worlds and players
      */
     public function getGameState(Request $request)
     {
-        $userId = $request->user()?->id;
+        $playerName = $request->input('player_name');
+        $player = $playerName ? Player::where('name', $playerName)->first() : null;
         
         $gameState = [
             'server' => [
@@ -40,7 +50,8 @@ class MasterGameServerController extends Controller
                 'total_games_played' => $this->getTotalGamesPlayed(),
                 'current_round' => $this->gameState['current_round']
             ],
-            'player' => $userId ? $this->buildPlayerStats($userId) : null,
+            'worlds' => $this->getWorldsStatus(),
+            'player' => $player ? $this->buildPlayerStats($player) : null,
             'leaderboard' => $this->getLeaderboard(),
             'global_stats' => $this->getGlobalStats()
         ];
@@ -49,11 +60,377 @@ class MasterGameServerController extends Controller
     }
 
     /**
+     * Get all game worlds status
+     */
+    public function getWorldsStatus()
+    {
+        return GameWorld::all()->map(function ($world) {
+            return [
+                'id' => $world->id,
+                'name' => $world->name,
+                'server_id' => $world->server_id,
+                'server_url' => $world->server_url,
+                'status' => $world->status,
+                'is_online' => $world->isOnline(),
+                'max_players' => $world->max_players,
+                'current_players' => $world->current_players,
+                'available_capacity' => $world->getAvailableCapacity(),
+                'last_heartbeat' => $world->last_heartbeat,
+                'description' => $world->description
+            ];
+        });
+    }
+
+    /**
+     * Register a new game world
+     */
+    public function registerWorld(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100|unique:game_worlds',
+            'server_url' => 'required|url',
+            'server_id' => 'required|string|max:50|unique:game_worlds',
+            'description' => 'nullable|string',
+            'max_players' => 'integer|min:1|max:1000',
+            'world_config' => 'nullable|array'
+        ]);
+
+        $world = GameWorld::create([
+            'name' => $request->name,
+            'server_url' => $request->server_url,
+            'server_id' => $request->server_id,
+            'description' => $request->description,
+            'max_players' => $request->max_players ?? 100,
+            'world_config' => $request->world_config,
+            'status' => 'online',
+            'last_heartbeat' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'world' => $world,
+            'message' => 'Game world registered successfully'
+        ]);
+    }
+
+    /**
+     * Update world heartbeat and status
+     */
+    public function updateWorldHeartbeat(Request $request)
+    {
+        $request->validate([
+            'server_id' => 'required|string',
+            'current_players' => 'required|integer|min:0',
+            'status' => 'nullable|in:online,offline,maintenance'
+        ]);
+
+        $world = GameWorld::where('server_id', $request->server_id)->first();
+        
+        if (!$world) {
+            return response()->json(['error' => 'World not found'], 404);
+        }
+
+        $world->update([
+            'current_players' => $request->current_players,
+            'status' => $request->status ?? $world->status,
+            'last_heartbeat' => now()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Player joins a world
+     */
+    public function playerJoinWorld(Request $request)
+    {
+        $request->validate([
+            'world_id' => 'required|exists:game_worlds,id',
+            'player_name' => 'required|string|max:100',
+            'session_id' => 'required|string|max:100|unique:player_world_sessions',
+            'player_state' => 'nullable|array'
+        ]);
+
+        $world = GameWorld::findOrFail($request->world_id);
+        
+        // Get or create player
+        $player = Player::firstOrCreate(
+            ['name' => $request->player_name],
+            [
+                'callsign' => $request->player_name,
+                'last_login' => now(),
+                'is_active' => true
+            ]
+        );
+
+        // Check if world is online and has capacity
+        if (!$world->isOnline()) {
+            return response()->json(['error' => 'World is offline'], 400);
+        }
+
+        if ($world->getAvailableCapacity() <= 0) {
+            return response()->json(['error' => 'World is full'], 400);
+        }
+
+        // Disconnect from any other world first
+        PlayerWorldSession::where('player_id', $player->id)
+            ->where('is_active', true)
+            ->update(['is_active' => false, 'disconnected_at' => now()]);
+
+        // Create new session
+        $session = PlayerWorldSession::create([
+            'player_id' => $player->id,
+            'game_world_id' => $world->id,
+            'session_id' => $request->session_id,
+            'player_name' => $request->player_name,
+            'player_state' => $request->player_state ?? [],
+            'is_active' => true
+        ]);
+
+        // Update world player count
+        $world->updatePlayerCount($world->current_players + 1);
+
+        // Update player last login
+        $player->updateLastLogin();
+
+        // Broadcast player joined event
+        broadcast(new PlayerJoinedWorld($session))->toOthers();
+
+        return response()->json([
+            'success' => true,
+            'session' => $session,
+            'world' => $world,
+            'player' => $player
+        ]);
+    }
+
+    /**
+     * Player leaves a world
+     */
+    public function playerLeaveWorld(Request $request)
+    {
+        $request->validate([
+            'session_id' => 'required|string'
+        ]);
+
+        $session = PlayerWorldSession::where('session_id', $request->session_id)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$session) {
+            return response()->json(['error' => 'Session not found'], 404);
+        }
+
+        $world = $session->gameWorld;
+        
+        // Disconnect session
+        $session->disconnect();
+
+        // Update world player count
+        $world->updatePlayerCount(max(0, $world->current_players - 1));
+
+        // Broadcast player left event
+        broadcast(new PlayerLeftWorld($session))->toOthers();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Transfer player to another world (WARP)
+     */
+    public function transferToWorld(Request $request)
+    {
+        $request->validate([
+            'player_name' => 'required|string',
+            'target_world_id' => 'required|exists:game_worlds,id',
+            'transfer_type' => 'required|in:warp,teleport,emergency',
+            'resources_to_transfer' => 'nullable|array',
+            'player_state' => 'nullable|array'
+        ]);
+
+        $player = Player::where('name', $request->player_name)->first();
+        if (!$player) {
+            return response()->json(['error' => 'Player not found'], 404);
+        }
+
+        $targetWorld = GameWorld::findOrFail($request->target_world_id);
+
+        // Check if target world is available
+        if (!$targetWorld->isOnline()) {
+            return response()->json(['error' => 'Target world is offline'], 400);
+        }
+
+        if ($targetWorld->getAvailableCapacity() <= 0) {
+            return response()->json(['error' => 'Target world is full'], 400);
+        }
+
+        // Get current session
+        $currentSession = $player->activeSession;
+        $fromWorldId = $currentSession?->game_world_id;
+
+        // Disconnect from current world
+        if ($currentSession) {
+            $currentSession->disconnect();
+            
+            // Update current world player count
+            $currentWorld = $currentSession->gameWorld;
+            $currentWorld->updatePlayerCount(max(0, $currentWorld->current_players - 1));
+        }
+
+        // Create new session in target world
+        $newSessionId = 'session_' . uniqid();
+        $newSession = PlayerWorldSession::create([
+            'player_id' => $player->id,
+            'game_world_id' => $targetWorld->id,
+            'session_id' => $newSessionId,
+            'player_name' => $player->name,
+            'player_state' => $request->player_state ?? [],
+            'is_active' => true
+        ]);
+
+        // Update target world player count
+        $targetWorld->updatePlayerCount($targetWorld->current_players + 1);
+
+        // Transfer resources if specified
+        $resourcesTransferred = [];
+        if ($request->resources_to_transfer) {
+            foreach ($request->resources_to_transfer as $resourceType => $amount) {
+                if ($player->removeResource($resourceType, $amount)) {
+                    $resourcesTransferred[$resourceType] = $amount;
+                }
+            }
+        }
+
+        // Record transfer
+        $transfer = WorldTransfer::create([
+            'player_id' => $player->id,
+            'from_world_id' => $fromWorldId,
+            'to_world_id' => $targetWorld->id,
+            'transfer_type' => $request->transfer_type,
+            'resources_transferred' => $resourcesTransferred,
+            'player_state' => $request->player_state ?? [],
+            'successful' => true
+        ]);
+
+        // Broadcast transfer completed event
+        broadcast(new WorldTransferCompleted($transfer))->toOthers();
+
+        return response()->json([
+            'success' => true,
+            'transfer' => $transfer,
+            'new_session' => $newSession,
+            'target_world' => $targetWorld,
+            'resources_transferred' => $resourcesTransferred
+        ]);
+    }
+
+    /**
+     * Get available worlds for transfer
+     */
+    public function getAvailableWorlds(Request $request)
+    {
+        $worlds = GameWorld::where('status', 'online')
+            ->where('current_players', '<', DB::raw('max_players'))
+            ->where('last_heartbeat', '>', now()->subMinutes(5))
+            ->get()
+            ->map(function ($world) {
+                return [
+                    'id' => $world->id,
+                    'name' => $world->name,
+                    'server_id' => $world->server_id,
+                    'current_players' => $world->current_players,
+                    'max_players' => $world->max_players,
+                    'available_capacity' => $world->getAvailableCapacity(),
+                    'description' => $world->description
+                ];
+            });
+
+        return response()->json($worlds);
+    }
+
+    /**
+     * Update player resources
+     */
+    public function updatePlayerResources(Request $request)
+    {
+        $request->validate([
+            'player_name' => 'required|string',
+            'resources' => 'required|array',
+            'resources.*.type' => 'required|string',
+            'resources.*.amount' => 'required|integer|min:0',
+            'operation' => 'required|in:add,remove,set' // add, remove, or set
+        ]);
+
+        $player = Player::where('name', $request->player_name)->first();
+        if (!$player) {
+            return response()->json(['error' => 'Player not found'], 404);
+        }
+
+        $results = [];
+
+        foreach ($request->resources as $resource) {
+            $type = $resource['type'];
+            $amount = $resource['amount'];
+            
+            switch ($request->operation) {
+                case 'add':
+                    $player->addResource($type, $amount);
+                    $results[$type] = ['success' => true, 'new_amount' => $player->getResource($type)];
+                    break;
+                    
+                case 'remove':
+                    $success = $player->removeResource($type, $amount);
+                    $results[$type] = [
+                        'success' => $success, 
+                        'new_amount' => $player->getResource($type)
+                    ];
+                    break;
+                    
+                case 'set':
+                    $player->resources()->updateOrCreate(
+                        ['resource_type' => $type],
+                        ['amount' => $amount, 'last_updated' => now()]
+                    );
+                    $results[$type] = ['success' => true, 'new_amount' => $amount];
+                    break;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'results' => $results,
+            'total_resources' => $player->getTotalResources()
+        ]);
+    }
+
+    /**
+     * Get player resources
+     */
+    public function getPlayerResources(Request $request)
+    {
+        $request->validate([
+            'player_name' => 'required|string'
+        ]);
+
+        $player = Player::where('name', $request->player_name)->first();
+        if (!$player) {
+            return response()->json(['error' => 'Player not found'], 404);
+        }
+
+        return response()->json([
+            'player' => $player->name,
+            'resources' => $player->getTotalResources(),
+            'current_world' => $player->getCurrentWorld()?->name
+        ]);
+    }
+
+    /**
      * Update player score and game state
      */
     public function updateScore(Request $request)
     {
         $request->validate([
+            'player_name' => 'required|string',
             'score' => 'required|numeric|min:0',
             'stage' => 'required|numeric|min:0',
             'bonus' => 'numeric|min:0',
@@ -61,8 +438,17 @@ class MasterGameServerController extends Controller
             'server_id' => 'string'
         ]);
 
-        $userId = $request->user()?->id;
-        $playerName = $request->user()?->name ?? $request->input('player_name', 'Anonymous');
+        $playerName = $request->player_name;
+
+        // Get or create player
+        $player = Player::firstOrCreate(
+            ['name' => $playerName],
+            [
+                'callsign' => $playerName,
+                'last_game_at' => now(),
+                'is_active' => true
+            ]
+        );
 
         // Store score in database
         $score = Score::create([
@@ -75,16 +461,14 @@ class MasterGameServerController extends Controller
             'json' => json_encode($request->input('game_data', []))
         ]);
 
-        // Update player stats
-        if ($userId) {
-            $this->updatePlayerStats($userId, $request->score, $request->stage);
-        }
+        // Update player last game time
+        $player->updateLastGame();
 
         // Invalidate leaderboard cache
         Cache::forget($this->leaderboardCacheKey);
 
         // Broadcast score update to all connected clients
-        broadcast(new \App\Events\ScoreUpdated($score))->toOthers();
+        broadcast(new ScoreUpdated($score))->toOthers();
 
         return response()->json([
             'success' => true,
@@ -114,15 +498,78 @@ class MasterGameServerController extends Controller
      */
     public function getPlayerStats(Request $request)
     {
-        $userId = $request->user()?->id;
+        $request->validate([
+            'player_name' => 'required|string'
+        ]);
+
+        $player = Player::where('name', $request->player_name)->first();
         
-        if (!$userId) {
-            return response()->json(['error' => 'User not authenticated'], 401);
+        if (!$player) {
+            return response()->json(['error' => 'Player not found'], 404);
         }
 
-        $stats = $this->buildPlayerStats($userId);
+        $stats = $this->buildPlayerStats($player);
         
         return response()->json($stats);
+    }
+
+    /**
+     * Create world event
+     */
+    public function createWorldEvent(Request $request)
+    {
+        $request->validate([
+            'world_id' => 'required|exists:game_worlds,id',
+            'event_type' => 'required|string|max:100',
+            'event_name' => 'required|string|max:255',
+            'event_data' => 'nullable|array',
+            'expires_at' => 'nullable|date|after:now'
+        ]);
+
+        $event = WorldEvent::create([
+            'game_world_id' => $request->world_id,
+            'event_type' => $request->event_type,
+            'event_name' => $request->event_name,
+            'event_data' => $request->event_data,
+            'expires_at' => $request->expires_at
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'event' => $event
+        ]);
+    }
+
+    /**
+     * Get world events
+     */
+    public function getWorldEvents(Request $request)
+    {
+        $worldId = $request->input('world_id');
+        $eventType = $request->input('event_type');
+        $activeOnly = $request->input('active_only', true);
+
+        $query = WorldEvent::query();
+
+        if ($worldId) {
+            $query->where('game_world_id', $worldId);
+        }
+
+        if ($eventType) {
+            $query->where('event_type', $eventType);
+        }
+
+        if ($activeOnly) {
+            $query->where('is_active', true)
+                  ->where(function ($q) {
+                      $q->whereNull('expires_at')
+                        ->orWhere('expires_at', '>', now());
+                  });
+        }
+
+        $events = $query->orderBy('event_time', 'desc')->get();
+
+        return response()->json($events);
     }
 
     /**
@@ -136,7 +583,9 @@ class MasterGameServerController extends Controller
             'uptime' => now()->diffInSeconds($this->gameState['server_start_time']),
             'memory_usage' => memory_get_usage(true),
             'active_connections' => $this->getActivePlayerCount(),
-            'database_status' => $this->checkDatabaseConnection()
+            'database_status' => $this->checkDatabaseConnection(),
+            'worlds_online' => GameWorld::where('status', 'online')->count(),
+            'total_worlds' => GameWorld::count()
         ]);
     }
 
@@ -145,9 +594,7 @@ class MasterGameServerController extends Controller
      */
     private function getActivePlayerCount()
     {
-        // This would integrate with your WebSocket server
-        // For now, return cached value or estimate
-        return Cache::get('active_players_count', 0);
+        return PlayerWorldSession::where('is_active', true)->count();
     }
 
     private function getTotalGamesPlayed()
@@ -155,36 +602,31 @@ class MasterGameServerController extends Controller
         return Score::count();
     }
 
-    private function buildPlayerStats($userId)
+    private function buildPlayerStats(Player $player)
     {
-        $user = User::find($userId);
-        if (!$user) return null;
-
-        $scores = Score::where('self', $user->name)->get();
+        $scores = $player->scores;
+        $worldSessions = $player->worldSessions;
+        $transfers = $player->worldTransfers;
         
         return [
-            'player_name' => $user->name,
+            'player_name' => $player->name,
+            'callsign' => $player->callsign,
             'total_games' => $scores->count(),
             'high_score' => $scores->max('score') ?? 0,
             'total_score' => $scores->sum('score'),
             'average_score' => $scores->avg('score') ?? 0,
             'best_stage' => $scores->max('stage') ?? 0,
             'last_played' => $scores->latest()->first()?->created_at,
-            'rank' => $this->getPlayerRank($user->name)
+            'rank' => $this->getPlayerRank($player->name),
+            'resources' => $player->getTotalResources(),
+            'current_world' => $player->getCurrentWorld()?->name,
+            'is_online' => $player->isOnline(),
+            'worlds_visited' => $worldSessions->pluck('gameWorld.name')->unique()->count(),
+            'total_transfers' => $transfers->count(),
+            'total_playtime' => $worldSessions->sum(DB::raw('TIMESTAMPDIFF(MINUTE, connected_at, COALESCE(disconnected_at, NOW()))')),
+            'last_login' => $player->last_login,
+            'last_game_at' => $player->last_game_at
         ];
-    }
-
-    private function updatePlayerStats($userId, $score, $stage)
-    {
-        $user = User::find($userId);
-        if (!$user) return;
-
-        // Update user's game statistics
-        $user->update([
-            'last_game_score' => $score,
-            'last_game_stage' => $stage,
-            'last_game_at' => now()
-        ]);
     }
 
     private function buildLeaderboard($limit, $timeframe)
@@ -222,14 +664,17 @@ class MasterGameServerController extends Controller
     {
         return Cache::remember('global_game_stats', 600, function () {
             return [
-                'total_players' => Score::distinct('self')->count(),
+                'total_players' => Player::count(),
+                'active_players' => PlayerWorldSession::where('is_active', true)->count(),
                 'total_games' => Score::count(),
                 'average_score' => Score::avg('score'),
                 'highest_score' => Score::max('score'),
                 'most_active_player' => Score::select('self', DB::raw('COUNT(*) as games'))
                     ->groupBy('self')
                     ->orderBy('games', 'desc')
-                    ->first()
+                    ->first(),
+                'worlds_online' => GameWorld::where('status', 'online')->count(),
+                'total_worlds' => GameWorld::count()
             ];
         });
     }

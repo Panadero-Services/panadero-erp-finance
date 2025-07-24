@@ -299,6 +299,21 @@ Route::middleware([
     Route::get('/master/leaderboard', [\App\Http\Controllers\MasterGameServerController::class, 'getLeaderboard'])->name('master.leaderboard');
     Route::get('/master/player-stats', [\App\Http\Controllers\MasterGameServerController::class, 'getPlayerStats'])->name('master.player-stats');
     Route::get('/master/health', [\App\Http\Controllers\MasterGameServerController::class, 'getServerHealth'])->name('master.health');
+    
+    // New Master Server routes
+    Route::get('/master/worlds', [\App\Http\Controllers\MasterGameServerController::class, 'getWorldsStatus'])->name('master.worlds');
+    Route::post('/master/worlds/register', [\App\Http\Controllers\MasterGameServerController::class, 'registerWorld'])->name('master.worlds.register');
+    Route::post('/master/worlds/heartbeat', [\App\Http\Controllers\MasterGameServerController::class, 'updateWorldHeartbeat'])->name('master.worlds.heartbeat');
+    Route::get('/master/worlds/available', [\App\Http\Controllers\MasterGameServerController::class, 'getAvailableWorlds'])->name('master.worlds.available');
+    
+    Route::post('/master/player/join-world', [\App\Http\Controllers\MasterGameServerController::class, 'playerJoinWorld'])->name('master.player.join-world');
+    Route::post('/master/player/leave-world', [\App\Http\Controllers\MasterGameServerController::class, 'playerLeaveWorld'])->name('master.player.leave-world');
+    Route::post('/master/player/transfer', [\App\Http\Controllers\MasterGameServerController::class, 'transferToWorld'])->name('master.player.transfer');
+    Route::post('/master/player/resources', [\App\Http\Controllers\MasterGameServerController::class, 'updatePlayerResources'])->name('master.player.resources');
+    Route::get('/master/player/resources', [\App\Http\Controllers\MasterGameServerController::class, 'getPlayerResources'])->name('master.player.resources.get');
+    
+    Route::post('/master/events', [\App\Http\Controllers\MasterGameServerController::class, 'createWorldEvent'])->name('master.events.create');
+    Route::get('/master/events', [\App\Http\Controllers\MasterGameServerController::class, 'getWorldEvents'])->name('master.events.get');
 
     // ========================================
     // SOLARSYS GAME ROUTES
