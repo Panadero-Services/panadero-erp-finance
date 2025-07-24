@@ -292,6 +292,15 @@ Route::middleware([
     Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
 
     // ========================================
+    // MASTER GAME SERVER ROUTES
+    // ========================================
+    Route::get('/master/game-state', [\App\Http\Controllers\MasterGameServerController::class, 'getGameState'])->name('master.game-state');
+    Route::post('/master/update-score', [\App\Http\Controllers\MasterGameServerController::class, 'updateScore'])->name('master.update-score');
+    Route::get('/master/leaderboard', [\App\Http\Controllers\MasterGameServerController::class, 'getLeaderboard'])->name('master.leaderboard');
+    Route::get('/master/player-stats', [\App\Http\Controllers\MasterGameServerController::class, 'getPlayerStats'])->name('master.player-stats');
+    Route::get('/master/health', [\App\Http\Controllers\MasterGameServerController::class, 'getServerHealth'])->name('master.health');
+
+    // ========================================
     // SOLARSYS GAME ROUTES
     // ========================================
     Route::get('home/solarsys', function () {

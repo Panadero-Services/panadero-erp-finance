@@ -4,16 +4,19 @@ import SolarSysGame, { GameServerSelector } from 'panadero-solarsysinvaders';
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
+import { useMasterGameServerStore } from '@/stores/masterGameServer';
+import MasterGameServerPanel from '@/components/MasterGameServerPanel.vue';
 
 // Get the game server URL from environment - use network URL for all clients
 const defaultServerUrl = import.meta.env.VITE_GAME_SERVER_URL_NETWORK || import.meta.env.VITE_GAME_SERVER_URL;
 const gameServerUrl = ref(defaultServerUrl);
 
 console.log('SolarSys loading...');
-console.log('Default Game Server URL:', defaultServerUrl);
+console.log('Default Game Server URL: ', defaultServerUrl);
 
 const settingsStore = useSettingsStore();
 const contractStore = useContractStore();
+const masterGameServerStore = useMasterGameServerStore();
 const mounted = ref(false);
 
 const handleServerChange = (newServerUrl) => {
@@ -29,6 +32,9 @@ const handleServerChange = (newServerUrl) => {
 onMounted(() => {
     console.log('SolarSys mounted');
     mounted.value = true;
+    
+    // Initialize Master Game Server
+    masterGameServerStore.initialize();
 });
 
 defineProps({
@@ -61,6 +67,11 @@ defineProps({
                     />
                 </div>
 
+                <!-- Master Game Server Panel -->
+                <div class="master-server-panel-container">
+                    <MasterGameServerPanel />
+                </div>
+
                 <div v-if="!mounted" class="loading">
                     Loading game...
                 </div>
@@ -90,6 +101,13 @@ defineProps({
     position: absolute;
     top: 10px;
     left: 10px;
+    z-index: 9999;
+}
+
+.master-server-panel-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
     z-index: 9999;
 }
 
