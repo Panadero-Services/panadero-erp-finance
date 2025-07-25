@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
             BusinessServiceSeeder::class,
             FeatureSeeder::class,
             FutureSeeder::class,
+            GameWorldSeeder::class,
             I1TablesDemoSeeder::class,
             I1OrdersSeeder::class
         ]);

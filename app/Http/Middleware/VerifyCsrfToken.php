@@ -21,5 +21,6 @@ class VerifyCsrfToken extends Middleware
         'master/leaderboard',
         'master/player-stats',
         'master/health',
+        'master/worlds/heartbeat'  // Add specific route
     ];
 }

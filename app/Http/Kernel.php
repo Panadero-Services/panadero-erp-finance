@@ -4,6 +4,7 @@ class Kernel extends HttpKernel
     // ...
 
     protected $middlewareAliases = [
+        'game.server' => \App\Http\Middleware\GameServerAuth::class,
         // ...
 
         'with_fast_api_key' => \App\Http\Middleware\VerifyFastApiKey::class,

@@ -52,12 +52,20 @@ class MasterGameServerController extends Controller
             ],
             'worlds' => $this->getWorldsStatus(),
             'player' => $player ? $this->buildPlayerStats($player) : null,
-            'leaderboard' => $this->getLeaderboard(),
+            'leaderboard' => $this->getLeaderboard($request),
             'global_stats' => $this->getGlobalStats()
         ];
 
         return response()->json($gameState);
     }
+
+
+    public function getWorldsStatuz(Request $request)
+    {
+        return $request;
+    }
+
+
 
     /**
      * Get all game worlds status
@@ -480,10 +488,10 @@ class MasterGameServerController extends Controller
     /**
      * Get leaderboard data
      */
-    public function getLeaderboard(Request $request)
+    public function getLeaderboard(Request $request = null)
     {
-        $limit = $request->input('limit', 10);
-        $timeframe = $request->input('timeframe', 'all'); // all, daily, weekly, monthly
+        $limit = $request ? $request->input('limit', 10) : 10;
+        $timeframe = $request ? $request->input('timeframe', 'all') : 'all';
 
         return Cache::remember("{$this->leaderboardCacheKey}_{$timeframe}_{$limit}", 
             $this->leaderboardCacheDuration, 

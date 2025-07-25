@@ -13,6 +13,7 @@ use App\Http\Controllers\BotController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\ModelConfigController;
 use App\Http\Controllers\DynamicController;
+use App\Http\Controllers\MasterGameServerController;
 use App\Http\Controllers\UserPermissionController;
 use App\Http\Controllers\ResourceController;
 use App\Http\Middleware\VerifyFastApiKey;
@@ -33,6 +34,9 @@ use GuzzleHttp\Client as GuzzleClient;
 | These are dedicated routes for specific functionality that cannot be
 | handled by the dynamic system
 */
+
+// Add this to api.php
+
 
 // ============================================================================
 // PROVIDER ROUTES
@@ -233,9 +237,6 @@ Route::get('u', function (Request $request){
 | - etc. for ALL entities
 */
 
-
-
-
 Route::middleware(['auth:sanctum', 'web'])->group(function () {
     // Generic dynamic routes for ALL entities
     Route::get('{table}', [DynamicController::class, 'api'])
@@ -261,6 +262,7 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
     Route::delete('{table}/{id}', [DynamicController::class, 'destroy'])
         ->name('api.table.destroy');
 });
+
 
 /*
 Complete CRUD Operations Summary

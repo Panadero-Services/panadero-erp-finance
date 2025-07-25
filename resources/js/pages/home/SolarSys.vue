@@ -1,11 +1,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import SolarSysGame, { GameServerSelector } from 'panadero-solarsysinvaders';
+import SolarSysGame, { GameServerSelector, MasterGameServerPanel, useMasterGameServerStore } from 'panadero-solarsysinvaders';
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
-import { useMasterGameServerStore } from '@/stores/masterGameServer';
-import MasterGameServerPanel from '@/components/MasterGameServerPanel.vue';
 
 // Get the game server URL from environment - use network URL for all clients
 const defaultServerUrl = import.meta.env.VITE_GAME_SERVER_URL_NETWORK || import.meta.env.VITE_GAME_SERVER_URL;

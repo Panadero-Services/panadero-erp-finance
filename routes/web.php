@@ -34,9 +34,12 @@ use App\Http\Controllers\TestPhotoUploadController;
 use App\Http\Controllers\BusinessServiceController;
 use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\DynamicController;
+use App\Http\Controllers\MasterGameServerController;
+
 //use App\Http\Controllers\Auth\AuthCheckController;
 
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\GameStateController;
 
 // Resource imports
 use App\Http\Resources\PostResource;
@@ -45,6 +48,79 @@ use App\Http\Resources\ProjectResource;
 // Middleware imports
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\RoleAccessMiddleware;
+
+
+
+/*
+Excellent! Now we understand exactly what makes it work:
+The route is grouped under the master prefix
+The critical part is ->withoutMiddleware(['web']) which completely bypasses the web middleware stack
+The route matches the socket server's expected path /master/worlds/heartbeat
+We get the expected {"success": true} response from the controller
+Let's break down why this works:
+The web middleware stack includes session handling, CSRF protection, and other browser-specific features
+For server-to-server API calls (like the socket server's heartbeat), we don't need any of that
+By using ->withoutMiddleware(['web']), we treat it as a pure API endpoint
+The route group with prefix('master') keeps our routes organized
+This matches the pattern we discovered with your test route - pure API endpoints that bypass web middleware work perfectly for server-to-server communication.
+Would you like me to help document this solution or make any other improvements to the implementation?
+*/
+
+
+ 
+
+
+// ========================================
+// MASTER GAME SERVER ROUTES
+// ========================================
+
+// GET routes - these work as-is
+Route::get('/master/worlds', [MasterGameServerController::class, 'getWorldsStatus'])
+    ->name('master.worlds');
+Route::get('/master/game-state', [MasterGameServerController::class, 'getGameState'])
+    ->name('master.game-state');
+Route::get('/master/leaderboard', [MasterGameServerController::class, 'getLeaderboard'])
+    ->name('master.leaderboard');
+Route::get('/master/player-stats', [MasterGameServerController::class, 'getPlayerStats'])
+    ->name('master.player-stats');
+Route::get('/master/health', [MasterGameServerController::class, 'getServerHealth'])
+    ->name('master.health');
+Route::get('/master/worlds/available', [MasterGameServerController::class, 'getAvailableWorlds'])
+    ->name('master.worlds.available');
+Route::get('/master/player/resources', [MasterGameServerController::class, 'getPlayerResources'])
+    ->name('master.player.resources.get');
+Route::get('/master/events', [MasterGameServerController::class, 'getWorldEvents'])
+    ->name('master.events.get');
+
+// POST routes - each needs web middleware bypass
+Route::post('/master/worlds/heartbeat', [MasterGameServerController::class, 'updateWorldHeartbeat'])
+    ->name('master.worlds.heartbeat')
+    ->withoutMiddleware(['web']);
+Route::post('/master/worlds/register', [MasterGameServerController::class, 'registerWorld'])
+    ->name('master.worlds.register')
+    ->withoutMiddleware(['web']);
+Route::post('/master/player/join-world', [MasterGameServerController::class, 'playerJoinWorld'])
+    ->name('master.player.join-world')
+    ->withoutMiddleware(['web']);
+Route::post('/master/player/leave-world', [MasterGameServerController::class, 'playerLeaveWorld'])
+    ->name('master.player.leave-world')
+    ->withoutMiddleware(['web']);
+Route::post('/master/player/transfer', [MasterGameServerController::class, 'transferToWorld'])
+    ->name('master.player.transfer')
+    ->withoutMiddleware(['web']);
+Route::post('/master/player/resources', [MasterGameServerController::class, 'updatePlayerResources'])
+    ->name('master.player.resources')
+    ->withoutMiddleware(['web']);
+Route::post('/master/update-score', [MasterGameServerController::class, 'updateScore'])
+    ->name('master.update-score')
+    ->withoutMiddleware(['web']);
+Route::post('/master/events', [MasterGameServerController::class, 'createWorldEvent'])
+    ->name('master.events.create')
+    ->withoutMiddleware(['web']);
+
+
+ 
+
 
 // ========================================
 // PUBLIC ROUTES (No Authentication Required)
@@ -97,10 +173,6 @@ Route::get('admin/roles', function () {
         'baseSections' => Section::where('page_id', '0')->get()
     ]);
 })->name('admin/roles');
-
-
-
-
 
 Route::get('home/welkom', function () {
     return Inertia::render('home/Welkom', [
@@ -291,31 +363,9 @@ Route::middleware([
     Route::get('/getscore', [\App\Http\Controllers\ScoreController::class, 'getscore'])->name('getscore');
     Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
 
-    // ========================================
-    // MASTER GAME SERVER ROUTES
-    // ========================================
-    Route::get('/master/game-state', [\App\Http\Controllers\MasterGameServerController::class, 'getGameState'])->name('master.game-state');
-    Route::post('/master/update-score', [\App\Http\Controllers\MasterGameServerController::class, 'updateScore'])->name('master.update-score');
-    Route::get('/master/leaderboard', [\App\Http\Controllers\MasterGameServerController::class, 'getLeaderboard'])->name('master.leaderboard');
-    Route::get('/master/player-stats', [\App\Http\Controllers\MasterGameServerController::class, 'getPlayerStats'])->name('master.player-stats');
-    Route::get('/master/health', [\App\Http\Controllers\MasterGameServerController::class, 'getServerHealth'])->name('master.health');
-    
-    // New Master Server routes
-    Route::get('/master/worlds', [\App\Http\Controllers\MasterGameServerController::class, 'getWorldsStatus'])->name('master.worlds');
-    Route::post('/master/worlds/register', [\App\Http\Controllers\MasterGameServerController::class, 'registerWorld'])->name('master.worlds.register');
-    Route::post('/master/worlds/heartbeat', [\App\Http\Controllers\MasterGameServerController::class, 'updateWorldHeartbeat'])->name('master.worlds.heartbeat');
-    Route::get('/master/worlds/available', [\App\Http\Controllers\MasterGameServerController::class, 'getAvailableWorlds'])->name('master.worlds.available');
-    
-    Route::post('/master/player/join-world', [\App\Http\Controllers\MasterGameServerController::class, 'playerJoinWorld'])->name('master.player.join-world');
-    Route::post('/master/player/leave-world', [\App\Http\Controllers\MasterGameServerController::class, 'playerLeaveWorld'])->name('master.player.leave-world');
-    Route::post('/master/player/transfer', [\App\Http\Controllers\MasterGameServerController::class, 'transferToWorld'])->name('master.player.transfer');
-    Route::post('/master/player/resources', [\App\Http\Controllers\MasterGameServerController::class, 'updatePlayerResources'])->name('master.player.resources');
-    Route::get('/master/player/resources', [\App\Http\Controllers\MasterGameServerController::class, 'getPlayerResources'])->name('master.player.resources.get');
-    
-    Route::post('/master/events', [\App\Http\Controllers\MasterGameServerController::class, 'createWorldEvent'])->name('master.events.create');
-    Route::get('/master/events', [\App\Http\Controllers\MasterGameServerController::class, 'getWorldEvents'])->name('master.events.get');
+   
 
-    // ========================================
+ // ========================================
     // SOLARSYS GAME ROUTES
     // ========================================
     Route::get('home/solarsys', function () {
@@ -604,9 +654,14 @@ Route::get('test/{id?}', function($id=1){
     // Add this route for auth check
     //Route::get('/auth/check', [AuthCheckController::class, 'check'])->middleware('auth:sanctum');
 
-
-
 }); // This closes the authenticated middleware group
+
+
+ 
+
+
+
+
 
 // ========================================
 // CATCH-ALL ROUTE (Keep at the end)
@@ -699,10 +754,6 @@ Route::get('/getproject', function(Request $request) {
 Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
 
 
-
-
-
-
     // ========================================
     // API UPDATE ROUTES
     // ========================================
@@ -742,5 +793,10 @@ Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
         ]);
     })->name('home/solarsys');
 
-    Route::post('/game-state', [GameStateController::class, 'update'])
-    ->middleware(['auth']);
+
+
+
+
+
+
+    
