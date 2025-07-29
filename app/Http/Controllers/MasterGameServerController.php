@@ -17,6 +17,7 @@ use App\Events\ScoreUpdated;
 use App\Events\WorldTransferCompleted;
 use App\Events\PlayerJoinedWorld;
 use App\Events\PlayerLeftWorld;
+use App\Services\MasterServerService;
 
 class MasterGameServerController extends Controller
 {
@@ -770,5 +771,23 @@ class MasterGameServerController extends Controller
             ->each(function ($world) {
                 $world->recordHeartbeatFailure();
             });
+    }
+
+    public function getPlayerState(string $playerId)
+    {
+        $state = app(MasterServerService::class)->getSharedPlayerState($playerId);
+        return response()->json($state);
+    }
+
+    public function updatePlayerState(Request $request, string $playerId)
+    {
+        $validated = $request->validate([
+            'resources' => 'array',
+            'score' => 'integer',
+            'name' => 'string'
+        ]);
+
+        app(MasterServerService::class)->updateSharedPlayerState($playerId, $validated);
+        return response()->json(['success' => true]);
     }
 } 
