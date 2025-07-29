@@ -17,6 +17,8 @@ class Player extends Model
         'callsign',
         'avatar',
         'preferences',
+        'resources',
+        'total_score',
         'last_login',
         'last_game_at',
         'is_active'
@@ -24,17 +26,10 @@ class Player extends Model
 
     protected $casts = [
         'preferences' => 'array',
+        'resources' => 'array',
         'last_login' => 'datetime',
         'last_game_at' => 'datetime'
     ];
-
-    /**
-     * Get all resources for this player
-     */
-    public function resources(): HasMany
-    {
-        return $this->hasMany(PlayerResource::class);
-    }
 
     /**
      * Get all world sessions for this player

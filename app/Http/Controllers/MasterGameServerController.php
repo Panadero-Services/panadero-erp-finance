@@ -786,17 +786,10 @@ class MasterGameServerController extends Controller
             ]);
         }
 
-        // Get shared resources
-        $resources = PlayerResource::where('player_id', $player->id)->first();
-        
         return response()->json([
-            'resources' => [
-                'gold' => $resources->gold ?? 0,
-                'water' => $resources->water ?? 0,
-                'kryptonite' => $resources->kryptonite ?? 0
-            ],
+            'resources' => $player->resources ?? ['gold' => 0, 'water' => 0, 'kryptonite' => 0],
             'score' => $player->total_score ?? 0,
-            'rank' => $this->getPlayerRank($player->id)
+            'rank' => null
         ]);
     }
 
@@ -814,20 +807,11 @@ class MasterGameServerController extends Controller
             'callsign' => null
         ]);
 
-        // Update shared resources
-        PlayerResource::updateOrCreate(
-            ['player_id' => $player->id],
-            [
-                'gold' => $validated['resources']['gold'] ?? 0,
-                'water' => $validated['resources']['water'] ?? 0,
-                'kryptonite' => $validated['resources']['kryptonite'] ?? 0
-            ]
-        );
-
-        // Update global score
-        if (isset($validated['score'])) {
-            $player->update(['total_score' => $validated['score']]);
-        }
+        // Update everything in one go using the new JSON fields
+        $player->update([
+            'resources' => $validated['resources'] ?? ['gold' => 0, 'water' => 0, 'kryptonite' => 0],
+            'total_score' => $validated['score'] ?? 0
+        ]);
 
         return response()->json(['success' => true]);
     }

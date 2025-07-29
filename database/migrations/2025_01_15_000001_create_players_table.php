@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('callsign', 50)->unique()->nullable();
             $table->string('avatar', 255)->nullable();
             $table->json('preferences')->nullable(); // Game preferences, settings
+            $table->json('resources')->nullable(); // Game resources (gold, water, kryptonite)
+            $table->integer('total_score')->default(0); // Total game score
             $table->timestamp('last_login')->nullable();
             $table->timestamp('last_game_at')->nullable();
             $table->boolean('is_active')->default(true);
