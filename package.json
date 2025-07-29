@@ -6,7 +6,7 @@
         "build": "vite build",
         "ssh": "ssh -i bastion.pem ubuntu@15.188.147.145",
         "socket-server": "node vendor/panadero/panadero-solarsysinvaders/server/socket-server.js",
-        "game-server": "GAME_SERVER_ID=local-01 MASTER_SERVER_URL=http://localhost:8000 GAME_SERVER_PORT=3000 node vendor/panadero/panadero-solarsysinvaders/server/socket-server.js"
+        "game-server": "cd vendor/panadero/panadero-solarsysinvaders/server && node socket-server.js"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^1.0.14",
