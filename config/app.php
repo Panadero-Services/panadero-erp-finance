@@ -172,6 +172,8 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\MasterServerProvider::class,  // Add this line
+
     ],
 
 ];

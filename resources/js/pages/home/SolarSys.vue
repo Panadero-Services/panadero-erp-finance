@@ -58,16 +58,16 @@ defineProps({
       <template #default>
             <div class="game-page">
                 <!-- Server Selector -->
-                <div class="server-selector-container">
-                    <GameServerSelector 
-                        :currentServer="gameServerUrl"
-                        @server-changed="handleServerChange"
-                    />
-                </div>
 
+                <div class="server-selector-container">
+                        <GameServerSelector 
+                            :currentServer="gameServerUrl"
+                            @server-changed="handleServerChange"
+                        />
+                </div>
                 <!-- Master Game Server Panel -->
                 <div class="master-server-panel-container">
-                    <MasterGameServerPanel />
+                        <MasterGameServerPanel />
                 </div>
 
                 <div v-if="!mounted" class="loading">
@@ -77,6 +77,7 @@ defineProps({
                     <SolarSysGame 
                         :multiplayer="true"
                         :serverUrl="gameServerUrl"
+                        :self="settingsStore.self || 'nope'"  
                     />
                 </div>
          </div>
@@ -96,6 +97,7 @@ defineProps({
 }
 
 .server-selector-container {
+    width: 350px;
     position: absolute;
     top: 10px;
     left: 10px;
@@ -103,6 +105,7 @@ defineProps({
 }
 
 .master-server-panel-container {
+    width: 350px;
     position: absolute;
     top: 10px;
     right: 10px;

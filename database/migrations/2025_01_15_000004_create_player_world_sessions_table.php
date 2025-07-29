@@ -13,14 +13,21 @@ return new class extends Migration
     {
         Schema::create('player_world_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('player_id')->constrained()->onDelete('cascade');
-            $table->foreignId('game_world_id')->constrained()->onDelete('cascade');
-            $table->string('session_id', 100)->unique();
-            $table->string('player_name', 100);
-            $table->json('player_state')->nullable(); // Current position, health, etc.
-            $table->timestamp('connected_at')->useCurrent();
-            $table->timestamp('disconnected_at')->nullable();
+            $table->foreignId('player_id');
+            $table->foreignId('game_world_id');
+            $table->string('session_id');
+            $table->string('player_name');
+            $table->timestamp('connected_at')->nullable();
+            $table->json('player_state')->nullable();    // Current player state
+            $table->json('resources')->nullable();       // Player resources
+            $table->string('status');        // active, disconnected, transferring
             $table->boolean('is_active')->default(true);
+            $table->timestamp('last_active')->nullable()->useCurrent();  // Fixed: Added nullable and default
+            $table->timestamp('disconnected_at')->nullable();
+            $table->json('recovery_data')->nullable();   // Data needed for recovery
+            $table->string('fallback_server_id')->nullable();
+            $table->integer('recovery_attempts')->default(0);
+            $table->string('recovery_stage')->nullable(); // For tracking multi-stage recovery
             $table->timestamps();
             
             $table->index(['player_id', 'is_active']);

@@ -17,11 +17,20 @@ return new class extends Migration
             $table->string('server_url', 255);
             $table->string('server_id', 50)->unique();
             $table->text('description')->nullable();
-            $table->enum('status', ['online', 'offline', 'maintenance'])->default('offline');
+            $table->enum('status', [
+                'online', 
+                'offline', 
+                'maintenance',
+                'unreachable',
+                'shutdown'
+            ])->default('offline');
             $table->integer('max_players')->default(100);
             $table->integer('current_players')->default(0);
             $table->json('world_config')->nullable(); // World-specific settings
             $table->timestamp('last_heartbeat')->nullable();
+            $table->json('state_changes')->nullable();  // Added: Track state history
+            $table->timestamp('last_state_change')->nullable();  // Added: When state last changed
+            $table->integer('consecutive_fails')->default(0);  // Added: Count failed heartbeats
             $table->timestamps();
             
             $table->index(['status', 'current_players']);

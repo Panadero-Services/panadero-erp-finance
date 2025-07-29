@@ -17,6 +17,11 @@ class Kernel extends HttpKernel
         
         // Or if you want it more frequent:
         // $schedule->command('session:gc')->everyFiveMinutes();
+
+        // Check server health every 30 seconds
+        $schedule->call(function () {
+            app(MasterGameServerController::class)->checkServersHealth();
+        })->everyThirtySeconds();
     }
 
 }

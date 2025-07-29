@@ -24,6 +24,10 @@ class MasterGameServerController extends Controller
     protected $leaderboardCacheKey = 'game_leaderboard';
     protected $leaderboardCacheDuration = 300; // 5 minutes
 
+    private const HEARTBEAT_INTERVAL = 30;  // seconds
+    private const HEARTBEAT_GRACE_PERIOD = 5;  // seconds
+    private const MAX_MISSED_HEARTBEATS = 3;
+
     public function __construct()
     {
         $this->gameState = [
@@ -138,11 +142,19 @@ class MasterGameServerController extends Controller
             return response()->json(['error' => 'World not found'], 404);
         }
 
+        // Update world state
         $world->update([
             'current_players' => $request->current_players,
-            'status' => $request->status ?? $world->status,
             'last_heartbeat' => now()
         ]);
+
+        // Always update status when receiving heartbeat
+        if ($world->status !== GameWorld::STATUS_ONLINE) {
+            $world->updateServerState(
+                GameWorld::STATUS_ONLINE,
+                'Heartbeat received'
+            );
+        }
 
         return response()->json(['success' => true]);
     }
@@ -488,7 +500,7 @@ class MasterGameServerController extends Controller
     /**
      * Get leaderboard data
      */
-    public function getLeaderboard(Request $request = null)
+    public function getLeaderboard(?Request $request = null)
     {
         $limit = $request ? $request->input('limit', 10) : 10;
         $timeframe = $request ? $request->input('timeframe', 'all') : 'all';
@@ -594,6 +606,35 @@ class MasterGameServerController extends Controller
             'database_status' => $this->checkDatabaseConnection(),
             'worlds_online' => GameWorld::where('status', 'online')->count(),
             'total_worlds' => GameWorld::count()
+        ]);
+    }
+
+    /**
+     * Unregister a game world
+     */
+    public function unregisterWorld(Request $request)
+    {
+        $request->validate([
+            'server_id' => 'required|string|exists:game_worlds,server_id'
+        ]);
+
+        $world = GameWorld::where('server_id', $request->server_id)->first();
+        
+        // Disconnect all active players
+        $world->activeSessions()->update([
+            'is_active' => false,
+            'disconnected_at' => now()
+        ]);
+
+        // Mark world as offline
+        $world->update([
+            'status' => 'offline',
+            'current_players' => 0
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Game world unregistered successfully'
         ]);
     }
 
@@ -712,5 +753,22 @@ class MasterGameServerController extends Controller
         } catch (\Exception $e) {
             return 'disconnected';
         }
+    }
+
+    // New method to check server health
+    public function checkServersHealth()
+    {
+        $threshold = now()->subSeconds(
+            self::HEARTBEAT_INTERVAL + self::HEARTBEAT_GRACE_PERIOD
+        );
+
+        GameWorld::where('status', '!=', GameWorld::STATUS_SHUTDOWN)
+            ->where(function ($query) use ($threshold) {
+                $query->where('last_heartbeat', '<', $threshold)
+                      ->orWhereNull('last_heartbeat');
+            })
+            ->each(function ($world) {
+                $world->recordHeartbeatFailure();
+            });
     }
 } 

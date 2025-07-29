@@ -49,7 +49,7 @@ use App\Http\Resources\ProjectResource;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\RoleAccessMiddleware;
 
-
+use App\Http\Controllers\GameServerController;
 
 /*
 Excellent! Now we understand exactly what makes it work:
@@ -116,6 +116,9 @@ Route::post('/master/update-score', [MasterGameServerController::class, 'updateS
     ->withoutMiddleware(['web']);
 Route::post('/master/events', [MasterGameServerController::class, 'createWorldEvent'])
     ->name('master.events.create')
+    ->withoutMiddleware(['web']);
+Route::post('/master/worlds/unregister', [MasterGameServerController::class, 'unregisterWorld'])
+    ->name('master.worlds.unregister')
     ->withoutMiddleware(['web']);
 
 
