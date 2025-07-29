@@ -121,14 +121,14 @@ Route::post('/master/worlds/unregister', [MasterGameServerController::class, 'un
     ->name('master.worlds.unregister')
     ->withoutMiddleware(['web']);
 
-// Add these routes
-Route::prefix('players')->group(function () {
-    Route::get('/state/{playerId}', [MasterGameServerController::class, 'getPlayerState']);
-    Route::post('/state/{playerId}', [MasterGameServerController::class, 'updatePlayerState']);
-    Route::post('/join', [MasterGameServerController::class, 'playerJoinWorld']);
-    Route::post('/transfer', [MasterGameServerController::class, 'transferPlayer']);
-});
- 
+
+// Add the missing shared state routes
+Route::get('/master/players/state/{playerId}', [MasterGameServerController::class, 'getPlayerState'])
+    ->name('master.players.state.get')
+    ->withoutMiddleware(['web']);
+Route::post('/master/players/state/{playerId}', [MasterGameServerController::class, 'updatePlayerState'])
+    ->name('master.players.state.update')
+    ->withoutMiddleware(['web']);
 
 
 // ========================================

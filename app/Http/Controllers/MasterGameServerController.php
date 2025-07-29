@@ -775,8 +775,29 @@ class MasterGameServerController extends Controller
 
     public function getPlayerState(string $playerId)
     {
-        $state = app(MasterServerService::class)->getSharedPlayerState($playerId);
-        return response()->json($state);
+        // Get player by name (which is the unique identifier)
+        $player = Player::where('name', $playerId)->first();
+        
+        if (!$player) {
+            return response()->json([
+                'resources' => ['gold' => 0, 'water' => 0, 'kryptonite' => 0],
+                'score' => 0,
+                'rank' => null
+            ]);
+        }
+
+        // Get shared resources
+        $resources = PlayerResource::where('player_id', $player->id)->first();
+        
+        return response()->json([
+            'resources' => [
+                'gold' => $resources->gold ?? 0,
+                'water' => $resources->water ?? 0,
+                'kryptonite' => $resources->kryptonite ?? 0
+            ],
+            'score' => $player->total_score ?? 0,
+            'rank' => $this->getPlayerRank($player->id)
+        ]);
     }
 
     public function updatePlayerState(Request $request, string $playerId)
@@ -787,7 +808,27 @@ class MasterGameServerController extends Controller
             'name' => 'string'
         ]);
 
-        app(MasterServerService::class)->updateSharedPlayerState($playerId, $validated);
+        $player = Player::where('name', $playerId)->firstOrCreate([
+            'name' => $playerId,
+            'email' => null,
+            'callsign' => null
+        ]);
+
+        // Update shared resources
+        PlayerResource::updateOrCreate(
+            ['player_id' => $player->id],
+            [
+                'gold' => $validated['resources']['gold'] ?? 0,
+                'water' => $validated['resources']['water'] ?? 0,
+                'kryptonite' => $validated['resources']['kryptonite'] ?? 0
+            ]
+        );
+
+        // Update global score
+        if (isset($validated['score'])) {
+            $player->update(['total_score' => $validated['score']]);
+        }
+
         return response()->json(['success' => true]);
     }
 } 
