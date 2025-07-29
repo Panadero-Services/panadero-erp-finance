@@ -11,8 +11,8 @@ class GameWorldSeeder extends Seeder
     {
         $defaultConfig = json_encode([
             'worldSize' => [
-                'width' => 10000,
-                'height' => 10000
+                'width' => 40000,
+                'height' => 40000
             ],
             'borderForce' => [
                 'radius' => 500,
@@ -22,23 +22,10 @@ class GameWorldSeeder extends Seeder
 
         $worlds = [
             [
-                'name' => 'Local Development World',
-                'server_url' => 'http://localhost:3000',
-                'server_id' => 'local-dev-01',
-                'description' => 'Local development game server for testing',
-                'status' => 'offline',
-                'max_players' => 100,
-                'current_players' => 0,
-                'world_config' => $defaultConfig,
-                'last_heartbeat' => null,  // Changed: No heartbeat for offline servers
-                'created_at' => now(),
-                'updated_at' => now()
-            ],
-            [
-                'name' => 'Local LAN Development World I',
+                'name' => 'Localhost I',
                 'server_url' => 'http://192.168.2.20:3000',
-                'server_id' => 'local-lan-01',
-                'description' => 'Local LAN iMacPro server for testing',
+                'server_id' => 'local-01',
+                'description' => 'Localhost iMacPro server for elementary connection',
                 'status' => 'offline',
                 'max_players' => 100,
                 'current_players' => 0,
@@ -48,9 +35,9 @@ class GameWorldSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'name' => 'Local LAN Development World II',
+                'name' => 'Local Network LAN I',
                 'server_url' => 'http://192.168.2.9:3000',
-                'server_id' => 'local-lan-02',
+                'server_id' => 'lan-02',
                 'description' => 'Local LAN macBookPro server for testing',
                 'status' => 'offline',
                 'max_players' => 100,
@@ -63,21 +50,25 @@ class GameWorldSeeder extends Seeder
             [
                 'name' => 'Web World I',
                 'server_url' => 'http://84.80.133.32:3000',
-                'server_id' => 'ww-01',
-                'description' => 'Online world for testing 1',
+                'server_id' => 'ww-03',
+                'description' => 'External connection to local-01',
                 'status' => 'offline',
-                'max_players' => 12,
+                'max_players' => 100,
                 'current_players' => 0,
-                'world_config' => json_encode([
-                    'worldSize' => [
-                        'width' => 40000,
-                        'height' => 40000
-                    ],
-                    'borderForce' => [
-                        'radius' => 500,
-                        'strength' => 0.5
-                    ]
-                ]),
+                'world_config' => $defaultConfig,
+                'last_heartbeat' => null,  // Changed
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'name' => 'Web World II',
+                'server_url' => 'http://84.80.133.32:3001',
+                'server_id' => 'ww-04',
+                'description' => 'External connection to lan-02',
+                'status' => 'offline',
+                'max_players' => 100,
+                'current_players' => 0,
+                'world_config' => $defaultConfig,
                 'last_heartbeat' => null,  // Changed
                 'created_at' => now(),
                 'updated_at' => now()
