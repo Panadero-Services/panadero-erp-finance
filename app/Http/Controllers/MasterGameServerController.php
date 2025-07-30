@@ -461,15 +461,25 @@ class MasterGameServerController extends Controller
 
         $playerName = $request->player_name;
 
-        // Get or create player
-        $player = Player::firstOrCreate(
-            ['name' => $playerName],
-            [
+        // Get existing player or create new one
+        $player = Player::where('name', $playerName)->first();
+        
+        if (!$player) {
+            // Only create new player with defaults
+            $player = Player::create([
+                'name' => $playerName,
                 'callsign' => $playerName,
                 'last_game_at' => now(),
-                'is_active' => true
-            ]
-        );
+                'resources' => ['gold' => 0, 'water' => 0, 'kryptonite' => 0],
+                'total_score' => 0
+            ]);
+        }
+
+        // Update score without overwriting existing data
+        $player->update([
+            'total_score' => $request->score,
+            'last_game_at' => now()
+        ]);
 
         // Store score in database
         $score = Score::create([
@@ -795,23 +805,36 @@ class MasterGameServerController extends Controller
 
     public function updatePlayerState(Request $request, string $playerId)
     {
-        $validated = $request->validate([
-            'resources' => 'array',
-            'score' => 'integer',
-            'name' => 'string'
-        ]);
+        $data = $request->all();
+        
+        // Check if create_only flag is set first
+        if (isset($data['create_only']) && $data['create_only'] === true) {
+            // Only create if doesn't exist, never update
+            $player = Player::firstOrCreate([
+                'name' => $playerId
+            ], [
+                'email' => null,
+                'callsign' => null,
+                'resources' => ['gold' => 0, 'water' => 0, 'kryptonite' => 0],
+                'total_score' => 0
+            ]);
+            
+            return response()->json(['success' => true]);
+        }
 
-        $player = Player::where('name', $playerId)->firstOrCreate([
-            'name' => $playerId,
-            'email' => null,
-            'callsign' => null
-        ]);
+        // Normal update for collection events
+        $player = Player::where('name', $playerId)->first();
+        
+        if (!$player) {
+            return response()->json(['error' => 'Player not found'], 404);
+        }
 
-        // Update everything in one go using the new JSON fields
-        $player->update([
-            'resources' => $validated['resources'] ?? ['gold' => 0, 'water' => 0, 'kryptonite' => 0],
-            'total_score' => $validated['score'] ?? 0
-        ]);
+        if (isset($data['resources']) && isset($data['score'])) {
+            $player->update([
+                'resources' => $data['resources'],
+                'total_score' => $data['score']
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }
