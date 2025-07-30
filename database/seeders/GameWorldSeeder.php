@@ -22,10 +22,10 @@ class GameWorldSeeder extends Seeder
 
         $worlds = [
             [
-                'name' => 'Localhost I',
+                'name' => 'GameServer 1 LAN',
                 'server_url' => 'http://192.168.2.20:3000',
                 'server_id' => 'local-01',
-                'description' => 'Localhost iMacPro server for elementary connection',
+                'description' => 'Local connection to GameServer1',
                 'status' => 'offline',
                 'max_players' => 100,
                 'current_players' => 0,
@@ -35,10 +35,10 @@ class GameWorldSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'name' => 'Local Network LAN I',
-                'server_url' => 'http://192.168.2.9:3000',
+                'name' => 'GameServer 2 LAN',
+                'server_url' => 'http://192.168.2.9:3001',
                 'server_id' => 'lan-02',
-                'description' => 'Local LAN macBookPro server for testing',
+                'description' => 'Local connection to GameServer2',
                 'status' => 'offline',
                 'max_players' => 100,
                 'current_players' => 0,
@@ -48,10 +48,10 @@ class GameWorldSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'name' => 'Web World I',
+                'name' => 'GameServer 1 WWW',
                 'server_url' => 'http://84.80.133.32:3000',
                 'server_id' => 'ww-03',
-                'description' => 'External connection to local-01',
+                'description' => 'External connection to GameServer1',
                 'status' => 'offline',
                 'max_players' => 100,
                 'current_players' => 0,
@@ -61,10 +61,10 @@ class GameWorldSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'name' => 'Web World II',
+                'name' => 'GameServer 2 WWW',
                 'server_url' => 'http://84.80.133.32:3001',
                 'server_id' => 'ww-04',
-                'description' => 'External connection to lan-02',
+                'description' => 'External connection to GameServer2',
                 'status' => 'offline',
                 'max_players' => 100,
                 'current_players' => 0,
