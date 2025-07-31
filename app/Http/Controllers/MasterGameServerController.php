@@ -810,7 +810,7 @@ class MasterGameServerController extends Controller
         // Check if create_only flag is set first
         if (isset($data['create_only']) && $data['create_only'] === true) {
             // Only create if doesn't exist, never update
-            $player = Player::firstOrCreate([
+            $player = Player::firstOrNew([
                 'name' => $playerId
             ], [
                 'email' => null,
