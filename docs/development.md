@@ -1,4 +1,47 @@
-# Development Guidelines
+# Development Guide
+
+## Dependency Management
+
+### Troubleshooting Module Issues
+
+If you encounter issues with modules, dependencies, or functionality (especially audio/sound):
+
+1. **Clear and reinstall modules:**
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+2. **Clear browser cache and hard refresh:**
+   - Press `Ctrl+Shift+R` (or `Cmd+Shift+R` on Mac)
+   - Or open DevTools → Network tab → check "Disable cache"
+
+3. **Check for dependency conflicts:**
+   ```bash
+   npm ls
+   npm audit
+   ```
+
+4. **Verify sound files exist:**
+   - Check that all sound files are in `/public/sounds/`
+   - Ensure file permissions are correct
+
+### Audio System Troubleshooting
+
+The game uses Web Audio API which requires user interaction to initialize:
+
+- **First click/input** unlocks the audio context
+- **Browser autoplay policies** may block audio until user interaction
+- **HTTPS required** for audio in production
+
+### Common Issues and Solutions
+
+| Issue | Solution |
+|-------|----------|
+| Sound not playing | Check browser console for audio errors, ensure user has interacted with page |
+| Module not found | Clear node_modules and reinstall |
+| Audio context errors | Check browser compatibility, ensure HTTPS in production |
+| Dependency conflicts | Use `npm ls` to identify conflicts, update or pin versions |
 
 ## The Minimal Impact Approach
 

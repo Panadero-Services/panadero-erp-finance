@@ -33,6 +33,9 @@ onMounted(() => {
     
     // Initialize Master Game Server
     masterGameServerStore.initialize();
+    console.log('whatever')
+    console.log('whatever')
+    console.log('whatever')
 });
 
 defineProps({
