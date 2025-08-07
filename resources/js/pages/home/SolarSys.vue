@@ -9,8 +9,14 @@ import { useContractStore } from '@/stores/contracts';
 const defaultServerUrl = import.meta.env.VITE_GAME_SERVER_URL_NETWORK || import.meta.env.VITE_GAME_SERVER_URL;
 const gameServerUrl = ref(defaultServerUrl);
 
-console.log('SolarSys loading...');
-console.log('Default Game Server URL: ', defaultServerUrl);
+console.debug('SolarSys loading...');
+console.debug('Default Game Server URL: ', defaultServerUrl);
+console.debug('Environment variables:', {
+    VITE_GAME_SERVER_URL: import.meta.env.VITE_GAME_SERVER_URL,
+    VITE_GAME_SERVER_URL_NETWORK: import.meta.env.VITE_GAME_SERVER_URL_NETWORK,
+    defaultServerUrl,
+    gameServerUrl: gameServerUrl.value
+});
 
 const settingsStore = useSettingsStore();
 const contractStore = useContractStore();
@@ -28,14 +34,11 @@ const handleServerChange = (newServerUrl) => {
 };
 
 onMounted(() => {
-    console.log('SolarSys mounted');
+    console.debug('SolarSys mounted');
     mounted.value = true;
     
     // Initialize Master Game Server
     masterGameServerStore.initialize();
-    console.log('whatever')
-    console.log('whatever')
-    console.log('whatever')
 });
 
 defineProps({
