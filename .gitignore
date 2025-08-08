@@ -4,7 +4,7 @@
 /public/hot
 /storage/*.key
 /vendor/*
-!vendor/panadero/
+!vendor/panadero/panadero-solarsysinvaders/
 !vendor/dhx_diagram_6/
 !vendor/dhx_gantt/
 !vendor/dhx_kanban/

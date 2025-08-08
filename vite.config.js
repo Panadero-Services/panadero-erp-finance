@@ -20,11 +20,11 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: process.env.VITE_SERVER_HOST || '192.168.2.20', // Use your network IP
+        host: process.env.VITE_SERVER_HOST || '0.0.0.0', // Use your network IP
         port: parseInt(process.env.VITE_SERVER_PORT || '5173'),
         cors: true,
         hmr: {
-            host: process.env.VITE_SERVER_HOST || '192.168.2.20', // Use your network IP
+            host: process.env.VITE_SERVER_HOST || '192.168.2.9', // Use your network IP
             port: parseInt(process.env.VITE_SERVER_PORT || '5173'),
         },
     },
