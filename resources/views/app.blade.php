@@ -13,7 +13,8 @@
 
         <!-- Scripts -->
         @routes
-        @vite(['resources/js/app.js', "resources/js/pages/{$page['component']}.vue"])
+        @viteReactRefresh
+        @vite(['resources/js/app.js'])
         @inertiaHead
         <script>
         // Refresh CSRF token on page load
