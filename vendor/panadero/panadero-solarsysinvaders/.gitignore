@@ -32,3 +32,5 @@ coverage/
 # Cache
 .cache/
 .npm/ 
+/vendor/panadero/panadero-solarsysinvaders/server
+vendor/panadero/panadero-solarsysinvaders/server/.env
