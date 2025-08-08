@@ -27,13 +27,20 @@ export function useMultiplayer(config = {}) {
 
     // Subfunction: Setup socket connection
     const setupSocketConnection = () => {
-        socket.value = io(config.serverUrl, {
-            transports: ['websocket'],
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000,
-            query: { self: config.self }
-        });
+        try {
+            console.debug('=== MULTIPLAYER: Creating socket ===');
+            socket.value = io(config.serverUrl, {
+                transports: ['websocket', 'polling'],
+                reconnection: true,
+                reconnectionAttempts: 5,
+                reconnectionDelay: 1000,
+                query: { self: config.self }
+            });
+            console.debug('=== MULTIPLAYER: Socket created ===');
+        } catch (err) {
+            console.debug('=== MULTIPLAYER: Socket creation failed ===', err);
+            throw err;  // Re-throw to be caught by connect()
+        }
     };
 
     // Subfunction: Setup connection events
@@ -146,14 +153,26 @@ export function useMultiplayer(config = {}) {
 
     // Main connect function
     const connect = () => {
-        console.debug('=== MULTIPLAYER: Connecting to server ===');
-        console.debug('Server URL:', config.serverUrl);
-        console.debug('Self:', config.self);
-        
-        setupSocketConnection();
-        setupConnectionEvents();
-        setupResourceEvents();
-        setupGameStateEvents();
+        try {
+            console.debug('=== MULTIPLAYER: Starting connection process ===');
+            console.debug('Server URL:', config.serverUrl);
+            console.debug('Self:', config.self);
+            
+            setupSocketConnection();
+            
+            // Add error event listener
+            socket.value.on('connect_error', (error) => {
+                console.debug('=== MULTIPLAYER: Connection Error ===', error.message);
+            });
+
+            setupConnectionEvents();
+            setupResourceEvents();
+            setupGameStateEvents();
+            
+            console.debug('=== MULTIPLAYER: Setup complete ===');
+        } catch (err) {
+            console.debug('=== MULTIPLAYER: Setup failed ===', err);
+        }
     };
 
     const disconnect = () => {

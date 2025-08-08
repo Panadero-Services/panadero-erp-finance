@@ -56,6 +56,7 @@ const useMasterGameServerStore = defineStore('masterGameServer', () => {
             lastUpdate.value = new Date();
             
             console.log('Master Game Server state updated:', gameState.value);
+            console.debug('Fetched worlds:', gameState.value.worlds);
         } catch (err) {
             error.value = err.response?.data?.message || 'Failed to fetch game state';
             console.error('Error fetching game state:', err);

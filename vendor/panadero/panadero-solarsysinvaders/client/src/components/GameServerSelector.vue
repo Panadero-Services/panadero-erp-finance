@@ -19,7 +19,9 @@ const error = ref(null);
 // Load servers from master server
 const loadServers = async () => {
     try {
+        console.debug('Loading servers...');
         const response = await axios.get('/master/worlds');
+        console.debug('Received servers:', response.data);
         availableServers.value = response.data.map(world => ({
             name: world.name,
             url: world.server_url,
@@ -37,6 +39,7 @@ const loadServers = async () => {
             isCustom: true
         });
     } catch (err) {
+        console.debug('Error loading servers:', err);
         error.value = 'Failed to load server list';
         console.error(err);
     } finally {
@@ -44,17 +47,8 @@ const loadServers = async () => {
     }
 };
 
-const AUTO_REFRESH_INTERVAL = 30000; // 30 seconds
-
-// Add refresh interval
 onMounted(() => {
     loadServers();
-    const refreshInterval = setInterval(loadServers, AUTO_REFRESH_INTERVAL);
-    
-    // Clean up on unmount
-    onUnmounted(() => {
-        clearInterval(refreshInterval);
-    });
 });
 
 const selectedServer = ref(props.currentServer);

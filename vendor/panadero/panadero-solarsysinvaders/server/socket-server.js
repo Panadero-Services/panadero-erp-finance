@@ -38,15 +38,15 @@ import { parseHelpCommand } from '../shared/helpSystem.js';
 import fetch from 'node-fetch';
 
 // Now define constants AFTER all imports and dotenv is loaded
-const MASTER_SERVER_URL = process.env.MASTER_SERVER_URL || 'http://localhost:8000';
-const GAME_SERVER_ID = process.env.GAME_SERVER_ID || 'local-dev-01';
-const PORT = process.env.GAME_SERVER_PORT || 3000;
+const MASTER_SERVER_URL = process.env.MASTER_SERVER_URL ;
+const GAME_SERVER_ID = process.env.GAME_SERVER_ID ;
+const PORT = process.env.GAME_SERVER_PORT;
 
 // Add debugging
 console.log('Environment variables loaded:');
-console.log('MASTER_SERVER_URL:', process.env.MASTER_SERVER_URL);
-console.log('GAME_SERVER_ID:', process.env.GAME_SERVER_ID);
-console.log('GAME_SERVER_PORT:', process.env.GAME_SERVER_PORT);
+console.log('MASTER_SERVER_URL:', MASTER_SERVER_URL);
+console.log('GAME_SERVER_ID:', GAME_SERVER_ID);
+console.log('GAME_SERVER_PORT:', PORT);
 console.log('Using GAME_SERVER_ID:', GAME_SERVER_ID);
 
 const app = express();
@@ -716,7 +716,12 @@ scheduleNextSpawn(gameState, resourceFields, (newCollectible) => {
 
 // More permissive CORS for Express
 app.use(cors({
-    origin: ["http://localhost:8000", "http://localhost:5173", "http://127.0.0.1:8000"],
+    origin: [
+        "http://localhost:8000",
+        "http://localhost:5173", 
+        "http://127.0.0.1:8000",
+        "https://self-api.com"    // Add this
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
@@ -727,9 +732,13 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
         origin: [
+            "https://self-api.com" ,
             "http://localhost:8000", 
             "http://localhost:5173", 
             "http://127.0.0.1:8000", 
+            "http://84.80.133.32:3000",
+            "http://84.80.133.32:3001",  // Add your AWS IP
+            "http://84.80.133.32:8000",   // Add your AWS IP
             "http://192.168.2.20:8000"  // Add the LAN IP
         ],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

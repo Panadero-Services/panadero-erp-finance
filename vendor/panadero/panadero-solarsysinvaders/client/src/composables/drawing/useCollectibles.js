@@ -5,7 +5,7 @@ let instance = null;
 
 export function useCollectibles() {
     if (instance) return instance;
-
+ 
     const { worldToScreen } = useGameUtils();
     
     const drawCollectible = (ctx, collectible, worldToScreen, camera) => {
