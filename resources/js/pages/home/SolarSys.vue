@@ -1,6 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import SolarSysGame, { GameServerSelector, MasterGameServerPanel, useMasterGameServerStore } from 'panadero-solarsysinvaders';
+import SolarSysGame, { 
+    GameServerSelector, 
+    MasterGameServerPanel, 
+    useMasterGameServerStore,
+    SystemSettingsPanel // Add this import
+} from 'panadero-solarsysinvaders';
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
@@ -23,6 +28,9 @@ const contractStore = useContractStore();
 const masterGameServerStore = useMasterGameServerStore();
 const mounted = ref(false);
 
+// Add ref for game instance
+const gameInstance = ref(null);
+
 const handleServerChange = (newServerUrl) => {
     console.log('Switching to server:', newServerUrl);
     gameServerUrl.value = newServerUrl;
@@ -31,6 +39,13 @@ const handleServerChange = (newServerUrl) => {
     setTimeout(() => {
         mounted.value = true;
     }, 100);
+};
+
+// Add settings change handler
+const handleSettingsChanged = (newSettings) => {
+    if (gameInstance.value) {
+        gameInstance.value.updateSettings(newSettings);
+    }
 };
 
 onMounted(() => {
@@ -61,23 +76,29 @@ defineProps({
             ...settingsStore,
             dark: true, // Force dark mode
         }"
-
         :contract="contractStore"
         :page="page"
     >
-      <template #default>
+        <template #default>
             <div class="game-page">
                 <!-- Server Selector -->
-
                 <div class="server-selector-container">
-                        <GameServerSelector 
-                            :currentServer="gameServerUrl"
-                            @server-changed="handleServerChange"
-                        />
+                    <GameServerSelector 
+                        :currentServer="gameServerUrl"
+                        @server-changed="handleServerChange"
+                    />
                 </div>
+
                 <!-- Master Game Server Panel -->
                 <div class="master-server-panel-container">
-                        <MasterGameServerPanel />
+                    <MasterGameServerPanel />
+                </div>
+
+                <!-- System Settings Panel -->
+                <div class="settings-panel-container">
+                    <SystemSettingsPanel 
+                        @settings-changed="handleSettingsChanged"
+                    />
                 </div>
 
                 <div v-if="!mounted" class="loading">
@@ -85,14 +106,15 @@ defineProps({
                 </div>
                 <div v-else class="game-wrapper">
                     <SolarSysGame 
+                        ref="gameInstance"
                         :multiplayer="true"
                         :serverUrl="gameServerUrl"
                         :self="settingsStore.self || 'nope'"  
                     />
                 </div>
-         </div>
-      </template>
-   </AppToolbarLayout>
+            </div>
+        </template>
+    </AppToolbarLayout>
 </template>
 
 <style scoped>
@@ -119,6 +141,14 @@ defineProps({
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: 9999;
+}
+
+/* Add styles for settings panel container */
+.settings-panel-container {
+    position: absolute;
+    top: 10px;
+    right: 370px; /* Position it next to the master server panel */
     z-index: 9999;
 }
 
