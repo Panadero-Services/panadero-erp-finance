@@ -3,13 +3,7 @@
 /public/build
 /public/hot
 /storage/*.key
-/vendor/*
-!vendor/dhx_diagram_6/
-!vendor/dhx_gantt/
-!vendor/dhx_kanban/
-!vendor/dhx_suite/
-!vendor/dhx_spreadsheet_5.1.8/
-!vendor/dhx_spreadsheet_5.2.0/
+/vendor
 .env
 .env.backup
 .env.production
@@ -26,4 +20,3 @@ yarn-error.log
 /.zed
 composer.lock
 composer-lock.json
-/vendor/panadero/panadero-solarsysinvaders
