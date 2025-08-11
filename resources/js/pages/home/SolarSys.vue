@@ -57,7 +57,11 @@ defineProps({
     <AppToolbarLayout 
         :title="page.title" 
         :baseSections="baseSections" 
-        :set="settingsStore"
+        :set="{
+            ...settingsStore,
+            dark: true, // Force dark mode
+        }"
+
         :contract="contractStore"
         :page="page"
     >
