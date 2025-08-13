@@ -1,4 +1,4 @@
-# Migration Guide: Vendor to Packages
+# Migration Guide: Vendor to Packages : just did it !
 
 This document explains the migration from the old `vendor/panadero/panadero-erp-finance` structure to the new `packages/panadero-erp-finance` structure.
 
