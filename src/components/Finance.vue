@@ -117,6 +117,28 @@ const cashByCategory = computed(() => {
 
 function fmt(n){ return new Intl.NumberFormat('en-US',{ style:'currency', currency:'USD'}).format(n||0); }
 function shortDate(d){ return new Date(d).toLocaleDateString(); }
+
+// Navigation function for shared entities
+function navigateToEntity(entityType) {
+  const routes = {
+    'business_services': '/home/business_services',
+    'projects': '/project/projects',
+    'users': '/admin/users',
+    'settings': '/config/settings',
+    'vendors': '/erp/vendors',
+    'customers': '/erp/customers'
+  };
+  
+  const route = routes[entityType];
+  if (route) {
+    // Use Inertia router if available, otherwise window.location
+    if (window.Inertia) {
+      window.Inertia.visit(route);
+    } else {
+      window.location.href = route;
+    }
+  }
+}
 </script>
 
 <template>
@@ -185,7 +207,7 @@ function shortDate(d){ return new Date(d).toLocaleDateString(); }
               </p>
 
               <ul class="text-gray-600 list-disc ml-5 space-y-1">
-                <li>Shared Entities</li>
+                <li>Framework Shared Entities</li>
               </ul>
             </div>
 
@@ -199,21 +221,105 @@ function shortDate(d){ return new Date(d).toLocaleDateString(); }
       <div class="mb-6 col-span-1">
         <div @click="activeInfo = !activeInfo" class="rounded-xl overflow-hidden  border-gray-200" :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
           <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2">
-            <h2 class="">Shared Entities</h2>
+            <h2 class="">Dependencies</h2>
           </div>
 
             <div v-if="activeInfo" class="bg-white px-6 py-5 h-64 overflow-scroll ">
-              <!-- What's are the shared entities? include them here!! -->
-              <p class="text-gray-700 mb-1 font-bold">
-                System  <span class="ml-16 font-normal text-xs"></span> 
+           
+              <!-- Package Tables -->
+              <p class="text-gray-700 mb-3 font-bold">
+                Package Tables <span class="ml-8 font-normal text-xs text-gray-500">Finance Module</span>
               </p>
-              These are system entities
-              ../home/business_services
-              ../project/projects
+              <div class="space-y-2 mb-4">
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm text-gray-700">finance_accounts</span>
+                  <span class="text-xs text-gray-500">6 recs • 3 days ago</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm text-gray-700">finance_journal_entries</span>
+                  <span class="text-xs text-gray-500">12 recs • 1 day ago</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm text-gray-700">finance_payables</span>
+                  <span class="text-xs text-gray-500">8 recs • 2 days ago</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm text-gray-700">finance_receivables</span>
+                  <span class="text-xs text-gray-500">15 recs • 1 day ago</span>
+                </div>
+              </div>
 
+              <!-- Framework Shared Entities -->
+              <p class="text-gray-700 mb-3 font-bold">
+                Framework Shared Entities <span class="ml-8 font-normal text-xs text-gray-500">System Level</span>
+              </p>
+              <div class="space-y-2">
+                <button 
+                  @click="navigateToEntity('business_services')"
+                  class="w-full text-left p-2 bg-blue-50 hover:bg-blue-100 rounded transition-colors cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-blue-700 font-medium">Business Services</span>
+                    <i class="fas fa-external-link-alt text-xs text-blue-500"></i>
+                  </div>
+                  <span class="text-xs text-blue-600">../home/business_services</span>
+                </button>
+                
+                <button 
+                  @click="navigateToEntity('projects')"
+                  class="w-full text-left p-2 bg-green-50 hover:bg-green-100 rounded transition-colors cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-green-700 font-medium">Projects</span>
+                    <i class="fas fa-external-link-alt text-xs text-green-500"></i>
+                  </div>
+                  <span class="text-xs text-green-600">../project/projects</span>
+                </button>
 
+                <button 
+                  @click="navigateToEntity('users')"
+                  class="w-full text-left p-2 bg-purple-50 hover:bg-purple-100 rounded transition-colors cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-purple-700 font-medium">Users & Teams</span>
+                    <i class="fas fa-external-link-alt text-xs text-purple-500"></i>
+                  </div>
+                  <span class="text-xs text-purple-600">../admin/users</span>
+                </button>
 
+                <button 
+                  @click="navigateToEntity('settings')"
+                  class="w-full text-left p-2 bg-orange-50 hover:bg-orange-100 rounded transition-colors cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-orange-700 font-medium">System Settings</span>
+                    <i class="fas fa-external-link-alt text-xs text-orange-500"></i>
+                  </div>
+                  <span class="text-xs text-orange-600">../config/settings</span>
+                </button>
 
+                <button 
+                  @click="navigateToEntity('vendors')"
+                  class="w-full text-left p-2 bg-teal-50 hover:bg-teal-100 rounded transition-colors cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-teal-700 font-medium">Vendors</span>
+                    <i class="fas fa-external-link-alt text-xs text-teal-500"></i>
+                  </div>
+                  <span class="text-xs text-teal-600">../erp/vendors</span>
+                </button>
+
+                <button 
+                  @click="navigateToEntity('customers')"
+                  class="w-full text-left p-2 bg-indigo-50 hover:bg-indigo-100 rounded transition-colors cursor-pointer"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-indigo-700 font-medium">Customers</span>
+                    <i class="fas fa-external-link-alt text-xs text-indigo-500"></i>
+                  </div>
+                  <span class="text-xs text-indigo-600">../erp/customers</span>
+                </button>
+              </div>
             </div>
         </div>
       </div>
