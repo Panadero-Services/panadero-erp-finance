@@ -281,6 +281,15 @@ export function useModule() {
 
 ## 📦 Package Standards
 
+### ⚠️ IMPORTANT: Dependency Management
+**For local packages, NEVER include dependencies or node_modules:**
+- **Remove `dependencies` section** from package.json
+- **Keep only `peerDependencies`** if needed
+- **Never commit `node_modules/` or `package-lock.json`**
+- **All dependencies are managed by the main project**
+
+This prevents duplicate dependencies and ensures consistency.
+
 ### package.json Template
 ```json
 {
@@ -302,10 +311,6 @@ export function useModule() {
   ],
   "author": "JaWsome.Orbit",
   "license": "MIT",
-  "dependencies": {
-    "vue": "^3.0.0",
-    "pinia": "^2.0.0"
-  },
   "peerDependencies": {
     "vue": "^3.0.0"
   },
@@ -418,6 +423,33 @@ MIT License - see LICENSE file for details
 ```
 
 ## 🚀 Deployment Standards
+
+### .gitignore Best Practices
+```gitignore
+# Dependencies - NEVER commit these for local packages
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local package specific - these should be handled by the main project
+node_modules/
+package-lock.json
+```
 
 ### deploy.sh Template
 ```bash
