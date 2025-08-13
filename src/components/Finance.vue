@@ -226,11 +226,14 @@ function navigateToEntity(entityType) {
 
             <div v-if="activeInfo" class="bg-white px-6 py-5 h-64 overflow-scroll ">
            
+
               <!-- Package Tables -->
               <p class="text-gray-700 mb-3 font-bold">
                 Package Tables <span class="ml-8 font-normal text-xs text-gray-500">Finance Module</span>
               </p>
+
               <div class="space-y-2 mb-4">
+              <div class="grid grid-cols-2 gap-x-6 gap-y-2">
                 <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
                   <span class="text-sm text-gray-700">finance_accounts</span>
                   <span class="text-xs text-gray-500">6 recs • 3 days ago</span>
@@ -248,12 +251,13 @@ function navigateToEntity(entityType) {
                   <span class="text-xs text-gray-500">15 recs • 1 day ago</span>
                 </div>
               </div>
-
+              </div>
               <!-- Framework Shared Entities -->
               <p class="text-gray-700 mb-3 font-bold">
                 Framework Shared Entities <span class="ml-8 font-normal text-xs text-gray-500">System Level</span>
               </p>
               <div class="space-y-2">
+              <div class="grid grid-cols-2 gap-x-6 gap-y-2">
                 <button 
                   @click="navigateToEntity('business_services')"
                   class="w-full text-left p-2 bg-blue-50 hover:bg-blue-100 rounded transition-colors cursor-pointer"
@@ -320,6 +324,7 @@ function navigateToEntity(entityType) {
                   <span class="text-xs text-indigo-600">../erp/customers</span>
                 </button>
               </div>
+            </div>
             </div>
         </div>
       </div>
