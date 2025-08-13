@@ -1,5 +1,6 @@
-# Dependencies
+# Dependencies - NEVER commit these for local packages
 node_modules/
+package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -41,3 +42,7 @@ coverage/
 # Temporary folders
 tmp/
 temp/
+
+# Local package specific - these should be handled by the main project
+node_modules/
+package-lock.json

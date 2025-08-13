@@ -1,6 +1,6 @@
 {
   "name": "panadero-erp-finance",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "ERP Finance Module for comprehensive financial management",
   "main": "index.js",
   "type": "module",
@@ -22,11 +22,6 @@
   ],
   "author": "JaWsome.Orbit",
   "license": "MIT",
-  "dependencies": {
-    "vue": "^3.0.0",
-    "pinia": "^2.0.0",
-    "decimal.js": "^10.0.0"
-  },
   "peerDependencies": {
     "vue": "^3.0.0"
   },
