@@ -27,6 +27,10 @@ use OpenAI\ValueObjects\ApiKey;
 use OpenAI\ValueObjects\Transporter\QueryParams;
 use GuzzleHttp\Client as GuzzleClient;
 
+use App\Http\Controllers\Finance\FixedAssetController;
+use App\Http\Controllers\Finance\BudgetController;
+use App\Http\Controllers\Finance\AuditLogController;
+
 /*
 |--------------------------------------------------------------------------
 | SPECIFIC API ROUTES
@@ -397,4 +401,19 @@ Route::get('i1_orders', function (){
     return I1Order::take(50)->get();
 });
 */
+
+Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
+    // Fixed Assets
+    Route::get('/assets', [FixedAssetController::class, 'index']);
+    Route::post('/assets', [FixedAssetController::class, 'store']);
+    Route::post('/assets/depreciate', [FixedAssetController::class, 'depreciate']);
+
+    // Budgets
+    Route::get('/budgets/{period}', [BudgetController::class, 'show']);
+    Route::post('/budgets', [BudgetController::class, 'upsert']);
+
+    // Audit
+    Route::get('/audit-logs', [AuditLogController::class, 'index']);
+    Route::post('/audit-logs', [AuditLogController::class, 'store']);
+});
 

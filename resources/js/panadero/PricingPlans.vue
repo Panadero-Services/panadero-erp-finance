@@ -1,9 +1,32 @@
+<script setup>
+import { computed } from 'vue'
+import { CheckIcon } from '@heroicons/vue/20/solid'
+
+const props = defineProps(['plans'])
+
+// Transform existing plans to new format
+const tiers = computed(() => {
+  return props.plans.map((plan, index) => ({
+    id: `tier-${plan.title.toLowerCase()}`,
+    name: plan.title,
+    href: plan.cta.href,
+    priceMonthly: plan.price,
+    priceRange: plan.priceRange,
+    description: plan.description,
+    features: plan.features,
+    mostPopular: plan.popular,
+    ctaLabel: plan.cta.label,
+    setupFee: plan.setupFee,
+    minUsers: plan.minUsers,
+    maxUsers: plan.maxUsers,
+  }));
+});
+</script>
 <template>
   <div class="bg-white dark:bg-gray-900 py-24 sm:py-32">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-4xl text-center">
-        <h2 class="text-base/7 font-semibold text-indigo-600 dark:text-indigo-400">Pricing</h2>
-        <p class="mt-2 text-balance text-5xl font-semibold tracking-tight text-gray-900 dark:text-white sm:text-6xl">Pricing that grows with you</p>
+        <h2 class="text-3xl font-semibold text-indigo-600 dark:text-indigo-400">Pricing</h2>
       </div>
       <p class="mx-auto mt-6 max-w-2xl text-pretty text-center text-lg font-medium text-gray-600 dark:text-gray-300 sm:text-xl/8">Choose an affordable plan that's packed with the best features for engaging your audience, creating customer loyalty, and driving sales.</p>
       <div class="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-y-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
@@ -14,10 +37,26 @@
               <p v-if="tier.mostPopular" class="rounded-full bg-indigo-600/10 dark:bg-indigo-400/10 px-2.5 py-1 text-xs/5 font-semibold text-indigo-600 dark:text-indigo-400">Most popular</p>
             </div>
             <p class="mt-4 text-sm/6 text-gray-600 dark:text-gray-300">{{ tier.description }}</p>
-            <p class="mt-6 flex items-baseline gap-x-1">
-              <span class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ tier.priceMonthly }}</span>
-              <span class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">/month</span>
-            </p>
+            
+            <!-- Pricing -->
+            <div class="mt-6">
+              <p class="flex items-baseline gap-x-1">
+                <span class="text-4xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ tier.priceMonthly }}</span>
+                <span class="text-sm/6 font-semibold text-gray-600 dark:text-gray-300">/user/month</span>
+              </p>
+              <p class="text-sm text-gray-500 mt-1">{{ tier.priceRange }} range</p>
+            </div>
+
+            <!-- Setup Fee -->
+            <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                <span class="font-semibold">Setup Fee:</span> {{ tier.setupFee }}
+              </p>
+              <p class="text-xs text-gray-500 mt-1">
+                {{ tier.minUsers }}-{{ tier.maxUsers }} users minimum
+              </p>
+            </div>
+
             <ul role="list" class="mt-8 space-y-3 text-sm/6 text-gray-600 dark:text-gray-300">
               <li v-for="feature in tier.features" :key="feature" class="flex gap-x-3">
                 <CheckIcon class="h-6 w-5 flex-none text-indigo-600 dark:text-indigo-400" aria-hidden="true" />
@@ -40,27 +79,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { computed } from 'vue'
-import { CheckIcon } from '@heroicons/vue/20/solid'
-
-const props = defineProps(['plans'])
-
-// Transform existing plans to new format
-const tiers = computed(() => {
-  return props.plans.map((plan, index) => ({
-    id: `tier-${plan.title.toLowerCase()}`,
-    name: plan.title,
-    href: plan.cta.href,
-    priceMonthly: plan.price,
-    description: plan.description,
-    features: plan.features,
-    mostPopular: plan.popular,
-    ctaLabel: plan.cta.label,
-  }));
-});
-</script>
 
 <style scoped>
 /* Optional scoped styles */

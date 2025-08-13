@@ -317,6 +317,19 @@ Route::middleware([
     Route::get('/defaultPages', [PageController::class, 'defaultPages'])->name('defaultPages');
     Route::resource('pages', PageController::class);
 
+
+
+
+
+    Route::get('erp/finance', function () {
+        return Inertia::render('erp/Finance', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('epr/finance');
+
+
+
     // ========================================
     // SECTIONS TABLE
     // ========================================
@@ -348,10 +361,6 @@ Route::middleware([
     Route::post('/logs', [LogController::class, 'store'])->name('logs.store');
     Route::get('/logs/criteria', [LogController::class, 'criteria'])->name('logs.criteria');
 
-
-
-
-
     // ========================================
     // FEATURES TABLE
     // ========================================
@@ -370,9 +379,7 @@ Route::middleware([
     Route::get('/getgame', [\App\Http\Controllers\GameController::class, 'get'])->name('getgame');
     Route::post('/setgame', [\App\Http\Controllers\GameController::class, 'setgame'])->name('setgame');
     Route::get('/getscore', [\App\Http\Controllers\ScoreController::class, 'getscore'])->name('getscore');
-    Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');
-
-   
+    Route::post('/setscore', [\App\Http\Controllers\ScoreController::class, 'setscore'])->name('setscore');   
 
  // ========================================
     // SOLARSYS GAME ROUTES

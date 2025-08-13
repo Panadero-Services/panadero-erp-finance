@@ -245,7 +245,56 @@ class BusinessServiceSeeder extends Seeder
                 'status' => 'deprecated',
                 'progress' => 10,
                 'path' => '/'
+            ],
+            [
+                'item' => 'Projects',
+                'title' => 'Projects List',
+                'description' => 'Table holding all projects',
+                'color' => 'blue',
+                'version' => 'v1.0.00',
+                'icon' => 'PuzzlePieceIcon',
+                'options' => [
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Projects', 'url' => '/shared/projects', 'route' => 'shared/projects']
+
+                ],
+                'status' => 'ready',
+                'progress' => 90,
+                'path' => '/shared/'
+            ],
+            [
+                'item' => 'Services',
+                'title' => 'Services List',
+                'description' => 'Table holding all Services',
+                'color' => 'blue',
+                'version' => 'v1.0.00',
+                'icon' => 'PuzzlePieceIcon',
+                'options' => [
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'BusinessServicesShared', 'url' => '/shared/business_services', 'route' => 'shard.business_services'],
+                    ['name' => 'BusinessServices', 'url' => '/home/business_services', 'route' => 'home.business_services']
+
+                ],
+                'status' => 'ready',
+                'progress' => 90,
+                'path' => '/shared/'
+            ],
+            [
+                'item' => 'Finance',
+                'title' => 'ERP Finance',
+                'description' => 'This service handles the ERP Finance function',
+                'color' => 'teal',
+                'version' => 'v1.0.00',
+                'icon' => 'EcommerceIcon',
+                'options' => [
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'Finance', 'url' => '/erp/finance', 'route' => 'erp.finance']
+                ],
+                'status' => 'ready',
+                'progress' => 90,
+                'path' => '/erp/'
             ]
+
         ];
 
         foreach ($services as $service) {

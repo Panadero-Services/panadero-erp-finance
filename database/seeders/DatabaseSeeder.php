@@ -49,6 +49,12 @@ class DatabaseSeeder extends Seeder
             I1OrdersSeeder::class
         ]);
 
+        // Finance seeders (do NOT remove other seeders)
+        $this->call([
+            FinanceCoreSeeder::class,
+            FinanceDemoSeeder::class,
+        ]);
+
         // Get all users and roles
         $users = User::all();
         $roles = Role::all();

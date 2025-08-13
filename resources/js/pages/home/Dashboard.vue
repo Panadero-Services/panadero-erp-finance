@@ -206,14 +206,14 @@ onMounted(async () => {
 
 
       <div class="grid grid-cols-2 m-6 text-3xl font-semibold text-black dark:text-white sm:ml-24">
-        <p>Business Services</p>
+        <p>Framework</p>
       </div>
 
-      <div id="whatever" class="ml-6 min-h-[280px]">
+      <div id="framework" class="ml-6 min-h-[80px]">
         <div class="">
           <div class="flex flex-wrap gap-2">
             <template v-for="service in services">
-              <div v-if="service.title.toLowerCase().includes(filter)" class="flex-shrink-0">
+              <div v-if="service.title.toLowerCase().includes(filter) && service.path=='/'" class="flex-shrink-0">
                 <business-function-card-small :set="_set" :f="service" :progress="service.progress" />
               </div>
             </template>
@@ -221,7 +221,42 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class=" m-6 mt-16 text-3xl font-semibold text-black dark:text-white text-right sm:mr-32">
+      <div class="grid grid-cols-2 m-6 mt-12 text-3xl font-semibold text-black dark:text-white sm:ml-24">
+        <p>Shared Entities</p>
+      </div>
+
+      <div id="shared_entities" class="ml-6 min-h-[80px]">
+        <div class="">
+          <div class="flex flex-wrap gap-2">
+            <template v-for="service in services">
+              <div v-if="service.title.toLowerCase().includes(filter) && service.path.includes('/shared/')" class="flex-shrink-0">
+                <business-function-card-small :set="_set" :f="service" :progress="service.progress" />
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 m-6 mt-12 text-3xl font-semibold text-black dark:text-white sm:ml-24">
+        <p>Business Services</p>
+      </div>
+
+
+      <div id="shared_entities" class="ml-6 min-h-[80px]">
+        <div class="">
+          <div class="flex flex-wrap gap-2">
+            <template v-for="service in services">
+              <div v-if="service.title.toLowerCase().includes(filter) && service.path.includes('/erp/')" class="flex-shrink-0">
+                <business-function-card-small :set="_set" :f="service" :progress="service.progress" />
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class=" m-6 mt-12 text-3xl font-semibold text-black dark:text-white text-right sm:mr-32">
         <p>Features</p>
       </div>
 
