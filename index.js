@@ -12,6 +12,7 @@ export { useAccountsPayable } from './src/composables/useAccountsPayable.js';
 export { useAccountsReceivable } from './src/composables/useAccountsReceivable.js';
 export { useCashFlow } from './src/composables/useCashFlow.js';
 export { useTaxManagement } from './src/composables/useTaxManagement.js';
+export { useInfoBoxes } from './src/composables/useInfoBoxes.js';
 
 // Export store
 export { useFinanceStore } from './src/stores/financeStore.js';

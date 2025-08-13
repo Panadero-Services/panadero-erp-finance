@@ -13,6 +13,7 @@ import BudgetingForecasting from './BudgetingForecasting.vue';
 import ComplianceAudit from './ComplianceAudit.vue';
 
 import { useFinanceStore } from '../stores/financeStore';
+import { useInfoBoxes } from '../composables/useInfoBoxes';
 
 // Tabs: add Dashboard as default
 const tabs = [
@@ -29,7 +30,18 @@ const tabs = [
 ];
 
 const activeTab = ref('dashboard');
-const activeInfo = ref(1);
+
+// Use the info boxes composable
+const {
+  activeInfo,
+  packageTables,
+  sharedEntities,
+  versionUpdates,
+  moduleDescription,
+  navigateToEntity,
+  toggleInfoBox,
+  getEntityColorClasses
+} = useInfoBoxes();
 
 const activeComponent = computed(() => {
   if (activeTab.value === 'dashboard') return null;
@@ -118,27 +130,7 @@ const cashByCategory = computed(() => {
 function fmt(n){ return new Intl.NumberFormat('en-US',{ style:'currency', currency:'USD'}).format(n||0); }
 function shortDate(d){ return new Date(d).toLocaleDateString(); }
 
-// Navigation function for shared entities
-function navigateToEntity(entityType) {
-  const routes = {
-    'business_services': '/home/business_services',
-    'projects': '/project/projects',
-    'users': '/admin/users',
-    'settings': '/config/settings',
-    'vendors': '/erp/vendors',
-    'customers': '/erp/customers'
-  };
-  
-  const route = routes[entityType];
-  if (route) {
-    // Use Inertia router if available, otherwise window.location
-    if (window.Inertia) {
-      window.Inertia.visit(route);
-    } else {
-      window.location.href = route;
-    }
-  }
-}
+
 </script>
 
 <template>
@@ -150,23 +142,19 @@ function navigateToEntity(entityType) {
     <!-- Info box section1-->
     <div class="col-span-12 lg:col-span-6 xl:col-span-4 ">
       <div class="mb-6 col-span-1">
-        <div @click="activeInfo = !activeInfo" class="rounded-xl overflow-hidden  border-gray-200 " :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
+        <div @click="toggleInfoBox" class="rounded-xl overflow-hidden  border-gray-200 " :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
           <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2 ">
-            <h2 class=" font-semibold ">ERP Finance Module v1.0.1</h2>
+            <h2 class=" font-semibold ">{{ moduleDescription.title }}</h2>
           </div>
 
             <div v-if="activeInfo" class="bg-white px-6 py-5 h-64 overflow-scroll">
 
               <!-- ERP Finance Module -->
               <p class="text-gray-700 mb-3">
-                This module provides comprehensive financial management capabilities including:
+                {{ moduleDescription.description }}
               </p>
               <ul class="text-gray-600 list-disc ml-5 space-y-1">
-                <li>General Ledger with journal entries and trial balance</li>
-                <li>Accounts Payable with vendor management and aging analysis</li>
-                <li>Accounts Receivable with customer management and aging analysis</li>
-                <li>Cash Flow tracking with categorization</li>
-                <li>Tax Management with compliance tracking</li>
+                <li v-for="feature in moduleDescription.features" :key="feature">{{ feature }}</li>
               </ul>
 
             </div>
@@ -179,36 +167,23 @@ function navigateToEntity(entityType) {
     <!-- Info box section2-->
     <div class="col-span-12 lg:col-span-6 xl:col-span-4">
       <div class="mb-6 col-span-1">
-        <div @click="activeInfo = !activeInfo" class="rounded-xl overflow-hidden  border-gray-200" :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
+        <div @click="toggleInfoBox" class="rounded-xl overflow-hidden  border-gray-200" :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
           <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2">
             <h2 class="">What's New?</h2>
           </div>
 
             <div v-if="activeInfo" class="bg-white px-6 py-5 h-64 overflow-scroll ">
 
-              <!-- What's new / updates -->
-              <p class="text-gray-700 mb-1 font-bold">
-                v1.01 <span class="ml-16 font-normal text-xs">11-aug-2025</span> 
-              </p>
+              <!-- Version updates -->
+              <div v-for="update in versionUpdates" :key="update.version" class="mb-6">
+                <p class="text-gray-700 mb-1 font-bold">
+                  {{ update.version }} <span class="ml-16 font-normal text-xs">{{ update.date }}</span> 
+                </p>
 
-              <ul class="text-gray-600 list-disc ml-5 space-y-1">
-                <li>Dashboard overview (KPIs, recent entries, overdue AP/AR, cash by category)</li>
-                <li>Fixed Assets (register assets, straight-line depreciation posted to GL)</li>
-                <li>Reporting (Income Statement, Balance Sheet, Cash Flow) with CSV export</li>
-                <li>Budgeting & Forecasting (budgets, variance vs actual per account)</li>
-                <li>Compliance & Audit (audit logs, basic segregation-of-duties check)</li>
-                <li>API ready: endpoints for assets, budgets, audit; seeders for accounts/periods/categories</li>
-                <li>Improved GL validation and period close (debits must equal credits)</li>
-              </ul>
-
-              <!-- What's new / updates -->
-              <p class="text-gray-700 mb-2 mt-6 font-bold">
-                v1.02 <span class="ml-16 font-normal text-xs">13-aug-2025</span> 
-              </p>
-
-              <ul class="text-gray-600 list-disc ml-5 space-y-1">
-                <li>Framework Shared Entities</li>
-              </ul>
+                <ul class="text-gray-600 list-disc ml-5 space-y-1">
+                  <li v-for="feature in update.features" :key="feature">{{ feature }}</li>
+                </ul>
+              </div>
             </div>
 
         </div>
@@ -219,112 +194,51 @@ function navigateToEntity(entityType) {
     <!-- Info box section3-->
     <div class="col-span-12 lg:col-span-6 xl:col-span-4">
       <div class="mb-6 col-span-1">
-        <div @click="activeInfo = !activeInfo" class="rounded-xl overflow-hidden  border-gray-200" :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
+                <div @click="toggleInfoBox" class="rounded-xl overflow-hidden  border-gray-200" :class="activeInfo ? 'border bg-indigo-100' : 'text-gray-700'">
           <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-2">
             <h2 class="">Dependencies</h2>
           </div>
 
             <div v-if="activeInfo" class="bg-white px-6 py-5 h-64 overflow-scroll ">
            
-
               <!-- Package Tables -->
               <p class="text-gray-700 mb-3 font-bold">
                 Package Tables <span class="ml-8 font-normal text-xs text-gray-500">Finance Module</span>
               </p>
 
               <div class="space-y-2 mb-4">
-              <div class="grid grid-cols-2 gap-x-6 gap-y-2">
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span class="text-sm text-gray-700">finance_accounts</span>
-                  <span class="text-xs text-gray-500">6 recs • 3 days ago</span>
-                </div>
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span class="text-sm text-gray-700">finance_journal_entries</span>
-                  <span class="text-xs text-gray-500">12 recs • 1 day ago</span>
-                </div>
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span class="text-sm text-gray-700">finance_payables</span>
-                  <span class="text-xs text-gray-500">8 recs • 2 days ago</span>
-                </div>
-                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
-                  <span class="text-sm text-gray-700">finance_receivables</span>
-                  <span class="text-xs text-gray-500">15 recs • 1 day ago</span>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+                  <div 
+                    v-for="table in packageTables" 
+                    :key="table.name"
+                    class="flex items-center justify-between p-2 bg-gray-50 rounded"
+                  >
+                    <span class="text-sm text-gray-700">{{ table.name }}</span>
+                    <span class="text-xs text-gray-500">{{ table.records }} recs • {{ table.lastUpdated }}</span>
+                  </div>
                 </div>
               </div>
-              </div>
+
               <!-- Framework Shared Entities -->
               <p class="text-gray-700 mb-3 font-bold">
                 Framework Shared Entities <span class="ml-8 font-normal text-xs text-gray-500">System Level</span>
               </p>
               <div class="space-y-2">
-              <div class="grid grid-cols-2 gap-x-6 gap-y-2">
-                <button 
-                  @click="navigateToEntity('business_services')"
-                  class="w-full text-left p-2 bg-blue-50 hover:bg-blue-100 rounded transition-colors cursor-pointer"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-blue-700 font-medium">Business Services</span>
-                    <i class="fas fa-external-link-alt text-xs text-blue-500"></i>
-                  </div>
-                  <span class="text-xs text-blue-600">../home/business_services</span>
-                </button>
-                
-                <button 
-                  @click="navigateToEntity('projects')"
-                  class="w-full text-left p-2 bg-green-50 hover:bg-green-100 rounded transition-colors cursor-pointer"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-green-700 font-medium">Projects</span>
-                    <i class="fas fa-external-link-alt text-xs text-green-500"></i>
-                  </div>
-                  <span class="text-xs text-green-600">../project/projects</span>
-                </button>
-
-                <button 
-                  @click="navigateToEntity('users')"
-                  class="w-full text-left p-2 bg-purple-50 hover:bg-purple-100 rounded transition-colors cursor-pointer"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-purple-700 font-medium">Users & Teams</span>
-                    <i class="fas fa-external-link-alt text-xs text-purple-500"></i>
-                  </div>
-                  <span class="text-xs text-purple-600">../admin/users</span>
-                </button>
-
-                <button 
-                  @click="navigateToEntity('settings')"
-                  class="w-full text-left p-2 bg-orange-50 hover:bg-orange-100 rounded transition-colors cursor-pointer"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-orange-700 font-medium">System Settings</span>
-                    <i class="fas fa-external-link-alt text-xs text-orange-500"></i>
-                  </div>
-                  <span class="text-xs text-orange-600">../config/settings</span>
-                </button>
-
-                <button 
-                  @click="navigateToEntity('vendors')"
-                  class="w-full text-left p-2 bg-teal-50 hover:bg-teal-100 rounded transition-colors cursor-pointer"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-teal-700 font-medium">Vendors</span>
-                    <i class="fas fa-external-link-alt text-xs text-teal-500"></i>
-                  </div>
-                  <span class="text-xs text-teal-600">../erp/vendors</span>
-                </button>
-
-                <button 
-                  @click="navigateToEntity('customers')"
-                  class="w-full text-left p-2 bg-indigo-50 hover:bg-indigo-100 rounded transition-colors cursor-pointer"
-                >
-                  <div class="flex items-center justify-between">
-                    <span class="text-sm text-indigo-700 font-medium">Customers</span>
-                    <i class="fas fa-external-link-alt text-xs text-indigo-500"></i>
-                  </div>
-                  <span class="text-xs text-indigo-600">../erp/customers</span>
-                </button>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-2">
+                  <button 
+                    v-for="entity in sharedEntities"
+                    :key="entity.id"
+                    @click="navigateToEntity(entity.id)"
+                    :class="`w-full text-left p-2 rounded transition-colors cursor-pointer ${getEntityColorClasses(entity.color)}`"
+                  >
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm font-medium">{{ entity.name }}</span>
+                      <i class="fas fa-external-link-alt text-xs"></i>
+                    </div>
+                    <span class="text-xs">{{ entity.path }}</span>
+                  </button>
+                </div>
               </div>
-            </div>
             </div>
         </div>
       </div>
