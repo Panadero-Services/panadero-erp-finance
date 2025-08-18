@@ -1,156 +1,284 @@
 # Panadero ERP Finance Module
 
-Modern finance and accounting module for ERP apps. Includes General Ledger, AP/AR, Cash Flow, Tax Management, Fixed Assets, Reporting (IS/BS/CF), Budgeting & Forecasting, and Compliance/Audit. Ships with in-memory demo data (Pinia) and optional DB/API persistence.
+**Version:** 1.0.7  
+**Release Date:** 17 August 2025  
+**Status:** Production Ready
 
-## 🚀 Quick Start
+## 🚀 What's New in v1.0.7
+
+### ✨ Major Features
+- **Enhanced Demo Components** - Comprehensive 3-column layout for all UI component demos with immediate code examples
+- **Inline Usage Examples** - Code snippets directly under each demo section for developer convenience
+- **Modular InfoBoard Architecture** - Refactored InfoBoard into separate section components for better maintainability
+- **Interactive Demo Selection** - Replaced dropdown with intuitive button-based component selection with icons
+- **Comprehensive Package Content** - Restored "What's in the Package?" with detailed Core Components (9), UI Components (6), and Features (10)
+- **Enhanced Component Demos** - Improved FinanceButton, FinanceDropdown, and FinanceToggle demos with real-world examples
+
+### 🔧 Developer Experience Improvements
+- **Copy-Paste Ready Code** - Syntax examples immediately available under visual demos
+- **Professional Layout** - 3-column grid organization for better visual scanning
+- **Progressive Complexity** - Examples range from basic to advanced usage patterns
+- **Visual Context** - See component behavior and implementation simultaneously
+- **Enhanced Documentation** - Complete coverage of component variants, states, and integration patterns
+
+## 📅 Version History
+
+### v1.0.7 (17 Aug 2025) - Current Release
+- Enhanced Demo Components with 3-column layout and inline usage examples
+- Modular InfoBoard Architecture (InfoSection, UIElementsSection, APIsSection)
+- Interactive Demo Selection with icon-coded buttons
+- Comprehensive Package Content restoration with 25+ detailed items
+- Enhanced Developer Experience with copy-paste ready code examples
+- Fixed demo width issues and restored missing content
+- Professional component organization and better maintainability
+
+### v1.0.6 (16 Aug 2025)
+- FinanceDropdown Component with Auto-Scaling
+- Enhanced FinanceButton with Store Integration
+- Perfect Height Matching System (32px/40px/48px)
+- Modernized GeneralLedger with FinanceDropdown
+- Advanced CSS Specificity and Styling
+- Transparent Outline Variants
+- Interactive Component Demos
+- Font Awesome Integration Fixes
+
+### v1.0.5 (15 Aug 2025)
+- Centralized StatusBadge Component
+- Dynamic Icon Scaling System  
+- ScaledIcon Component for consistent icon sizing
+- Enhanced DRY refactoring completed
+- All components now use centralized styling system
+
+### v1.0.4 (14 Aug 2025)
+- Complete DRY refactoring
+- Centralized styling through financeStore
+- Removed duplicate computed styles
+- Enhanced font scaling system
+- Improved component maintainability
+
+### v1.0.3 (13 Aug 2025)
+- Enhanced flexible scaling system
+- Padding, margin, and border radius scaling
+- Improved button and input scaling
+- Better responsive design
+- Enhanced user experience
+
+### v1.0.2 (12 Aug 2025)
+- Font size scaling system
+- Dynamic styling with 1px increments
+- Settings panel integration
+- Centralized configuration management
+- Improved accessibility
+
+### v1.0.1 (11 Aug 2025)
+- Invoice system implementation
+- Auto-generated invoice numbers
+- Cross-section search functionality
+- CSV export capabilities
+- Status tracking system
+
+## 🎯 Core Components
+
+### Financial Management
+- **General Ledger** - Journal entries, trial balance, period management
+- **Accounts Payable** - Vendor management, invoice processing, payment tracking
+- **Accounts Receivable** - Customer management, invoice generation, collection tracking
+- **Cash Flow** - Transaction categorization, inflow/outflow analysis
+- **Tax Management** - Compliance tracking, tax calculations, reporting
+- **Fixed Assets** - Asset registration, depreciation calculations, maintenance tracking
+- **Budgeting & Forecasting** - Budget planning, variance analysis, forecasting
+- **Reporting** - Financial statements, custom reports, data export
+- **Compliance & Audit** - Audit trails, compliance monitoring, security logging
+
+### UI Components
+- **FinanceDropdown** - Modern dropdown with auto-scaling and perfect height matching to FinanceButton
+- **FinanceButton** - Enhanced button component with automatic store integration
+- **StatusBadge** - Centralized status display with auto-detection
+- **ScaledIcon** - Dynamic icon sizing with theme support
+- **FinanceToggle** - Reusable toggle switch component with multiple variants and sizes
+- **FinanceSettingsPanel** - Centralized configuration management
+- **Dynamic Styling** - Font scaling, spacing, and responsive design
+
+## 🛠️ Technical Architecture
+
+### Frontend
+- **Vue.js 3** - Modern reactive framework
+- **Pinia** - Centralized state management
+- **Tailwind CSS** - Utility-first styling with dark mode support
+- **Font Awesome** - Professional icon library
+
+### Backend Integration
+- **Laravel API** - RESTful endpoints for all finance operations
+- **Database Persistence** - Full CRUD operations with relationships
+- **CSV Export** - Data export functionality
+- **Authentication** - Secure API access
+
+### Styling System
+- **Centralized Store** - All styling managed through financeStore
+- **Dynamic Scaling** - Font sizes, spacing, and components scale together
+- **Dark Mode** - Professional enterprise theme support
+- **Responsive Design** - Mobile-first approach with breakpoint optimization
+
+## 🚀 Getting Started
 
 ### Installation
-This package is designed to work as a local package within your Laravel + Vue.js project.
-
 ```bash
-# Clone or copy to your project's packages directory
-packages/panadero-erp-finance/
+npm install panadero-erp-finance
 ```
 
-### Usage
+### Basic Usage
 ```vue
-<!-- In your main Finance page wrapper -->
-<script setup>
-import Finance from '../../../../packages/panadero-erp-finance/src/components/Finance.vue';
-</script>
-
 <template>
   <Finance />
 </template>
+
+<script setup>
+import { Finance } from 'panadero-erp-finance';
+</script>
 ```
 
-## ✨ Features
-- **General Ledger**: Balanced journal entries, trial balance, period close
-- **Accounts Payable/Receivable**: Invoices, payments, aging summary
-- **Cash Flow**: Categorized inflow/outflow with basic summaries
-- **Tax Management**: Records, filing, payments
-- **Fixed Assets**: Register assets, straight-line depreciation, NBV
-- **Reporting**: Income Statement, Balance Sheet, Cash Flow (export CSV)
-- **Budgeting & Forecasting**: Budgets by account, variance vs. actual
-- **Compliance & Audit**: Audit log, simple SoD check
+### Using FinanceDropdown Component
+```vue
+<!-- Basic usage with auto-scaling -->
+<FinanceDropdown 
+  v-model="selected" 
+  :options="categories"
+  placeholder="Select Category"
+/>
 
-## 📁 Package Structure
-```
-packages/panadero-erp-finance/
-├── src/
-│   ├── components/
-│   │   ├── Finance.vue          # Main shell + tabs
-│   │   ├── GeneralLedger.vue    # GL management
-│   │   ├── AccountsPayable.vue  # AP management
-│   │   ├── AccountsReceivable.vue # AR management
-│   │   ├── CashFlow.vue         # Cash flow tracking
-│   │   ├── TaxManagement.vue    # Tax compliance
-│   │   ├── FixedAssets.vue      # Asset management
-│   │   ├── Reporting.vue        # Financial reports
-│   │   ├── BudgetingForecasting.vue # Budget management
-│   │   └── ComplianceAudit.vue  # Audit & compliance
-│   ├── composables/
-│   │   ├── useGeneralLedger.js
-│   │   ├── useAccountsPayable.js
-│   │   ├── useAccountsReceivable.js
-│   │   ├── useCashFlow.js
-│   │   ├── useTaxManagement.js
-│   │   ├── useFixedAssets.js
-│   │   ├── useReporting.js
-│   │   ├── useBudgeting.js
-│   │   └── useCompliance.js
-│   ├── stores/
-│   │   └── financeStore.js      # Pinia store
-│   └── types/
-│       └── index.js             # TypeScript definitions
-├── tests/                        # Test files
-├── package.json                  # Package configuration
-├── index.js                      # Main exports
-├── README.md                     # This file
-└── HowTo.md                      # User guide
+<!-- With object options -->
+<FinanceDropdown 
+  v-model="selectedCountry"
+  :options="countries"
+  option-label="label"
+  option-value="value"
+  variant="outline"
+  size="normal"
+/>
+
+<!-- Perfect height matching with FinanceButton -->
+<div class="flex gap-3">
+  <FinanceDropdown :options="filters" size="normal" />
+  <FinanceButton variant="primary" size="normal">Filter</FinanceButton>
+</div>
 ```
 
-## 🔧 Development
+### Using Enhanced FinanceButton Component
+```vue
+<!-- Auto-scaling - no manual styling needed -->
+<FinanceButton variant="primary">Save</FinanceButton>
 
-### Prerequisites
-- Vue.js 3.x
-- Pinia 2.x
-- Tailwind CSS (for styling)
-- Font Awesome (for icons, optional)
+<!-- With icons and sizes -->
+<FinanceButton 
+  variant="success" 
+  size="large" 
+  icon-left="fas fa-check"
+>
+  Complete
+</FinanceButton>
 
-### Local Development
-```bash
-cd packages/panadero-erp-finance
-npm install
-npm run dev
+<!-- Transparent outline variant -->
+<FinanceButton variant="outline-primary">Cancel</FinanceButton>
 ```
 
-### Building
-```bash
-npm run build
-npm run lint
+### Using StatusBadge Component
+```vue
+<!-- Auto-detected status -->
+<StatusBadge :status="invoice.status" />
+
+<!-- Manual variant -->
+<StatusBadge :status="'Success'" variant="success" />
 ```
 
-## 📊 State & Demo Data
-- The Pinia store contains demo arrays for all financial data
-- GL validations enforce balancing debits/credits
-- Period close enforces debits==credits for that period
-- All data is in-memory by default (Pinia)
+### Using ScaledIcon Component
+```vue
+<!-- Basic usage -->
+<ScaledIcon icon="fa-table" />
 
-## 🌐 Optional: Persistence (DB/API)
-This module can run fully in-memory. To persist, wire Laravel migrations, endpoints, and seeders.
-
-### Database Tables
-Core tables from `2025_05_15_000001_create_finance_tables.php`:
-- `finance_accounts`, `finance_periods`
-- `finance_journal_entries`, `finance_journal_lines`
-- `finance_payables`, `finance_receivables`
-- `finance_tax_records`
-- `finance_cashflow_categories`, `finance_cashflow_transactions`
-
-Additional tables:
-- `finance_fixed_assets`, `finance_asset_depreciations`
-- `finance_budgets`, `finance_budget_lines`
-- `finance_audit_logs`
-
-### API Endpoints
-```http
-# Fixed Assets
-GET  /api/finance/assets
-POST /api/finance/assets
-POST /api/finance/assets/depreciate
-
-# Budgets
-GET  /api/finance/budgets/{period}
-POST /api/finance/budgets
-
-# Audit logs
-GET  /api/finance/audit-logs
-POST /api/finance/audit-logs
+<!-- With size and color -->
+<ScaledIcon 
+  icon="fa-table" 
+  size="large" 
+  color="primary" 
+/>
 ```
 
-## 📈 Roadmap
-- Lease accounting (ASC 842/IFRS 16)
-- Bank reconciliation, feeds (CSV/API)
-- Automated AR reminders and AP discounting suggestions
-- Advanced SoD policies and report attestations
-- PDF exports and scheduled reports
+### Using FinanceToggle Component
+```vue
+<!-- Basic usage -->
+<FinanceToggle 
+  v-model="isEnabled" 
+  label="Enable Feature" 
+/>
+
+<!-- With custom variant and size -->
+<FinanceToggle 
+  v-model="darkMode" 
+  label="Dark Mode" 
+  variant="blue" 
+  size="normal" 
+/>
+
+<!-- All available variants -->
+<FinanceToggle variant="blue" />   <!-- Blue theme -->
+<FinanceToggle variant="green" />  <!-- Green theme -->
+<FinanceToggle variant="red" />    <!-- Red theme -->
+<FinanceToggle variant="purple" /> <!-- Purple theme -->
+<FinanceToggle variant="yellow" /> <!-- Yellow theme -->
+
+<!-- All available sizes -->
+<FinanceToggle size="small" />     <!-- Small (h-4 w-8) -->
+<FinanceToggle size="normal" />    <!-- Normal (h-6 w-11) -->
+<FinanceToggle size="large" />     <!-- Large (h-8 w-14) -->
+```
+
+## 🔧 Configuration
+
+### Font Scaling
+The system supports dynamic font scaling from 8px to 24px with 1px increments:
+
+```javascript
+// Access through store
+const store = useFinanceStore();
+store.setFontSize(16); // Set base font size
+store.increaseFontSize(); // Increase by 1px
+store.decreaseFontSize(); // Decrease by 1px
+```
+
+### Dark Mode
+Dark mode is automatically applied based on system preferences and can be toggled through the settings panel.
+
+## 📊 Performance Features
+
+- **Lazy Loading** - Components load on demand
+- **Efficient Rendering** - Optimized Vue 3 reactivity
+- **Minimal Bundle Size** - Tree-shaking and code splitting
+- **Fast API Calls** - Optimized database queries
+
+## 🔒 Security Features
+
+- **CSRF Protection** - Laravel CSRF token validation
+- **Authentication** - Secure API access control
+- **Data Validation** - Input sanitization and validation
+- **Audit Logging** - Complete activity tracking
 
 ## 🤝 Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
-## 📄 License
-MIT License - see LICENSE file for details
+This module follows strict coding standards:
+- **DRY Principle** - No duplicate code
+- **Component Reusability** - Shared components across modules
+- **Consistent Styling** - Unified design system
+- **Performance Optimization** - Efficient rendering and data handling
+
+## 📝 License
+
+This module is part of the Panadero ERP system and follows the same licensing terms.
 
 ## 🆘 Support
-- Create an issue on GitHub
-- Check the HowTo.md for user guides
-- Review the composables for implementation examples
+
+For technical support or feature requests, please refer to the main ERP system documentation or contact the development team.
 
 ---
 
-**Note**: This module is UI + store first. Persistence is optional and incremental. If you see "react-refresh" dev overlay warnings, they're not module-related and can be ignored or disabled in Vite.
+**Last Updated:** 17 August 2025  
+**Current Release:** v1.0.7

@@ -3,6 +3,200 @@ import { ref, computed } from 'vue';
 import Decimal from 'decimal.js';
 
 export const useFinanceStore = defineStore('finance', () => {
+  // Settings - centralized configuration
+  const settings = ref({
+    // Font scaling
+    fontSize: 14,
+    
+    // Display
+    darkMode: true,
+    compactLayout: false,
+    showDebug: false,
+    
+    // Tables
+    rowsPerPage: 25,
+    showRowNumbers: true,
+    stickyHeaders: true,
+    
+    // Export
+    defaultExportFormat: 'csv',
+    includeHeaders: true,
+    autoExport: false,
+    
+    // Data
+    autoRefreshInterval: 30,
+    lazyLoading: true,
+    cacheData: true
+  });
+
+  // Settings actions
+  const updateSetting = (key, value) => {
+    settings.value[key] = value;
+    // Save to localStorage
+    localStorage.setItem('financeSettings', JSON.stringify(settings.value));
+  };
+
+  const updateSettings = (newSettings) => {
+    Object.assign(settings.value, newSettings);
+    localStorage.setItem('financeSettings', JSON.stringify(settings.value));
+  };
+
+  const resetSettings = () => {
+    settings.value = {
+      fontSize: 14,
+      darkMode: true,
+      compactLayout: false,
+      showDebug: false,
+      rowsPerPage: 25,
+      showRowNumbers: true,
+      stickyHeaders: true,
+      defaultExportFormat: 'csv',
+      includeHeaders: true,
+      autoExport: false,
+      autoRefreshInterval: 30,
+      lazyLoading: true,
+      cacheData: true
+    };
+    localStorage.setItem('financeSettings', JSON.stringify(settings.value));
+  };
+
+  const loadSettings = () => {
+    const saved = localStorage.getItem('financeSettings');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        Object.assign(settings.value, parsed);
+      } catch (err) {
+        console.error('Failed to load saved settings:', err);
+      }
+    }
+  };
+
+  // Font size specific actions
+  const setFontSize = (size) => {
+    const clampedSize = Math.max(8, Math.min(24, size));
+    updateSetting('fontSize', clampedSize);
+  };
+
+  const increaseFontSize = () => {
+    const newSize = Math.min(settings.value.fontSize + 1, 24);
+    setFontSize(newSize);
+  };
+
+  const decreaseFontSize = () => {
+    const newSize = Math.max(settings.value.fontSize - 1, 8);
+    setFontSize(newSize);
+  };
+
+  const getFontSize = (type) => {
+    return fontSizes.value[type] || fontSizes.value.text;
+  };
+
+  // Computed font sizes based on store settings
+  const fontSizes = computed(() => {
+    const base = settings.value.fontSize;
+    
+    const getTailwindClass = (size) => {
+      if (size >= 8 && size <= 24) {
+        return `text-${size}`;
+      }
+      if (size < 8) return 'text-8';
+      if (size > 24) return 'text-24';
+      return 'text-14';
+    };
+    
+    return {
+      base: base,
+      text: getTailwindClass(base),
+      title: getTailwindClass(base + 2),
+      subtitle: getTailwindClass(base + 4),
+      heading: getTailwindClass(base + 6),
+      button: getTailwindClass(base - 2),
+      label: getTailwindClass(base - 2),
+      input: getTailwindClass(base),
+      table: getTailwindClass(base - 2),
+      amount: getTailwindClass(base + 2),
+      description: getTailwindClass(base - 2)
+    };
+  });
+
+  // Computed styles for scaling
+  const scalingStyles = computed(() => {
+    const base = settings.value.fontSize;
+    return {
+      buttonPadding: { padding: `${Math.max(8, base - 4)}px ${Math.max(12, base - 2) * 1.5}px` },
+      inputPadding: { padding: `${Math.max(8, base - 6)}px`, height: `${Math.max(36, base + 20)}px` },
+      textareaHeight: { height: `${Math.max(80, base * 3.5)}px` },
+      tableHeader: { fontSize: `${base - 2}px` },
+      actionButton: {
+        width: `${Math.max(24, base + 8)}px`,
+        height: `${Math.max(24, base + 8)}px`,
+        fontSize: `${Math.max(24, base + 8) * 0.6}px`
+      },
+      // Enhanced padding scaling
+      gapScale: { gap: `${Math.max(8, base - 2)}px` },
+      marginScale: { marginBottom: `${Math.max(16, base + 2)}px` },
+      paddingScale: { padding: `${Math.max(2, Math.round(base * 0.2))}px` },
+      borderRadius: { borderRadius: `${Math.max(4, base - 8)}px` },
+      // Component-specific scaling
+      cardPadding: { padding: `${Math.max(20, base + 6)}px` },
+      sectionMargin: { marginBottom: `${Math.max(24, base + 10)}px` },
+      buttonGap: { gap: `${Math.max(8, base - 2)}px` },
+      // Font size styles for direct use
+      titleFontSize: { fontSize: `${base + 4}px` },
+      subtitleFontSize: { fontSize: `${base + 2}px` },
+      textFontSize: { fontSize: `${base}px` },
+      smallFontSize: { fontSize: `${base - 2}px` },
+      largeFontSize: { fontSize: `${base + 6}px` },
+      amountFontSize: { fontSize: `${base + 2}px` },
+      // Icon scaling
+      iconSize: { fontSize: `${base}px` },
+      iconSizeSmall: { fontSize: `${base - 2}px` },
+      iconSizeLarge: { fontSize: `${base + 2}px` },
+      iconSizeExtraLarge: { fontSize: `${base + 4}px` },
+      // Table scaling
+      tableRowHeight: { height: `${Math.round(base * 1.4)}px !important` },
+      tableHeaderHeight: { height: `${Math.max(28, base * 2)}px` }
+    };
+  });
+
+  // Simple spacing utilities
+  const spacing = {
+    padding: 'p-6',
+    paddingSmall: 'p-4', 
+    paddingLarge: 'p-8',
+    margin: 'mb-6',
+    marginSmall: 'mb-4',
+    marginLarge: 'mb-8',
+    gap: 'gap-4',
+    gapSmall: 'gap-2',
+    gapLarge: 'gap-6'
+  };
+
+  // Simple border styles
+  const borders = {
+    default: 'border',
+    rounded: 'rounded-lg',
+    roundedSmall: 'rounded-md'
+  };
+
+  // Simple button styles (no dark mode - use darkMode.js for that)
+  const buttons = {
+    primary: 'bg-indigo-600 text-white hover:bg-indigo-700',
+    secondary: 'bg-gray-600 text-white hover:bg-gray-700',
+    success: 'bg-green-600 text-white hover:bg-green-700',
+    danger: 'bg-red-600 text-white hover:bg-red-700',
+    warning: 'bg-yellow-600 text-white hover:bg-yellow-700'
+  };
+
+  // Simple form styles (no dark mode - use darkMode.js for that)
+  const forms = {
+    input: 'w-full border rounded p-2',
+    label: 'block text-sm font-medium mb-2',
+    select: 'w-full border rounded p-2',
+    textarea: 'w-full border rounded p-2 h-20'
+  };
+
   // Core GL state (demo data)
   const journalEntries = ref([
     {
@@ -39,8 +233,9 @@ export const useFinanceStore = defineStore('finance', () => {
     { id: 2, invoice_no: 'AR-002', customer_name: 'Customer 2', invoice_date: '2025-05-05', due_date: '2025-06-04', amount: 3000, received_amount: 1500, status: 'partial' },
   ]);
   const cashFlowTransactions = ref([
-    { id: 1, category_id: 1, category_name: 'Sales Revenue', category_type: 'operating', transaction_date: '2025-05-15', type: 'inflow', amount: 5000, description: 'Monthly sales revenue', reference_no: 'CF-001' },
-    { id: 2, category_id: 2, category_name: 'Operating Expenses', category_type: 'operating', transaction_date: '2025-05-15', type: 'outflow', amount: 2000, description: 'Monthly operating expenses', reference_no: 'CF-002' },
+    { id: 1, category_id: 1, category_name: 'Sales Revenue', category_type: 'operating', transaction_date: '2025-08-14', type: 'inflow', amount: 33.00, description: 'whatever descript', reference_no: '9382-923' },
+    { id: 2, category_id: 1, category_name: 'Sales Revenue', category_type: 'operating', transaction_date: '2025-08-14', type: 'inflow', amount: 332.00, description: 'found soe', reference_no: '938-09' },
+    { id: 3, category_id: 2, category_name: 'Operating Expenses', category_type: 'operating', transaction_date: '2025-08-15', type: 'outflow', amount: 412.00, description: 'nieuwe koffiefilterss', reference_no: '09-929s' },
   ]);
   const taxRecords = ref([
     { id: 1, tax_type: 'VAT', tax_period: '2025-01', taxable_amount: 10000, tax_amount: 2000, filing_due_date: '2025-02-01', payment_due_date: '2025-02-15', status: 'pending' },
@@ -279,7 +474,67 @@ export const useFinanceStore = defineStore('finance', () => {
     auditLogs.value.push({ id: Date.now(), timestamp: new Date().toISOString(), user_id, entity, action, meta });
   }
 
+  // Invoice system helper methods
+  async function addPayable(payable) {
+    payables.value.push({ ...payable, id: Date.now() });
+  }
+
+  async function addReceivable(receivable) {
+    receivables.value.push({ ...receivable, id: Date.now() });
+  }
+
+  async function addJournalEntry(entry) {
+    journalEntries.value.push({ ...entry, id: Date.now() });
+  }
+
+  async function addCashFlowTransaction(transaction) {
+    cashFlowTransactions.value.push({ ...transaction, id: Date.now() });
+  }
+
+  async function addTaxRecord(record) {
+    taxRecords.value.push({ ...record, id: Date.now() });
+  }
+
+  async function addFixedAsset(asset) {
+    fixedAssets.value.push({ ...asset, id: Date.now() });
+  }
+
+  async function addBudget(budget) {
+    budgets.value.push({ ...budget, id: Date.now() });
+  }
+
+  async function addAuditLog(log) {
+    auditLogs.value.push({ ...log, id: Date.now() });
+  }
+
+  // Helper functions for direct styling
+  const getTitleStyle = () => ({ fontSize: `${settings.value.fontSize + 4}px` });
+  const getSubtitleStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
+  const getTextStyle = () => ({ fontSize: `${settings.value.fontSize}px` });
+  const getSmallTextStyle = () => ({ fontSize: `${settings.value.fontSize - 2}px` });
+  const getLargeTextStyle = () => ({ fontSize: `${settings.value.fontSize + 6}px` });
+  const getAmountStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
+
   return {
+    // Settings
+    settings,
+    updateSetting,
+    updateSettings,
+    resetSettings,
+    loadSettings,
+    setFontSize,
+    increaseFontSize,
+    decreaseFontSize,
+    getFontSize,
+    fontSizes,
+    scalingStyles,
+    spacing,
+    borders,
+    buttons,
+    forms,
+    // Helper functions for direct styling
+    getTitleStyle, getSubtitleStyle, getTextStyle, getSmallTextStyle, getLargeTextStyle, getAmountStyle,
+
     // GL
     journalEntries,
     accountBalances,
@@ -326,5 +581,15 @@ export const useFinanceStore = defineStore('finance', () => {
     runDepreciation,
     createBudget,
     logAudit,
+
+    // Invoice system methods
+    addPayable,
+    addReceivable,
+    addJournalEntry,
+    addCashFlowTransaction,
+    addTaxRecord,
+    addFixedAsset,
+    addBudget,
+    addAuditLog,
   };
 });

@@ -1,17 +1,107 @@
 import { ref, computed } from 'vue';
+import { useFinanceStore } from '../stores/financeStore';
 
 export function useInfoBoxes() {
   const activeInfo = ref(1);
+  const store = useFinanceStore();
 
-  // Package tables data
-  const packageTables = [
-    { name: 'finance_accounts', records: 6, lastUpdated: '3 days ago' },
-    { name: 'finance_journal_entries', records: 12, lastUpdated: '1 day ago' },
-    { name: 'finance_payables', records: 8, lastUpdated: '2 days ago' },
-    { name: 'finance_receivables', records: 15, lastUpdated: '1 day ago' },
-    { name: 'finance_tax_records', records: 4, lastUpdated: '5 days ago' },
-    { name: 'finance_cashflow_transactions', records: 22, lastUpdated: 'today' }
-  ];
+  // Dynamic package tables data computed from store
+  const packageTables = computed(() => {
+    const now = new Date();
+    
+    return [
+      {
+        name: 'finance_accounts',
+        records: Object.keys(store.accountBalances).length,
+        lastUpdated: getLastUpdated(store.journalEntries, 'account updates')
+      },
+      {
+        name: 'finance_journal_entries',
+        records: store.journalEntries.length,
+        lastUpdated: getLastUpdated(store.journalEntries, 'journal entries')
+      },
+      {
+        name: 'finance_payables',
+        records: store.payables.length,
+        lastUpdated: getLastUpdated(store.payables, 'payables')
+      },
+      {
+        name: 'finance_receivables',
+        records: store.receivables.length,
+        lastUpdated: getLastUpdated(store.receivables, 'receivables')
+      },
+      {
+        name: 'finance_tax_records',
+        records: store.taxRecords.length,
+        lastUpdated: getLastUpdated(store.taxRecords, 'tax records')
+      },
+      {
+        name: 'finance_cashflow_transactions',
+        records: store.cashFlowTransactions.length,
+        lastUpdated: getLastUpdated(store.cashFlowTransactions, 'cash flow')
+      },
+      {
+        name: 'finance_fixed_assets',
+        records: store.fixedAssets.length,
+        lastUpdated: getLastUpdated(store.fixedAssets, 'fixed assets')
+      },
+      {
+        name: 'finance_budgets',
+        records: store.budgets.length,
+        lastUpdated: getLastUpdated(store.budgets, 'budgets')
+      },
+      {
+        name: 'finance_audit_logs',
+        records: store.auditLogs.length,
+        lastUpdated: getLastUpdated(store.auditLogs, 'audit logs')
+      }
+    ];
+  });
+
+  // Total records count for module description
+  const totalRecords = computed(() => {
+    return Object.keys(store.accountBalances).length +
+           store.journalEntries.length +
+           store.payables.length +
+           store.receivables.length +
+           store.taxRecords.length +
+           store.cashFlowTransactions.length +
+           store.fixedAssets.length +
+           store.budgets.length +
+           store.auditLogs.length;
+  });
+
+  // Helper function to calculate last updated time
+  function getLastUpdated(dataArray, fallbackText) {
+    if (!dataArray || dataArray.length === 0) {
+      return 'never';
+    }
+    
+    // Find the most recent timestamp
+    const timestamps = dataArray
+      .map(item => {
+        // Handle different timestamp fields
+        const timestamp = item.timestamp || item.invoice_date || item.transaction_date || item.acquired_at;
+        return timestamp ? new Date(timestamp) : null;
+      })
+      .filter(date => date && !isNaN(date.getTime()));
+    
+    if (timestamps.length === 0) {
+      return 'never';
+    }
+    
+    const mostRecent = new Date(Math.max(...timestamps));
+    const now = new Date();
+    const diffMs = now - mostRecent;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'today';
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+    if (diffDays < 365) return `${Math.floor(diffDays / 30)} months ago`;
+    return `${Math.floor(diffDays / 365)} years ago`;
+  }
 
   // Shared entities data
   const sharedEntities = [
@@ -59,63 +149,201 @@ export function useInfoBoxes() {
     }
   ];
 
-  // Version updates data
-  const versionUpdates = [
+  // Version updates with correct dates
+  const versionUpdates = computed(() => [
     {
-      version: 'v1.01',
-      date: '11-aug-2025',
+      version: 'v1.0.7',
+      date: '17 Aug 2025',
       features: [
-        'Dashboard overview (KPIs, recent entries, overdue AP/AR, cash by category)',
-        'Fixed Assets (register assets, straight-line depreciation posted to GL)',
-        'Reporting (Income Statement, Balance Sheet, Cash Flow) with CSV export',
-        'Budgeting & Forecasting (budgets, variance vs actual per account)',
-        'Compliance & Audit (audit logs, basic segregation-of-duties check)',
-        'API ready: endpoints for assets, budgets, audit; seeders for accounts/periods/categories',
-        'Improved GL validation and period close (debits must equal credits)'
+        'Enhanced Demo Components with 3-Column Layout',
+        'Inline Usage Examples for Developer Convenience',
+        'Modular InfoBoard Architecture (InfoSection, UIElementsSection, APIsSection)',
+        'Interactive Demo Selection with Icon-Coded Buttons',
+        'Comprehensive Package Content Restoration (25+ items)',
+        'Enhanced FinanceToggle and FinanceDropdown Demos',
+        'Fixed Demo Width Issues and Content Restoration',
+        'Professional Component Organization and Maintainability'
       ]
     },
     {
-      version: 'v1.02',
-      date: '13-aug-2025',
+      version: 'v1.0.6',
+      date: '16 Aug 2025',
       features: [
-        'Framework Shared Entities',
-        'Enhanced Dependencies section with clickable navigation',
-        'Improved 2-column grid layout for better space utilization'
+        'FinanceDropdown Component with Auto-Scaling',
+        'Enhanced FinanceButton with Store Integration',
+        'Perfect Height Matching System',
+        'Modernized GeneralLedger with FinanceDropdown',
+        'Advanced CSS Specificity and Styling',
+        'Transparent Outline Variants',
+        'Interactive Component Demos',
+        'Font Awesome Integration Fixes'
+      ]
+    },
+    {
+      version: 'v1.0.5',
+      date: '15 Aug 2025',
+      features: [
+        'Centralized StatusBadge Component',
+        'Dynamic Icon Scaling System',
+        'ScaledIcon Component for consistent icon sizing',
+        'Enhanced DRY refactoring completed',
+        'All components now use centralized styling system'
+      ]
+    },
+    {
+      version: 'v1.0.4',
+      date: '14 Aug 2025',
+      features: [
+        'Complete DRY refactoring',
+        'Centralized styling through financeStore',
+        'Removed duplicate computed styles',
+        'Enhanced font scaling system',
+        'Improved component maintainability'
+      ]
+    },
+    {
+      version: 'v1.0.3',
+      date: '13 Aug 2025',
+      features: [
+        'Enhanced flexible scaling system',
+        'Padding, margin, and border radius scaling',
+        'Improved button and input scaling',
+        'Better responsive design',
+        'Enhanced user experience'
+      ]
+    },
+    {
+      version: 'v1.0.2',
+      date: '12 Aug 2025',
+      features: [
+        'Font size scaling system',
+        'Dynamic styling with 1px increments',
+        'Settings panel integration',
+        'Centralized configuration management',
+        'Improved accessibility'
+      ]
+    },
+    {
+      version: 'v1.0.1',
+      date: '11 Aug 2025',
+      features: [
+        'Invoice system implementation',
+        'Auto-generated invoice numbers',
+        'Cross-section search functionality',
+        'CSV export capabilities',
+        'Status tracking system'
       ]
     }
-  ];
+  ]);
 
-  // Module description
-  const moduleDescription = {
-    title: 'ERP Finance Module v1.0.1',
-    description: 'This module provides comprehensive financial management capabilities including:',
+  // Dynamic module description with real-time stats
+  const moduleDescription = computed(() => ({
+    title: `ERP Finance Module v1.0.7 (${totalRecords.value} records)`,
+    version: 'v1.0.7',
+    description: 'Comprehensive financial management system with enhanced demo components, modular architecture, and developer-friendly inline usage examples.',
+    totalRecords: totalRecords.value,
+    descriptions: [
+      {
+        id: 1,
+        title: 'Core Components',
+        count: 9,
+        list: [
+          'General Ledger - Complete accounting system',
+          'Accounts Payable - Vendor payment management',
+          'Accounts Receivable - Customer invoice tracking',
+          'Cash Flow - Transaction monitoring and analysis',
+          'Fixed Assets - Asset lifecycle management',
+          'Tax Management - Tax calculation and filing',
+          'Budgeting & Forecasting - Financial planning tools',
+          'Compliance & Audit - Regulatory compliance tracking',
+          'Reporting - Financial reports and analytics'
+        ]
+      },
+      {
+        id: 2,
+        title: 'UI Components',
+        count: 7,
+        list: [
+          'FinanceButton - Auto-scaling button component with variants',
+          'FinanceDropdown - Perfect height-matching dropdown component',
+          'FinanceInput - Text input component matching dropdown dimensions exactly',
+          'FinanceValueCard - Flexible value display cards with auto-coloring',
+          'FinanceToggle - Modern toggle switches with color variants',
+          'StatusBadge - Centralized status indicator component',
+          'ScaledIcon - Dynamic icon sizing system'
+        ]
+      },
+      {
+        id: 3,
+        title: 'Features',
+        count: 10,
+        list: [
+          'Enhanced 3-column demo layout for better visual organization',
+          'Inline usage examples directly under each demo section',
+          'Modular InfoBoard architecture with separate section components',
+          'Interactive demo selection with icon-coded buttons',
+          'Auto-scaling integration through store.fontSizes.base',
+          'Perfect component height matching system',
+          'Professional dark mode support across all components',
+          'Dynamic table row and header height scaling',
+          'Comprehensive currency and number formatting',
+          'Permission-based access control for different sections'
+        ]
+      }
+    ],
     features: [
-      'General Ledger with journal entries and trial balance',
-      'Accounts Payable with vendor management and aging analysis',
-      'Accounts Receivable with customer management and aging analysis',
-      'Cash Flow tracking with categorization',
-      'Tax Management with compliance tracking'
+      'FinanceDropdown component with perfect height matching to FinanceButton',
+      'Auto-scaling integration through store.fontSizes.base system',
+      'Enhanced FinanceButton with automatic font and padding scaling',
+      'Modernized GeneralLedger with consistent dropdown components',
+      'Transparent outline variants with proper CSS specificity',
+      'Interactive component demos in InfoBoard section',
+      'Font Awesome icon integration with proper loading',
+      'Professional dark mode support across all components',
+      'Centralized StatusBadge and ScaledIcon components',
+      'Complete DRY refactoring with centralized styling system'
     ]
-  };
+  }));
 
-  // Navigation function for shared entities
+  // Navigation function for shared entities and package tables
   function navigateToEntity(entityType) {
     const routes = {
+      // Framework shared entities
       'business_services': '/home/business_services',
       'projects': '/project/projects',
       'users': '/admin/users',
       'settings': '/config/settings',
       'vendors': '/erp/vendors',
-      'customers': '/erp/customers'
+      'customers': '/erp/customers',
+      
+      // Finance package tables - use the actual tab IDs from Finance.vue
+      'finance_accounts': '#general-ledger',
+      'finance_journal_entries': '#general-ledger',
+      'finance_payables': '#accounts-payable',
+      'finance_receivables': '#accounts-receivable',
+      'finance_tax_records': '#tax-management',
+      'finance_cashflow_transactions': '#cash-flow',
+      'finance_fixed_assets': '#fixed-assets',
+      'finance_budgets': '#budgeting',
+      'finance_audit_logs': '#compliance'
     };
     
     const route = routes[entityType];
     if (route) {
-      // Use Inertia router if available, otherwise window.location
-      if (window.Inertia) {
-        window.Inertia.visit(route);
+      if (route.startsWith('#')) {
+        // Handle hash-based navigation for finance tabs
+        const tabId = route.substring(1);
+        // Emit a custom event that the Finance.vue component can listen to
+        window.dispatchEvent(new CustomEvent('switchFinanceTab', { 
+          detail: { tabId } 
+        }));
       } else {
-        window.location.href = route;
+        // Use Inertia router if available, otherwise window.location
+        if (window.Inertia) {
+          window.Inertia.visit(route);
+        } else {
+          window.location.href = route;
+        }
       }
     }
   }
@@ -125,15 +353,21 @@ export function useInfoBoxes() {
     activeInfo.value = !activeInfo.value;
   }
 
-  // Get color classes for shared entities
+  // Get color classes for shared entities and package tables
   function getEntityColorClasses(color) {
     const colorMap = {
-      blue: 'bg-blue-50 hover:bg-blue-100 text-blue-700 text-blue-600 text-blue-500',
-      green: 'bg-green-50 hover:bg-green-100 text-green-700 text-green-600 text-green-500',
-      purple: 'bg-purple-50 hover:bg-purple-100 text-purple-700 text-purple-600 text-purple-500',
-      orange: 'bg-orange-50 hover:bg-orange-100 text-orange-700 text-orange-600 text-orange-500',
-      teal: 'bg-teal-50 hover:bg-teal-100 text-teal-700 text-teal-600 text-teal-500',
-      indigo: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-indigo-600 text-indigo-500'
+      // Framework entity colors
+      blue: 'bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-300 dark:hover:text-blue-200',
+      green: 'bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:text-green-300 dark:hover:text-green-200',
+      purple: 'bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:text-purple-300 dark:hover:text-purple-200',
+      orange: 'bg-orange-50 hover:bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-300 dark:hover:text-orange-200',
+      teal: 'bg-teal-50 hover:bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:hover:bg-teal-900/30 dark:text-teal-300 dark:hover:text-teal-200',
+      indigo: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/30 dark:text-indigo-300 dark:hover:text-indigo-200',
+      
+      // Package table colors
+      gray: 'bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-200',
+      red: 'bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-300 dark:hover:text-red-200',
+      yellow: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:hover:bg-yellow-900/30 dark:text-yellow-300 dark:hover:text-yellow-200'
     };
     
     return colorMap[color] || colorMap.blue;
@@ -148,6 +382,7 @@ export function useInfoBoxes() {
     sharedEntities,
     versionUpdates,
     moduleDescription,
+    totalRecords,
     
     // Functions
     navigateToEntity,

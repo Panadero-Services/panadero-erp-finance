@@ -1,6 +1,16 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useGeneralLedger } from '../composables/useGeneralLedger';
+import { useInvoiceApi } from '../composables/useInvoiceApi';
+import { useFinanceStore } from '../stores/financeStore';
+import StatusBadge from './ui/StatusBadge.vue';
+import FinanceButton from './ui/FinanceButton.vue';
+import FinanceDropdown from './ui/FinanceDropdown.vue';
+import FinanceValueCard from './ui/FinanceValueCard.vue';
+
+const store = useFinanceStore();
+
+// Remove all computed styles - use store directly
 
 const {
   isLoading,
@@ -11,6 +21,16 @@ const {
   closePeriod
 } = useGeneralLedger();
 
+const {
+  generateInvoiceNumber,
+  createInvoice,
+  exportInvoicesToCSV,
+  fetchInvoices,
+  invoices: apiInvoices,
+  isLoading: invoiceLoading,
+  error: invoiceError
+} = useInvoiceApi();
+
 const showNewEntryForm = ref(false);
 const accounts = ref([
   'Cash',
@@ -19,6 +39,12 @@ const accounts = ref([
   'Accounts Payable',
   'Revenue',
   'Expenses'
+]);
+
+// Dropdown options for FinanceDropdown
+const entryTypeOptions = ref([
+  { label: 'Debit', value: 'debit' },
+  { label: 'Credit', value: 'credit' }
 ]);
 
 const newEntry = ref({
@@ -47,30 +73,32 @@ function openNewEntryForm() {
 }
 
 // Computed properties for balance validation
-const totalDebits = computed(() => {
-  return newEntry.value.lines
+const totalDebits = ref(0);
+const totalCredits = ref(0);
+
+const balanceDifference = ref(0);
+const isBalanced = ref(true);
+
+const canSubmit = ref(false);
+
+// Watch for changes in newEntry.lines to update totals
+watch(() => newEntry.value.lines, () => {
+  totalDebits.value = newEntry.value.lines
     .filter(line => line.type === 'debit')
     .reduce((sum, line) => sum + (parseFloat(line.amount) || 0), 0);
-});
-
-const totalCredits = computed(() => {
-  return newEntry.value.lines
+  totalCredits.value = newEntry.value.lines
     .filter(line => line.type === 'credit')
     .reduce((sum, line) => sum + (parseFloat(line.amount) || 0), 0);
-});
-
-const balanceDifference = computed(() => {
-  return Math.abs(totalDebits.value - totalCredits.value);
-});
-
-const isBalanced = computed(() => {
-  return Math.abs(totalDebits.value - totalCredits.value) < 0.01; // Allow for small rounding differences
-});
-
-const canSubmit = computed(() => {
-  return newEntry.value.description.trim() !== '' && 
+  balanceDifference.value = Math.abs(totalDebits.value - totalCredits.value);
+  isBalanced.value = Math.abs(totalDebits.value - totalCredits.value) < 0.01; // Allow for small rounding differences
+  canSubmit.value = newEntry.value.description.trim() !== '' && 
          newEntry.value.lines.every(line => line.account && line.amount > 0);
-});
+}, { deep: true });
+
+// Missing functions
+function formatDate(date) {
+  return new Date(date).toLocaleDateString();
+}
 
 function formatCurrency(amount) {
   return new Intl.NumberFormat('en-US', {
@@ -89,13 +117,24 @@ function removeLine(index) {
 
 async function handleNewEntry() {
   try {
+    // Create invoice using the invoice system
+    const invoice = await createInvoice('GL', {
+      description: newEntry.value.description,
+      lines: newEntry.value.lines,
+      period: currentPeriod.value,
+      type: 'journal',
+      category: 'adjustment'
+    });
+    
+    // Also post to GL for backward compatibility
     await postJournalEntry(newEntry.value);
+    
     showNewEntryForm.value = false;
     resetForm();
-    alert('Journal entry posted successfully!');
+    alert('Journal entry posted successfully with invoice number: ' + invoice.invoice_number);
   } catch (error) {
-    alert(`Error posting journal entry: ${error.message}`);
     console.error('Post journal entry error:', error);
+    alert(`Error posting journal entry: ${error.message}`);
   }
 }
 
@@ -110,477 +149,293 @@ async function handleClosePeriod() {
     }
   }
 }
+
+// Filters state
+const filters = ref({
+  period: '',
+  account: ''
+});
+
+const availablePeriods = computed(() => {
+  return Object.keys(journalEntries.value).map(id => id.split('_')[0]);
+});
+
+const availableAccounts = computed(() => {
+  const allAccounts = new Set();
+  journalEntries.value.forEach(entry => {
+    entry.lines.forEach(line => {
+      if (line.account) {
+        allAccounts.add(line.account);
+      }
+    });
+  });
+  return Array.from(allAccounts);
+});
+
+const filteredJournalEntries = computed(() => {
+  return journalEntries.value.filter(entry => {
+    const matchesPeriod = filters.value.period ? entry.period === filters.value.period : true;
+    const matchesAccount = filters.value.account ? entry.lines.some(line => line.account === filters.value.account) : true;
+    return matchesPeriod && matchesAccount;
+  });
+});
+
+function exportGL() {
+  exportInvoicesToCSV('GL');
+}
 </script>
 <template>
-  <div class="general-ledger">
-    <header class="gl-header">
-      <h1>General Ledger</h1>
-      <div class="period-info">
-        Current Period: {{ currentPeriod }}
-        <button @click="handleClosePeriod" :disabled="isLoading">
-          Close Period
-        </button>
-      </div>
-    </header>
-
-    <div class="gl-content">
-      <div class="journal-entries">
-        <h2>Journal Entries</h2>
-        <div class="toolbar">
-          <button @click="openNewEntryForm">New Entry</button>
-        </div>
-        
-        <div v-if="journalEntries.length > 0" class="entries-list">
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Description</th>
-                <th>Account</th>
-                <th>Debit</th>
-                <th>Credit</th>
-              </tr>
-            </thead>
-            <tbody>
-              <template v-for="entry in journalEntries" :key="entry.id">
-                <tr v-for="line in entry.lines" :key="line.id">
-                  <td>{{ entry.timestamp }}</td>
-                  <td>{{ entry.description }}</td>
-                  <td>{{ line.account }}</td>
-                  <td>{{ line.type === 'debit' ? line.amount : '' }}</td>
-                  <td>{{ line.type === 'credit' ? line.amount : '' }}</td>
-                </tr>
-              </template>
-            </tbody>
-          </table>
-        </div>
-        <div v-else class="no-entries">
-          No journal entries for this period
-        </div>
-      </div>
-
-      <div class="trial-balance">
-        <h2>Trial Balance</h2>
-
-        <div class="toolbar">
-          <button @click="handleClosePeriod">Close Period</button>
+  <div class="general-ledger dark:bg-gray-900">
+    <div class="flex items-center justify-between mb-6">
+      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">General Ledger</h2>
+      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <!-- Filters -->
+        <div class="flex items-center gap-2 mr-4">
+          <FinanceDropdown v-model="filters.period" :options="['', ...availablePeriods]" placeholder="All Periods" variant="ghost" size="normal" />
+          <FinanceDropdown v-model="filters.account" :options="['', ...availableAccounts]" placeholder="All Accounts" variant="ghost" size="normal" />
         </div>
 
-
-        <table v-if="Object.keys(trialBalance).length > 0">
-          <thead>
-            <tr>
-              <th>Account</th>
-              <th>Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(balance, account) in trialBalance" :key="account">
-              <td>{{ account }}</td>
-              <td>{{ balance }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-else class="no-balance">
-          No trial balance available
+        <!-- Buttons -->
+        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+          <FinanceButton variant="primary" @click="handleNewEntry">New Entry</FinanceButton>
+          <FinanceButton variant="success" @click="exportGL">Export GL</FinanceButton>
+          <FinanceButton variant="secondary" @click="handleClosePeriod">Close Period</FinanceButton>
         </div>
+
       </div>
     </div>
 
-    <div v-if="showNewEntryForm" class="entry-form-overlay">
-      <div class="entry-form">
-        <h3>New Journal Entry</h3>
+    <div :style="store.scalingStyles.smallFontSize" class="mb-4 text-gray-600 dark:text-gray-400">
+      Current Period: {{ currentPeriod }}
+    </div>
+
+    <!-- Summary Cards -->
+    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <FinanceValueCard title="Journal Entries" :value="journalEntries.length" rows="2-row" format="number" color="info" icon="fas fa-list" />
+      <FinanceValueCard title="Active Accounts" :value="Object.keys(trialBalance).length" rows="2-row" format="number" color="info" icon="fas fa-chart-pie" />
+      <FinanceValueCard title="Total Debits" :value="totalDebits" rows="2-row" format="currency" color="positive" icon="fas fa-plus-circle" />
+      <FinanceValueCard title="Total Credits" :value="totalCredits" rows="2-row" format="currency" color="positive" icon="fas fa-minus-circle" />
+    </div>
+
+    <!-- Balance Status -->
+    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <FinanceValueCard title="Balance Status" :value="isBalanced ? 'Balanced ✓' : 'Unbalanced ✗'" rows="2-row" :color="isBalanced ? 'positive' : 'negative'" icon="fas fa-balance-scale" />
+      <FinanceValueCard title="Difference" :value="balanceDifference" rows="2-row" format="currency" color="auto" :max-good="0" :max-warning="100" icon="fas fa-calculator" />
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded border dark:border-gray-700 mb-6">
+      <div class="p-4 border-b bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Journal Entries</h3>
+      </div>
+      
+      <div v-if="filteredJournalEntries.length > 0" class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-50 dark:bg-gray-700 text-left">
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Date</th>
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Description</th>
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Account</th>
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Debit</th>
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Credit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="entry in filteredJournalEntries" :key="entry.id">
+              <tr v-for="line in entry.lines" :key="line.id" class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-100" :style="store.scalingStyles.tableRowHeight">
+                <td class="p-3 border dark:border-gray-600">{{ entry.timestamp }}</td>
+                <td class="p-3 border dark:border-gray-600">{{ entry.description }}</td>
+                <td class="p-3 border dark:border-gray-600">{{ line.account }}</td>
+                <td class="p-3 border dark:border-gray-600">{{ line.type === 'debit' ? line.amount : '' }}</td>
+                <td class="p-3 border dark:border-gray-600">{{ line.type === 'credit' ? line.amount : '' }}</td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+      <div v-else class="p-6 text-center text-gray-500 dark:text-gray-400 italic">
+        No journal entries for this period
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded border dark:border-gray-700 mb-6">
+      <div class="p-4 border-b bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Trial Balance</h3>
+      </div>
+      
+      <div v-if="Object.keys(trialBalance).length > 0" class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="bg-gray-50 dark:bg-gray-700 text-left">
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Account</th>
+              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(balance, account) in trialBalance" :key="account" class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-100" :style="store.scalingStyles.tableRowHeight">
+              <td class="p-3 border dark:border-gray-600">{{ account }}</td>
+              <td class="p-3 border dark:border-gray-600">{{ balance }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-else class="p-6 text-center text-gray-500 dark:text-gray-400 italic">
+        No trial balance available
+      </div>
+    </div>
+
+    <div v-if="showNewEntryForm">
+      <div class="fixed inset-0 z-20 bg-black opacity-20 dark:opacity-75" @click="showNewEntryForm = false"></div>
+      <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
+        <div class="h-full flex flex-col">
+          <div class="flex-1 overflow-y-auto">
+        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Journal Entry</h3>
         <form @submit.prevent="handleNewEntry">
-          <div class="form-group">
-            <label>Description</label>
-            <input v-model="newEntry.description" required />
+          <div class="mb-4">
+            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+            <input v-model="newEntry.description" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Enter description" />
           </div>
           
-          <div class="entry-lines">
-            <div v-for="(line, index) in newEntry.lines" :key="index" class="entry-line">
-              <select v-model="line.account" required>
-                <option value="">Select Account</option>
-                <option v-for="acc in accounts" :key="acc">{{ acc }}</option>
-              </select>
-              <select v-model="line.type" required>
-                <option value="debit">Debit</option>
-                <option value="credit">Credit</option>
-              </select>
-              <input type="number" v-model="line.amount" step="0.01" required />
-              <button type="button" @click="removeLine(index)" v-if="newEntry.lines.length > 2">
-                Remove
-              </button>
+          <div class="mb-4">
+            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Entry Lines</label>
+            <div class="space-y-3">
+              <div v-for="(line, index) in newEntry.lines" :key="index" class="grid grid-cols-4 gap-2 items-center">
+                <FinanceDropdown 
+                  v-model="line.account" 
+                  :options="['', ...accounts]"
+                  placeholder="Select Account"
+                  variant="outline"
+                  size="normal"
+                  full-width
+                />
+                <FinanceDropdown 
+                  v-model="line.type" 
+                  :options="entryTypeOptions"
+                  option-label="label"
+                  option-value="value"
+                  placeholder="Debit/Credit"
+                  variant="outline"
+                  size="normal"
+                  full-width
+                />
+                <input type="number" v-model="line.amount" step="0.01" required class="border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Amount" />
+                <button type="button" @click="removeLine(index)" v-if="newEntry.lines.length > 2" class="px-2 py-1 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
+                  Remove
+                </button>
+              </div>
             </div>
+            <button type="button" @click="addLine" :style="store.scalingStyles.smallFontSize" class="mt-2 px-3 py-1 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded">+ Add Line</button>
           </div>
-          
-          <button type="button" @click="addLine">Add Line</button>
           
           <!-- Balance Validation Display -->
-          <div class="balance-validation" :class="{ 'balanced': isBalanced, 'unbalanced': !isBalanced }">
-            <div class="balance-row">
-              <span>Total Debits: {{ formatCurrency(totalDebits) }}</span>
-              <span>Total Credits: {{ formatCurrency(totalCredits) }}</span>
+          <div class="mb-4 p-3 rounded border" :class="{ 'border-green-200 bg-green-50 dark:border-green-600 dark:bg-green-900/20': isBalanced, 'border-red-200 bg-red-50 dark:border-red-600 dark:bg-red-900/20': !isBalanced }">
+            <div class="grid grid-cols-2 gap-4" :style="store.scalingStyles.smallFontSize">
+              <div>
+                <span class="font-medium dark:text-gray-200">Total Debits:</span> 
+                <span class="ml-2 dark:text-gray-100">{{ formatCurrency(totalDebits) }}</span>
+              </div>
+              <div>
+                <span class="font-medium dark:text-gray-200">Total Credits:</span> 
+                <span class="ml-2 dark:text-gray-100">{{ formatCurrency(totalCredits) }}</span>
+              </div>
             </div>
-            <div class="balance-difference" v-if="!isBalanced">
+            <div v-if="!isBalanced" class="mt-2 text-red-600 dark:text-red-400 font-medium">
               Difference: {{ formatCurrency(balanceDifference) }}
             </div>
-            <div class="balance-status">
-              Status: <span :class="{ 'balanced': isBalanced, 'unbalanced': !isBalanced }">
+            <div class="mt-2 font-medium dark:text-gray-200">
+              Status: <span :class="{ 'text-green-600 dark:text-green-400': isBalanced, 'text-red-600 dark:text-red-400': !isBalanced }">
                 {{ isBalanced ? 'Balanced ✓' : 'Unbalanced ✗' }}
               </span>
             </div>
           </div>
           
-          <div class="form-actions">
-            <button type="submit" :disabled="isLoading || !isBalanced || !canSubmit">Save Entry</button>
-            <button type="button" @click="showNewEntryForm = false">Cancel</button>
+          <div class="flex justify-end gap-2">
+            <button type="button" @click="showNewEntryForm = false" class="px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600">Cancel</button>
+            <button type="submit" :disabled="isLoading || !isBalanced || !canSubmit" class="px-3 py-2 rounded bg-indigo-600 text-white disabled:opacity-50 hover:bg-indigo-700">Save Entry</button>
           </div>
         </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.general-ledger {
-  padding: 2rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.gl-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* CashFlow-style summary cards */
+.cf-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
   margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #f3f4f6;
 }
 
-.gl-header h1 {
-  font-size: 1.875rem;
-  font-weight: 700;
-  color: #111827;
+.summary-card {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+  @apply dark:bg-gray-800 dark:shadow-gray-900/50;
+}
+
+.summary-card h3 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  @apply dark:text-gray-300;
+}
+
+.summary-card p {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  @apply dark:text-white;
+}
+
+.cf-totals {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.total-card {
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  text-align: center;
+  @apply dark:bg-gray-800 dark:shadow-gray-900/50;
+}
+
+.total-card h4 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  @apply dark:text-gray-300;
+}
+
+.total-card p {
+  font-size: 1.125rem;
+  font-weight: 600;
   margin: 0;
 }
 
-.gl-content {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Changed from 2fr 1fr to 1fr 1fr for equal columns */
-  gap: 2rem;
-  align-items: start; /* Ensure both columns start at the same top level */
+/* Color classes */
+.positive {
+  color: #059669;
+  @apply dark:text-green-400;
 }
 
-.journal-entries,
-.trial-balance {
-  display: flex;
-  flex-direction: column;
-  min-height: 400px; /* Ensure minimum height for consistent alignment */
+.negative {
+  color: #dc2626;
+  @apply dark:text-red-400;
 }
 
-.journal-entries h2,
-.trial-balance h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #374151;
-  margin: 0 0 1rem 0;
-  height: 2.5rem; /* Fixed height for headers to ensure alignment */
-  display: flex;
-  align-items: center;
-}
-
-.toolbar {
-  margin-bottom: 1.5rem;
-  display: flex;
-  gap: 1rem;
-  height: 3.5rem; /* Fixed height for toolbar to ensure alignment */
-  align-items: center;
-}
-
-.toolbar button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.toolbar button:first-child {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: white;
-}
-
-.toolbar button:first-child:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.toolbar button:last-child {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.toolbar button:last-child:hover {
-  background: #e5e7eb;
-}
-
-.entries-list table,
-.trial-balance table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-th, td {
-  border: 1px solid #e5e7eb;
-  padding: 1rem;
-  text-align: left;
-  font-size: 0.875rem;
-}
-
-th {
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-  color: #374151;
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.no-entries,
-.no-balance {
-  text-align: center;
-  padding: 3rem 2rem;
-  color: #6b7280;
-  font-style: italic;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 2px dashed #d1d5db;
-  flex: 1; /* Take remaining space */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px; /* Minimum height for empty state */
-}
-
-.entry-form-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.entry-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
-}
-
-.entry-form h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
+.amount {
   color: #111827;
-  margin: 0 0 1.5rem 0;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #374151;
-  font-size: 0.875rem;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  transition: border-color 0.2s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-.entry-lines {
-  margin: 1.5rem 0;
-  padding: 1.5rem;
-  background: #f9fafb;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-}
-
-.entry-line {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr auto;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  align-items: center;
-}
-
-.entry-line:last-child {
-  margin-bottom: 0;
-}
-
-.entry-line button {
-  padding: 0.5rem;
-  border: none;
-  background: #ef4444;
-  color: white;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  transition: background-color 0.2s ease;
-}
-
-.entry-line button:hover {
-  background: #dc2626;
-}
-
-.balance-validation {
-  margin: 1.5rem 0;
-  padding: 1.5rem;
-  border-radius: 8px;
-  border: 2px solid;
-  font-size: 0.875rem;
-}
-
-.balance-validation.balanced {
-  background-color: #f0fdf4;
-  border-color: #10b981;
-}
-
-.balance-validation.unbalanced {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-}
-
-.balance-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.balance-difference {
-  text-align: center;
-  margin-bottom: 0.75rem;
-  color: #ef4444;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.balance-status {
-  text-align: center;
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.balance-status .balanced {
-  color: #10b981;
-}
-
-.balance-status .unbalanced {
-  color: #ef4444;
-}
-
-.form-actions {
-  margin-top: 2rem;
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-}
-
-.form-actions button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 500;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.form-actions button:first-child {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: white;
-}
-
-.form-actions button:first-child:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.form-actions button:first-child:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.form-actions button:last-child {
-  background: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-}
-
-.form-actions button:last-child:hover {
-  background: #e5e7eb;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .general-ledger {
-    padding: 1rem;
-  }
-  
-  .gl-content {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-  
-  .entry-line {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-  
-  .entry-form {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-  
-  .form-actions {
-    flex-direction: column;
-  }
-  
-  .form-actions button {
-    width: 100%;
-  }
+  @apply dark:text-white;
 }
 </style>

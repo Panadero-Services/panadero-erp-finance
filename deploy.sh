@@ -38,3 +38,4 @@ echo "📝 Next steps:"
 echo "   1. Push to GitHub: git push origin master --tags"
 echo "   2. Create release on GitHub"
 echo "   3. Update main project if needed"
+

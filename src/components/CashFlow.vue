@@ -3,6 +3,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useCashFlow } from '../composables/useCashFlow';
+import { useInvoiceApi } from '../composables/useInvoiceApi';
+import { useFinanceStore } from '../stores/financeStore';
+import StatusBadge from './ui/StatusBadge.vue';
+import FinanceValueCard from './ui/FinanceValueCard.vue';
+import FinanceButton from './ui/FinanceButton.vue';
+import FinanceDropdown from './ui/FinanceDropdown.vue';
+
+const store = useFinanceStore();
+
+// Remove all computed styles - use store directly
 
 const {
   isLoading,
@@ -13,14 +23,30 @@ const {
   monthlyFlow,
   addTransaction,
   updateTransaction,
-  deleteTransaction,
+  deleteTransaction: deleteTransactionFromComposable,
   init
 } = useCashFlow();
+
+const {
+  generateInvoiceNumber,
+  createInvoice,
+  exportInvoicesToCSV,
+  fetchInvoices,
+  invoices: apiInvoices,
+  isLoading: invoiceLoading,
+  error: invoiceError
+} = useInvoiceApi();
 
 // UI state
 const showNewTransactionForm = ref(false);
 const showEditForm = ref(false);
 const editingTransaction = ref(null);
+
+// Filters state
+const filters = ref({
+  period: '',
+  category: ''
+});
 
 // Form models
 const newTransaction = ref({
@@ -41,6 +67,17 @@ const categories = ref([
   { id: 5, name: 'Loan Repayment', type: 'financing' }
 ]);
 
+// Dropdown options
+const categoryOptions = ref([
+  { label: 'All Categories', value: '' },
+  ...categories.value.map(cat => ({ label: cat.name, value: cat.id }))
+]);
+
+const typeOptions = ref([
+  { label: 'Inflow', value: 'inflow' },
+  { label: 'Outflow', value: 'outflow' }
+]);
+
 function formatDate(date) {
   return new Date(date).toLocaleDateString();
 }
@@ -52,8 +89,50 @@ function formatCurrency(amount) {
   }).format(amount);
 }
 
+async function exportCashFlow() {
+  try {
+    // Export current transactions to CSV
+    const csvContent = exportInvoicesToCSV(transactions.value, 'cash-flow');
+    console.log('Cash Flow exported:', csvContent);
+  } catch (error) {
+    console.error('Export failed:', error);
+  }
+}
+
+function editTransaction(transaction) {
+  editingTransaction.value = { ...transaction };
+  showEditForm.value = true;
+}
+
+async function handleDeleteTransaction(transactionId) {
+  try {
+    // Delete from cash flow
+    await deleteTransactionFromComposable(transactionId);
+    console.log('Transaction deleted:', transactionId);
+  } catch (error) {
+    console.error('Delete failed:', error);
+  }
+}
+
 async function handleNewTransaction() {
+  // Auto-generate reference number if not provided
+  if (!newTransaction.value.reference_no) {
+    newTransaction.value.reference_no = generateInvoiceNumber('CF');
+  }
+  
+      // Create invoice using the invoice system
+    const invoice = await createInvoice('CF', {
+    category_id: newTransaction.value.category_id,
+    transaction_date: newTransaction.value.transaction_date,
+    type: newTransaction.value.type,
+    amount: newTransaction.value.amount,
+    description: newTransaction.value.description,
+    reference_no: newTransaction.value.reference_no
+  });
+  
+  // Also add to cash flow for backward compatibility
   await addTransaction(newTransaction.value);
+  
   showNewTransactionForm.value = false;
   newTransaction.value = {
     category_id: '',
@@ -63,11 +142,6 @@ async function handleNewTransaction() {
     description: '',
     reference_no: ''
   };
-}
-
-function editTransaction(transaction) {
-  editingTransaction.value = { ...transaction };
-  showEditForm.value = true;
 }
 
 function closeEditForm() {
@@ -80,241 +154,282 @@ async function handleEditTransaction() {
   closeEditForm();
 }
 
-async function handleDeleteTransaction(transactionId) {
-  if (confirm('Are you sure you want to delete this transaction?')) {
-    await deleteTransaction(transactionId);
-  }
-}
-
-async function exportCashFlow() {
-  // Implement export functionality
-  console.log('Export cash flow');
-}
-
 onMounted(async () => {
   await init();
+  // Fetch invoices for this section
+  await fetchInvoices({ section: 'CF' });
 });
 </script>
 <template>
-  <div class="cash-flow">
-    <header class="cf-header">
-      <h1>Cash Flow Management</h1>
-      <div class="cf-filters">
-        <div class="period-filter">
-          <label>Period:</label>
-          <input type="month" v-model="selectedPeriod" />
+  <div class="cash-flow dark:bg-gray-900">
+    <div class="flex items-center justify-between mb-6">
+      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Cash Flow Management</h2>
+      <div class="flex items-center gap-2">
+      </div>
+      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <!-- Filters -->
+        <div class="flex items-center gap-2 mr-4">
+          <input 
+            v-model="filters.period" 
+            type="text" 
+            placeholder="Period (YYYY-MM)" 
+            :style="[store.scalingStyles.inputPadding, store.scalingStyles.textFontSize]"
+            class="border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+          >
+          <FinanceDropdown
+            v-model="filters.category"
+            :options="categoryOptions"
+            placeholder="All Categories"
+            variant="outline"
+          />
         </div>
-        
-        <div class="category-filter">
-          <label>Category:</label>
-          <select v-model="selectedCategory">
-            <option value="">All Categories</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
-              {{ category.name }}
-            </option>
-          </select>
+        <!-- Buttons -->
+        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+          <FinanceButton
+            @click="showNewTransactionForm = true"
+            variant="primary"
+            icon-left="fas fa-plus"
+          >
+            New Transaction
+          </FinanceButton>
+          <FinanceButton
+            @click="exportCashFlow"
+            variant="success"
+            icon-left="fas fa-download"
+          >
+            Export
+          </FinanceButton>
         </div>
-      </div>
-    </header>
-
-    <div class="cf-summary">
-      <div class="summary-card operating">
-        <h3>Operating Activities</h3>
-        <p :class="{ 'positive': summary.operating >= 0, 'negative': summary.operating < 0 }">
-          {{ formatCurrency(summary.operating) }}
-        </p>
-      </div>
-      <div class="summary-card investing">
-        <h3>Investing Activities</h3>
-        <p :class="{ 'positive': summary.investing >= 0, 'negative': summary.investing < 0 }">
-          {{ formatCurrency(summary.investing) }}
-        </p>
-      </div>
-      <div class="summary-card financing">
-        <h3>Financing Activities</h3>
-        <p :class="{ 'positive': summary.financing >= 0, 'negative': summary.financing < 0 }">
-          {{ formatCurrency(summary.financing) }}
-        </p>
-      </div>
-      <div class="summary-card net-flow">
-        <h3>Net Cash Flow</h3>
-        <p :class="{ 'positive': summary.netCashFlow >= 0, 'negative': summary.netCashFlow < 0 }">
-          {{ formatCurrency(summary.netCashFlow) }}
-        </p>
       </div>
     </div>
 
-    <div class="cf-totals">
-      <div class="total-card">
-        <h4>Total Inflow</h4>
-        <p class="positive">{{ formatCurrency(summary.totalInflow) }}</p>
-      </div>
-      <div class="total-card">
-        <h4>Total Outflow</h4>
-        <p class="negative">{{ formatCurrency(summary.totalOutflow) }}</p>
-      </div>
+    <div :style="store.scalingStyles.sectionMargin" class="cf-summary">
+      <FinanceValueCard title="Operating Activities" :value="summary.operating" rows="2-row" format="currency" color="auto" :min-good="0" :min-warning="-10000" icon="fas fa-cogs" />
+      <FinanceValueCard title="Investing Activities" :value="summary.investing" rows="2-row" format="currency" color="auto" :min-good="0" :min-warning="-50000" icon="fas fa-chart-line" />
+      <FinanceValueCard title="Financing Activities" :value="summary.financing" rows="2-row" format="currency" color="auto" :min-good="0" :min-warning="-25000" icon="fas fa-university" />
+      <FinanceValueCard title="Net Cash Flow" :value="summary.netCashFlow" rows="2-row" format="currency" color="auto" :min-good="1000" :min-warning="-1000" icon="fas fa-money-bill-wave" />
+    </div>
+
+    <div :style="store.scalingStyles.sectionMargin" class="cf-totals">
+      <FinanceValueCard title="Total Inflow" :value="summary.totalInflow" rows="2-row" format="currency" color="positive" icon="fas fa-arrow-up" trend="up" />
+      <FinanceValueCard title="Total Outflow" :value="summary.totalOutflow" rows="2-row" format="currency" color="negative" icon="fas fa-arrow-down" trend="down" />
     </div>
 
     <div class="cf-content">
-      <div class="toolbar">
-        <button @click="showNewTransactionForm = true">New Transaction</button>
-        <button @click="exportCashFlow">Export</button>
-      </div>
-
       <div v-if="transactions.length > 0" class="transactions-list">
-        <table>
+        <table :style="store.scalingStyles.borderRadius" class="w-full border-collapse bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
           <thead>
-            <tr>
-              <th>Date</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Reference</th>
-              <th>Actions</th>
+            <tr class="bg-gray-50 dark:bg-gray-700" :style="store.scalingStyles.tableHeaderHeight">
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Date</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Category</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Description</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Type</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Amount</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Reference</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="transaction in transactions" :key="transaction.id">
-              <td>{{ formatDate(transaction.transaction_date) }}</td>
-              <td>{{ transaction.category_name }}</td>
-              <td>{{ transaction.description }}</td>
-              <td>
-                <span :class="transaction.type">{{ transaction.type }}</span>
+            <tr 
+              v-for="transaction in transactions" 
+              :key="transaction.id" 
+              class="dark:text-gray-100 dark:border-gray-600"
+              :style="store.scalingStyles.tableRowHeight"
+            >
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(transaction.transaction_date) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.category_name }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.description }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+                <StatusBadge :status="transaction.type" />
               </td>
-              <td>{{ formatCurrency(transaction.amount) }}</td>
-              <td>{{ transaction.reference_no || '-' }}</td>
-              <td>
-                <button @click="editTransaction(transaction)" class="edit-btn">Edit</button>
-                <button @click="deleteTransaction(transaction.id)" class="delete-btn">Delete</button>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(transaction.amount) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.reference_no || '-' }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+                <div class="flex items-center gap-1">
+                  <button 
+                    @click="editTransaction(transaction)" 
+                    class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                    title="Edit Transaction"
+                  >
+                    <i class="fas fa-edit" :style="store.scalingStyles.iconSize"></i>
+                  </button>
+                  <button 
+                    @click="handleDeleteTransaction(transaction.id)" 
+                    class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
+                    title="Delete Transaction"
+                  >
+                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div v-else class="no-transactions">
+      <div v-else :style="store.scalingStyles.smallFontSize" class="no-transactions text-gray-500 dark:text-gray-400 p-6 text-center italic">
         No transactions found for the selected criteria
       </div>
     </div>
 
     <!-- New Transaction Form Modal -->
-    <div v-if="showNewTransactionForm" class="modal-overlay">
-      <div class="modal-content">
-        <h3>New Cash Flow Transaction</h3>
-        <form @submit.prevent="handleNewTransaction">
-          <div class="form-group">
-            <label>Category</label>
-            <select v-model="newTransaction.category_id" required>
-              <option value="">Select Category</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
-                {{ category.name }}
-              </option>
-            </select>
-          </div>
+    <div v-if="showNewTransactionForm">
+      <div class="fixed inset-0 z-20 bg-black opacity-20 dark:opacity-75" @click="showNewTransactionForm = false"></div>
+      <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
+        <div class="h-full flex flex-col">
+          <div class="flex-1 overflow-y-auto">
+            <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Cash Flow Transaction</h3>
+            <form @submit.prevent="handleNewTransaction">
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
+                    <FinanceDropdown
+                      v-model="newTransaction.category_id"
+                      :options="categories"
+                      option-label="name"
+                      option-value="id"
+                      placeholder="Select Category"
+                      variant="filled"
+                      full-width
+                    />
+                  </div>
 
-          <div class="form-group">
-            <label>Transaction Date</label>
-            <input type="date" v-model="newTransaction.transaction_date" required />
-          </div>
+                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Transaction Date</label>
+                    <input type="date" v-model="newTransaction.transaction_date" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                  </div>
 
-          <div class="form-group">
-            <label>Type</label>
-            <select v-model="newTransaction.type" required>
-              <option value="inflow">Inflow</option>
-              <option value="outflow">Outflow</option>
-            </select>
-          </div>
+                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
+                    <FinanceDropdown
+                      v-model="newTransaction.type"
+                      :options="typeOptions"
+                      variant="filled"
+                      full-width
+                    />
+                  </div>
 
-          <div class="form-group">
-            <label>Amount</label>
-            <input type="number" v-model="newTransaction.amount" step="0.01" required />
-          </div>
+                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+                    <input type="number" v-model="newTransaction.amount" step="0.01" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                  </div>
+              </div>
 
-          <div class="form-group">
-            <label>Description</label>
-            <textarea v-model="newTransaction.description" required></textarea>
-          </div>
+              <div class="mb-4">
+                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                <textarea v-model="newTransaction.description" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding, store.scalingStyles.textareaHeight]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
+              </div>
 
-          <div class="form-group">
-            <label>Reference Number</label>
-            <input v-model="newTransaction.reference_no" />
-          </div>
+              <div class="mb-4">
+                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
+                <input v-model="newTransaction.reference_no" :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+              </div>
 
-          <div class="form-actions">
-            <button type="submit" :disabled="isLoading">Save</button>
-            <button type="button" @click="showNewTransactionForm = false">Cancel</button>
+              <div class="flex justify-end gap-2">
+                <FinanceButton
+                  type="button"
+                  @click="showNewTransactionForm = false"
+                  variant="outline-secondary"
+                >
+                  Cancel
+                </FinanceButton>
+                <FinanceButton
+                  type="submit"
+                  :disabled="isLoading"
+                  variant="primary"
+                  icon-left="fas fa-save"
+                >
+                  Save
+                </FinanceButton>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
     <!-- Edit Transaction Form Modal -->
-    <div v-if="showEditForm" class="modal-overlay">
-      <div class="modal-content">
-        <h3>Edit Transaction</h3>
-        <form @submit.prevent="handleEditTransaction">
-          <div class="form-group">
-            <label>Category</label>
-            <select v-model="editingTransaction.category_id" required>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
-                {{ category.name }}
-              </option>
-            </select>
-          </div>
+    <div v-if="showEditForm">
+      <div class="fixed inset-0 z-20 bg-black opacity-20 dark:opacity-75" @click="closeEditForm"></div>
+      <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
+        <div class="h-full flex flex-col">
+          <div class="flex-1 overflow-y-auto">
+            <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Edit Transaction</h3>
+            <form @submit.prevent="handleEditTransaction">
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
+                    <FinanceDropdown
+                      v-model="editingTransaction.category_id"
+                      :options="categories"
+                      option-label="name"
+                      option-value="id"
+                      variant="filled"
+                      full-width
+                    />
+                  </div>
 
-          <div class="form-group">
-            <label>Transaction Date</label>
-            <input type="date" v-model="editingTransaction.transaction_date" required />
-          </div>
+                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Transaction Date</label>
+                    <input type="date" v-model="editingTransaction.transaction_date" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                  </div>
 
-          <div class="form-group">
-            <label>Type</label>
-            <select v-model="editingTransaction.type" required>
-              <option value="inflow">Inflow</option>
-              <option value="outflow">Outflow</option>
-            </select>
-          </div>
+                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
+                    <FinanceDropdown
+                      v-model="editingTransaction.type"
+                      :options="typeOptions"
+                      variant="filled"
+                      full-width
+                    />
+                  </div>
 
-          <div class="form-group">
-            <label>Amount</label>
-            <input type="number" v-model="editingTransaction.amount" step="0.01" required />
-          </div>
+                  <div>
+                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+                    <input type="number" v-model="editingTransaction.amount" step="0.01" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                  </div>
+              </div>
 
-          <div class="form-group">
-            <label>Description</label>
-            <textarea v-model="editingTransaction.description" required></textarea>
-          </div>
+              <div class="mb-4">
+                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                <textarea v-model="editingTransaction.description" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding, store.scalingStyles.textareaHeight]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
+              </div>
 
-          <div class="form-group">
-            <label>Reference Number</label>
-            <input v-model="editingTransaction.reference_no" />
-          </div>
+              <div class="mb-4">
+                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
+                <input v-model="editingTransaction.reference_no" :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+              </div>
 
-          <div class="form-actions">
-            <button type="submit" :disabled="isLoading">Update</button>
-            <button type="button" @click="closeEditForm">Cancel</button>
+              <div class="flex justify-end gap-2">
+                <FinanceButton
+                  type="button"
+                  @click="closeEditForm"
+                  variant="outline-secondary"
+                >
+                  Cancel
+                </FinanceButton>
+                <FinanceButton
+                  type="submit"
+                  :disabled="isLoading"
+                  variant="primary"
+                  icon-left="fas fa-save"
+                >
+                  Update
+                </FinanceButton>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* Standardized styling now controlled via useStyling.js composable */
+/* Users can customize font sizes, colors, spacing, etc. from the centralized styling system */
+
 .cash-flow {
   padding: 1rem;
-}
-
-.cf-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.cf-filters {
-  display: flex;
-  gap: 1rem;
 }
 
 .cf-summary {
@@ -329,6 +444,7 @@ onMounted(async () => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  @apply dark:bg-gray-800 dark:shadow-gray-900/50;
 }
 
 .cf-totals {
@@ -343,31 +459,34 @@ onMounted(async () => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  @apply dark:bg-gray-800 dark:shadow-gray-900/50;
 }
 
 .positive {
   color: #059669;
   font-weight: bold;
+  @apply dark:text-green-400;
 }
 
 .negative {
   color: #dc2626;
   font-weight: bold;
+  @apply dark:text-red-400;
 }
 
 .inflow {
   color: #059669;
   font-weight: bold;
+  @apply dark:text-green-400;
 }
 
 .outflow {
   color: #dc2626;
   font-weight: bold;
+  @apply dark:text-red-400;
 }
 
-.toolbar {
-  margin-bottom: 1rem;
-}
+
 
 table {
   width: 100%;
@@ -378,78 +497,50 @@ th, td {
   padding: 0.5rem;
   border: 1px solid #ddd;
   text-align: left;
+  @apply dark:border-gray-600;
 }
 
-.edit-btn {
-  background: #3b82f6;
-  color: white;
-  margin-right: 0.5rem;
-}
-
-.delete-btn {
-  background: #dc2626;
-  color: white;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  justify-content: center;
+.action-btn {
+  display: inline-flex;
   align-items: center;
-}
-
-.modal-content {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background: #f5f5f5;
+  justify-content: center;
+  margin: 0 0.25rem;
+  border: none;
+  border-radius: 0.375rem;
+  background: transparent;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 
-button:hover {
-  background: #e5e5e5;
+.action-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.action-btn:active {
+  transform: translateY(0);
 }
+
+.edit-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.delete-btn:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+/* Dark mode support */
+.dark .action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .edit-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.dark .delete-btn:hover {
+  background: rgba(220, 38, 38, 0.2);
+}
+
+
 </style>

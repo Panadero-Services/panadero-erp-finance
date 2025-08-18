@@ -62,3 +62,4 @@ If you encounter any issues during migration, check:
 1. Import paths are correctly updated
 2. All package dependencies are installed
 3. The Finance component renders without errors
+
