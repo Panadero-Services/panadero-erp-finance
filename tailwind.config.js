@@ -34,6 +34,25 @@ export default {
               xxl: ['22px', '2.2rem'],
               xxxl: ['24px', '2.3rem'],
               header: ['36px', '3.5rem'],
+              
+              // Custom 1px increment sizes for dynamic scaling
+              '8': ['8px', '1rem'],
+              '9': ['9px', '1rem'],
+              '10': ['10px', '1rem'],
+              '11': ['11px', '1rem'],
+              '12': ['12px', '1rem'],
+              '13': ['13px', '1rem'],
+              '14': ['14px', '1rem'],
+              '15': ['15px', '1rem'],
+              '16': ['16px', '1rem'],
+              '17': ['17px', '1rem'],
+              '18': ['18px', '1rem'],
+              '19': ['19px', '1rem'],
+              '20': ['20px', '1rem'],
+              '21': ['21px', '1rem'],
+              '22': ['22px', '1rem'],
+              '23': ['23px', '1rem'],
+              '24': ['24px', '1rem'],
             },
 
             colors: {

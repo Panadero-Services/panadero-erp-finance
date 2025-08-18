@@ -67,7 +67,71 @@ Would you like me to help document this solution or make any other improvements 
 */
 
 
- 
+
+use App\Http\Controllers\FinanceInvoiceController;
+
+
+// ============================================================================
+// FINANCE INVOICE SYSTEM ROUTES
+// ============================================================================
+// Test route without authentication
+Route::get('/finance/test', function () {
+    return response()->json([
+        'message' => 'Finance test route working',
+        'timestamp' => now(),
+        'cookies' => request()->cookies->all()
+    ]);
+});
+
+// Test finance invoices route without authentication
+Route::get('/finance/invoices/test', function () {
+    return response()->json([
+        'message' => 'Finance invoices test route working',
+        'timestamp' => now(),
+        'cookies' => request()->cookies->all(),
+        'headers' => request()->headers->all()
+    ]);
+});
+
+Route::prefix('finance/invoices')->middleware('auth')->group(function () {
+    // Basic CRUD operations
+    Route::get('/', [FinanceInvoiceController::class, 'index']);
+    Route::post('/', [FinanceInvoiceController::class, 'store']);
+    Route::get('/{invoice_number}', [FinanceInvoiceController::class, 'show']);
+    Route::put('/{invoice_number}', [FinanceInvoiceController::class, 'update']);
+    Route::delete('/{invoice_number}', [FinanceInvoiceController::class, 'destroy']);
+    
+    // Invoice workflow operations
+    Route::post('/{invoice_number}/approve', [FinanceInvoiceController::class, 'approve']);
+    Route::post('/{invoice_number}/complete', [FinanceInvoiceController::class, 'complete']);
+    Route::post('/{invoice_number}/cancel', [FinanceInvoiceController::class, 'cancel']);
+    
+    // Reporting and statistics
+    Route::get('/stats/summary', [FinanceInvoiceController::class, 'stats']);
+    Route::get('/export/csv', [FinanceInvoiceController::class, 'export']);
+    
+    // Section-specific routes
+    Route::prefix('section/{section}')->group(function () {
+        Route::get('/', [FinanceInvoiceController::class, 'index']);
+        Route::get('/stats', [FinanceInvoiceController::class, 'stats']);
+        Route::get('/export', [FinanceInvoiceController::class, 'export']);
+    });
+    
+    // Status-specific routes
+    Route::prefix('status/{status}')->group(function () {
+        Route::get('/', [FinanceInvoiceController::class, 'index']);
+        Route::get('/export', [FinanceInvoiceController::class, 'export']);
+    });
+});
+
+
+
+
+
+
+
+
+
 
 
 // ========================================

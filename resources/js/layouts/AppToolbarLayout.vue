@@ -104,7 +104,7 @@ onUnmounted(() => {
 
 <template>
   <html class="overscroll-none" :class="set.dark ? 'dark bg-black' : 'light bg-indigo-100'">
-    <div class="bg-slate-100 text-black/50 dark:bg-slate-950 dark:text-white/50 h-screen w-screen font-roboto">
+    <div class="bg-slate-50 text-black/50 dark:bg-slate-900 dark:text-white/50 min-h-screen w-full font-roboto">
       <Head :title="title" />
 
       <!-- Only render content if user is authenticated -->
@@ -156,7 +156,7 @@ onUnmounted(() => {
 
         <!-- Main Content -->
         <template v-if="$slots.default">
-          <div class="flex game-content">
+          <div class="flex game-content w-full">
 
             <!-- Sidebar -->
             <div
@@ -260,10 +260,16 @@ onUnmounted(() => {
     </div>
   </html>
 </template>
-
 <style>
-/* Remove any background colors from game area */
+/* To this: */
 .game-content {
-  background: none !important;
+  background: inherit !important;
+  min-height: 100vh;
+  min-width: 100vh;
+}
+
+/* Add this for proper background inheritance: */
+.game-content > div {
+  background: inherit;
 }
 </style>

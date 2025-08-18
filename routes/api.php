@@ -39,6 +39,28 @@ use App\Http\Controllers\Finance\AuditLogController;
 | handled by the dynamic system
 */
 
+// ============================================================================
+// FINANCE INVOICE SYSTEM ROUTES
+// ============================================================================
+// Test route without authentication
+Route::get('/finance/test', function () {
+    return response()->json([
+        'message' => 'Finance test route working',
+        'timestamp' => now(),
+        'cookies' => request()->cookies->all()
+    ]);
+});
+
+// Test finance invoices route without authentication
+Route::get('/finance/invoices/test', function () {
+    return response()->json([
+        'message' => 'Finance invoices test route working',
+        'timestamp' => now(),
+        'cookies' => request()->cookies->all(),
+        'headers' => request()->headers->all()
+    ]);
+});
+
 // Add this to api.php
 
 
@@ -402,6 +424,23 @@ Route::get('i1_orders', function (){
 });
 */
 
+
+
+// Test route to check authentication
+Route::get('/test-auth', function () {
+    if (auth()->check()) {
+        return response()->json([
+            'authenticated' => true,
+            'user' => auth()->user()->email,
+            'message' => 'Authentication working'
+        ]);
+    }
+    return response()->json([
+        'authenticated' => false,
+        'message' => 'Not authenticated'
+    ], 401);
+})->middleware('auth:sanctum');
+
 Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
     // Fixed Assets
     Route::get('/assets', [FixedAssetController::class, 'index']);
@@ -416,4 +455,6 @@ Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
     Route::get('/audit-logs', [AuditLogController::class, 'index']);
     Route::post('/audit-logs', [AuditLogController::class, 'store']);
 });
+
+
 
