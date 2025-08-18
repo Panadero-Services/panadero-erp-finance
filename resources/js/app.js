@@ -7,7 +7,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { createPinia } from 'pinia';
 import { useSessionStore } from '@/stores/session';
-import SolarSysGame from 'panadero-solarsysinvaders';
+// import SolarSysGame from 'panadero-solarsysinvaders';
 
 const pinia = createPinia();
 const appName = import.meta.env.VITE_APP_NAME || 'indigo3';
@@ -25,7 +25,7 @@ createInertiaApp({
             .use(pinia);
         
         // Register the game component globally
-        app.component('SolarSysGame', SolarSysGame);
+        // app.component('SolarSysGame', SolarSysGame);
         
         const sessionStore = useSessionStore();
         

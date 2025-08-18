@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
 // sections
-import Finance from '../../../../packages/panadero-erp-finance/src/components/Finance.vue';
+import Finance from 'panadero-erp-finance/src/components/Finance.vue';
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
