@@ -1,29 +1,40 @@
 # Panadero ERP Finance Module
 
-**Version:** 1.0.7  
-**Release Date:** 17 August 2025  
+**Version:** 1.0.8  
+**Release Date:** 18 August 2025  
 **Status:** Production Ready
 
-## 🚀 What's New in v1.0.7
+## 🚀 What's New in v1.0.8
 
 ### ✨ Major Features
-- **Enhanced Demo Components** - Comprehensive 3-column layout for all UI component demos with immediate code examples
-- **Inline Usage Examples** - Code snippets directly under each demo section for developer convenience
-- **Modular InfoBoard Architecture** - Refactored InfoBoard into separate section components for better maintainability
-- **Interactive Demo Selection** - Replaced dropdown with intuitive button-based component selection with icons
-- **Comprehensive Package Content** - Restored "What's in the Package?" with detailed Core Components (9), UI Components (6), and Features (10)
-- **Enhanced Component Demos** - Improved FinanceButton, FinanceDropdown, and FinanceToggle demos with real-world examples
+- **Complete Workflow Management System** - Brand new WorkflowDashboard with modern card-based interface and 4-column modal
+- **Direct Workflow Creation** - One-click workflow instantiation from template cards with immediate modal opening
+- **Active Workflow Management** - Real-time tracking with unique workflow numbers and delete capabilities
+- **Enhanced Modal Interface** - Large 4-column workflow management modal with tabbed sections (Info & History)
+- **Advanced History Tracking** - Logger-style history with timestamps and detailed action logging
+- **7 Workflow Step Types** - Complete documentation for User Action, Timer, API Response, Approval, Agent, System, and External Overwrite steps
+- **Responsive Grid Layout** - Adaptive 1-4 column display based on screen size with proper overflow handling
 
-### 🔧 Developer Experience Improvements
-- **Copy-Paste Ready Code** - Syntax examples immediately available under visual demos
-- **Professional Layout** - 3-column grid organization for better visual scanning
-- **Progressive Complexity** - Examples range from basic to advanced usage patterns
-- **Visual Context** - See component behavior and implementation simultaneously
-- **Enhanced Documentation** - Complete coverage of component variants, states, and integration patterns
+### 🔧 Technical Improvements
+- **Vue.js Lifecycle Fixes** - Resolved v-show/v-if errors during component unmounting for stable modal operations
+- **Dark Mode Cleanup** - Removed conflicting dark mode classes ensuring consistent light mode styling
+- **Overflow Management** - Proper scrolling containers preventing off-screen content in modals
+- **Performance Optimization** - Efficient rendering with conditional display logic and optimized component updates
+- **Error Handling** - Enhanced null safety checks and robust error management throughout workflow system
+- **Tab Navigation** - Clean switching between Workflow Info and History tabs without DOM conflicts
 
 ## 📅 Version History
 
-### v1.0.7 (17 Aug 2025) - Current Release
+### v1.0.8 (18 Aug 2025) - Current Release
+- **Complete Workflow Management System** with modern WorkflowDashboard and 4-column modal interface
+- **Direct Workflow Creation** from template cards with immediate modal opening
+- **Active Workflow Management** with real-time tracking and delete capabilities
+- **7 Workflow Step Types** documented: User Action, Timer, API Response, Approval, Agent, System, External Overwrite
+- **Enhanced History Tracking** with logger-style display and timestamps
+- **Vue.js Lifecycle Fixes** and performance optimizations
+- **Responsive Design** with proper overflow handling and dark mode cleanup
+
+### v1.0.7 (17 Aug 2025)
 - Enhanced Demo Components with 3-column layout and inline usage examples
 - Modular InfoBoard Architecture (InfoSection, UIElementsSection, APIsSection)
 - Interactive Demo Selection with icon-coded buttons

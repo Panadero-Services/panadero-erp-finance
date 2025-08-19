@@ -1,7 +1,7 @@
 {
   "name": "panadero-erp-finance",
-  "version": "1.0.7",
-  "description": "ERP Finance Module - Comprehensive financial management system",
+  "version": "1.0.8",
+  "description": "ERP Finance Module - Comprehensive financial management system with complete workflow management",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -14,6 +14,9 @@
     "erp",
     "finance",
     "accounting",
+    "workflow-management",
+    "business-process",
+    "approval-system",
     "general-ledger",
     "accounts-payable",
     "accounts-receivable",

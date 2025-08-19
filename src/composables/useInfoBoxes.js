@@ -152,6 +152,20 @@ export function useInfoBoxes() {
   // Version updates with correct dates
   const versionUpdates = computed(() => [
     {
+      version: 'v1.0.8',
+      date: '18 Aug 2025',
+      features: [
+        'Complete Workflow Management System with WorkflowDashboard',
+        'Direct Workflow Creation from Template Cards',
+        'Active Workflow Management with Delete Capabilities',
+        'Enhanced 4-Column Modal Interface with Tabbed Sections',
+        'Advanced History Tracking with Logger-Style Display',
+        '7 Workflow Step Types: User Action, Timer, API, Approval, Agent, System, External',
+        'Vue.js Lifecycle Fixes and Performance Optimizations',
+        'Responsive Design with Proper Overflow Handling'
+      ]
+    },
+    {
       version: 'v1.0.7',
       date: '17 Aug 2025',
       features: [
@@ -238,9 +252,9 @@ export function useInfoBoxes() {
 
   // Dynamic module description with real-time stats
   const moduleDescription = computed(() => ({
-    title: `ERP Finance Module v1.0.7 (${totalRecords.value} records)`,
-    version: 'v1.0.7',
-    description: 'Comprehensive financial management system with enhanced demo components, modular architecture, and developer-friendly inline usage examples.',
+    title: `ERP Finance Module v1.0.8 (${totalRecords.value} records)`,
+    version: 'v1.0.8',
+    description: 'Comprehensive financial management system with complete workflow management, 4-column modal interface, and 7 documented workflow step types.',
     totalRecords: totalRecords.value,
     descriptions: [
       {
@@ -276,8 +290,12 @@ export function useInfoBoxes() {
       {
         id: 3,
         title: 'Features',
-        count: 10,
+        count: 12,
         list: [
+          'Complete Workflow Management System with WorkflowDashboard',
+          'Direct workflow creation from template cards with 4-column modal',
+          'Active workflow tracking with unique IDs and delete capabilities',
+          '7 Workflow Step Types: User Action, Timer, API, Approval, Agent, System, External',
           'Enhanced 3-column demo layout for better visual organization',
           'Inline usage examples directly under each demo section',
           'Modular InfoBoard architecture with separate section components',
@@ -285,9 +303,7 @@ export function useInfoBoxes() {
           'Auto-scaling integration through store.fontSizes.base',
           'Perfect component height matching system',
           'Professional dark mode support across all components',
-          'Dynamic table row and header height scaling',
-          'Comprehensive currency and number formatting',
-          'Permission-based access control for different sections'
+          'Dynamic table row and header height scaling'
         ]
       }
     ],

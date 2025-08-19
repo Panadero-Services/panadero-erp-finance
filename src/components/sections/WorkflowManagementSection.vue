@@ -3,7 +3,8 @@ import { ref, computed } from 'vue'
 import { useFinanceStore } from '../../stores/financeStore.js'
 import WorkflowDemo from '../demo/WorkflowDemo.vue'
 import WorkflowDashboard from '../workflow/WorkflowDashboard.vue'
-
+import WorkflowStatistics from '../workflow/WorkflowStatistics.vue'
+ 
 const store = useFinanceStore()
 
 // Event handlers for workflow dashboard
@@ -75,6 +76,9 @@ const workflowTemplates = [
       </div>
     </div>
 
+
+    <!-- Statistics Cards -->
+    <WorkflowStatistics :stats="workflowStats" />
 
 
     <!-- Financial Workflow Dashboard -->
