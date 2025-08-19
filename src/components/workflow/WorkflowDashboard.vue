@@ -1,3 +1,9 @@
+<!--
+  Financial ERP Workflow Dashboard
+  @version 1.0.8
+  @date 18-Aug-2025
+  @description Enhanced workflow management interface with direct creation and modal management
+-->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useWorkflowStore } from '../../stores/workflowStore.js'

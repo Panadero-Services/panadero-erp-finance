@@ -1,0 +1,66 @@
+{
+  "name": "@panadero-erp/workflow-management",
+  "version": "1.0.8",
+  "description": "Financial ERP Workflow Management System with comprehensive step types and modal interface",
+  "main": "WorkflowDashboard.vue",
+  "author": "Panadero ERP Team",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "business-process",
+    "approval",
+    "automation",
+    "financial-erp",
+    "vue3",
+    "pinia"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/panadero-erp/workflow-management"
+  },
+  "bugs": {
+    "url": "https://github.com/panadero-erp/workflow-management/issues"
+  },
+  "homepage": "https://github.com/panadero-erp/workflow-management#readme",
+  "dependencies": {
+    "vue": "^3.3.0",
+    "pinia": "^2.1.0"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0",
+    "pinia": ">=2.1.0"
+  },
+  "files": [
+    "*.vue",
+    "*.js",
+    "*.md",
+    "*.json"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "changelog": "../../../CHANGELOG.md",
+  "readme": "README.md",
+  "release": {
+    "date": "2025-08-18",
+    "features": [
+      "Complete WorkflowDashboard redesign",
+      "Direct workflow creation from cards",
+      "Active workflow management with delete",
+      "Enhanced 4-column modal interface",
+      "Tabbed Column 3 with Info and History",
+      "Advanced workflow history logging",
+      "Responsive overflow handling",
+      "7 documented step requirement types"
+    ],
+    "improvements": [
+      "Vue.js lifecycle fixes",
+      "Dark mode cleanup",
+      "Performance optimizations",
+      "Enhanced error handling"
+    ]
+  }
+}

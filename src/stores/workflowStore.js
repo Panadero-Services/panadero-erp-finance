@@ -1,3 +1,9 @@
+/**
+ * Financial ERP Workflow Management Store
+ * @version 1.0.8
+ * @date 18-Aug-2025
+ * @description Comprehensive workflow management system with 7 step types
+ */
 import { defineStore } from 'pinia';
 import { ref, computed, readonly } from 'vue';
 
@@ -69,7 +75,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Complete vendor registration and validation process',
       category: 'procurement',
       module: 'procurement',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'discovery',
@@ -281,7 +287,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Basic journal entry with standard debit/credit validation',
       category: 'general_ledger',
       module: 'gl',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'entry_creation',
@@ -368,7 +374,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Multi-level approval process for vendor invoices',
       category: 'accounts_payable',
       module: 'ap',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'invoice_review',
@@ -475,7 +481,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Create and approve customer invoices with validation',
       category: 'accounts_receivable',
       module: 'ar',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'invoice_creation',
@@ -558,7 +564,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Monthly cash flow forecasting and approval process',
       category: 'cash_flow',
       module: 'cf',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'forecast_preparation',
@@ -634,7 +640,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Annual department budget creation and approval',
       category: 'budgeting',
       module: 'budget',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'budget_preparation',
@@ -728,7 +734,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Capital asset purchase approval and setup process',
       category: 'fixed_assets',
       module: 'fa',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'acquisition_request',
@@ -824,7 +830,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Quarterly tax calculation and filing preparation',
       category: 'tax_management',
       module: 'tax',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'data_collection',
@@ -923,7 +929,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Monthly bank and account reconciliation process',
       category: 'compliance_audit',
       module: 'compliance',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'reconciliation_preparation',
@@ -999,7 +1005,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       description: 'Monthly/quarterly financial statement preparation process',
       category: 'financial_reporting',
       module: 'reporting',
-      version: '1.0.0',
+      version: '1.0.8',
       steps: [
         {
           id: 'data_preparation',
