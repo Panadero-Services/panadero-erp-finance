@@ -66,7 +66,6 @@ const activeComponent = computed(() => {
 // Handle tab switching from infobox navigation
 function handleTabSwitch(event) {
   const { tabId } = event.detail;
-  console.log('🔄 Tab switch triggered:', tabId, 'from event:', event);
   if (tabs.find(t => t.id === tabId)) {
     activeTab.value = tabId;
   }

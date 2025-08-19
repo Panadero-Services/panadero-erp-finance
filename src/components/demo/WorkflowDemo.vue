@@ -224,74 +224,9 @@ const handleStepClick = ({ step, index }) => {
 
     <!-- Overview Demo -->
     <div v-if="selectedDemo === 'overview'" class="space-y-8">
-      <div class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
-        <h3 class="text-xl font-semibold text-blue-700 dark:text-blue-300 mb-4">
-          🚀 Workflow System Overview
-        </h3>
-        <p class="text-blue-600 dark:text-blue-400 mb-4">
-          Our comprehensive workflow system provides standardized, automated business processes with multi-step approvals, 
-          data validation, and real-time tracking. Perfect for complex operations like vendor onboarding, employee management, 
-          and financial processes.
-        </p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div class="space-y-4">
-            <h4 class="font-semibold text-blue-700 dark:text-blue-300">Key Features:</h4>
-            <ul class="space-y-2 text-blue-600 dark:text-blue-400">
-              <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i> Multi-step workflow engine</li>
-              <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i> Role-based approvals</li>
-              <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i> Dynamic form generation</li>
-              <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i> Real-time progress tracking</li>
-              <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i> Audit trail and history</li>
-              <li class="flex items-center"><i class="fas fa-check-circle mr-2"></i> File upload support</li>
-            </ul>
-          </div>
-          
-          <div class="space-y-4">
-            <h4 class="font-semibold text-blue-700 dark:text-blue-300">Use Cases:</h4>
-            <ul class="space-y-2 text-blue-600 dark:text-blue-400">
-              <li class="flex items-center"><i class="fas fa-arrow-right mr-2"></i> Vendor Onboarding</li>
-              <li class="flex items-center"><i class="fas fa-arrow-right mr-2"></i> Employee Onboarding</li>
-              <li class="flex items-center"><i class="fas fa-arrow-right mr-2"></i> Purchase Approvals</li>
-              <li class="flex items-center"><i class="fas fa-arrow-right mr-2"></i> Document Review</li>
-              <li class="flex items-center"><i class="fas fa-arrow-right mr-2"></i> Quality Assurance</li>
-              <li class="flex items-center"><i class="fas fa-arrow-right mr-2"></i> Compliance Checks</li>
-            </ul>
-          </div>
-        </div>
-      </div>
 
-      <!-- Current System Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <FinanceValueCard
-          title="Total Workflows"
-          :value="workflowStats.total"
-          rows="2-row"
-          color="neutral"
-          icon="fas fa-sitemap"
-        />
-        <FinanceValueCard
-          title="Active"
-          :value="workflowStats.active"
-          rows="2-row"
-          color="info"
-          icon="fas fa-play-circle"
-        />
-        <FinanceValueCard
-          title="Pending Approval"
-          :value="workflowStats.pending"
-          rows="2-row"
-          color="warning"
-          icon="fas fa-clock"
-        />
-        <FinanceValueCard
-          title="Completed"
-          :value="workflowStats.completed"
-          rows="2-row"
-          color="positive"
-          icon="fas fa-check-circle"
-        />
-      </div>
+
+
 
       <!-- Usage Example -->
       <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">

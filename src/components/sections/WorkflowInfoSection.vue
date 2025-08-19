@@ -5,6 +5,17 @@ import WorkflowDemo from '../demo/WorkflowDemo.vue'
 
 const store = useFinanceStore()
 
+// Event handlers for workflow dashboard
+const handleWorkflowSelected = (workflow) => {
+  console.log('Workflow selected:', workflow)
+  // You can add navigation logic here
+}
+
+const handleWorkflowStarted = (instance) => {
+  console.log('Workflow started:', instance)
+  // You can add notification or navigation logic here
+}
+
 // Workflow statistics
 const workflowStats = ref({
   totalWorkflows: 12,
@@ -57,26 +68,34 @@ const workflowFeatures = [
 
 // Available workflow templates
 const workflowTemplates = [
-  { name: 'Vendor Onboarding', id: 'vendor-onboarding', steps: 5, avgTime: '3-5 days' },
-  { name: 'Employee Onboarding', id: 'employee-onboarding', steps: 7, avgTime: '1-2 weeks' },
-  { name: 'Purchase Request', id: 'purchase-request', steps: 4, avgTime: '2-3 days' },
-  { name: 'Invoice Approval', id: 'invoice-approval', steps: 3, avgTime: '1-2 days' },
-  { name: 'Document Review', id: 'document-review', steps: 3, avgTime: '1-3 days' },
-  { name: 'Budget Approval', id: 'budget-approval', steps: 5, avgTime: '1 week' },
-  { name: 'Contract Renewal', id: 'contract-renewal', steps: 6, avgTime: '2-3 weeks' },
-  { name: 'Asset Management', id: 'asset-management', steps: 4, avgTime: '1 week' }
+  // Core Business Workflows
+  { name: 'Vendor Onboarding', id: 'vendor-onboarding', steps: 5, avgTime: '3-5 days', category: 'procurement' },
+  { name: 'Employee Onboarding', id: 'employee-onboarding', steps: 7, avgTime: '1-2 weeks', category: 'hr' },
+  { name: 'Purchase Request', id: 'purchase-request', steps: 4, avgTime: '2-3 days', category: 'procurement' },
+  { name: 'Contract Renewal', id: 'contract-renewal', steps: 6, avgTime: '2-3 weeks', category: 'legal' },
+  
+  // Financial ERP Workflows
+  { name: 'Simple Journal Entry', id: 'gl-journal-entry-simple', steps: 2, avgTime: '30 minutes', category: 'general_ledger' },
+  { name: 'Vendor Invoice Approval', id: 'ap-vendor-invoice-approval', steps: 3, avgTime: '3-5 days', category: 'accounts_payable' },
+  { name: 'Customer Invoice Creation', id: 'ar-customer-invoice-creation', steps: 2, avgTime: '1-2 days', category: 'accounts_receivable' },
+  { name: 'Cash Flow Forecast', id: 'cf-cash-forecast-approval', steps: 2, avgTime: '2-3 days', category: 'cash_flow' },
+  { name: 'Department Budget Approval', id: 'budget-department-budget-approval', steps: 3, avgTime: '3-4 weeks', category: 'budgeting' },
+  { name: 'Asset Acquisition', id: 'fa-asset-acquisition-approval', steps: 3, avgTime: '1-2 weeks', category: 'fixed_assets' },
+  { name: 'Quarterly Tax Filing', id: 'tax-quarterly-filing-preparation', steps: 3, avgTime: '1 week', category: 'tax_management' },
+  { name: 'Monthly Reconciliation', id: 'compliance-monthly-reconciliation', steps: 2, avgTime: '3-5 days', category: 'compliance' },
+  { name: 'Financial Statements', id: 'report-financial-statements', steps: 3, avgTime: '1-2 weeks', category: 'reporting' }
 ]
 </script>
 
 <template>
   <div class="space-y-8">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg p-6">
+    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg">
       <div class="flex items-center justify-between">
         <div>
           <h1 :style="{ fontSize: `${store.fontSizes.base + 8}px` }" class="font-bold text-gray-900 dark:text-white mb-2">
-            <i class="fas fa-sitemap mr-3 text-indigo-600 dark:text-indigo-400"></i>
-            Workflow Management System
+            <i class="fas fa-info-circle mr-3 text-indigo-600 dark:text-indigo-400"></i>
+            Workflow Info 
           </h1>
           <p :style="{ fontSize: `${store.fontSizes.base}px` }" class="text-gray-600 dark:text-gray-300">
             Streamline business processes with automated workflows, approvals, and tracking
@@ -84,17 +103,15 @@ const workflowTemplates = [
         </div>
         <div class="text-right">
           <div :style="{ fontSize: `${store.fontSizes.base + 6}px` }" class="font-bold text-indigo-600 dark:text-indigo-400">
-            v1.0.7
           </div>
           <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">
-            Production Ready
           </div>
         </div>
       </div>
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
       <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
         <div class="flex items-center justify-between">
           <div>
@@ -191,7 +208,7 @@ const workflowTemplates = [
         </div>
       </div>
     </div>
-
+    
     <!-- Feature Highlights -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <h2 :style="{ fontSize: `${store.fontSizes.base + 4}px` }" class="font-bold text-gray-900 dark:text-white mb-6">
@@ -236,10 +253,15 @@ const workflowTemplates = [
               <i class="fas fa-clock mr-2"></i>
               {{ template.avgTime }}
             </div>
+            <div v-if="template.category" :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">
+              <i class="fas fa-tag mr-2"></i>
+              {{ template.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+            </div>
           </div>
         </div>
       </div>
     </div>
+
 
     <!-- Live Demo Section -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">

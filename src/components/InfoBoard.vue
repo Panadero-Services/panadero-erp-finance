@@ -3,7 +3,8 @@ import { ref, computed } from 'vue'
 import { useFinanceStore } from '../stores/financeStore.js'
 import InfoSection from './sections/InfoSection.vue'
 import UIElementsSection from './sections/UIElementsSection.vue'
-import WorkflowSection from './sections/WorkflowSection.vue'
+import WorkflowInfoSection from './sections/WorkflowInfoSection.vue'
+import WorkflowManagementSection from './sections/WorkflowManagementSection.vue'
 import APIsSection from './sections/APIsSection.vue'
 
 const store = useFinanceStore()
@@ -26,7 +27,8 @@ const hasPermission = (tab) => permissions.value[tab] || false
 const tabs = [
   { id: 'info', name: 'Info', icon: 'fas fa-info-circle', permission: 'info' },
   { id: 'uiElements', name: 'UI Elements', icon: 'fas fa-palette', permission: 'uiElements' },
-  { id: 'workflows', name: 'Workflow System', icon: 'fas fa-sitemap', permission: 'workflows' },
+  { id: 'workflowInfo', name: 'Workflow Info', icon: 'fas fa-info-circle', permission: 'info' },
+  { id: 'workflows', name: 'Workflows', icon: 'fas fa-sitemap', permission: 'workflows' },
   //{ id: 'apis', name: 'APIs', icon: 'fas fa-code', permission: 'apis' }
   { id: 'apis', name: 'APIs', icon: 'fas fa-code', permission: 'info' }
 ]
@@ -75,8 +77,11 @@ const switchTab = (tabId) => {
       <!-- UI Elements Tab -->
       <UIElementsSection v-else-if="activeTab === 'uiElements'" />
 
+      <!-- Workflow Info Tab -->
+      <WorkflowInfoSection v-else-if="activeTab === 'workflowInfo'" />
+
       <!-- Workflow System Tab -->
-      <WorkflowSection v-else-if="activeTab === 'workflows'" />
+      <WorkflowManagementSection v-else-if="activeTab === 'workflows'" />
 
       <!-- APIs Tab -->
       <APIsSection v-else-if="activeTab === 'apis'" :has-access="permissions.apis" />
