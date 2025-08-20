@@ -5,6 +5,19 @@ All notable changes to the Financial ERP Workflow Management System will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.9] - 2025-08-19
+
+### 🎯 Component Enhancements
+- **Enhanced WorkflowCard Component**: Reusable with optional actions and flexible display modes
+- **WorkflowStatistics Component**: Extracted statistics into separate, reusable component
+- **ActiveWorkflowCard.vue**: Fixed Vue structure and enhanced delete functionality
+- **WorkflowModal.vue**: Enhanced 4-column layout with proper overflow handling
+- **WorkflowStepper.vue**: Restored proper Vue structure with enhanced step display
+
+### 🎨 User Experience Improvements
+- **Enhanced Hover Effects**: Smooth transitions and interactive elements
+- **Event Handler Optimization**: Single action points per workflow card
+
 ## [1.0.8] - 2025-08-18
 
 ### 🎯 Major Features Added
@@ -107,11 +120,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Support Status | Release Date | End of Support |
 |---------|---------------|--------------|----------------|
-| 1.0.8   | ✅ Current    | 2025-08-18   | TBD           |
+| 1.0.9   | ✅ Current    | 2025-08-19   | TBD           |
+| 1.0.8   | 🔄 Maintenance| 2025-08-18   | 2025-12-19    |
 | 1.0.7   | 🔄 Maintenance| 2025-08-15   | 2025-12-18    |
 | 1.0.6   | ❌ EOL        | 2025-08-12   | 2025-08-18    |
 
 ## Migration Guide
+
+### Upgrading to 1.0.9
+
+#### Breaking Changes
+- None - fully backward compatible
+
+#### New Features to Adopt
+1. **Enhanced WorkflowCard**: Use the new optional actions and flexible display modes
+2. **WorkflowStatistics Component**: Utilize the extracted statistics component for better modularity
+3. **Improved Event Handling**: Take advantage of optimized single action points per workflow card
+
+#### Recommended Actions
+1. Review the enhanced component structure
+2. Test the improved hover effects and interactions
+3. Utilize the new reusable component architecture
 
 ### Upgrading to 1.0.8
 
@@ -139,5 +168,5 @@ For questions about this changelog or upgrade assistance:
 
 ---
 
-*Generated on 18-Aug-2025*
-*Financial ERP Workflow System v1.0.8*
+*Generated on 19-Aug-2025*
+*Financial ERP Workflow System v1.0.9*

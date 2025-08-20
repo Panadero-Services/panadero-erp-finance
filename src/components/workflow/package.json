@@ -1,6 +1,6 @@
 {
   "name": "@panadero-erp/workflow-management",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Financial ERP Workflow Management System with comprehensive step types and modal interface",
   "main": "WorkflowDashboard.vue",
   "author": "Panadero ERP Team",
@@ -45,22 +45,17 @@
   "changelog": "../../../CHANGELOG.md",
   "readme": "README.md",
   "release": {
-    "date": "2025-08-18",
+    "date": "2025-08-19",
     "features": [
-      "Complete WorkflowDashboard redesign",
-      "Direct workflow creation from cards",
-      "Active workflow management with delete",
-      "Enhanced 4-column modal interface",
-      "Tabbed Column 3 with Info and History",
-      "Advanced workflow history logging",
-      "Responsive overflow handling",
-      "7 documented step requirement types"
+      "Enhanced WorkflowCard Component - Reusable with optional actions",
+      "WorkflowStatistics Component - Extracted statistics into separate component",
+      "ActiveWorkflowCard.vue - Fixed Vue structure and enhanced delete functionality",
+      "WorkflowModal.vue - Enhanced 4-column layout with proper overflow handling",
+      "WorkflowStepper.vue - Restored proper Vue structure with enhanced step display"
     ],
     "improvements": [
-      "Vue.js lifecycle fixes",
-      "Dark mode cleanup",
-      "Performance optimizations",
-      "Enhanced error handling"
+      "Enhanced Hover Effects - Smooth transitions and interactive elements",
+      "Event Handler Optimization - Single action points per workflow card"
     ]
   }
 }

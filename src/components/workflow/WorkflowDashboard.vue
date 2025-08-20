@@ -104,8 +104,21 @@ onMounted(() => {
           v-for="workflow in allWorkflows" 
           :key="workflow.id"
           :workflow="workflow"
-          @click="(workflow) => startWorkflowDirectly(workflow, emit)"
-        />
+          :clickable="false"
+        >
+          <!-- Custom actions slot -->
+          <template #actions>
+            <div class="flex space-x-2">
+              <button 
+                @click="startWorkflowDirectly(workflow, emit)"
+                class="flex-1 px-3 py-2 bg-blue-700 text-white text-sm font-medium rounded-md hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                :style="{ fontSize: `${store.fontSizes.base - 2}px` }">
+                <i class="fas fa-play mr-2"></i>
+                Start
+              </button>
+            </div>
+          </template>
+        </WorkflowCard>
           </div>
         </div>
         
@@ -171,7 +184,7 @@ onMounted(() => {
             Cancel
           </button>
           <button 
-            @click="startWorkflow(selectedWorkflow)"
+            @click="startWorkflowDirectly(selectedWorkflow, emit)"
             class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
             <i class="fas fa-play mr-2"></i>
             Start Workflow

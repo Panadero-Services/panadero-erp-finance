@@ -3,7 +3,30 @@
   @version 1.0.8
   @description Dynamic form for current workflow step
 -->
+<script setup>
+import { useFinanceStore } from '../../stores/financeStore.js'
 
+// Store
+const store = useFinanceStore()
+
+// Props for dynamic form configuration
+const props = defineProps({
+  workflowStep: {
+    type: Object,
+    default: () => ({})
+  },
+  formData: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
+// Emits for form updates
+const emit = defineEmits(['update:formData'])
+
+// In a real implementation, this would generate forms based on JSON schema
+// from the workflow step configuration
+</script>
 
 <template>
   <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-6">
@@ -74,28 +97,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { useFinanceStore } from '../../stores/financeStore.js'
-
-// Store
-const store = useFinanceStore()
-
-// Props for dynamic form configuration
-const props = defineProps({
-  workflowStep: {
-    type: Object,
-    default: () => ({})
-  },
-  formData: {
-    type: Object,
-    default: () => ({})
-  }
-})
-
-// Emits for form updates
-const emit = defineEmits(['update:formData'])
-
-// In a real implementation, this would generate forms based on JSON schema
-// from the workflow step configuration
-</script>

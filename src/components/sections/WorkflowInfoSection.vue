@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useFinanceStore } from '../../stores/financeStore.js'
 import WorkflowDemo from '../demo/WorkflowDemo.vue'
 import WorkflowStatistics from '../workflow/WorkflowStatistics.vue'
+import WorkflowCard from '../workflow/WorkflowCard.vue'
 
 const store = useFinanceStore()
 
@@ -143,27 +144,14 @@ const workflowTemplates = [
         <i class="fas fa-layer-group mr-2 text-indigo-600 dark:text-indigo-400"></i>
         Available Workflow Templates
       </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div v-for="template in workflowTemplates" :key="template.id" 
-             class="border border-gray-200 dark:border-gray-600 rounded-lg p-4 hover:border-indigo-300 dark:hover:border-indigo-500 transition-colors">
-          <h3 :style="{ fontSize: `${store.fontSizes.base}px` }" class="font-semibold text-gray-900 dark:text-white mb-2">
-            {{ template.name }}
-          </h3>
-          <div class="space-y-1">
-            <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-600 dark:text-gray-400">
-              <i class="fas fa-list-ol mr-2"></i>
-              {{ template.steps }} steps
-            </div>
-            <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-600 dark:text-gray-400">
-              <i class="fas fa-clock mr-2"></i>
-              {{ template.avgTime }}
-            </div>
-            <div v-if="template.category" :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">
-              <i class="fas fa-tag mr-2"></i>
-              {{ template.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
-            </div>
-          </div>
-        </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <WorkflowCard 
+          v-for="template in workflowTemplates" 
+          :key="template.id"
+          :workflow="template"
+          :clickable="false"
+          @select="handleWorkflowSelected"
+        />
       </div>
     </div>
 

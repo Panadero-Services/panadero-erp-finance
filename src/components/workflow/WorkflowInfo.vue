@@ -3,6 +3,39 @@
   @version 1.0.8
   @description Tabbed workflow information and history
 -->
+<script setup>
+import { ref } from 'vue'
+import { useFinanceStore } from '../../stores/financeStore.js'
+
+// Store
+const store = useFinanceStore()
+
+// Props
+const props = defineProps({
+  workflowData: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
+// Local state
+const activeTab = ref('info')
+
+// Utility function
+function getModuleDisplayName(module) {
+  if (!module) return 'General'
+  
+  switch (module) {
+    case 'gl': return 'General Ledger'
+    case 'ap': return 'Accounts Payable'
+    case 'ar': return 'Accounts Receivable'
+    case 'cf': return 'Cash Flow'
+    case 'procurement': return 'Procurement'
+    default: return module.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+  }
+}
+</script>
+
 <template>
   <div class="bg-gray-50 dark:bg-gray-700/30 flex flex-col overflow-hidden h-full">
     <!-- Tab Headers -->
@@ -101,19 +134,26 @@
       <!-- History Tab -->
       <div v-if="activeTab === 'history'" class="p-4 h-full overflow-y-auto">
         <div class="space-y-4">
+          <h4 :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">
+            <i class="fas fa-history mr-2 text-indigo-600"></i>
+            Workflow History
+          </h4>
           
-          <!-- Workflow History -->
-          <div>
-            <h4 :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">
-              <i class="fas fa-history mr-2 text-indigo-600"></i>
-              Workflow History
-            </h4>
-            <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-3 font-mono text-gray-800 dark:text-gray-200 overflow-y-auto max-h-64">
-              <div>19-8-2025, 12:28:28  created by demo_user</div>
-              <div>19-8-2025, 12:28:28  Information completed</div>
-              <div>19-8-2025, 16:45:22  Form submitted</div>
-              <div>19-8-2025, 16:45:42  Api Request Sent</div>
-              <div>19-8-2025, 16:46:11  Api Response Error</div>
+          <!-- History Log -->
+          <div class="bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg p-4 font-mono text-sm">
+            <div class="space-y-2">
+              <div class="text-green-600 dark:text-green-400">
+                19-8-2025, 12:28:28 created by demo_user
+              </div>
+              <div class="text-green-600 dark:text-green-400">
+                19-8-2025, 12:28:28 Step 1 completed
+              </div>
+              <div class="text-green-600 dark:text-green-400">
+                19-8-2025, 16:45:22 Step 2 completed
+              </div>
+              <div class="text-blue-600 dark:text-blue-400">
+                19-8-2025, 17:00:00 Step 3 started
+              </div>
             </div>
           </div>
         </div>
@@ -121,25 +161,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-import { useFinanceStore } from '../../stores/financeStore.js'
-
-// Store
-const store = useFinanceStore()
-
-// Props
-const props = defineProps({
-  workflowData: {
-    type: Object,
-    default: () => ({})
-  }
-})
-
-// Local state for tab management
-const activeTab = ref('info')
-
-// In a real implementation, this would receive dynamic workflow data
-// and generate content based on the workflow configuration
-</script>

@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import { useFinanceStore } from '../stores/financeStore';
+import versionsData from '../data/versions.json';
 
 export function useInfoBoxes() {
   const activeInfo = ref(1);
@@ -149,111 +150,13 @@ export function useInfoBoxes() {
     }
   ];
 
-  // Version updates with correct dates
-  const versionUpdates = computed(() => [
-    {
-      version: 'v1.0.8',
-      date: '18 Aug 2025',
-      features: [
-        'Complete Workflow Management System with WorkflowDashboard',
-        'Direct Workflow Creation from Template Cards',
-        'Active Workflow Management with Delete Capabilities',
-        'Enhanced 4-Column Modal Interface with Tabbed Sections',
-        'Advanced History Tracking with Logger-Style Display',
-        '7 Workflow Step Types: User Action, Timer, API, Approval, Agent, System, External',
-        'Vue.js Lifecycle Fixes and Performance Optimizations',
-        'Responsive Design with Proper Overflow Handling'
-      ]
-    },
-    {
-      version: 'v1.0.7',
-      date: '17 Aug 2025',
-      features: [
-        'Enhanced Demo Components with 3-Column Layout',
-        'Inline Usage Examples for Developer Convenience',
-        'Modular InfoBoard Architecture (InfoSection, UIElementsSection, APIsSection)',
-        'Interactive Demo Selection with Icon-Coded Buttons',
-        'Comprehensive Package Content Restoration (25+ items)',
-        'Enhanced FinanceToggle and FinanceDropdown Demos',
-        'Fixed Demo Width Issues and Content Restoration',
-        'Professional Component Organization and Maintainability'
-      ]
-    },
-    {
-      version: 'v1.0.6',
-      date: '16 Aug 2025',
-      features: [
-        'FinanceDropdown Component with Auto-Scaling',
-        'Enhanced FinanceButton with Store Integration',
-        'Perfect Height Matching System',
-        'Modernized GeneralLedger with FinanceDropdown',
-        'Advanced CSS Specificity and Styling',
-        'Transparent Outline Variants',
-        'Interactive Component Demos',
-        'Font Awesome Integration Fixes'
-      ]
-    },
-    {
-      version: 'v1.0.5',
-      date: '15 Aug 2025',
-      features: [
-        'Centralized StatusBadge Component',
-        'Dynamic Icon Scaling System',
-        'ScaledIcon Component for consistent icon sizing',
-        'Enhanced DRY refactoring completed',
-        'All components now use centralized styling system'
-      ]
-    },
-    {
-      version: 'v1.0.4',
-      date: '14 Aug 2025',
-      features: [
-        'Complete DRY refactoring',
-        'Centralized styling through financeStore',
-        'Removed duplicate computed styles',
-        'Enhanced font scaling system',
-        'Improved component maintainability'
-      ]
-    },
-    {
-      version: 'v1.0.3',
-      date: '13 Aug 2025',
-      features: [
-        'Enhanced flexible scaling system',
-        'Padding, margin, and border radius scaling',
-        'Improved button and input scaling',
-        'Better responsive design',
-        'Enhanced user experience'
-      ]
-    },
-    {
-      version: 'v1.0.2',
-      date: '12 Aug 2025',
-      features: [
-        'Font size scaling system',
-        'Dynamic styling with 1px increments',
-        'Settings panel integration',
-        'Centralized configuration management',
-        'Improved accessibility'
-      ]
-    },
-    {
-      version: 'v1.0.1',
-      date: '11 Aug 2025',
-      features: [
-        'Invoice system implementation',
-        'Auto-generated invoice numbers',
-        'Cross-section search functionality',
-        'CSV export capabilities',
-        'Status tracking system'
-      ]
-    }
-  ]);
+  // ✅ WORKING: Dynamic version from JSON
+  const versionUpdates = computed(() => versionsData.releases);
 
-  // Dynamic module description with real-time stats
+  // ✅ WORKING: Dynamic current version
   const moduleDescription = computed(() => ({
-    title: `ERP Finance Module v1.0.8 (${totalRecords.value} records)`,
-    version: 'v1.0.8',
+    title: `ERP Finance Module v${versionsData.current} (${totalRecords.value} records)`,
+    version: `v${versionsData.current}`,
     description: 'Comprehensive financial management system with complete workflow management, 4-column modal interface, and 7 documented workflow step types.',
     totalRecords: totalRecords.value,
     descriptions: [

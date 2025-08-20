@@ -3,6 +3,38 @@
   @version 1.0.8
   @description Card for displaying active workflows with delete functionality
 -->
+<script setup>
+import { useFinanceStore } from '../../stores/financeStore.js'
+
+// Store
+const store = useFinanceStore()
+
+// Props
+const props = defineProps({
+  activeWorkflow: {
+    type: Object,
+    required: true
+  }
+})
+
+// Emits
+const emit = defineEmits(['open', 'delete'])
+
+// Utility function
+function getModuleDisplayName(module) {
+  if (!module) return 'General'
+  
+  switch (module) {
+    case 'gl': return 'General Ledger'
+    case 'ap': return 'Accounts Payable'
+    case 'ar': return 'Accounts Receivable'
+    case 'cf': return 'Cash Flow'
+    case 'procurement': return 'Procurement'
+    default: return module.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
+  }
+}
+</script>
+
 <template>
   <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors relative group">
     <div class="flex justify-between items-start mb-2">
@@ -37,35 +69,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { useFinanceStore } from '../../stores/financeStore.js'
-
-// Store
-const store = useFinanceStore()
-
-// Props
-const props = defineProps({
-  activeWorkflow: {
-    type: Object,
-    required: true
-  }
-})
-
-// Emits
-const emit = defineEmits(['open', 'delete'])
-
-// Utility function
-function getModuleDisplayName(module) {
-  if (!module) return 'General'
-  
-  switch (module) {
-    case 'gl': return 'General Ledger'
-    case 'ap': return 'Accounts Payable'
-    case 'ar': return 'Accounts Receivable'
-    case 'cf': return 'Cash Flow'
-    case 'procurement': return 'Procurement'
-    default: return module.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())
-  }
-}
-</script>
