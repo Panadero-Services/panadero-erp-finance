@@ -1,6 +1,6 @@
 {
   "name": "panadero-erp-finance",
-  "version": "1.0.9",
+  "version": "1.10.0",
   "description": "ERP Finance Module - Comprehensive financial management system with complete workflow management",
   "main": "index.js",
   "type": "module",

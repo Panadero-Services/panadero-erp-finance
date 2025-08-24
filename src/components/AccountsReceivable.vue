@@ -347,15 +347,15 @@ onMounted(async () => {
         <table class="w-full border-collapse">
           <thead>
             <tr class="bg-gray-50 dark:bg-gray-700 text-left">
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Invoice #</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Customer</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Date</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Due Date</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Amount</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Received</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Outstanding</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Status</th>
-              <th class="p-3 border dark:border-gray-600 dark:text-gray-200">Actions</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Invoice #</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Customer</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Date</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Due Date</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Amount</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Received</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Outstanding</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
+              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -363,14 +363,14 @@ onMounted(async () => {
                 :class="{ 'bg-red-50 dark:bg-red-900/20': isOverdue(receivable) }" 
                 class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-100"
                 :style="store.scalingStyles.tableRowHeight">
-              <td class="p-3 border dark:border-gray-600">{{ receivable.invoice_no }}</td>
-              <td class="p-3 border dark:border-gray-600">{{ receivable.customer_name }}</td>
-              <td class="p-3 border dark:border-gray-600">{{ formatDate(receivable.invoice_date) }}</td>
-              <td class="p-3 border dark:border-gray-600">{{ formatDate(receivable.due_date) }}</td>
-              <td class="p-3 border dark:border-gray-600">{{ formatCurrency(receivable.amount) }}</td>
-              <td class="p-3 border dark:border-gray-600">{{ formatCurrency(receivable.received_amount) }}</td>
-              <td class="p-3 border dark:border-gray-600">{{ formatCurrency(receivable.amount - receivable.received_amount) }}</td>
-              <td class="p-3 border dark:border-gray-600">
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ receivable.invoice_no }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ receivable.customer_name }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(receivable.invoice_date) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(receivable.due_date) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.amount) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.received_amount) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.amount - receivable.received_amount) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
                 <StatusBadge :status="receivable.status" />
               </td>
               <td class="p-3 border dark:border-gray-600">

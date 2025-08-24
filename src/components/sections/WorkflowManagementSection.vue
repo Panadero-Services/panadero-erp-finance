@@ -1,9 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useFinanceStore } from '../../stores/financeStore.js'
-import WorkflowDemo from '../demo/WorkflowDemo.vue'
-import WorkflowDashboard from '../workflow/WorkflowDashboard.vue'
-import WorkflowStatistics from '../workflow/WorkflowStatistics.vue'
+import { WorkflowDemo, WorkflowDashboard, WorkflowStatistics } from '../../../../panadero-workflow'
  
 const store = useFinanceStore()
 
@@ -24,7 +22,7 @@ const workflowStats = ref({
   activeWorkflows: 5,
   completedWorkflows: 7,
   templatesAvailable: 8,
-  averageCompletionTime: '2.3 days',
+  averageCompletionTime: '2.1 days',
   pendingApprovals: 3
 })
 
@@ -78,7 +76,7 @@ const workflowTemplates = [
 
 
     <!-- Statistics Cards -->
-    <WorkflowStatistics :stats="workflowStats" />
+    <WorkflowStatistics :stats="workflowStats" :fontSizeBase="store.fontSizes.base"/>
 
 
     <!-- Financial Workflow Dashboard -->

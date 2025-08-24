@@ -5,6 +5,23 @@ All notable changes to the Financial ERP Workflow Management System will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2025-08-20
+
+### 🏗️ Major Architecture Refactoring
+- **Package Separation**: Extracted complete workflow system into standalone `panadero-workflow` package
+- **Clean Module Separation**: Complete decoupling of workflow engine from finance module for better maintainability
+- **Enhanced Package Exports**: Streamlined import system with workflow components imported from dedicated package
+- **Improved Dependency Management**: Workflow package now independently versioned and maintained
+- **Modular Component Structure**: Better separation of concerns between financial logic and workflow management
+- **Reduced Bundle Size**: Finance package now lighter without workflow dependencies
+- **Package Integration Layer**: Seamless integration between finance and workflow packages via export mapping
+
+### 📦 Package Structure Improvements
+- **Independent Workflow Package**: `panadero-workflow` v1.0.9 with complete workflow functionality
+- **Cleaner Finance Package**: Focus on pure financial module concerns
+- **Better Import Management**: Simplified component imports and exports
+- **Enhanced Modularity**: Each package can be developed and versioned independently
+
 ## [1.0.9] - 2025-08-19
 
 ### 🎯 Component Enhancements

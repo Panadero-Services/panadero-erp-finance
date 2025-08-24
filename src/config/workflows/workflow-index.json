@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "version": "1.0.8",
+    "lastUpdated": "2025-01-27",
+    "description": "Index of all available workflow definitions"
+  },
+  "workflows": [
+    {
+      "id": "vendor-onboarding",
+      "file": "procurement/vendor-onboarding.workflow.json",
+      "module": "procurement",
+      "category": "vendor_management",
+      "complexity": "medium",
+      "status": "active"
+    },
+    {
+      "id": "gl-journal-entry-simple",
+      "file": "general-ledger/simple-journal-entry.workflow.json",
+      "module": "general_ledger",
+      "category": "daily_operations",
+      "complexity": "low",
+      "status": "active"
+    },
+    {
+      "id": "ap-vendor-invoice-approval",
+      "file": "accounts-payable/vendor-invoice-approval.workflow.json",
+      "module": "accounts_payable",
+      "category": "invoice_processing",
+      "complexity": "medium",
+      "status": "active"
+    }
+  ],
+  "modules": {
+    "procurement": {
+      "workflowCount": 1,
+      "lastUpdated": "2025-01-27"
+    },
+    "general_ledger": {
+      "workflowCount": 1,
+      "lastUpdated": "2025-01-27"
+    },
+    "accounts_payable": {
+      "workflowCount": 1,
+      "lastUpdated": "2025-01-27"
+    },
+    "accounts_receivable": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    },
+    "cash_flow": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    },
+    "budgeting": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    },
+    "fixed_assets": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    },
+    "tax_management": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    },
+    "compliance_audit": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    },
+    "financial_reporting": {
+      "workflowCount": 0,
+      "lastUpdated": null
+    }
+  }
+}

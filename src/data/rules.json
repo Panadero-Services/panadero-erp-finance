@@ -92,10 +92,12 @@
   },
   "testing": {
     "before_commit": [
+      "analyze module",
       "verify no linting errors",
       "test component functionality", 
       "check responsive design",
-      "validate dark mode support"
+      "validate dark mode support",
+      "validate scaleable styling"
     ]
   },
   "forbidden_actions": {
@@ -105,7 +107,9 @@
       "create duplicate code instead of reusing components",
       "ignore user feedback or corrections",
       "use custom CSS when Tailwind classes are available",
-      "create components without proper error handling"
+      "create components without proper error handling", 
+      "loose scaleable styling ", 
+      "use watch(), watchers or other eventlisteners"
     ]
   },
   "emergency_procedures": {

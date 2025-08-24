@@ -1,0 +1,185 @@
+{
+  "metadata": {
+    "workflowId": "gl-journal-entry-simple",
+    "version": "1.0.8",
+    "lastUpdated": "2025-01-27",
+    "author": "Accounting Team",
+    "status": "active"
+  },
+  "workflow": {
+    "id": "gl-journal-entry-simple",
+    "name": "Simple Journal Entry",
+    "description": "Basic journal entry with standard debit/credit validation",
+    "category": "daily_operations",
+    "module": "general_ledger",
+    "version": "1.0.8",
+    "complexity": "low",
+    "estimatedDuration": "30 minutes",
+    "approvalLevels": 0,
+    "tags": ["journal", "accounting", "daily", "simple"],
+    "slaSettings": {
+      "totalDuration": "30 minutes",
+      "escalationRules": []
+    },
+    "notificationSettings": {
+      "stepCompletion": true,
+      "approvalRequired": false,
+      "workflowCompletion": true
+    },
+    "steps": [
+      {
+        "id": "entry_creation",
+        "name": "Journal Entry Creation",
+        "description": "Create basic journal entry with account lines",
+        "type": "data_collection",
+        "required": true,
+        "order": 1,
+        "estimatedDuration": "15 minutes",
+        "approvalRequired": false,
+        "formSchema": {
+          "sections": [
+            {
+              "title": "Entry Header",
+              "fields": [
+                {
+                  "name": "entry_date",
+                  "type": "date",
+                  "required": true,
+                  "label": "Entry Date"
+                },
+                {
+                  "name": "reference",
+                  "type": "text",
+                  "required": true,
+                  "label": "Reference Number"
+                },
+                {
+                  "name": "description",
+                  "type": "textarea",
+                  "required": true,
+                  "label": "Description",
+                  "attributes": {
+                    "rows": 3
+                  }
+                },
+                {
+                  "name": "period",
+                  "type": "select",
+                  "required": true,
+                  "label": "Accounting Period",
+                  "options": ["Current", "Previous", "Next"]
+                }
+              ]
+            },
+            {
+              "title": "Journal Lines",
+              "fields": [
+                {
+                  "name": "lines",
+                  "type": "dynamic_table",
+                  "required": true,
+                  "label": "Account Lines",
+                  "validation": {
+                    "minRows": 2
+                  },
+                  "attributes": {
+                    "columns": [
+                      {
+                        "name": "account",
+                        "type": "select",
+                        "required": true,
+                        "label": "Account"
+                      },
+                      {
+                        "name": "debit",
+                        "type": "number",
+                        "required": false,
+                        "label": "Debit Amount",
+                        "validation": {
+                          "min": 0,
+                          "step": 0.01
+                        }
+                      },
+                      {
+                        "name": "credit",
+                        "type": "number",
+                        "required": false,
+                        "label": "Credit Amount",
+                        "validation": {
+                          "min": 0,
+                          "step": 0.01
+                        }
+                      },
+                      {
+                        "name": "description",
+                        "type": "text",
+                        "required": false,
+                        "label": "Line Description"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "validationRules": {
+          "requiredFields": ["entry_date", "reference", "description", "lines"],
+          "customValidations": [
+            {
+              "rule": "debit_credit_balance",
+              "message": "Total debits must equal total credits"
+            },
+            {
+              "rule": "at_least_two_lines",
+              "message": "At least two account lines required"
+            }
+          ]
+        }
+      },
+      {
+        "id": "validation",
+        "name": "Entry Validation",
+        "description": "Validate journal entry for accuracy and compliance",
+        "type": "financial_validation",
+        "required": true,
+        "order": 2,
+        "estimatedDuration": "5 minutes",
+        "approvalRequired": false,
+        "formSchema": {
+          "sections": [
+            {
+              "title": "Validation Checklist",
+              "fields": [
+                {
+                  "name": "accounts_exist",
+                  "type": "checkbox",
+                  "required": true,
+                  "label": "All accounts exist and are active"
+                },
+                {
+                  "name": "period_open",
+                  "type": "checkbox",
+                  "required": true,
+                  "label": "Accounting period is open"
+                },
+                {
+                  "name": "amounts_valid",
+                  "type": "checkbox",
+                  "required": true,
+                  "label": "All amounts are positive numbers"
+                },
+                {
+                  "name": "description_clear",
+                  "type": "checkbox",
+                  "required": true,
+                  "label": "Description is clear and complete"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -331,11 +331,11 @@ onMounted(async () => {
           </thead>
           <tbody>
             <tr v-for="payable in filteredPayables" :key="payable.id" class="dark:text-gray-100 dark:border-gray-600" :style="store.scalingStyles.tableRowHeight">
-              <td :style="[store.fontSizes.text, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.invoice_no }}</td>
-              <td :style="[store.fontSizes.text, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.vendor_name }}</td>
-              <td :style="[store.fontSizes.text, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.invoice_date) }}</td>
-              <td :style="[store.fontSizes.text, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.due_date) }}</td>
-              <td :style="[store.fontSizes.text, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(payable.amount) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.invoice_no }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.vendor_name }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.invoice_date) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.due_date) }}</td>
+              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(payable.amount) }}</td>
               <td :style="store.scalingStyles.paddingScale" class="border dark:border-gray-600">
                 <StatusBadge :status="payable.status" />
               </td>

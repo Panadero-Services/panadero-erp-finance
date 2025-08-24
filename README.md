@@ -1,8 +1,25 @@
 # Panadero ERP Finance Module
 
-**Version:** 1.0.9  
-**Release Date:** 19 August 2025  
+**Version:** 1.10.0  
+**Release Date:** 20 August 2025  
 **Status:** Production Ready
+
+## 🚀 What's New in v1.10.0
+
+### 🏗️ Major Architecture Refactoring
+- **Package Separation** - Extracted complete workflow system into standalone `panadero-workflow` package
+- **Clean Module Separation** - Complete decoupling of workflow engine from finance module for better maintainability
+- **Enhanced Package Exports** - Streamlined import system with workflow components imported from dedicated package
+- **Improved Dependency Management** - Workflow package now independently versioned and maintained
+- **Modular Component Structure** - Better separation of concerns between financial logic and workflow management
+- **Reduced Bundle Size** - Finance package now lighter without workflow dependencies
+- **Package Integration Layer** - Seamless integration between finance and workflow packages via export mapping
+
+### 📦 Package Structure Improvements
+- **Independent Workflow Package** - `panadero-workflow` v1.0.9 with complete workflow functionality
+- **Cleaner Finance Package** - Focus on pure financial module concerns
+- **Better Import Management** - Simplified component imports and exports
+- **Enhanced Modularity** - Each package can be developed and versioned independently
 
 ## 🚀 What's New in v1.0.9
 

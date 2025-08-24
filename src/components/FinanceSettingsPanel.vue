@@ -97,10 +97,10 @@ onMounted(() => {
   console.log('Settings panel mounted, current font size:', store.settings.fontSize);
 });
 
-// Watch for font size changes
-watch(() => store.settings.fontSize, (newSize) => {
-  console.log('Font size changed to:', newSize);
-});
+// Watch for font size changes  ONLY FOR DEBUGGING
+//watch(() => store.settings.fontSize, (newSize) => {
+  //console.debug('Font size changed to:', newSize);
+//});
 </script>
 
 <template>

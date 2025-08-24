@@ -21,6 +21,23 @@ export { default as AccountsReceivable } from './src/components/AccountsReceivab
 export { default as CashFlow } from './src/components/CashFlow.vue';
 export { default as TaxManagement } from './src/components/TaxManagement.vue';
 
+// Export workflow package components
+export { 
+  WorkflowDashboard, 
+  WorkflowDemo, 
+  WorkflowManager,
+  WorkflowCard,
+  WorkflowForm,
+  WorkflowModal,
+  WorkflowStepper,
+  WorkflowInfo,
+  WorkflowStatistics,
+  WorkflowDetailModal,
+  ActiveWorkflowCard,
+  WorkflowTemplate,
+  useWorkflowStore
+} from './src/packages/panadero-workflow/index.js';
+
 // Export composables
 export { useGeneralLedger } from './src/composables/useGeneralLedger.js';
 export { useAccountsPayable } from './src/composables/useAccountsPayable.js';
@@ -39,8 +56,8 @@ export { useFinanceStore } from './src/stores/financeStore.js';
 // Package information
 export const packageInfo = {
   name: 'panadero-erp-finance',
-  version: '0.1.0',
-  description: 'ERP Finance Module for comprehensive financial management',
+  version: '1.10.0',
+  description: 'ERP Finance Module for comprehensive financial management with modular workflow integration',
   author: 'JaWsome.Orbit',
   components: [
     'Finance',
@@ -48,6 +65,9 @@ export const packageInfo = {
     'AccountsPayable',
     'AccountsReceivable',
     'CashFlow',
-    'TaxManagement'
+    'TaxManagement',
+    'WorkflowDashboard',
+    'WorkflowDemo',
+    'WorkflowManager'
   ]
 };

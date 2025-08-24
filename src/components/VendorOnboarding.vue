@@ -1,8 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useWorkflowStore } from '../stores/workflowStore'
-import { useFinanceStore } from '../stores/financeStore'
-import WorkflowManager from './workflow/WorkflowManager.vue'
+import { useFinanceStore } from '../stores/financeStore.js'
+import { WorkflowManager, useWorkflowStore } from 'panadero-workflow'
 import FinanceValueCard from './ui/FinanceValueCard.vue'
 import FinanceButton from './ui/FinanceButton.vue'
 import StatusBadge from './ui/StatusBadge.vue'

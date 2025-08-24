@@ -1,9 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import Decimal from 'decimal.js';
+import axios from 'axios'
 
 export const useFinanceStore = defineStore('finance', () => {
   // Settings - centralized configuration
+  // 22.08.2025 needs work !! --> standarardize over modules and put in generic composable
   const settings = ref({
     // Font scaling
     fontSize: 14,
@@ -474,6 +476,14 @@ export const useFinanceStore = defineStore('finance', () => {
     auditLogs.value.push({ id: Date.now(), timestamp: new Date().toISOString(), user_id, entity, action, meta });
   }
 
+  // Helper functions for direct styling
+  const getTitleStyle = () => ({ fontSize: `${settings.value.fontSize + 4}px` });
+  const getSubtitleStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
+  const getTextStyle = () => ({ fontSize: `${settings.value.fontSize}px` });
+  const getSmallTextStyle = () => ({ fontSize: `${settings.value.fontSize - 2}px` });
+  const getLargeTextStyle = () => ({ fontSize: `${settings.value.fontSize + 6}px` });
+  const getAmountStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
+
   // Invoice system helper methods
   async function addPayable(payable) {
     payables.value.push({ ...payable, id: Date.now() });
@@ -506,14 +516,6 @@ export const useFinanceStore = defineStore('finance', () => {
   async function addAuditLog(log) {
     auditLogs.value.push({ ...log, id: Date.now() });
   }
-
-  // Helper functions for direct styling
-  const getTitleStyle = () => ({ fontSize: `${settings.value.fontSize + 4}px` });
-  const getSubtitleStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
-  const getTextStyle = () => ({ fontSize: `${settings.value.fontSize}px` });
-  const getSmallTextStyle = () => ({ fontSize: `${settings.value.fontSize - 2}px` });
-  const getLargeTextStyle = () => ({ fontSize: `${settings.value.fontSize + 6}px` });
-  const getAmountStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
 
   return {
     // Settings
