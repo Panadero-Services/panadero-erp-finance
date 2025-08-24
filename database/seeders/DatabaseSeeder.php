@@ -12,49 +12,126 @@ class DatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
+     * 
+     * This seeder includes ALL available seeders in the correct dependency order.
      */
     public function run(): void
     {
-        // Create roles
-        $memberRole = Role::create(['name'=> 'member']);
-        $editorRole = Role::create(['name'=> 'editor']);
-        $adminRole = Role::create(['name'=> 'admin']);
-        $developerRole = Role::create(['name'=> 'developer']);
-        $masterRole = Role::create(['name'=> 'master']);
+        $this->command->info('🌱 Starting Database Seeding Process...');
 
-        // Add the ProviderSeeder
-        $this->call(ProviderSeeder::class);
+        // ===== STEP 1: CREATE CORE ROLES =====
+        $this->command->info('📋 Creating core roles...');
+        $memberRole = Role::create(['name' => 'member']);
+        $editorRole = Role::create(['name' => 'editor']);
+        $adminRole = Role::create(['name' => 'admin']);
+        $developerRole = Role::create(['name' => 'developer']);
+        $masterRole = Role::create(['name' => 'master']);
 
-        // Call other seeders
+        // ===== STEP 2: CORE FOUNDATION SEEDERS =====
+        $this->command->info('🏗️  Seeding foundation data...');
         $this->call([
-            UserSeeder::class,
-            CategorySeeder::class,
-            PostTypeSeeder::class,
-            TagSeeder::class,
-            PostSeeder::class,
-            Web3ChainSeeder::class,
-            Web3ProjectSeeder::class,
-            Web3TypeSeeder::class,
-            Web3RecordSeeder::class,
-            ProjectSeeder::class,
-            PageSeeder::class,
-            UpdatePagesSeeder::class,
-            SectionsSeeder::class,
-            StateDatasetSeeder::class,
-            BusinessServiceSeeder::class,
-            FeatureSeeder::class,
-            FutureSeeder::class,
-            GameWorldSeeder::class,
-            I1TablesDemoSeeder::class,
-            I1OrdersSeeder::class
+            ProviderSeeder::class,           // External providers
+            UserSeeder::class,               // System users (MUST be early for foreign keys)
+            PermissionSeeder::class,         // Permissions system
         ]);
 
-        // Finance seeders (do NOT remove other seeders)
+        // ===== STEP 3: BASIC CONTENT STRUCTURE =====
+        $this->command->info('📝 Seeding content structure...');
         $this->call([
-            FinanceCoreSeeder::class,
-            FinanceDemoSeeder::class,
+            CategorySeeder::class,           // Content categories
+            PostTypeSeeder::class,           // Post types
+            TagSeeder::class,                // Content tags
+            PostSeeder::class,               // Blog posts and content
         ]);
 
+        // ===== STEP 4: WEB3 & BLOCKCHAIN DATA =====
+        $this->command->info('⛓️  Seeding Web3 and blockchain data...');
+        $this->call([
+            Web3ChainSeeder::class,          // Blockchain networks
+            Web3TypeSeeder::class,           // Web3 transaction types
+            Web3ProjectSeeder::class,        // Web3 projects
+            Web3RecordSeeder::class,         // Web3 transaction records
+        ]);
+
+        // ===== STEP 5: PROJECT MANAGEMENT =====
+        $this->command->info('📊 Seeding project management data...');
+        $this->call([
+            ProjectSeeder::class,            // Projects
+            FeatureSeeder::class,            // Project features
+            FutureSeeder::class,             // Future roadmap items
+            BusinessServiceSeeder::class,    // Business services
+        ]);
+
+        // ===== STEP 6: CONTENT MANAGEMENT =====
+        $this->command->info('📄 Seeding content management...');
+        $this->call([
+            PageSeeder::class,               // CMS pages
+            SectionsSeeder::class,           // Page sections
+            UpdatePagesSeeder::class,        // Page updates
+            FuturesPageSeeder::class,        // Future pages
+        ]);
+
+        // ===== STEP 7: DATA MANAGEMENT =====
+        $this->command->info('📈 Seeding data management...');
+        $this->call([
+            StateDatasetSeeder::class,       // State datasets
+            RawDatasetSeeder::class,         // Raw datasets
+            LogSeeder::class,                // System logs
+        ]);
+
+        // ===== STEP 8: GAMING SYSTEM =====
+        $this->command->info('🎮 Seeding gaming system...');
+        $this->call([
+            GameWorldSeeder::class,          // Game worlds and gaming data
+        ]);
+
+        // ===== STEP 9: I1 BUSINESS SYSTEM =====
+        $this->command->info('🏭 Seeding I1 business system...');
+        $this->call([
+            I1TablesDemoSeeder::class,       // I1 core tables (countries, customers, etc.)
+            I1OrdersSeeder::class,           // I1 orders
+        ]);
+
+        // ===== STEP 10: INVENTORY & COMMERCE =====
+        $this->command->info('📦 Seeding inventory and commerce...');
+        $this->call([
+            // Locations and storage
+            SiteSeeder::class,               // Sites/locations
+            WarehouseSeeder::class,          // Warehouses
+            
+            // Products and inventory
+            ArticleGroupSeeder::class,       // Article groups
+            ArticleSeeder::class,            // Articles/products
+            InventorySeeder::class,          // Inventory management
+            
+            // Sales and orders
+            OrderSeeder::class,              // Orders
+            OrderLineSeeder::class,          // Order line items
+            SalesDetailSeeder::class,        // Sales details
+            
+            // Rentals
+            RentalSeeder::class,             // Rental management
+            RentalDetailSeeder::class,       // Rental details
+        ]);
+
+        // ===== STEP 11: FINANCE CORE SYSTEM =====
+        $this->command->info('💰 Seeding finance core system...');
+        $this->call([
+            FinanceCoreSeeder::class,        // Finance accounts, chart of accounts
+            FinanceInvoiceSeeder::class,     // Finance invoices
+            FinanceDemoSeeder::class,        // Finance demo data
+        ]);
+
+        // ===== STEP 12: VENDOR MANAGEMENT =====
+        $this->command->info('🏢 Seeding vendor management...');
+        $this->call([
+            VendorSeeder::class,             // Core vendor entities (shared)
+            FinanceVendorSeeder::class,      // Finance-specific vendor extensions
+        ]);
+
+        // ===== STEP 13: USER ROLE ASSIGNMENTS =====
+        $this->command->info('👥 Assigning user roles...');
+        
         // Get all users and roles
         $users = User::all();
         $roles = Role::all();
@@ -64,27 +141,23 @@ class DatabaseSeeder extends Seeder
             $user->roles()->attach($memberRole);
         }
 
-        // Then, give all roles to lbakker@me.com
-        $adminUser = User::where('email', 'lbakker@me.com')->first();
-        if ($adminUser) {
-            // Detach existing roles first to avoid duplicates
-            $adminUser->roles()->detach();
-            // Attach all roles
-            $adminUser->roles()->attach($roles);
+        // Give all roles to primary admin users
+        $adminEmails = ['lbakker@me.com', 'jawsome.orbit@gmail.com'];
+        
+        foreach ($adminEmails as $email) {
+            $adminUser = User::where('email', $email)->first();
+            if ($adminUser) {
+                // Detach existing roles first to avoid duplicates
+                $adminUser->roles()->detach();
+                // Attach all roles
+                $adminUser->roles()->attach($roles);
+                $this->command->info("🔑 Granted all roles to: {$email}");
+            }
         }
 
-        // Then, give all roles to jawsome.orbit@gmail.com
-        $adminUser = User::where('email', 'jawsome.orbit@gmail.com')->first();
-        if ($adminUser) {
-            // Detach existing roles first to avoid duplicates
-            $adminUser->roles()->detach();
-            // Attach all roles
-            $adminUser->roles()->attach($roles);
-        }
-
-        // Add this line after creating roles
-        $this->call(PermissionSeeder::class);
-
+        // ===== STEP 14: TEAM MANAGEMENT =====
+        $this->command->info('🏆 Setting up team management...');
+        
         // Create demo team
         $demoTeam = \App\Models\Team::create([
             'name' => 'demo', 
@@ -98,5 +171,45 @@ class DatabaseSeeder extends Seeder
         foreach ($users as $user) {
             $user->update(['current_team_id' => 1]);
         }
+
+        // ===== STEP 15: FINALIZATION =====
+        $this->command->info('✨ Creating demo comments...');
+        Comment::factory()->count(50)->create();
+
+        // ===== COMPLETION SUMMARY =====
+        $this->showCompletionSummary();
+    }
+
+    /**
+     * Display completion summary with statistics
+     */
+    private function showCompletionSummary(): void
+    {
+        $this->command->info('');
+        $this->command->info('🎉 ========================================');
+        $this->command->info('🎉 DATABASE SEEDING COMPLETED SUCCESSFULLY!');
+        $this->command->info('🎉 ========================================');
+        $this->command->info('');
+
+        // Count records in key tables
+        $counts = [
+            'Users' => User::count(),
+            'Roles' => Role::count(),
+            'Posts' => \App\Models\Post::count(),
+            'Projects' => \App\Models\Project::count(),
+            'Vendors' => \App\Models\Vendor::count(),
+            'Finance Vendors' => \App\Models\FinanceVendor::count(),
+            'Finance Accounts' => \DB::table('finance_accounts')->count(),
+        ];
+
+        $this->command->info('📊 SEEDING STATISTICS:');
+        foreach ($counts as $table => $count) {
+            $this->command->info("   • {$table}: {$count} records");
+        }
+
+        $this->command->info('');
+        $this->command->info('✅ All seeders have been executed in the correct dependency order.');
+        $this->command->info('🚀 Your application is ready for testing!');
+        $this->command->info('');
     }
 }

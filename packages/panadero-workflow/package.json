@@ -1,0 +1,45 @@
+{
+  "name": "panadero-workflow",
+  "version": "1.0.12",
+  "description": "Financial ERP Workflow Management System with comprehensive step types and modal interface",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./Dashboard": "./Dashboard.vue",
+    "./Demo": "./Demo.vue",
+    "./Manager": "./Manager.vue"
+  },
+  "author": "Panadero ERP Team",
+  "license": "MIT",
+  "keywords": [
+    "workflow",
+    "business-process",
+    "approval",
+    "automation",
+    "financial-erp",
+    "vue3",
+    "pinia"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Panadero-Services/panadero-workflow.git"
+  },
+  "peerDependencies": {
+    "vue": ">=3.3.0",
+    "pinia": ">=2.1.0"   
+  },
+  "files": [
+    "*.vue",
+    "*.js",
+    "*.md",
+    "*.json"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "changelog": "CHANGELOG.md",
+  "readme": "README.md"
+}

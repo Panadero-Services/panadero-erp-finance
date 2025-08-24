@@ -121,14 +121,6 @@ const formatTitle = (title) => {
     <div class="relative block w-80 h-[64px] m-1 ">
         <!-- Main Card Container -->
         <div class="h-full flex rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden ">
-          
-
-
-
-
-
-
-
 
             <!-- Left Avatar - Full Height -->
             <div class="w-6 min-w-[1.5rem] flex items-center justify-center px-0 bg-gradient-to-br from-blue-500 to-indigo-600 via-indigo-700 dark:from-blue-600 dark:to-indigo-800">
@@ -145,7 +137,7 @@ const formatTitle = (title) => {
 
                         <h3 class="text-xs font-medium text-gray-900 dark:text-white line-clamp-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200" 
                             @click="$emit('show', record?.id ?? 0)">                            
-                            {{ record?.[config.title] }}
+                            {{ record?.[config.title] }}abc
                         </h3>
                     </div>
                     <div class="w-1/5 flex-none text-xxxs text-right text-gray-900 dark:text-white ">
@@ -159,22 +151,11 @@ const formatTitle = (title) => {
                 <div class="h-[10px] flex items-center px-3 flex">
                     
                     <div class="w-2/5 ">
-
-
-
-
-
                         <span  class="text-xxxs text-gray-500 dark:text-gray-400 ">
                         {{ formatDistance(record?.updated_at ?? new Date(), new Date()) }} ago
                         </span>
                     </div>
-
                 </div>
-
-
-
-
-
 
                 <!-- Bottom Row: Completely Independent -->
                 <div class="h-[25px] flex items-center px-3 mt-2">

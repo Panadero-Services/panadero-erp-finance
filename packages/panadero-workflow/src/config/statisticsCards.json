@@ -1,0 +1,46 @@
+{
+  "cards": [
+    {
+      "key": "totalWorkflows",
+      "label": "Total Workflows",
+      "icon": "fas fa-sitemap",
+      "iconColor": "blue",
+      "valueColor": "gray"
+    },
+    {
+      "key": "activeWorkflows",
+      "label": "Active Workflows",
+      "icon": "fas fa-play-circle",
+      "iconColor": "green",
+      "valueColor": "green"
+    },
+    {
+      "key": "pendingApprovals",
+      "label": "Pending Approvals",
+      "icon": "fas fa-clock",
+      "iconColor": "orange",
+      "valueColor": "orange"
+    },
+    {
+      "key": "completedWorkflows",
+      "label": "Completed Workflows",
+      "icon": "fas fa-check-circle",
+      "iconColor": "purple",
+      "valueColor": "purple"
+    },
+    {
+      "key": "templatesAvailable",
+      "label": "Templates Available",
+      "icon": "fas fa-layer-group",
+      "iconColor": "indigo",
+      "valueColor": "indigo"
+    },
+    {
+      "key": "averageCompletionTime",
+      "label": "Avg. Completion Time",
+      "icon": "fas fa-stopwatch",
+      "iconColor": "gray",
+      "valueColor": "gray"
+    }
+  ]
+}

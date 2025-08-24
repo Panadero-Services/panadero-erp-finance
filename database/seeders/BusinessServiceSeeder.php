@@ -271,7 +271,25 @@ class BusinessServiceSeeder extends Seeder
                 'icon' => 'PuzzlePieceIcon',
                 'options' => [
                     ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
-                    ['name' => 'BusinessServicesShared', 'url' => '/shared/business_services', 'route' => 'shard.business_services'],
+                    ['name' => 'BusinessServicesShared', 'url' => '/shared/business_services', 'route' => 'shared.business_services'],
+                    ['name' => 'BusinessServices', 'url' => '/home/business_services', 'route' => 'home.business_services']
+
+                ],
+                'status' => 'ready',
+                'progress' => 90,
+                'path' => '/shared/'
+            ],
+            [
+                'item' => 'Vendors',
+                'title' => 'Vendors List',
+                'description' => 'Table holding all Vendors',
+                'color' => 'blue',
+                'version' => 'v1.0.00',
+                'icon' => 'PuzzlePieceIcon',
+                'options' => [
+                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+                    ['name' => 'BusinessServicesShared', 'url' => '/shared/business_services', 'route' => 'shared.business_services'],
+                    ['name' => 'VendorsShared', 'url' => '/shared/vendors', 'route' => 'shared.vendors'],
                     ['name' => 'BusinessServices', 'url' => '/home/business_services', 'route' => 'home.business_services']
 
                 ],
