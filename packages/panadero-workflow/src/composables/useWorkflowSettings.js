@@ -1,5 +1,6 @@
 // Workflow Settings Composable
 // @version 1.0.9
+// date 21-Aug-2025
 // @description Provides styling and configuration settings for workflow components
 
 import { ref, computed, onMounted } from 'vue'
@@ -39,8 +40,10 @@ export function useWorkflowSettings() {
       
       // Body text
       body: base,         // 14, 16, 18, etc.
+      bodyVerySmall: base - 2, // 13
       bodySmall: base - 1, // 13
       bodyLarge: base + 1, // 15
+      bodyVeryLarge: base + 2, // 15
       
       // Labels and captions
       label: base - 1,    // 13
@@ -191,6 +194,3 @@ const getColorClass = (colorType, variant = 'light', element = 'text') => {
     getResponsiveClass
   }
 }
-
-
-

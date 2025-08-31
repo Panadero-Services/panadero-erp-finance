@@ -1,0 +1,293 @@
+{
+  "current": "1.2.1",
+  "releases": [
+    {
+      "version": "v1.2.1",
+      "date": "30 Aug 2025",
+      "status": "current",
+      "features": [
+        "Shared Composables Integration - useGenericInfoBoxes from shared package for consistent info display patterns",
+        "WorkflowInfoBoxes Enhancement - Dedicated workflow-specific composable extending generic info box functionality",
+        "Generic Layout System - Standardized layout components from shared package for ERP module consistency",
+        "Framework Settings Integration - Shared FrameworkSettingsPanel component for unified settings management",
+        "Scaling Composables - useScaling from shared package for consistent responsive behavior across modules",
+        "Package Isolation Complete - Full separation from finance package with independent versioning and deployment",
+        "Component Standardization - Generic components following shared naming conventions and architecture patterns",
+        "Store Architecture - Workflow-specific store with generic composable integration for shared functionality",
+        "Navigation Enhancement - WorkflowNavigation using shared scaling and layout patterns",
+        "API Section Modularity - Shared API section components for consistent developer documentation"
+      ]
+    },
+    {
+      "version": "v1.2.0",
+      "date": "29 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Transition with revamp of all composables and components",
+        "Generic Layout for ERP modules and framework features"
+      ]
+    },
+    {
+      "version": "v1.1.0",
+      "date": "28 Aug 2025",
+      "status": "current",
+      "features": [
+        "Basic workflow engine in dedicated package panadero-workflow",
+        "Template management Isolated",
+        "Shared Composables folder for generic package information"
+      ]
+    },
+    {
+      "version": "v1.0.17",
+      "date": "27 Aug 2025",
+      "status": "current",
+      "features": [
+        "ModalHeader v2.4.0 - Compact elegant header with fully dynamic module mapping and configurable data-driven approach",
+        "ModalInfo v2.0.0 - Comprehensive workflow information display with template details, step overview, requirements, and timeline",
+        "ActiveCard v1.2.0 - Upgraded card with clean state information and enhanced progress visualization",
+        "Modal Folder Structure - Reorganized modal components with dedicated /modal/ subdirectory",
+        "Two-Column Modal Layout - Enhanced responsive layout with proper scrolling and content organization",
+        "Dynamic Grid Layouts - Responsive grid systems across Statistics, ActiveWorkflowsList, and WorkflowTemplatesList",
+        "FINAL Combined Versioning - Last unified Finance + Workflow version before separate version control"
+      ]
+    },
+    {
+      "version": "v1.0.16",
+      "date": "26 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "WorkflowForm Component v1.2.1 - Enhanced form submission step type handling with production-ready structure",
+        "Form Field Type System - Comprehensive validation: text, textarea, select, multi-select, checkbox, radio, date, email, tel, url, file, number",
+        "testWorkflowLoading.js - 6-test workflow validation system for template loading and step verification",
+        "useWorkflowValidation.js - Robust validation composable with template, steps, form schema, and field validation",
+        "WorkflowStepper v1.1.0 - Real step status checking with visual state indicators",
+        "ModalCurrentStep v1.1.0 - Enhanced current step display with step type specific component routing",
+        "Step Status System - Accurate step state management using actual step.status instead of index assumptions"
+      ]
+    },
+    {
+      "version": "v1.0.15",
+      "date": "25 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "In-Memory Workflow System - inMemoryWorkflows as single source of truth for active workflows",
+        "Template Blueprint vs Instance Separation - Clear distinction between templates and running instances",
+        "Dual-Layer Architecture - Templates for configuration, instances for execution state",
+        "State Consolidation - Removed duplicate state tracking, unified workflow management",
+        "Template Enhancement System - Enhanced templates with lazy-loaded workflow definitions",
+        "ActiveCard Component - Enhanced display with step progress visualization",
+        "WorkflowTemplatesList Component - Dedicated template listing with start actions",
+        "Template-Instance Pattern - Clear separation between blueprints and runtime execution"
+      ]
+    },
+    {
+      "version": "v1.0.14",
+      "date": "24 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Modular Modal System - Complete modularization into 9 specialized components (Header, Navigation, Steps, Config, History, CurrentStep, ContentWrapper, Footer)",
+        "ModalHeader Component - Dedicated header with workflow info, status badges, and close functionality",
+        "ModalTabNavigation Component - Tab switching system for Steps, Information, Config, and History sections",
+        "ModalCurrentStep Component - Focused current step display with action type indicators",
+        "ModalContentWrapper Component - Dynamic step type component wrapper with intelligent component selection",
+        "WorkflowForm Component - Enhanced form submission step type with comprehensive field support",
+        "Dynamic Form Schema - JSON-driven form generation with sections, field types, and validation rules",
+        "Form Field Types - Support for text, email, tel, url, textarea, select, number, date, checkbox, and radio inputs",
+        "Section-Based Layout - Organized form fields into logical sections with responsive grid layouts",
+        "Overflow Management - Proper overflow handling with min-height: 0 and flex-1 for scrollable content areas",
+        "Component Separation - Clear separation of concerns with each modal section as independent component"
+      ]
+    },
+    {
+      "version": "v1.0.13",
+      "date": "23 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Five Core Step Types - Standardized step types: shared_entity_selection, form_submission, approval, checklist, submit_database",
+        "Step Type Handler Composable - New useStepTypeHandler for managing step type behaviors and configurations",
+        "Step Type Validation - Comprehensive validation system ensuring only valid step types are used",
+        "13 Pre-Built Templates - Complete set of default workflows covering business and financial processes",
+        "Financial ERP Workflows - Journal Entry, Invoice Approval, Customer Invoice, Cash Flow, Budget, Asset, Tax, Reconciliation templates",
+        "Business Process Workflows - Vendor Onboarding, Employee Onboarding, Purchase Request, Contract Renewal templates",
+        "Lazy Loading Architecture - Workflow definitions loaded on-demand for improved performance",
+        "Category-Based Organization - Templates organized by procurement, hr, legal, and 9 financial categories",
+        "Modular Template Configuration - New workflowTemplatesConfig.js with maintainable structure",
+        "Workflow Validation System - Comprehensive useWorkflowValidation composable with template and step validation",
+        "Enhanced Store Architecture - Updated workflowStore with better state management and lifecycle handling",
+        "Test Infrastructure - New testWorkflowLoading.js for validating workflow structure and compliance",
+        "Async Workflow Loading - Dynamic import system with error handling and fallbacks"
+      ]
+    },
+    {
+      "version": "v1.0.12",
+      "date": "22 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Enhanced Wrapper Component - Refactored Wrapper.vue with improved separation of concerns between panadero-erp-finance and panadero-workflow",
+        "Settings Encapsulation - Isolated and encapsulated settings management in standardized layout patterns for modular consistency",
+        "Package Boundary Enforcement - Strengthened separation between finance module logic and workflow management system",
+        "Dynamic Col-Span System - Intelligent grid column calculations based on font size settings for responsive card layouts",
+        "Modal Height & Width Scaling - Dynamic modal dimensions using viewport units calculated from font base settings",
+        "Card Responsive Sizing - Statistics and workflow cards now dynamically adjust padding, font sizes, and spacing",
+        "Grid Layout Intelligence - Adaptive grid layouts responding to font size changes for optimal space utilization",
+        "Statistics Configuration System - External configuration via statisticsCards.json for better maintainability",
+        "Info Section Enhancement - Refactored Info component with valuable user and admin information display",
+        "Simplified Interface - Streamlined information presentation without complex tabbed interfaces",
+        "Clean Interface Layer - Streamlined communication interface between packages without dependency coupling"
+      ]
+    },
+    {
+      "version": "v1.0.11",
+      "date": "21 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "DRY Settings Bridge - Centralized useWorkflowSettings composable with reactive font scaling system",
+        "Finance Package Integration - Wrapper.vue component bridges ERP finance settings to workflow package",
+        "Reactive Settings Synchronization - Real-time settings propagation from finance store to workflow components",
+        "Isolated Module Styling - Complete separation of styling concerns between packages while maintaining consistency",
+        "Enhanced Font Scaling System - Comprehensive font size calculations with predefined combinations (h1-h4, body, button, caption)",
+        "Color Scheme Standardization - Unified color system with primary, success, warning, danger, and info variants",
+        "Layout Utilities Enhancement - Advanced spacing, border radius, transitions, and shadow utilities",
+        "Modal.vue Refactoring - Enhanced 4-column layout with better overflow handling and responsive design",
+        "ActiveCard.vue Enhancement - Improved delete functionality with hover effects and better status display",
+        "Wrapper.vue Bridge Component - New component providing seamless integration between finance and workflow packages",
+        "Naming Convention Standardization - Comprehensive naming conventions document for consistent development"
+      ]
+    },
+    {
+      "version": "v1.10.0",
+      "date": "20 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Package Architecture Refactoring - Extracted workflow system into standalone panadero-workflow package",
+        "Clean Module Separation - Complete decoupling of workflow engine from finance module for better maintainability",
+        "Enhanced Package Exports - Streamlined import system with workflow components imported from dedicated package",
+        "Improved Dependency Management - Workflow package now independently versioned and maintained",
+        "Modular Component Structure - Better separation of concerns between financial logic and workflow management",
+        "Reduced Bundle Size - Finance package now lighter without workflow dependencies",
+        "Package Integration Layer - Seamless integration between finance and workflow packages via export mapping"
+      ]
+    },
+    {
+      "version": "v1.0.9",
+      "date": "19 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Enhanced WorkflowCard Component - Reusable with optional actionz and flexible display modes",
+        "WorkflowStatistics Component - Extracted statistics into separate, reusable component",
+        "ActiveWorkflowCard.vue - Fixed Vue structure and enhanced delete functionality",
+        "WorkflowModal.vue - Enhanced 4-column layout with proper overflow handling",
+        "WorkflowStepper.vue - Restored proper Vue structure with enhanced step display",
+        "Enhanced Hover Effects - Smooth transitions and interactive elements",
+        "Event Handler Optimization - Single action points per workflow card"
+      ]
+    },
+    {
+      "version": "v1.0.8",
+      "date": "18 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Complete Workflow Management System with WorkflowDashboard",
+        "Direct Workflow Creation from Template Cards",
+        "Active Workflow Management with Delete Capabilities",
+        "Enhanced 4-Column Modal Interface with Tabbed Sections",
+        "Advanced History Tracking with Logger-Style Display",
+        "7 Workflow Step Types: User Action, Timer, API, Approval, Agent, System, External",
+        "WorkflowForm.vue - Fixed Vue structure and improved form validation",
+        "WorkflowInfo.vue - Fixed Vue structure and enhanced tabbed interface",
+        "Vue.js Lifecycle Fixes and Performance Optimizations",
+        "Responsive Design with Proper Overflow Handling"
+      ]
+    },
+    {
+      "version": "v1.0.7",
+      "date": "17 Aug 2025",
+      "status": "maintenance",
+      "features": [
+        "Enhanced Demo Components with 3-Column Layout",
+        "Inline Usage Examples for Developer Convenience",
+        "Modular InfoBoard Architecture (InfoSection, UIElementsSection, APIsSection)",
+        "Interactive Demo Selection with Icon-Coded Buttons",
+        "Comprehensive Package Content Restoration (25+ items)",
+        "Enhanced FinanceToggle and FinanceDropdown Demos",
+        "Fixed Demo Width Issues and Content Restoration",
+        "Professional Component Organization and Maintainability"
+      ]
+    },
+    {
+      "version": "v1.0.6",
+      "date": "16 Aug 2025",
+      "status": "eol",
+      "features": [
+        "FinanceDropdown Component with Auto-Scaling",
+        "Enhanced FinanceButton with Store Integration",
+        "Perfect Height Matching System",
+        "Modernized GeneralLedger with FinanceDropdown",
+        "Advanced CSS Specificity and Styling",
+        "Transparent Outline Variants",
+        "Interactive Component Demos",
+        "Font Awesome Integration Fixes"
+      ]
+    },
+    {
+      "version": "v1.0.5",
+      "date": "15 Aug 2025",
+      "status": "eol",
+      "features": [
+        "Centralized StatusBadge Component",
+        "Dynamic Icon Scaling System",
+        "ScaledIcon Component for consistent icon sizing",
+        "Enhanced DRY refactoring completed",
+        "All components now use centralized styling system"
+      ]
+    },
+    {
+      "version": "v1.0.4",
+      "date": "14 Aug 2025",
+      "status": "eol",
+      "features": [
+        "Complete DRY refactoring",
+        "Centralized styling through financeStore",
+        "Removed duplicate computed styles",
+        "Enhanced font scaling system",
+        "Improved component maintainability"
+      ]
+    },
+    {
+      "version": "v1.0.3",
+      "date": "13 Aug 2025",
+      "status": "eol",
+      "features": [
+        "Enhanced flexible scaling system",
+        "Padding, margin, and border radius scaling",
+        "Improved button and input scaling",
+        "Better responsive design",
+        "Enhanced user experience"
+      ]
+    },
+    {
+      "version": "v1.0.2",
+      "date": "12 Aug 2025",
+      "status": "eol",
+      "features": [
+        "Font size scaling system",
+        "Dynamic styling with 1px increments",
+        "Settings panel integration",
+        "Centralized configuration management",
+        "Improved accessibility"
+      ]
+    },
+    {
+      "version": "v1.0.1",
+      "date": "11 Aug 2025",
+      "status": "eol",
+      "features": [
+        "Invoice system implementation",
+        "Auto-generated invoice numbers",
+        "Cross-section search functionality",
+        "CSV export capabilities",
+        "Status tracking system"
+      ]
+    }
+  ]
+}

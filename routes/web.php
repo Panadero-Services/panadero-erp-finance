@@ -394,6 +394,17 @@ Route::middleware([
 
 
 
+    Route::get('features/workflow', function () {
+        return Inertia::render('features/Workflow', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('featurs/workflow');
+
+
+
+
+
     // ========================================
     // SECTIONS TABLE
     // ========================================
@@ -664,6 +675,20 @@ Route::middleware([
     Route::get('planning', function () { 
         return Inertia::render('Planning', []); 
     })->name('planning');
+
+    // ========================================
+    // Feature : workflow
+    // ========================================
+    Route::get('features/workflow/dashboard', function () {
+        return Inertia::render('features/workflow/Dashboard', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get()
+        ]);
+    })->name('features/workflow/dashboard');
+
+
+
+
 
     // ========================================
     // TEST ROUTES

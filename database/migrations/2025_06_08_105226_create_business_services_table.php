@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('business_services', function (Blueprint $table) {
             $table->id();
-            $table->string('item', 8)->unique();
+            $table->string('item', 16)->unique();
             $table->string('title', 32);
             $table->text('description');
             $table->string('color', 32);

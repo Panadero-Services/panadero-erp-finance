@@ -1,8 +1,8 @@
 /**
  * Workflow Dashboard Composable
- * @version 1.0.9
+ * @version 1.1.2
  * @date 27-Jan-2025
- * @description Centralized logic for workflow dashboard functionality - simplified for package isolation
+ * @description Centralized logic for workflow dashboard functionality with reactive store integration
  */
 import { ref, computed, onMounted } from 'vue'
 import { useWorkflowStore } from './workflowStore.js'
@@ -13,13 +13,36 @@ export function useWorkflowDashboard() {
   // Reactive state
   const selectedWorkflow = ref(null)
   const showOverlay = ref(false)
-  const activeWorkflows = ref([])
   const selectedActiveWorkflow = ref(null)
   const showWorkflowModal = ref(false)
   const activeTab = ref('info')
   const configWorkflows = ref([])
   const loadingConfigWorkflows = ref(false)
 
+  // Reactive store data - just use the store directly
+// Reactive store data - FIXED: Use workflows instead of inMemoryWorkflows
+const activeWorkflows = computed(() => {
+  return workflowStore.workflows.map(instance => { // ← FIXED
+    // Find the template for this instance
+    const template = workflowStore.builtInTemplates.find(t => t.id === instance.template_id)
+    
+    return {
+      workflowNr: instance.id,
+      instanceId: instance.id,
+      name: instance.name || template?.name || 'Unknown Workflow',
+      module: template?.module || 'general',
+      category: template?.category || 'general',
+      complexity: template?.complexity || 'medium',
+      startedAt: new Date(instance.created_at),
+      status: instance.status,
+      template: instance.template, // ← Use stored template
+      configWorkflow: null,
+      steps: instance.steps || [],
+      currentStep: instance.currentStep || 0,
+      isInMemory: true
+    }
+  })
+})
   // Load workflows from store on mount
   onMounted(async () => {
     await loadWorkflowsFromStore()
@@ -34,7 +57,7 @@ export function useWorkflowDashboard() {
       const workflows = workflowStore.builtInTemplates || []
       configWorkflows.value = workflows.filter(Boolean)
       
-      console.log('Loaded workflows from store:', configWorkflows.value)
+      console.debug('Loaded workflows from store:', configWorkflows.value)
     } catch (error) {
       console.error('Failed to load workflows from store:', error)
     } finally {
@@ -112,59 +135,59 @@ export function useWorkflowDashboard() {
     activeTab.value = 'info' // Reset to default tab
   }
 
-  async function startWorkflowDirectly(workflow, emit) {
-    try {
-      // Use workflow directly from store
-      const fullWorkflow = workflow
+async function startWorkflowDirectly(workflow) {
+  try {
+    // Use workflow directly from store
+    const fullWorkflow = workflow
 
-      const instance = workflowStore.createWorkflowInstance(fullWorkflow.id, {
-        created_by: 'current_user',
-        workflow_data: {
-          name: fullWorkflow.name,
-          description: fullWorkflow.description,
-          category: fullWorkflow.category,
-          module: fullWorkflow.module,
-          complexity: fullWorkflow.complexity,
-          estimated_duration: fullWorkflow.estimated_duration
-        }
-      })
-      
-      // Wait for the workflow to start and steps to be loaded
-      await workflowStore.startWorkflow(instance.id)
-      emit('workflow-started', instance)
-      
-      // Add to active workflows with unique workflowNr
-      const workflowNr = `WF-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`
-      const activeWorkflow = {
-        workflowNr,
-        instanceId: instance.id,
+    // FIXED: Use createWorkflowInstance instead of createInMemoryWorkflow
+    const instance = workflowStore.createWorkflowInstance(fullWorkflow.id, {
+      created_by: 'current_user',
+      workflow_data: {
         name: fullWorkflow.name,
-        module: fullWorkflow.module,
+        description: fullWorkflow.description,
         category: fullWorkflow.category,
+        module: fullWorkflow.module,
         complexity: fullWorkflow.complexity,
-        startedAt: new Date(),
-        status: 'active',
-        template: fullWorkflow, // Store the full workflow definition
-        configWorkflow: null, // No config source in simplified version
-        // Add the steps from the started workflow instance
-        steps: instance.steps
+        estimated_duration: fullWorkflow.estimated_duration
       }
-      activeWorkflows.value.push(activeWorkflow)
-      
-      // Open the big modal directly
-      selectedActiveWorkflow.value = activeWorkflow
-      showWorkflowModal.value = true
-      
-      console.log(`Started workflow directly: ${fullWorkflow.name}`, {
-        instance,
-        activeWorkflow,
-        source: 'store',
-        stepsCount: instance.steps.length
-      })
-    } catch (error) {
-      console.error('Failed to start workflow:', error)
+    })
+    
+    // FIXED: Use startWorkflow instead of startInMemoryWorkflow
+    await workflowStore.startWorkflow(instance.id)
+    
+    // Create the active workflow object for the modal
+    const activeWorkflow = {
+      workflowNr: instance.id,
+      instanceId: instance.id,
+      name: fullWorkflow.name,
+      module: fullWorkflow.module,
+      category: fullWorkflow.category,
+      complexity: fullWorkflow.complexity,
+      startedAt: new Date(),
+      status: 'active',
+      template: fullWorkflow,
+      configWorkflow: null,
+      steps: instance.steps,
+      currentStep: instance.currentStep || 0,
+      isInMemory: true
     }
+    
+    // Open the big modal directly
+    selectedActiveWorkflow.value = activeWorkflow
+    showWorkflowModal.value = true
+    
+    console.debug(`Started workflow: ${fullWorkflow.name}`, {
+      instance,
+      activeWorkflow,
+      source: 'store',
+      stepsCount: instance.steps.length,
+      template: instance.template
+    })
+  } catch (error) {
+    console.error('Failed to start workflow:', error)
   }
+}
 
   // Load workflow details (simplified)
   async function loadWorkflowDetails(workflowId) {
@@ -179,16 +202,17 @@ export function useWorkflowDashboard() {
   }
 
   function deleteActiveWorkflow(workflowToDelete) {
-    const index = activeWorkflows.value.findIndex(w => w.workflowNr === workflowToDelete.workflowNr)
-    if (index > -1) {
-      activeWorkflows.value.splice(index, 1)
+    // FIXED: Remove from workflows instead of inMemoryWorkflows
+    const instanceIndex = workflowStore.workflows.findIndex(w => w.id === workflowToDelete.instanceId)
+    if (instanceIndex > -1) {
+      workflowStore.workflows.splice(instanceIndex, 1)
       
       // Close modal if this workflow was selected
       if (selectedActiveWorkflow.value?.workflowNr === workflowToDelete.workflowNr) {
         closeWorkflowModal()
       }
       
-      console.log(`Deleted workflow: ${workflowToDelete.name}`)
+      console.debug(`Deleted workflow: ${workflowToDelete.name}`)
     }
   }
 

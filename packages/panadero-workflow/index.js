@@ -3,21 +3,27 @@
 // @description Exports main workflow components for external use
 
 // Main External Components
-export { default as WorkflowWrapper } from './src/Wrapper.vue'
-export { default as WorkflowDashboard } from './src/Dashboard.vue'
-export { default as WorkflowDemo } from './src/Demo.vue'
-export { default as WorkflowManager } from './src/Manager.vue'
+export { default as WorkflowWrapper } from './src/WorkflowWrapper.vue'
+export { default as WorkflowDashboard } from './src/WorkflowDashboard.vue'
+export { default as WorkflowDemo } from './src/WorkflowDemo.vue'
+export { default as WorkflowManager } from './src/WorkflowManager.vue'
 
 // Internal Components (for advanced usage)
 export { default as WorkflowCard } from './src/components/Card.vue'
 export { default as WorkflowForm } from './src/components/WorkflowForm.vue'
 export { default as WorkflowModal } from './src/components/Modal.vue'
 export { default as WorkflowStepper } from './src/components/WorkflowStepper.vue'
-export { default as WorkflowInfo } from './src/components/Info.vue'
+export { default as WorkflowInfo } from './src/components/modal/ModalInfo.vue'
 export { default as WorkflowStatistics } from './src/components/Statistics.vue'
-export { default as WorkflowDetailModal } from './src/components/DetailModal.vue'
 export { default as ActiveWorkflowCard } from './src/components/ActiveCard.vue'
 export { default as WorkflowTemplate } from './src/components/Template.vue'
+
+// Step Type Components
+export { default as WorkflowApproval } from './src/components/WorkflowApproval.vue'
+export { default as WorkflowChecklist } from './src/components/WorkflowChecklist.vue'
+export { default as WorkflowEntitySelection } from './src/components/WorkflowEntitySelection.vue'
+export { default as WorkflowDatabaseSubmit } from './src/components/WorkflowDatabaseSubmit.vue'
+export { default as ModalContentWrapper } from './src/components/ModalContentWrapper.vue'
 
 // Composables
 export { useWorkflowStore } from './src/composables/workflowStore.js'

@@ -101,6 +101,12 @@ import { WorkflowDashboard } from '../../packages/panadero-workflow/Dashboard.vu
 - Maintain component reusability
 
 ## Version History
+- **v1.2.1**: Isolated Package Architecture, Shared Composables Integration, Framework Standardization
+- **v1.0.17**: Layout & Stepper Enhancements, Modal Organization, Final Combined Versioning
+- **v1.0.16**: Form Type Refactor, Testing Module Enhancement, Component Architecture Improvements
+- **v1.0.15**: Store Architecture Redesign, Template Blueprint vs Instance Separation, Component Improvements
+- **v1.0.14**: Modal Content Architecture, Step Forms Enhancement, Layout Improvements, Component Modularization
+- **v1.0.13**: Workflow Step Types System, 13 Default Templates, Modular Architecture, Validation System
 - **v1.0.12**: Wrapper Refactoring, Dynamic Col-Span System, Statistics Configuration, Enhanced Info Section
 - **v1.0.11**: DRY Settings Bridge, Dynamic Styling Architecture, Enhanced Component Separation
 - **v1.0.10**: Independent Package Architecture

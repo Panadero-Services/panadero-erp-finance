@@ -1,0 +1,120 @@
+{
+  "framework": {
+    "name": "Panadero Framework",
+    "version": "1.0.0",
+    "description": "Modular business application framework with ERP, workflow, and style packages",
+    "settings": {
+      "fontSize": 14,
+      "darkMode": true,
+      "compactLayout": false,
+      "autoSave": true
+    }
+  },
+  "colorScheme": {
+    "blue": "bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 dark:text-blue-300 dark:hover:text-blue-200",
+    "green": "bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900/20 dark:hover:bg-green-900/30 dark:text-green-300 dark:hover:text-green-200",
+    "purple": "bg-purple-50 hover:bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:hover:bg-purple-900/30 dark:text-purple-300 dark:hover:text-purple-200",
+    "orange": "bg-orange-50 hover:bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 dark:text-orange-300 dark:hover:text-orange-200",
+    "teal": "bg-teal-50 hover:bg-teal-100 text-teal-700 dark:bg-teal-900/20 dark:hover:bg-teal-900/30 dark:text-teal-300 dark:hover:text-teal-200",
+    "indigo": "bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/20 dark:hover:bg-indigo-900/30 dark:text-indigo-300 dark:hover:text-indigo-200",
+    "gray": "bg-gray-50 hover:bg-gray-100 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-gray-200",
+    "red": "bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-300 dark:hover:text-red-200",
+    "yellow": "bg-yellow-50 hover:bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:hover:bg-yellow-900/30 dark:text-yellow-300 dark:hover:text-yellow-200"
+  },
+  "sharedEntities": [
+    {
+      "id": "business_services",
+      "name": "Business Services",
+      "path": "/home/business_services",
+      "color": "blue",
+      "icon": "fas fa-briefcase",
+      "description": "Core business service management"
+    },
+    {
+      "id": "projects",
+      "name": "Projects",
+      "path": "/project/projects",
+      "color": "green",
+      "icon": "fas fa-project-diagram",
+      "description": "Project management and tracking"
+    },
+    {
+      "id": "users",
+      "name": "Users & Teams",
+      "path": "/admin/users",
+      "color": "purple",
+      "icon": "fas fa-users",
+      "description": "User and team administration"
+    },
+    {
+      "id": "settings",
+      "name": "System Settings",
+      "path": "/config/settings",
+      "color": "orange",
+      "icon": "fas fa-cog",
+      "description": "Framework configuration and settings"
+    },
+    {
+      "id": "vendors",
+      "name": "Vendors",
+      "path": "/erp/vendors",
+      "color": "teal",
+      "icon": "fas fa-truck",
+      "description": "Vendor and supplier management"
+    },
+    {
+      "id": "customers",
+      "name": "Customers",
+      "path": "/erp/customers",
+      "color": "indigo",
+      "icon": "fas fa-user-tie",
+      "description": "Customer relationship management"
+    }
+  ],
+  "packageTypes": {
+    "erp-finance": {
+      "category": "ERP",
+      "defaultIcon": "fas fa-calculator",
+      "description": "Financial management modules"
+    },
+    "workflow": {
+      "category": "Process",
+      "defaultIcon": "fas fa-route",
+      "description": "Business process and workflow modules"
+    },
+    "style": {
+      "category": "UI",
+      "defaultIcon": "fas fa-palette",
+      "description": "Styling and design system modules"
+    }
+  },
+  "navigation": {
+    "defaultEventPrefix": "switch",
+    "globalEventBus": "window"
+  },
+  "ui": {
+    "defaultFontSizes": {
+      "base": 14,
+      "small": 12,
+      "large": 16,
+      "xlarge": 18
+    },
+    "defaultSpacing": {
+      "padding": "p-4",
+      "margin": "m-4",
+      "gap": "gap-4"
+    },
+    "borderRadius": {
+      "default": "rounded-md",
+      "small": "rounded",
+      "large": "rounded-lg"
+    }
+  },
+  "timestampFields": {
+    "common": ["timestamp", "created_at", "updated_at"],
+    "financial": ["invoice_date", "transaction_date", "payment_date"],
+    "operational": ["acquired_at", "completed_at", "started_at"]
+  },
+  "supportedLanguages": ["en", "es", "fr", "de"],
+  "defaultLocale": "en"
+}

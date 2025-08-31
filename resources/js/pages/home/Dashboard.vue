@@ -186,13 +186,10 @@ onMounted(async () => {
 </script>
 
 
-
-
 <template>
   <AppToolbarLayout :title="page.title" :baseSections="baseSections" :set="_set" :contract="_contract" :page="page">
     <template #header>
       <pulse v-model="_pulse" :animation="_set.animate" />
-
 
     </template>
 
@@ -201,15 +198,15 @@ onMounted(async () => {
     <template #default>
 
       <div class="text-center" id="toolbar">
-        <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Search" />
+        <input v-model="filter" name="filter" type="filter" autocomplete="filter" required="" class="mt-2 min-w-0 flex-auto rounded-sm bg-gray-50 dark:bg-slate-950 px-3.5 py-0.5 text-base text-gray-600 sm:text-sm/6 focus:ring-0" placeholder="Filter" />
       </div>
 
 
-      <div class="grid grid-cols-2 m-6 text-3xl font-semibold text-black dark:text-white sm:ml-24">
+      <div class="grid grid-cols-2 m-6 mt-1 text-3xl font-semibold text-black dark:text-white sm:ml-24">
         <p>Framework</p>
       </div>
 
-      <div id="framework" class="ml-6 min-h-[80px]">
+      <div id="framework" class="mx-6 min-h-[80px]">
         <div class="">
           <div class="flex flex-wrap gap-2">
             <template v-for="service in services">
@@ -221,13 +218,13 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="grid grid-cols-2 m-6 mt-12 text-3xl font-semibold text-black dark:text-white sm:ml-24">
+      <div class=" m-6 mt-4 text-3xl font-semibold text-black dark:text-white text-right sm:mr-32">
         <p>Shared Entities</p>
       </div>
 
-      <div id="shared_entities" class="ml-6 min-h-[80px]">
+      <div id="shared_entities" class="mx-6 min-h-[80px]">
         <div class="">
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2 justify-end">
             <template v-for="service in services">
               <div v-if="service.title.toLowerCase().includes(filter) && service.path.includes('/shared/')" class="flex-shrink-0">
                 <business-function-card-small :set="_set" :f="service" :progress="service.progress" />
@@ -237,10 +234,9 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="grid grid-cols-2 m-6 mt-12 text-3xl font-semibold text-black dark:text-white sm:ml-24">
+      <div class="grid grid-cols-2 m-6 mt-4 text-3xl font-semibold text-black dark:text-white sm:ml-24">
         <p>Business Services</p>
       </div>
-
 
       <div id="shared_entities" class="ml-6 min-h-[80px]">
         <div class="">
@@ -254,13 +250,11 @@ onMounted(async () => {
         </div>
       </div>
 
-
-
-      <div class=" m-6 mt-12 text-3xl font-semibold text-black dark:text-white text-right sm:mr-32">
+      <div class=" m-6 mt-4 text-3xl font-semibold text-black dark:text-white text-right sm:mr-32">
         <p>Features</p>
       </div>
 
-      <div id="features" class="ml-6  min-h-[280px]">
+      <div id="features" class="mx-6  min-h-[280px]">
         <div class="">
           <div class="flex flex-wrap gap-2 justify-end">
             <template v-for="feature in features">

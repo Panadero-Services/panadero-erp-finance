@@ -297,21 +297,201 @@ class BusinessServiceSeeder extends Seeder
                 'progress' => 90,
                 'path' => '/shared/'
             ],
-            [
-                'item' => 'Finance',
-                'title' => 'ERP Finance',
-                'description' => 'This service handles the ERP Finance function',
-                'color' => 'teal',
-                'version' => 'v1.0.00',
-                'icon' => 'EcommerceIcon',
-                'options' => [
-                    ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
-                    ['name' => 'Finance', 'url' => '/erp/finance', 'route' => 'erp.finance']
-                ],
-                'status' => 'ready',
-                'progress' => 90,
-                'path' => '/erp/'
-            ]
+
+
+// ERP FUNCTIONS TOP 10
+    [
+        'item' => 'Finance',
+        'title' => 'ERP Finance',
+        'description' => 'Comprehensive financial management system with accounting, budgeting, and reporting',
+        'color' => 'teal',
+        'version' => 'v1.0.00',
+        'icon' => 'EcommerceIcon',
+        'options' => [
+            ['name' => 'Finance', 'url' => '/erp/finance', 'route' => 'erp.finance'],
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home/dashboard'],
+            ['name' => 'General Ledger', 'url' => '/erp/finance', 'route' => 'erp.finance', 'tab' => 'general-ledger'],
+            ['name' => 'Accounts Payable', 'url' => '/erp/finance', 'route' => 'erp.finance', 'tab' => 'accounts-payable'],
+            ['name' => 'Accounts Receivable', 'url' => '/erp/finance', 'route' => 'erp.finance', 'tab' => 'accounts-receivable'],
+            ['name' => 'Cash Flow', 'url' => '/erp/finance', 'route' => 'erp.finance', 'tab' => 'cash-flow'],
+            ['name' => 'Budgeting', 'url' => '/erp/finance', 'route' => 'erp.finance', 'tab' => 'budgeting'],
+            ['name' => 'Reporting', 'url' => '/erp/finance', 'route' => 'erp.finance', 'tab' => 'reporting']
+        ],
+        'status' => 'ready',
+        'progress' => 50,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Inventry',
+        'title' => 'ERP Inventory',
+        'description' => 'Complete inventory management with stock tracking, warehousing, and supply chain',
+        'color' => 'blue',
+        'version' => 'v1.0.00',
+        'icon' => 'CubeIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Stock Management', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'stock'],
+            ['name' => 'Warehouse Management', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'warehouse'],
+            ['name' => 'Purchase Orders', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'purchase-orders'],
+            ['name' => 'Supplier Management', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'suppliers'],
+            ['name' => 'Inventory Reports', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'reports']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Sales',
+        'title' => 'ERP Sales',
+        'description' => 'Sales management system with CRM, order processing, and customer analytics',
+        'color' => 'green',
+        'version' => 'v1.0.00',
+        'icon' => 'ShoppingCartIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Customer Management', 'url' => '/erp/sales', 'route' => 'erp.sales', 'tab' => 'customers'],
+            ['name' => 'Sales Orders', 'url' => '/erp/sales', 'route' => 'erp.sales', 'tab' => 'orders'],
+            ['name' => 'Quotations', 'url' => '/erp/sales', 'route' => 'erp.sales', 'tab' => 'quotations'],
+            ['name' => 'Sales Analytics', 'url' => '/erp/sales', 'route' => 'erp.sales', 'tab' => 'analytics'],
+            ['name' => 'Commission Tracking', 'url' => '/erp/sales', 'route' => 'erp.sales', 'tab' => 'commissions']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'HR',
+        'title' => 'ERP HR',
+        'description' => 'Human resources management with employee records, payroll, and performance tracking',
+        'color' => 'purple',
+        'version' => 'v1.0.00',
+        'icon' => 'UsersIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Employee Records', 'url' => '/erp/hr', 'route' => 'erp.hr', 'tab' => 'employees'],
+            ['name' => 'Payroll Management', 'url' => '/erp/hr', 'route' => 'erp.hr', 'tab' => 'payroll'],
+            ['name' => 'Time & Attendance', 'url' => '/erp/hr', 'route' => 'erp.hr', 'tab' => 'attendance'],
+            ['name' => 'Performance Reviews', 'url' => '/erp/hr', 'route' => 'erp.hr', 'tab' => 'performance'],
+            ['name' => 'Training & Development', 'url' => '/erp/hr', 'route' => 'erp.hr', 'tab' => 'training']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Manufact',
+        'title' => 'ERP Manufacturing',
+        'description' => 'Production planning, quality control, and manufacturing execution system',
+        'color' => 'blue',
+        'version' => 'v1.0.00',
+        'icon' => 'CogIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Production Planning', 'url' => '/erp/manufacturing', 'route' => 'erp.manufacturing', 'tab' => 'planning'],
+            ['name' => 'Work Orders', 'url' => '/erp/manufacturing', 'route' => 'erp.manufacturing', 'tab' => 'work-orders'],
+            ['name' => 'Quality Control', 'url' => '/erp/manufacturing', 'route' => 'erp.manufacturing', 'tab' => 'quality'],
+            ['name' => 'Equipment Maintenance', 'url' => '/erp/manufacturing', 'route' => 'erp.manufacturing', 'tab' => 'maintenance'],
+            ['name' => 'Production Reports', 'url' => '/erp/manufacturing', 'route' => 'erp.manufacturing', 'tab' => 'reports']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Procure',
+        'title' => 'ERP Procurement',
+        'description' => 'Strategic sourcing, vendor management, and procurement automation',
+        'color' => 'indigo',
+        'version' => 'v1.0.00',
+        'icon' => 'ClipboardDocumentListIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Vendor Management', 'url' => '/erp/procurement', 'route' => 'erp.procurement', 'tab' => 'vendors'],
+            ['name' => 'Purchase Requisitions', 'url' => '/erp/procurement', 'route' => 'erp.procurement', 'tab' => 'requisitions'],
+            ['name' => 'Contract Management', 'url' => '/erp/procurement', 'route' => 'erp.procurement', 'tab' => 'contracts'],
+            ['name' => 'Supplier Evaluation', 'url' => '/erp/procurement', 'route' => 'erp.procurement', 'tab' => 'evaluation'],
+            ['name' => 'Cost Analysis', 'url' => '/erp/procurement', 'route' => 'erp.procurement', 'tab' => 'cost-analysis']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Projects',
+        'title' => 'ERP Projects',
+        'description' => 'Project planning, resource allocation, and project financial management',
+        'color' => 'pink',
+        'version' => 'v1.0.00',
+        'icon' => 'FolderIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Project Planning', 'url' => '/erp/projects', 'route' => 'erp.projects', 'tab' => 'planning'],
+            ['name' => 'Resource Allocation', 'url' => '/erp/projects', 'route' => 'erp.projects', 'tab' => 'resources'],
+            ['name' => 'Task Management', 'url' => '/erp/projects', 'route' => 'erp.projects', 'tab' => 'tasks'],
+            ['name' => 'Project Financials', 'url' => '/erp/projects', 'route' => 'erp.projects', 'tab' => 'financials'],
+            ['name' => 'Project Reports', 'url' => '/erp/projects', 'route' => 'erp.projects', 'tab' => 'reports']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Customer',
+        'title' => 'ERP Customer Service',
+        'description' => 'Customer support, ticket management, and service level monitoring',
+        'color' => 'yellow',
+        'version' => 'v1.0.00',
+        'icon' => 'QuestionMarkCircleIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Ticket Management', 'url' => '/erp/customer-service', 'route' => 'erp.customer-service', 'tab' => 'tickets'],
+            ['name' => 'Customer Support', 'url' => '/erp/customer-service', 'route' => 'erp.customer-service', 'tab' => 'support'],
+            ['name' => 'Knowledge Base', 'url' => '/erp/customer-service', 'route' => 'erp.customer-service', 'tab' => 'knowledge'],
+            ['name' => 'Service Level Monitoring', 'url' => '/erp/customer-service', 'route' => 'erp.customer-service', 'tab' => 'sla'],
+            ['name' => 'Customer Analytics', 'url' => '/erp/customer-service', 'route' => 'erp.customer-service', 'tab' => 'analytics']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Analytics',
+        'title' => 'ERP Analytics',
+        'description' => 'Business intelligence, reporting, and data visualization across all modules',
+        'color' => 'red',
+        'version' => 'v1.0.00',
+        'icon' => 'ChartBarIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Business Intelligence', 'url' => '/erp/analytics', 'route' => 'erp.analytics', 'tab' => 'bi'],
+            ['name' => 'Financial Reports', 'url' => '/erp/analytics', 'route' => 'erp.analytics', 'tab' => 'financial-reports'],
+            ['name' => 'Operational Reports', 'url' => '/erp/analytics', 'route' => 'erp.analytics', 'tab' => 'operational'],
+            ['name' => 'Data Visualization', 'url' => '/erp/analytics', 'route' => 'erp.analytics', 'tab' => 'visualization'],
+            ['name' => 'Custom Dashboards', 'url' => '/erp/analytics', 'route' => 'erp.analytics', 'tab' => 'dashboards']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ],
+    [
+        'item' => 'Complianc',
+        'title' => 'ERP Compliance',
+        'description' => 'Regulatory compliance, audit trails, and governance management',
+        'color' => 'gray',
+        'version' => 'v1.0.00',
+        'icon' => 'ShieldCheckIcon',
+        'options' => [
+            ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
+            ['name' => 'Regulatory Compliance', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'regulatory'],
+            ['name' => 'Audit Trails', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'audit'],
+            ['name' => 'Risk Management', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'risk'],
+            ['name' => 'Policy Management', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'policies'],
+            ['name' => 'Compliance Reports', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'reports']
+        ],
+        'status' => 'ready',
+        'progress' => 5,
+        'path' => '/erp/'
+    ]
 
         ];
 

@@ -122,6 +122,22 @@ class FeatureSeeder extends Seeder
                 'status' => 'featured',
                 'progress' => 100,
                 'is_active' => true
+            ],
+            [
+                'item' => 'Workflow',
+                'title' => 'Workflow feature',
+                'description' => 'Streamline business processes with automated workflows, approvals, and tracking.',
+                'color' => 'red',
+                'version' => '1.0',
+                'icon' => 'ProjectIcon',
+                'options' => json_encode([
+                    ['name' => 'Dashboard', 'url' => '/features/workflow', 'route' => '/features/workflow'] 
+                ]),
+                'links' => json_encode([]),
+                'path' => '/features/workflow',
+                'status' => 'featured',
+                'progress' => 100,
+                'is_active' => true
             ]
         ];
 

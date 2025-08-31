@@ -1,21 +1,20 @@
 <!--
   Workflow Stepper Component
-  @version 1.0.10
-  @description Dynamic vertical stepper for workflow steps with 5 step types
+  @version 1.1.0
+  @description Dynamic vertical stepper for workflow steps with ACTUAL step status checking
+  @fixed Use real step.status instead of assuming steps before current are completed
 -->
 <script setup>
 import { computed } from 'vue'
-import { useWorkflowStore } from '../composables/workflowStore.js'
 import { useWorkflowSettings } from '../composables/useWorkflowSettings.js'
 
 // Store
-const workflowStore = useWorkflowStore()
 const settings = useWorkflowSettings()
 
-// Dynamic font sizes (same as Statistics.vue, Dashboard.vue, and Modal.vue)
-const _caption = computed(() => { return `${settings.fontSizesComputed.value.caption}px`; });
-const _value = computed(() => { return `${settings.fontSizesComputed.value.h4}px`; });
-const _padding = computed(() => { return `${settings.fontSizesComputed.value.h4/2}px`; });
+// Dynamic font sizes
+const _caption = computed(() => `${settings.fontSizesComputed.value.caption}px`)
+const _value = computed(() => `${settings.fontSizesComputed.value.h4}px`)
+const _padding = computed(() => `${settings.fontSizesComputed.value.h4/2}px`)
 
 // Props
 const props = defineProps({
@@ -38,8 +37,15 @@ function handleStepClick(stepIndex) {
 }
 
 function getStepStatus(stepIndex) {
-  if (stepIndex < props.currentStep) return 'completed'
-  if (stepIndex === props.currentStep) return 'active'
+  const step = props.steps[stepIndex]
+  if (!step) return 'pending'
+  
+  // Use ACTUAL step status from the workflow data
+  if (step.status === 'completed' || step.status === 'approved') return 'completed'
+  if (step.status === 'active' || stepIndex === props.currentStep) return 'active'
+  if (step.status === 'requires_approval') return 'approval'
+  if (step.status === 'failed') return 'failed'
+  
   return 'pending'
 }
 
@@ -49,162 +55,95 @@ function getStepClasses(stepIndex) {
   
   switch (status) {
     case 'completed':
-      return `${baseClasses} bg-green-50 dark:bg-green-900/20 border border-gray-300 dark:border-gray-600 hover:bg-green-100 dark:hover:bg-green-900/30`
+      return `${baseClasses} bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30`
     case 'active':
-      return `${baseClasses} bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-600 dark:border-blue-400`
-    default:
+      return `${baseClasses} bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900/30`
+    case 'approval':
+      return `${baseClasses} bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 hover:bg-yellow-100 dark:hover:bg-yellow-900/30`
+    case 'failed':
+      return `${baseClasses} bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-900/30`
+    default: // pending
       return `${baseClasses} bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700`
   }
 }
 
-function getStepNumberClasses(stepIndex) {
+function getStepIconClasses(stepIndex) {
   const status = getStepStatus(stepIndex)
-  const baseClasses = 'flex items-center justify-center w-8 h-8 rounded-full font-semibold transition-all duration-200'
   
   switch (status) {
     case 'completed':
-      return `${baseClasses} bg-green-600 text-white`
+      return 'w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center'
     case 'active':
-      return `${baseClasses} bg-blue-600 text-white`
-    default:
-      return `${baseClasses} bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300`
-  }
-}
-
-function getStepTextClasses(stepIndex) {
-  const status = getStepStatus(stepIndex)
-  const baseClasses = 'font-medium transition-all duration-200'
-  
-  switch (status) {
-    case 'completed':
-      return `${baseClasses} text-green-800 dark:text-green-200`
-    case 'active':
-      return `${baseClasses} text-blue-800 dark:text-blue-200`
-    default:
-      return `${baseClasses} text-gray-700 dark:text-gray-300`
-  }
-}
-
-function getStepDescriptionClasses(stepIndex) {
-  const status = getStepStatus(stepIndex)
-  const baseClasses = 'transition-all duration-200'
-  
-  switch (status) {
-    case 'completed':
-      return `${baseClasses} text-green-600 dark:text-green-400`
-    case 'active':
-      return `${baseClasses} text-blue-600 dark:text-blue-400`
-    default:
-      return `${baseClasses} text-gray-500 dark:text-gray-400`
-  }
-}
-
-function getStepTypeInfo(stepType) {
-  switch (stepType) {
-    case 'user_actions':
-      return { icon: 'fas fa-mouse-pointer', color: 'text-purple-600' }
-    case 'form_submission':
-      return { icon: 'fas fa-edit', color: 'text-blue-600' }
+      return 'w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center'
     case 'approval':
-      return { icon: 'fas fa-user-check', color: 'text-orange-600' }
-    case 'shared_entity_selection':
-      return { icon: 'fas fa-database', color: 'text-green-600' }
-    case 'checklist':
-      return { icon: 'fas fa-tasks', color: 'text-indigo-600' }
-    default:
-      return { icon: 'fas fa-circle', color: 'text-gray-600' }
+      return 'w-8 h-8 bg-yellow-500 text-white rounded-full flex items-center justify-center'
+    case 'failed':
+      return 'w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center'
+    default: // pending
+      return 'w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full flex items-center justify-center'
   }
 }
 
-// Format step type for display
-function formatStepType(type) {
-  return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+function getStepIcon(stepIndex) {
+  const status = getStepStatus(stepIndex)
+  
+  switch (status) {
+    case 'completed': return 'fas fa-check'
+    case 'active': return 'fas fa-play'
+    case 'approval': return 'fas fa-clock'
+    case 'failed': return 'fas fa-times'
+    default: return stepIndex + 1 // Show step number for pending
+  }
 }
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div v-for="(step, index) in props.steps" 
-         :key="step.id" 
-         @click="handleStepClick(index)"
-         :class="[
-           'p-3 rounded-lg cursor-pointer transition-colors relative group',
-           getStepClasses(index)
-         ]">
+  <div class="space-y-2">
+    <div 
+      v-for="(step, index) in steps" 
+      :key="step.id || index"
+      :class="getStepClasses(index)"
+      @click="handleStepClick(index)"
+    >
+      <!-- Step Icon -->
+      <div :class="getStepIconClasses(index)">
+        <i v-if="getStepStatus(index) !== 'pending'" :class="getStepIcon(index)" class="text-sm"></i>
+        <span v-else :style="{ fontSize: _caption }" class="font-medium">{{ index + 1 }}</span>
+      </div>
       
-      <div class="flex items-center justify-between mb-2">
-        <div class="flex items-center space-x-3">
-          <div :class="[
-            'w-6 h-6 rounded-full flex items-center justify-center font-medium',
-            getStepNumberClasses(index)
-          ]"
-                        :style="{ fontSize: _caption, padding: _padding }">
-            {{ step.order || index + 1 }}
-          </div>
-          <span :style="{ fontSize: _caption }" 
-                :class="['font-medium', getStepTextClasses(index)]">
-            {{ step.name }}
+      <!-- Step Content -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between">
+          <h4 :style="{ fontSize: _value }" class="font-medium text-gray-900 dark:text-white">
+            {{ step.name || `Step ${index + 1}` }}
+          </h4>
+          <span 
+            v-if="getStepStatus(index) !== 'pending'" 
+            :style="{ fontSize: _caption }" 
+            class="text-xs font-medium uppercase tracking-wide"
+            :class="{
+              'text-green-600 dark:text-green-400': getStepStatus(index) === 'completed',
+              'text-blue-600 dark:text-blue-400': getStepStatus(index) === 'active',
+              'text-yellow-600 dark:text-yellow-400': getStepStatus(index) === 'approval',
+              'text-red-600 dark:text-red-400': getStepStatus(index) === 'failed'
+            }"
+          >
+            {{ getStepStatus(index) }}
           </span>
         </div>
         
-        <!-- Active Step Badge -->
-        <span v-if="getStepStatus(index) === 'active'" 
-              :style="{ fontSize: _caption }" 
-              class="px-2 py-1 font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
-        </span>
+        <p v-if="step.description" :style="{ fontSize: _caption }" class="text-gray-600 dark:text-gray-400 mt-1">
+          {{ step.description }}
+        </p>
+        
+        <div v-if="step.type" :style="{ fontSize: _caption }" class="text-gray-500 dark:text-gray-500 mt-1">
+          {{ step.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
+        </div>
       </div>
-      
-      <!-- Step Description -->
-      <p :style="{ fontSize: _caption }" 
-         :class="getStepDescriptionClasses(index)">
-        {{ step.description }}
-      </p>
-      
-      <!-- Step Type with Icon -->
-      <div class="flex items-center mt-2 space-x-2">
-        <i :class="[getStepTypeInfo(step.type).icon, getStepTypeInfo(step.type).color]" 
-           :style="{ fontSize: _caption }"></i>
-        <span :style="{ fontSize: _caption }" 
-              :class="getStepDescriptionClasses(index)">
-          {{ formatStepType(step.type) }}
-        </span>
-        <span v-if="step.estimatedDuration" 
-              :style="{ fontSize: _caption }" 
-              :class="getStepDescriptionClasses(index)">
-          • {{ step.estimatedDuration }}
-        </span>
-        <span v-if="step.approvalRequired" 
-              :style="{ fontSize: _caption }" 
-              :class="['text-orange-600', getStepDescriptionClasses(index)]">
-          • Requires Approval
-        </span>
-      </div>
-      
-      <!-- Completion Status for completed steps -->
-      <p v-if="getStepStatus(index) === 'completed'" 
-         :style="{ fontSize: _caption }" 
-         class="text-green-600 dark:text-green-400 mt-2">
-        <i class="fas fa-check mr-1 "></i>
-        Completed
-      </p>
-      
-      <!-- Hover Tooltip -->
-      <div class="absolute left-full ml-2 top-0 bg-black text-white rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-50 whitespace-nowrap"
-           :style="{ fontSize: _caption }">
-        {{ step.description }}
-        <span v-if="step.estimatedDuration"> (~{{ step.estimatedDuration }})</span>
-        <span v-if="step.approverRoles && step.approverRoles.length > 0">
-          , {{ step.approverRoles.join(', ') }}
-        </span>
-      </div>
-    </div>
-    
-    <!-- No Steps Available -->
-    <div v-if="props.steps.length === 0" class="text-center py-8">
-      <i class="fas fa-list-ol text-gray-400 text-2xl mb-2"></i>
-      <p :style="{ fontSize: _caption }" class="text-gray-500 dark:text-gray-400">
-        No workflow steps available
-      </p>
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Pure Tailwind CSS - no custom styles needed */
+</style>

@@ -1,7 +1,44 @@
 <script setup>
 import { ref, computed } from 'vue';
 import ApplicationLogo from '@/components/logoSelf.vue';
-import { EnvelopeIcon, ArrowPathIcon, CloudArrowUpIcon, FingerPrintIcon, Bars3Icon, LockClosedIcon, WalletIcon, NewspaperIcon, RectangleGroupIcon, PencilSquareIcon, BarsArrowUpIcon, BuildingOfficeIcon, ClipboardDocumentCheckIcon, CubeTransparentIcon, CreditCardIcon, RocketLaunchIcon, LanguageIcon, DevicePhoneMobileIcon, TruckIcon, PuzzlePieceIcon, EllipsisVerticalIcon } from '@heroicons/vue/24/outline';
+
+import { 
+    EnvelopeIcon, 
+    ArrowPathIcon, 
+    CloudArrowUpIcon, 
+    FingerPrintIcon, 
+    Bars3Icon, 
+    LockClosedIcon, 
+    WalletIcon, 
+    NewspaperIcon, 
+    RectangleGroupIcon, 
+    PencilSquareIcon, 
+    BarsArrowUpIcon, 
+    BuildingOfficeIcon, 
+    ClipboardDocumentCheckIcon, 
+    CubeTransparentIcon, 
+    CreditCardIcon, 
+    RocketLaunchIcon, 
+    LanguageIcon, 
+    DevicePhoneMobileIcon, 
+    TruckIcon, 
+    PuzzlePieceIcon, 
+    EllipsisVerticalIcon,
+    
+
+
+    ClipboardDocumentListIcon,  // Instead of ClipboardListIcon
+    CubeIcon,                   // Instead of PackageIcon
+    QuestionMarkCircleIcon,     // Instead of SupportIcon
+    
+    // Add these missing ERP module icons
+    ShoppingCartIcon,
+    UsersIcon,
+    CogIcon,
+    FolderIcon,
+    ChartBarIcon,
+    ShieldCheckIcon
+} from '@heroicons/vue/24/outline';
 
 import { usePage, Link, router } from '@inertiajs/vue3';
 import NavLink from '@/components/NavLink.vue';
@@ -116,6 +153,17 @@ const _color = computed(()=> {
                           <Bars3Icon v-if="'Bars3Icon'==f.icon" :class="_feature" aria-hidden="true" />                     
                           <LockClosedIcon v-if="'LockClosedIcon'==f.icon" :class="_feature" aria-hidden="true" />
                           <WalletIcon v-if="'WalletIcon'==f.icon" :class="_feature" aria-hidden="true" />
+            <!-- Add these missing ERP module icons -->
+<CubeIcon v-if="'CubeIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<ShoppingCartIcon v-if="'ShoppingCartIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<UsersIcon v-if="'UsersIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<CogIcon v-if="'CogIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<ClipboardDocumentListIcon v-if="'ClipboardDocumentListIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<FolderIcon v-if="'FolderIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<QuestionMarkCircleIcon v-if="'QuestionMarkCircleIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<ChartBarIcon v-if="'ChartBarIcon'==f.icon" :class="_feature" aria-hidden="true" />
+<ShieldCheckIcon v-if="'ShieldCheckIcon'==f.icon" :class="_feature" aria-hidden="true" />
+
                 <p class="mt-2 text-center text-xxxs col-span-3 text-gray-600 dark:text-white ">{{ f.version }}</p>
                     </div>
             <div class="col-span-3 mt-3">

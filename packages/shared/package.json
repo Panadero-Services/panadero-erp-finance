@@ -1,0 +1,12 @@
+{
+  "name": "panadero-shared",
+  "version": "1.0.0",
+  "description": "Shared configuration for Panadero packages",
+  "main": "config/panadero-packages-config.json",
+  "type": "module",
+  "files": [
+    "config/"
+  ],
+  "keywords": ["panadero", "config", "framework"],
+  "license": "MIT"
+}

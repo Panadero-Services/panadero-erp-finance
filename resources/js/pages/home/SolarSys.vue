@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import SolarSysGame, { 
-    GameServerSelector, 
-    MasterGameServerPanel, 
-    useMasterGameServerStore,
-    SystemSettingsPanel // Add this import
-} from 'panadero-solarsysinvaders';
+// import SolarSysGame, { 
+//     GameServerSelector, 
+//     MasterGameServerPanel, 
+//     useMasterGameServerStore,
+//     SystemSettingsPanel // Add this import
+// } from 'panadero-solarsysinvaders';
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useContractStore } from '@/stores/contracts';
@@ -25,7 +25,7 @@ console.debug('Environment variables:', {
 
 const settingsStore = useSettingsStore();
 const contractStore = useContractStore();
-const masterGameServerStore = useMasterGameServerStore();
+// const masterGameServerStore = useMasterGameServerStore();
 const mounted = ref(false);
 
 // Add ref for game instance
@@ -82,35 +82,33 @@ defineProps({
         <template #default>
             <div class="game-page">
                 <!-- Server Selector -->
-                <div class="server-selector-container">
+                <!-- <div class="server-selector-container">
                     <GameServerSelector 
                         :currentServer="gameServerUrl"
                         @server-changed="handleServerChange"
                     />
                 </div>
 
-                <!-- Master Game Server Panel -->
                 <div class="master-server-panel-container">
                     <MasterGameServerPanel />
                 </div>
 
-                <!-- System Settings Panel -->
                 <div class="settings-panel-container">
                     <SystemSettingsPanel 
                         @settings-changed="handleSettingsChanged"
                     />
-                </div>
+                </div> -->
 
                 <div v-if="!mounted" class="loading">
                     Loading game...
                 </div>
                 <div v-else class="game-wrapper">
-                    <SolarSysGame 
+                    <!-- <SolarSysGame 
                         ref="gameInstance"
                         :multiplayer="true"
                         :serverUrl="gameServerUrl"
                         :self="settingsStore.self || 'nope'"  
-                    />
+                    --> Game temporarily disabled
                 </div>
             </div>
         </template>

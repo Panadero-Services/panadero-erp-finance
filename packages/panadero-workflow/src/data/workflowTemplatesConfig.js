@@ -23,25 +23,25 @@ const BASIC_TEMPLATES = [
   { name: 'Financial Statements', id: 'report-financial-statements', steps: 3, avgTime: '1-2 weeks', category: 'reporting', complexity: 'high', description: 'Prepare and review monthly financial statements' }
 ];
 
-// ===== STEP DEFINITIONS (Lazy loaded when needed) =====
-const STEP_DEFINITIONS = {
-  'vendor-onboarding': () => import('.//steps/vendorOnboardingSteps.js'),
-  'employee-onboarding': () => import('./steps/employeeOnboardingSteps.js'),
-  'purchase-request': () => import('./steps/purchaseRequestSteps.js'),
-  'contract-renewal': () => import('./steps/contractRenewalSteps.js'),
-  'gl-journal-entry-simple': () => import('./steps/journalEntrySteps.js'),
-  'ap-vendor-invoice-approval': () => import('./steps/invoiceApprovalSteps.js'),
-  'ar-customer-invoice-creation': () => import('./steps/customerInvoiceSteps.js'),
-  'cf-cash-forecast-approval': () => import('./steps/cashFlowSteps.js'),
-  'budget-department-budget-approval': () => import('./steps/budgetApprovalSteps.js'),
-  'fa-asset-acquisition-approval': () => import('./steps/assetAcquisitionSteps.js'),
-  'tax-quarterly-filing-preparation': () => import('./steps/taxFilingSteps.js'),
-  'compliance-monthly-reconciliation': () => import('./steps/reconciliationSteps.js'),
-  'report-financial-statements': () => import('./steps/financialStatementsSteps.js')
+// ===== WORKFLOW DEFINITIONS (Lazy loaded when needed) =====
+const WORKFLOW_DEFINITIONS = {
+  'vendor-onboarding': () => import('./workflows/VendorOnboardingWorkflow.js'),
+  'employee-onboarding': () => import('./workflows/employeeOnboardingSteps.js'),
+  'purchase-request': () => import('./workflows/purchaseRequestSteps.js'),
+  'contract-renewal': () => import('./workflows/contractRenewalSteps.js'),
+  'gl-journal-entry-simple': () => import('./workflows/journalEntrySteps.js'),
+  'ap-vendor-invoice-approval': () => import('./workflows/invoiceApprovalSteps.js'),
+  'ar-customer-invoice-creation': () => import('./workflows/customerInvoiceSteps.js'),
+  'cf-cash-forecast-approval': () => import('./workflows/cashFlowSteps.js'),
+  'budget-department-budget-approval': () => import('./workflows/budgetApprovalSteps.js'),
+  'fa-asset-acquisition-approval': () => import('./workflows/assetAcquisitionSteps.js'),
+  'tax-quarterly-filing-preparation': () => import('./workflows/taxFilingSteps.js'),
+  'compliance-monthly-reconciliation': () => import('./workflows/reconciliationSteps.js'),
+  'report-financial-statements': () => import('./workflows/financialStatementsSteps.js')
 };
 
-// ===== ENHANCED TEMPLATES WITH STEP LOADING =====
-function enhanceTemplateWithSteps(template) {
+// ===== ENHANCED TEMPLATES WITH WORKFLOW LOADING =====
+function enhanceTemplateWithWorkflows(template) {
   return {
     ...template,
     estimated_duration: template.avgTime,
@@ -49,14 +49,14 @@ function enhanceTemplateWithSteps(template) {
     module: template.category.split('_')[0],
     version: '1.0.8',
     
-    // Lazy load detailed steps when needed
+    // Lazy load detailed workflows when needed
     async getSteps() {
-      if (STEP_DEFINITIONS[template.id]) {
+      if (WORKFLOW_DEFINITIONS[template.id]) {
         try {
-          const stepModule = await STEP_DEFINITIONS[template.id]();
-          return stepModule.default || stepModule.steps;
+          const workflowModule = await WORKFLOW_DEFINITIONS[template.id]();
+          return workflowModule.default || workflowModule.steps;
         } catch (error) {
-          console.warn(`Failed to load steps for ${template.id}:`, error);
+          console.warn(`Failed to load workflow for ${template.id}:`, error);
           return [];
         }
       }
@@ -81,37 +81,29 @@ export const WORKFLOW_CATEGORIES = {
   reporting: 'Reporting'
 };
 
-// ===== STEPTYPE =====
-export const WORKFLOW_STEPTYPES = {
- 'shared_entity_selection', 
- 'form_submission', 
- 'approval', 
- 'checklist', 
- 'agent', 
- 'system',
- 'submit_database' 
-}
-
-
-
-
-
-
+// ===== WORKFLOW STEP TYPES =====
+export const WORKFLOW_STEPTYPES = [
+  'shared_entity_selection', 
+  'form_submission', 
+  'approval', 
+  'checklist', 
+  'submit_database' 
+];
 
 // ===== UTILITY FUNCTIONS =====
 export function getAllWorkflowTemplates() {
-  return BASIC_TEMPLATES.map(enhanceTemplateWithSteps);
+  return BASIC_TEMPLATES.map(enhanceTemplateWithWorkflows);
 }
 
 export function getWorkflowTemplateById(id) {
   const template = BASIC_TEMPLATES.find(t => t.id === id);
-  return template ? enhanceTemplateWithSteps(template) : null;
+  return template ? enhanceTemplateWithWorkflows(template) : null;
 }
 
 export function getWorkflowsByCategory(category) {
   return BASIC_TEMPLATES
     .filter(t => t.category === category)
-    .map(enhanceTemplateWithSteps);
+    .map(enhanceTemplateWithWorkflows);
 }
 
 export default getAllWorkflowTemplates();
