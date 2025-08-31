@@ -1,6 +1,6 @@
 // ERP Finance Module - Main Entry Point
-export { default as Finance } from './src/components/Finance.vue';
-export { default as FinanceSettingsPanel } from './src/components/FinanceSettingsPanel.vue';
+export { default as FinanceWrapper } from './src/FinanceWrapper.vue';
+export { default as FinanceSettingsPanel } from './src/FinanceSettingsPanel.vue';
 export { default as StatusBadge } from './src/components/ui/StatusBadge.vue';
 export { default as ScaledIcon } from './src/components/ui/ScaledIcon.vue';
 export { default as FinanceToggle } from './src/components/ui/FinanceToggle.vue';
@@ -32,9 +32,13 @@ export {
   WorkflowStepper,
   WorkflowInfo,
   WorkflowStatistics,
-  WorkflowDetailModal,
   ActiveWorkflowCard,
   WorkflowTemplate,
+  WorkflowApproval,
+  WorkflowChecklist,
+  WorkflowEntitySelection,
+  WorkflowDatabaseSubmit,
+  ModalContentWrapper,
   useWorkflowStore
 } from './src/packages/panadero-workflow/index.js';
 

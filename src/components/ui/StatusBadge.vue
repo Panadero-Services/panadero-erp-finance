@@ -1,16 +1,6 @@
-<template>
-  <span 
-    :style="[store.scalingStyles.textFontSize, store.scalingStyles.borderRadius]" 
-    :class="`${getStatusClasses(status, variant)} px-2 py-1 rounded font-medium`"
-  >
-    {{ status }}
-  </span>
-</template>
-
 <script setup>
-import { useFinanceStore } from '../../stores/financeStore';
-
-const store = useFinanceStore();
+import { useScaling } from '../../../../shared/composables/useScaling.js'
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 const props = defineProps({
   status: {
@@ -88,3 +78,11 @@ const getStatusClasses = (status, variant) => {
   return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
 };
 </script>
+<template>
+  <span 
+    :style="[scalingStyles.textFontSize, scalingStyles.borderRadius]" 
+    :class="`${getStatusClasses(status, variant)} px-2 py-1 rounded font-medium`"
+  >
+    {{ status }}
+  </span>
+</template>

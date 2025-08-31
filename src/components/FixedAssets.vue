@@ -2,15 +2,13 @@
 import { ref, onMounted } from 'vue';
 import { useFixedAssets } from '../composables/useFixedAssets';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
-import { useFinanceStore } from '../stores/financeStore';
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
+import { useScaling } from '../../../shared/composables/useScaling.js'
 
-const store = useFinanceStore();
-
-// Remove all computed styles - use store directly
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Filters state
 const filters = ref({
@@ -94,8 +92,8 @@ function deleteAsset(assetId) {
 <template>
   <div class="fixed-assets dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Fixed Assets</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="scalingStyles.titleFontSize" class="font-semibold dark:text-white">Fixed Assets</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <FinanceDropdown
@@ -118,7 +116,7 @@ function deleteAsset(assetId) {
           />
         </div>
         <!-- Buttons -->
-        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <div :style="scalingStyles.buttonGap" class="flex items-center">
           <FinanceButton
             @click="handleNewAsset"
             variant="primary"
@@ -148,7 +146,7 @@ function deleteAsset(assetId) {
     </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <FinanceValueCard title="Total Assets" :value="totalAssets" rows="2-row" format="currency" color="neutral" icon="fas fa-building" />
 
       <FinanceValueCard title="Total Depreciation" :value="totalDepreciation" rows="2-row" format="currency" color="warning" icon="fas fa-chart-line-down" />
@@ -157,50 +155,50 @@ function deleteAsset(assetId) {
     </div>
 
     <!-- Assets Table -->
-    <div :style="store.scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
-      <div :style="store.scalingStyles.cardPadding" class="border-b dark:border-gray-700">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Assets List</h3>
+    <div :style="scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
+      <div :style="scalingStyles.cardPadding" class="border-b dark:border-gray-700">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Assets List</h3>
       </div>
       <div class="overflow-x-auto">
-        <table :style="store.scalingStyles.borderRadius" class="w-full border-collapse">
+        <table :style="scalingStyles.borderRadius" class="w-full border-collapse">
         <thead>
             <tr class="bg-gray-50 dark:bg-gray-700">
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Asset Name</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Category</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Cost</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Acquired</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Depreciation</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Net Value</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Asset Name</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Category</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Cost</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Acquired</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Depreciation</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Net Value</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
-            <tr v-for="asset in filteredAssets" :key="asset.id" class="dark:text-gray-100 dark:border-gray-600" :style="store.scalingStyles.tableRowHeight">
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ asset.name }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ asset.category }}</td>
-              <td :style="store.scalingStyles.paddingScale" class="border dark:border-gray-600">
+            <tr v-for="asset in filteredAssets" :key="asset.id" class="dark:text-gray-100 dark:border-gray-600" :style="scalingStyles.tableRowHeight">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ asset.name }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ asset.category }}</td>
+              <td :style="scalingStyles.paddingScale" class="border dark:border-gray-600">
                 <StatusBadge :status="asset.status" />
               </td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(asset.cost) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(asset.acquired_at) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(asset.accumulated_depreciation) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(asset.cost - asset.accumulated_depreciation) }}</td>
-              <td :style="store.scalingStyles.paddingScale" class="border dark:border-gray-600">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(asset.cost) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(asset.acquired_at) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(asset.accumulated_depreciation) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(asset.cost - asset.accumulated_depreciation) }}</td>
+              <td :style="scalingStyles.paddingScale" class="border dark:border-gray-600">
                 <div class="flex gap-2">
                   <button 
                     @click="editAsset(asset)" 
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     title="Edit Asset"
                   >
-                    <i class="fas fa-edit" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-edit" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="deleteAsset(asset.id)" 
                     class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     title="Delete Asset"
                   >
-                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-trash" :style="scalingStyles.iconSize"></i>
                   </button>
                 </div>
               </td>

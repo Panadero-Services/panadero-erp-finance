@@ -1,0 +1,152 @@
+{
+    "packageInfo": {
+      "displayName": "ERP Finance Module",
+      "type": "erp-finance",
+      "description": "Comprehensive financial management system with complete workflow management, 4-column modal interface, and 7 documented workflow step types."
+    },
+    "store": {
+      "name": "useFinanceStore",
+      "path": "./src/stores/financeStore"
+    },
+    "tables": [
+      {
+        "name": "finance_accounts",
+        "displayName": "Accounts",
+        "storeProperty": "accountBalances",
+        "isObject": true,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#general-ledger"
+      },
+      {
+        "name": "finance_journal_entries",
+        "displayName": "Journal Entries",
+        "storeProperty": "journalEntries",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#general-ledger"
+      },
+      {
+        "name": "finance_payables",
+        "displayName": "Payables",
+        "storeProperty": "payables",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#accounts-payable"
+      },
+      {
+        "name": "finance_receivables",
+        "displayName": "Receivables",
+        "storeProperty": "receivables",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#accounts-receivable"
+      },
+      {
+        "name": "finance_tax_records",
+        "displayName": "Tax Records",
+        "storeProperty": "taxRecords",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#tax-management"
+      },
+      {
+        "name": "finance_cashflow_transactions",
+        "displayName": "Cash Flow Transactions",
+        "storeProperty": "cashFlowTransactions",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#cash-flow"
+      },
+      {
+        "name": "finance_fixed_assets",
+        "displayName": "Fixed Assets",
+        "storeProperty": "fixedAssets",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#fixed-assets"
+      },
+      {
+        "name": "finance_budgets",
+        "displayName": "Budgets",
+        "storeProperty": "budgets",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#budgeting"
+      },
+      {
+        "name": "finance_audit_logs",
+        "displayName": "Audit Logs",
+        "storeProperty": "auditLogs",
+        "isObject": false,
+        "timestampFields": ["timestamp", "invoice_date", "transaction_date", "acquired_at"],
+        "route": "#compliance"
+      }
+    ],
+    "descriptions": [
+      {
+        "id": 1,
+        "title": "Core Components",
+        "count": 9,
+        "list": [
+          "General Ledger - Complete accounting system",
+          "Accounts Payable - Vendor payment management",
+          "Accounts Receivable - Customer invoice tracking",
+          "Cash Flow - Transaction monitoring and analysis",
+          "Fixed Assets - Asset lifecycle management",
+          "Tax Management - Tax calculation and filing",
+          "Budgeting & Forecasting - Financial planning tools",
+          "Compliance & Audit - Regulatory compliance tracking",
+          "Reporting - Financial reports and analytics"
+        ]
+      },
+      {
+        "id": 2,
+        "title": "UI Components",
+        "count": 7,
+        "list": [
+          "FinanceButton - Auto-scaling button component with variants",
+          "FinanceDropdown - Perfect height-matching dropdown component",
+          "FinanceInput - Text input component matching dropdown dimensions exactly",
+          "FinanceValueCard - Flexible value display cards with auto-coloring",
+          "FinanceToggle - Modern toggle switches with color variants",
+          "StatusBadge - Centralized status indicator component",
+          "ScaledIcon - Dynamic icon sizing system"
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Features",
+        "count": 12,
+        "list": [
+          "Complete Workflow Management System with WorkflowDashboard",
+          "Direct workflow creation from template cards with 4-column modal",
+          "Active workflow tracking with unique IDs and delete capabilities",
+          "7 Workflow Step Types: User Action, Timer, API, Approval, Agent, System, External",
+          "Enhanced 3-column demo layout for better visual organization",
+          "Inline usage examples directly under each demo section",
+          "Modular InfoBoard architecture with separate section components",
+          "Interactive demo selection with icon-coded buttons",
+          "Auto-scaling integration through store.fontSizes.base",
+          "Perfect component height matching system",
+          "Professional dark mode support across all components",
+          "Dynamic table row and header height scaling"
+        ]
+      }
+    ],
+    "features": [
+      "FinanceDropdown component with perfect height matching to FinanceButton",
+      "Auto-scaling integration through store.fontSizes.base system",
+      "Enhanced FinanceButton with automatic font and padding scaling",
+      "Modernized GeneralLedger with consistent dropdown components",
+      "Transparent outline variants with proper CSS specificity",
+      "Interactive component demos in InfoBoard section",
+      "Font Awesome icon integration with proper loading",
+      "Professional dark mode support across all components",
+      "Centralized StatusBadge and ScaledIcon components",
+      "Complete DRY refactoring with centralized styling system"
+    ],
+    "navigation": {
+      "eventName": "switchFinanceTab",
+      "packageType": "erp-finance"
+    }
+  }

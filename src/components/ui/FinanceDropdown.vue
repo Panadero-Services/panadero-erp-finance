@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue';
 import { useFinanceStore } from '../../stores/financeStore';
 
+import { useScaling } from '../../../../shared/composables/useScaling.js'
+const { fontSizes, scalingStyles, spacing } = useScaling()
+
 // Props
 const props = defineProps({
   // Dropdown options
@@ -78,8 +81,8 @@ const dropdownRef = ref(null);
 
 // Computed dynamic styles
 const dynamicStyles = computed(() => ({
-  fontSize: `${store.fontSizes.base}px`,
-  ...store.scalingStyles.buttonPadding
+  fontSize: `${fontSizes.base}px`,
+  ...scalingStyles.buttonPadding
 }));
 
 // Computed classes
@@ -179,7 +182,7 @@ onBeforeUnmount(() => {
     <button
       type="button"
       :disabled="disabled"
-      :style="dynamicStyles"
+      :style="[scalingStyles.textFontSize, scalingStyles.buttonPadding]" 
       :class="[
         'finance-dropdown group',
         variantClasses[variant],
@@ -218,7 +221,7 @@ onBeforeUnmount(() => {
         v-for="(option, index) in options"
         :key="index"
         class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
-        :style="{ fontSize: `${store.fontSizes.base}px` }"
+        :style="{ fontSize: `${fontSizes.base}px` }"
         @click="selectOption(option)"
       >
         <span class="block truncate">

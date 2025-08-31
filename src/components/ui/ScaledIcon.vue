@@ -9,8 +9,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useFinanceStore } from '../../stores/financeStore';
+import { useScaling } from '../../../../../shared/composables/useScaling.js'
 
 const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 const props = defineProps({
   icon: {
@@ -49,10 +51,10 @@ const iconClasses = computed(() => {
 
 const iconStyle = computed(() => {
   const sizeMap = {
-    small: store.scalingStyles.iconSizeSmall,
-    normal: store.scalingStyles.iconSize,
-    large: store.scalingStyles.iconSizeLarge,
-    'extra-large': store.scalingStyles.iconSizeExtraLarge
+    small: scalingStyles.iconSizeSmall,
+    normal: scalingStyles.iconSize,
+    large: scalingStyles.iconSizeLarge,
+    'extra-large': scalingStyles.iconSizeExtraLarge
   };
   
   return sizeMap[props.size];

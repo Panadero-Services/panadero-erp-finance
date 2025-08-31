@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import Decimal from 'decimal.js';
-import axios from 'axios'
+import axios from 'axios';
+// import { useScaling } from '../../../shared/composables/useScaling.js'; // COMMENTED OUT
 
 export const useFinanceStore = defineStore('finance', () => {
   // Settings - centralized configuration
@@ -31,15 +32,33 @@ export const useFinanceStore = defineStore('finance', () => {
     cacheData: true
   });
 
+  // Initialize shared scaling composable
+  // const { fontSizes, scalingStyles, spacing, setFontSize: updateScalingFontSize } = useScaling(
+  //   settings.value.fontSize,
+  //   'financeSettings'
+  // );
+
   // Settings actions
   const updateSetting = (key, value) => {
     settings.value[key] = value;
+    
+    // If fontSize changes, update the scaling composable too
+    if (key === 'fontSize') {
+      // updateScalingFontSize(value); // COMMENTED OUT
+    }
+    
     // Save to localStorage
     localStorage.setItem('financeSettings', JSON.stringify(settings.value));
   };
 
   const updateSettings = (newSettings) => {
     Object.assign(settings.value, newSettings);
+    
+    // Update scaling composable if fontSize changed
+    if (newSettings.fontSize) {
+      // updateScalingFontSize(newSettings.fontSize); // COMMENTED OUT
+    }
+    
     localStorage.setItem('financeSettings', JSON.stringify(settings.value));
   };
 
@@ -59,6 +78,10 @@ export const useFinanceStore = defineStore('finance', () => {
       lazyLoading: true,
       cacheData: true
     };
+    
+    // Reset scaling composable too
+    // updateScalingFontSize(14); // COMMENTED OUT
+    
     localStorage.setItem('financeSettings', JSON.stringify(settings.value));
   };
 
@@ -68,6 +91,11 @@ export const useFinanceStore = defineStore('finance', () => {
       try {
         const parsed = JSON.parse(saved);
         Object.assign(settings.value, parsed);
+        
+        // Update scaling composable with loaded fontSize
+        if (parsed.fontSize) {
+          // updateScalingFontSize(parsed.fontSize); // COMMENTED OUT
+        }
       } catch (err) {
         console.error('Failed to load saved settings:', err);
       }
@@ -76,120 +104,12 @@ export const useFinanceStore = defineStore('finance', () => {
 
   // Font size specific actions
   const setFontSize = (size) => {
-    const clampedSize = Math.max(8, Math.min(24, size));
-    updateSetting('fontSize', clampedSize);
+    settings.value.fontSize = size;
+    // updateScalingFontSize(size); // COMMENTED OUT
+    localStorage.setItem('financeSettings', JSON.stringify(settings.value));
   };
 
-  const increaseFontSize = () => {
-    const newSize = Math.min(settings.value.fontSize + 1, 24);
-    setFontSize(newSize);
-  };
-
-  const decreaseFontSize = () => {
-    const newSize = Math.max(settings.value.fontSize - 1, 8);
-    setFontSize(newSize);
-  };
-
-  const getFontSize = (type) => {
-    return fontSizes.value[type] || fontSizes.value.text;
-  };
-
-  // Computed font sizes based on store settings
-  const fontSizes = computed(() => {
-    const base = settings.value.fontSize;
-    
-    const getTailwindClass = (size) => {
-      if (size >= 8 && size <= 24) {
-        return `text-${size}`;
-      }
-      if (size < 8) return 'text-8';
-      if (size > 24) return 'text-24';
-      return 'text-14';
-    };
-    
-    return {
-      base: base,
-      text: getTailwindClass(base),
-      title: getTailwindClass(base + 2),
-      subtitle: getTailwindClass(base + 4),
-      heading: getTailwindClass(base + 6),
-      button: getTailwindClass(base - 2),
-      label: getTailwindClass(base - 2),
-      input: getTailwindClass(base),
-      table: getTailwindClass(base - 2),
-      amount: getTailwindClass(base + 2),
-      description: getTailwindClass(base - 2)
-    };
-  });
-
-  // Computed styles for scaling
-  const scalingStyles = computed(() => {
-    const base = settings.value.fontSize;
-    return {
-      buttonPadding: { padding: `${Math.max(8, base - 4)}px ${Math.max(12, base - 2) * 1.5}px` },
-      inputPadding: { padding: `${Math.max(8, base - 6)}px`, height: `${Math.max(36, base + 20)}px` },
-      textareaHeight: { height: `${Math.max(80, base * 3.5)}px` },
-      tableHeader: { fontSize: `${base - 2}px` },
-      actionButton: {
-        width: `${Math.max(24, base + 8)}px`,
-        height: `${Math.max(24, base + 8)}px`,
-        fontSize: `${Math.max(24, base + 8) * 0.6}px`
-      },
-      // Enhanced padding scaling
-      gapScale: { gap: `${Math.max(8, base - 2)}px` },
-      marginScale: { marginBottom: `${Math.max(16, base + 2)}px` },
-      paddingScale: { padding: `${Math.max(2, Math.round(base * 0.2))}px` },
-      borderRadius: { borderRadius: `${Math.max(4, base - 8)}px` },
-      // Component-specific scaling
-      cardPadding: { padding: `${Math.max(20, base + 6)}px` },
-      sectionMargin: { marginBottom: `${Math.max(24, base + 10)}px` },
-      buttonGap: { gap: `${Math.max(8, base - 2)}px` },
-      // Font size styles for direct use
-      titleFontSize: { fontSize: `${base + 4}px` },
-      subtitleFontSize: { fontSize: `${base + 2}px` },
-      textFontSize: { fontSize: `${base}px` },
-      smallFontSize: { fontSize: `${base - 2}px` },
-      largeFontSize: { fontSize: `${base + 6}px` },
-      amountFontSize: { fontSize: `${base + 2}px` },
-      // Icon scaling
-      iconSize: { fontSize: `${base}px` },
-      iconSizeSmall: { fontSize: `${base - 2}px` },
-      iconSizeLarge: { fontSize: `${base + 2}px` },
-      iconSizeExtraLarge: { fontSize: `${base + 4}px` },
-      // Table scaling
-      tableRowHeight: { height: `${Math.round(base * 1.4)}px !important` },
-      tableHeaderHeight: { height: `${Math.max(28, base * 2)}px` }
-    };
-  });
-
-  // Simple spacing utilities
-  const spacing = {
-    padding: 'p-6',
-    paddingSmall: 'p-4', 
-    paddingLarge: 'p-8',
-    margin: 'mb-6',
-    marginSmall: 'mb-4',
-    marginLarge: 'mb-8',
-    gap: 'gap-4',
-    gapSmall: 'gap-2',
-    gapLarge: 'gap-6'
-  };
-
-  // Simple border styles
-  const borders = {
-    default: 'border',
-    rounded: 'rounded-lg',
-    roundedSmall: 'rounded-md'
-  };
-
-  // Simple button styles (no dark mode - use darkMode.js for that)
-  const buttons = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700',
-    secondary: 'bg-gray-600 text-white hover:bg-gray-700',
-    success: 'bg-green-600 text-white hover:bg-green-700',
-    danger: 'bg-red-600 text-white hover:bg-red-700',
-    warning: 'bg-yellow-600 text-white hover:bg-yellow-700'
-  };
+  
 
   // Simple form styles (no dark mode - use darkMode.js for that)
   const forms = {
@@ -477,12 +397,12 @@ export const useFinanceStore = defineStore('finance', () => {
   }
 
   // Helper functions for direct styling
-  const getTitleStyle = () => ({ fontSize: `${settings.value.fontSize + 4}px` });
-  const getSubtitleStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
-  const getTextStyle = () => ({ fontSize: `${settings.value.fontSize}px` });
-  const getSmallTextStyle = () => ({ fontSize: `${settings.value.fontSize - 2}px` });
-  const getLargeTextStyle = () => ({ fontSize: `${settings.value.fontSize + 6}px` });
-  const getAmountStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
+  // const getTitleStyle = () => ({ fontSize: `${settings.value.fontSize + 4}px` });
+  // const getSubtitleStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
+  // const getTextStyle = () => ({ fontSize: `${settings.value.fontSize}px` });
+  // const getSmallTextStyle = () => ({ fontSize: `${settings.value.fontSize - 2}px` });
+  // const getLargeTextStyle = () => ({ fontSize: `${settings.value.fontSize + 6}px` });
+  // const getAmountStyle = () => ({ fontSize: `${settings.value.fontSize + 2}px` });
 
   // Invoice system helper methods
   async function addPayable(payable) {
@@ -525,18 +445,12 @@ export const useFinanceStore = defineStore('finance', () => {
     resetSettings,
     loadSettings,
     setFontSize,
-    increaseFontSize,
-    decreaseFontSize,
-    getFontSize,
-    fontSizes,
-    scalingStyles,
-    spacing,
-    borders,
-    buttons,
-    forms,
-    // Helper functions for direct styling
-    getTitleStyle, getSubtitleStyle, getTextStyle, getSmallTextStyle, getLargeTextStyle, getAmountStyle,
-
+    
+    // Scaling (now from shared composable)
+    // fontSizes,
+    // scalingStyles,
+    // spacing,
+    
     // GL
     journalEntries,
     accountBalances,

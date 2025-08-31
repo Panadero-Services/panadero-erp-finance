@@ -3,12 +3,14 @@ import { ref, onMounted } from 'vue';
 import { useAccountsPayable } from '../composables/useAccountsPayable';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
 import { useFinanceStore } from '../stores/financeStore';
+import { useScaling } from '../../../shared/composables/useScaling.js';
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 
 const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling();
 
 // Remove all computed styles - use store directly
 
@@ -222,15 +224,15 @@ onMounted(async () => {
 <template>
   <div class="accounts-payable dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Accounts Payable</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="fontSizes.titleFontSize" class="font-semibold dark:text-white">Accounts Payable</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <input 
             v-model="filters.vendor" 
             type="text" 
             placeholder="Vendor Name" 
-            :style="[store.scalingStyles.inputPadding, store.scalingStyles.textFontSize]"
+            :style="[scalingStyles.inputPadding, fontSizes.textFontSize]"
             class="border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           >
           <FinanceDropdown 
@@ -274,7 +276,7 @@ onMounted(async () => {
     </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       
       <FinanceValueCard title="Total Payables" :value="totalPayables" rows="2-row" format="currency" color="neutral" icon="fas fa-file-invoice-dollar" />
       <FinanceValueCard title="Overdue Amount" :value="overdueAmount" rows="2-row" format="currency" color="auto" :max-good="1000" :max-warning="5000" icon="fas fa-exclamation-triangle" />
@@ -283,7 +285,7 @@ onMounted(async () => {
     </div>
 
     <!-- Aging Summary -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
       <FinanceValueCard title="Current" :value="summary.aging.current" rows="2-row" format="currency" color="positive" size="small" />
       <FinanceValueCard title="1-30 Days" :value="summary.aging['30days']" rows="2-row" format="currency" color="warning" size="small" />
       <FinanceValueCard title="31-60 Days" :value="summary.aging['60days']" rows="2-row" format="currency" color="warning" size="small" />
@@ -300,8 +302,8 @@ onMounted(async () => {
           </svg>
         </div>
         <div class="ml-3">
-          <h3 :style="store.scalingStyles.smallFontSize" class="font-medium text-red-800 dark:text-red-200">Error</h3>
-          <div :style="store.scalingStyles.smallFontSize" class="mt-2 text-red-700 dark:text-red-300">
+          <h3 :style="fontSizes.smallFontSize" class="font-medium text-red-800 dark:text-red-200">Error</h3>
+          <div :style="fontSizes.smallFontSize" class="mt-2 text-red-700 dark:text-red-300">
             <p>{{ invoiceError }}</p>
             <p v-if="invoiceError.includes('Authentication')" class="mt-1">
               <a href="/login" class="font-medium underline hover:text-red-600 dark:hover:text-red-400">Go to Login</a>
@@ -312,48 +314,48 @@ onMounted(async () => {
     </div>
 
     <!-- Payables Table -->
-    <div :style="store.scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
-      <div :style="store.scalingStyles.cardPadding" class="border-b dark:border-gray-700">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Payables List</h3>
+    <div :style="scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
+      <div :style="scalingStyles.cardPadding" class="border-b dark:border-gray-700">
+        <h3 :style="fontSizes.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Payables List</h3>
       </div>
       <div class="overflow-x-auto">
-        <table :style="store.scalingStyles.borderRadius" class="w-full border-collapse">
+        <table :style="scalingStyles.borderRadius" class="w-full border-collapse">
           <thead>
             <tr class="bg-gray-50 dark:bg-gray-700">
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Invoice #</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Vendor</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Date</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Due Date</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Amount</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Invoice #</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Vendor</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Date</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Due Date</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Amount</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="payable in filteredPayables" :key="payable.id" class="dark:text-gray-100 dark:border-gray-600" :style="store.scalingStyles.tableRowHeight">
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.invoice_no }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.vendor_name }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.invoice_date) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.due_date) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(payable.amount) }}</td>
-              <td :style="store.scalingStyles.paddingScale" class="border dark:border-gray-600">
+            <tr v-for="payable in filteredPayables" :key="payable.id" class="dark:text-gray-100 dark:border-gray-600" :style="scalingStyles.tableRowHeight">
+              <td :style="[fontSizes.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.invoice_no }}</td>
+              <td :style="[fontSizes.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ payable.vendor_name }}</td>
+              <td :style="[fontSizes.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.invoice_date) }}</td>
+              <td :style="[fontSizes.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(payable.due_date) }}</td>
+              <td :style="[fontSizes.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(payable.amount) }}</td>
+              <td :style="scalingStyles.paddingScale" class="border dark:border-gray-600">
                 <StatusBadge :status="payable.status" />
               </td>
-              <td :style="store.scalingStyles.paddingScale"  class="border dark:border-gray-600">
+              <td :style="scalingStyles.paddingScale"  class="border dark:border-gray-600">
                 <div class="flex gap-2">
                   <button 
                     @click="editPayable(payable)" 
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     title="Edit Payable"
                   >
-                    <i class="fas fa-edit" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-edit" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="deletePayable(payable.id)" 
                     class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     title="Delete Payable"
                   >
-                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-trash" :style="scalingStyles.iconSize"></i>
                   </button>
                 </div>
               </td>
@@ -369,11 +371,11 @@ onMounted(async () => {
                   <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
                     <div class="h-full flex flex-col">
                       <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4">New Payable</h3>
+        <h3 :style="fontSizes.subtitleFontSize" class="font-semibold mb-4">New Payable</h3>
         <form @submit.prevent="handleNewPayable">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Vendor</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Vendor</label>
               <FinanceDropdown 
                 v-model="newPayable.vendor_id" 
                 :options="[{ label: 'Select Vendor', value: '' }, ...vendors.map(v => ({ label: v.name, value: v.id }))]"
@@ -387,28 +389,28 @@ onMounted(async () => {
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Number</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Number</label>
               <input v-model="newPayable.invoice_no" placeholder="Leave blank to auto-generate" class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
-              <small :style="store.scalingStyles.smallFontSize" class="text-gray-500 dark:text-gray-400">Leave blank to auto-generate</small>
+              <small :style="fontSizes.smallFontSize" class="text-gray-500 dark:text-gray-400">Leave blank to auto-generate</small>
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Date</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Date</label>
               <input type="date" v-model="newPayable.invoice_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Due Date</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Due Date</label>
               <input type="date" v-model="newPayable.due_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
               <input type="number" v-model="newPayable.amount" step="0.01" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
               <FinanceDropdown 
                 v-model="newPayable.category" 
                 :options="categoryOptions"
@@ -423,12 +425,12 @@ onMounted(async () => {
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+            <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
             <input v-model="newPayable.description" placeholder="Invoice description" class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
+            <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
             <textarea v-model="newPayable.notes" class="w-full border rounded p-2 h-20 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
           </div>
 
@@ -452,16 +454,16 @@ onMounted(async () => {
                   <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
                     <div class="h-full flex flex-col">
                       <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4">Record Payment</h3>
+        <h3 :style="fontSizes.subtitleFontSize" class="font-semibold mb-4">Record Payment</h3>
         <form @submit.prevent="handlePayment">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Date</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Date</label>
               <input type="date" v-model="payment.date" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
             <input type="number" 
                    v-model="payment.amount" 
                    :max="selectedPayable.amount - selectedPayable.paid_amount"
@@ -472,12 +474,12 @@ onMounted(async () => {
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 mb-2">Reference Number</label>
+            <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 mb-2">Reference Number</label>
             <input v-model="payment.reference_no" required class="w-full border rounded p-2" />
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 mb-2">Notes</label>
+            <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 mb-2">Notes</label>
             <textarea v-model="payment.notes" class="w-full border rounded p-2 h-20"></textarea>
           </div>
 
@@ -497,17 +499,17 @@ onMounted(async () => {
                   <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
                     <div class="h-full flex flex-col">
                       <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Bulk Actions</h3>
+        <h3 :style="fontSizes.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Bulk Actions</h3>
         <div class="space-y-4">
           <div>
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Select Payables</label>
+            <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Select Payables</label>
             <div class="max-h-40 overflow-y-auto border rounded p-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
               <div v-for="payable in payables" :key="payable.id" class="flex items-center gap-2 py-1">
                 <input type="checkbox" 
                        :value="payable.id" 
                        v-model="selectedPayables" 
                        class="rounded" />
-                <span :style="store.scalingStyles.smallFontSize" class="dark:text-gray-100">{{ payable.invoice_no }} - {{ payable.vendor_name }} ({{ formatCurrency(payable.amount) }})</span>
+                <span :style="fontSizes.smallFontSize" class="dark:text-gray-100">{{ payable.invoice_no }} - {{ payable.vendor_name }} ({{ formatCurrency(payable.amount) }})</span>
               </div>
             </div>
           </div>

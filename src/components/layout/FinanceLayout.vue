@@ -10,7 +10,7 @@ const emit = defineEmits(['tab-change']);
 </script>
 
 <template>
-  <div class="finance-page dark:bg-gray-900">
+  <div class="layout-page dark:bg-gray-900">
     <!-- Navigation Component -->
     <FinanceNavigation 
       :active-tab="activeTab" 
@@ -32,7 +32,7 @@ const emit = defineEmits(['tab-change']);
 </template>
 
 <style scoped>
-.finance-page {
+.layout-page {
   min-height: 100vh;
   padding: 0;
   margin: 24px;

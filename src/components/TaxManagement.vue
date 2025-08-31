@@ -3,12 +3,14 @@ import { ref, onMounted } from 'vue';
 import { useTaxManagement } from '../composables/useTaxManagement';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
 import { useFinanceStore } from '../stores/financeStore';
+import { useScaling } from '../../../shared/composables/useScaling.js';
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
 
 const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling();
 
 // Remove all computed styles - use store directly
 
@@ -227,8 +229,8 @@ onMounted(async () => {
 <template>
   <div class="tax-management dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Tax Management</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="fontSizes.titleFontSize" class="font-semibold dark:text-white">Tax Management</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <FinanceDropdown
@@ -256,7 +258,7 @@ onMounted(async () => {
           />
         </div>
         <!-- Buttons -->
-        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <div :style="scalingStyles.buttonGap" class="flex items-center">
           <FinanceButton
             @click="handleNewTaxRecord"
             variant="primary"
@@ -286,7 +288,7 @@ onMounted(async () => {
     </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <FinanceValueCard title="Total Tax Amount" :value="totalTaxAmount" rows="2-row" format="currency" color="neutral" icon="fas fa-receipt" />
 
       <FinanceValueCard title="Pending Amount" :value="pendingAmount" rows="2-row" format="currency" color="auto" :max-good="5000" :max-warning="10000" icon="fas fa-clock" />
@@ -299,7 +301,7 @@ onMounted(async () => {
     <!-- Tax Records Table -->
     <div class="bg-white dark:bg-gray-800 rounded border dark:border-gray-700 mb-6">
       <div class="p-4 border-b bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Tax Records</h3>
+        <h3 :style="fontSizes.subtitleFontSize" class="font-semibold dark:text-white">Tax Records</h3>
       </div>
       
       <div v-if="taxRecords.length > 0" class="overflow-x-auto">
@@ -320,7 +322,7 @@ onMounted(async () => {
             <tr v-for="record in taxRecords" :key="record.id" 
                 :class="{ 'bg-red-50 dark:bg-red-900/20': isOverdue(record) }" 
                 class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-100"
-                :style="store.scalingStyles.tableRowHeight">
+                :style="scalingStyles.tableRowHeight">
               <td class="p-3 border dark:border-gray-600">{{ record.tax_type }}</td>
               <td class="p-3 border dark:border-gray-600">{{ record.tax_period }}</td>
               <td class="p-3 border dark:border-gray-600">{{ formatCurrency(record.taxable_amount) }}</td>
@@ -337,7 +339,7 @@ onMounted(async () => {
                     @click="openFilingForm(record)"
                     class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors"
                   >
-                    <i class="fas fa-file-upload" :style="store.scalingStyles.iconSizeSmall"></i>
+                    <i class="fas fa-file-upload" :style="scalingStyles.iconSizeSmall"></i>
                     File Return
                   </button>
                   <button 
@@ -345,7 +347,7 @@ onMounted(async () => {
                     @click="openPaymentForm(record)"
                     class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-md transition-colors"
                   >
-                    <i class="fas fa-dollar-sign" :style="store.scalingStyles.iconSizeSmall"></i>
+                    <i class="fas fa-dollar-sign" :style="scalingStyles.iconSizeSmall"></i>
                     Record Payment
                   </button>
                 </div>
@@ -366,11 +368,11 @@ onMounted(async () => {
         <div class="h-full flex flex-col">
           <!-- Content area -->
           <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Tax Record</h3>
+        <h3 :style="fontSizes.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Tax Record</h3>
         <form @submit.prevent="handleNewTaxRecord">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Tax Type</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Tax Type</label>
               <select v-model="newTaxRecord.tax_type" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                 <option value="">Select Tax Type</option>
                 <option value="VAT">VAT</option>
@@ -381,33 +383,33 @@ onMounted(async () => {
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Tax Period</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Tax Period</label>
               <input type="month" v-model="newTaxRecord.tax_period" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Taxable Amount</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Taxable Amount</label>
               <input type="number" v-model="newTaxRecord.taxable_amount" step="0.01" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Tax Amount</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Tax Amount</label>
               <input type="number" v-model="newTaxRecord.tax_amount" step="0.01" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Filing Due Date</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Filing Due Date</label>
               <input type="date" v-model="newTaxRecord.filing_due_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Due Date</label>
+              <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Due Date</label>
               <input type="date" v-model="newTaxRecord.payment_due_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
+            <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
             <textarea v-model="newTaxRecord.notes" class="w-full border rounded p-2 h-20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
           </div>
 
@@ -427,21 +429,21 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-            <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">File Tax Return</h3>
+            <h3 :style="fontSizes.subtitleFontSize" class="font-semibold mb-4 dark:text-white">File Tax Return</h3>
             <form @submit.prevent="handleFiling">
               <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Filing Date</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Filing Date</label>
                   <input type="date" v-model="filingDetails.filing_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                 </div>
 
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Return Reference</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Return Reference</label>
                   <input v-model="filingDetails.return_reference" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                 </div>
 
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Filing Method</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Filing Method</label>
                   <select v-model="filingDetails.filing_method" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                     <option value="">Select Method</option>
                     <option value="online">Online</option>
@@ -452,7 +454,7 @@ onMounted(async () => {
               </div>
 
               <div class="mb-4">
-                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
+                <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
                 <textarea v-model="filingDetails.notes" class="w-full border rounded p-2 h-20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
               </div>
 
@@ -472,16 +474,16 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-            <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Record Tax Payment</h3>
+            <h3 :style="fontSizes.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Record Tax Payment</h3>
             <form @submit.prevent="handlePayment">
               <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Date</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Date</label>
                   <input type="date" v-model="paymentDetails.payment_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                 </div>
 
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Amount</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Amount</label>
                   <input type="number" 
                          v-model="paymentDetails.payment_amount" 
                          :max="selectedRecord.tax_amount"
@@ -491,7 +493,7 @@ onMounted(async () => {
                 </div>
 
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Method</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Method</label>
                   <select v-model="paymentDetails.payment_method" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600">
                     <option value="">Select Method</option>
                     <option value="bank_transfer">Bank Transfer</option>
@@ -502,13 +504,13 @@ onMounted(async () => {
                 </div>
 
                 <div>
-                  <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
+                  <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
                   <input v-model="paymentDetails.reference_number" required class="w-full border rounded p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                 </div>
               </div>
 
               <div class="mb-4">
-                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
+                <label :style="fontSizes.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
                 <textarea v-model="paymentDetails.notes" class="w-full border rounded p-2 h-20 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
               </div>
 

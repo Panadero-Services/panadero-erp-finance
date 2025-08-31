@@ -1,13 +1,15 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useFinanceStore } from '../stores/financeStore.js'
 import { WorkflowManager, useWorkflowStore } from 'panadero-workflow'
 import FinanceValueCard from './ui/FinanceValueCard.vue'
 import FinanceButton from './ui/FinanceButton.vue'
 import StatusBadge from './ui/StatusBadge.vue'
+import { useScaling } from '../../../shared/composables/useScaling.js'
 
 const workflowStore = useWorkflowStore()
 const financeStore = useFinanceStore()
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Component state
 const activeWorkflows = ref([])
@@ -146,13 +148,13 @@ const getCurrentStepName = (workflow) => {
       <div class="header-content">
         <h1 
           class="page-title"
-          :style="{ fontSize: `${financeStore.fontSizes.base + 6}px` }"
+          :style="{ fontSize: `${fontSizes.base + 6}px` }"
         >
           Vendor Onboarding
         </h1>
         <p 
           class="page-description"
-          :style="{ fontSize: `${financeStore.fontSizes.base}px` }"
+          :style="{ fontSize: `${fontSizes.base}px` }"
         >
           Streamlined vendor registration and validation process with automated workflows
         </p>
@@ -174,7 +176,7 @@ const getCurrentStepName = (workflow) => {
     <div v-if="showWorkflowManager" class="workflow-modal-overlay" @click="closeWorkflowManager">
       <div class="workflow-modal" @click.stop>
         <div class="modal-header">
-          <h2 :style="{ fontSize: `${financeStore.fontSizes.base + 4}px` }" class="modal-title">
+          <h2 :style="{ fontSize: `${fontSizes.base + 4}px` }" class="modal-title">
             {{ selectedWorkflowId ? 'View Vendor Onboarding' : 'New Vendor Onboarding' }}
           </h2>
           <button 
@@ -237,7 +239,7 @@ const getCurrentStepName = (workflow) => {
         <div class="section-header">
           <h2 
             class="section-title"
-            :style="{ fontSize: `${financeStore.fontSizes.base + 4}px` }"
+            :style="{ fontSize: `${fontSizes.base + 4}px` }"
           >
             Active Onboarding Workflows
           </h2>
@@ -266,7 +268,7 @@ const getCurrentStepName = (workflow) => {
             v-for="workflow in activeWorkflows" 
             :key="workflow.id"
             class="table-row"
-            :style="financeStore.scalingStyles.tableRowHeight"
+            :style="scalingStyles.tableRowHeight"
           >
             <div class="table-cell">
               <div class="vendor-info">
@@ -275,7 +277,7 @@ const getCurrentStepName = (workflow) => {
                 </span>
                 <span 
                   class="vendor-id"
-                  :style="{ fontSize: `${financeStore.fontSizes.base - 3}px` }"
+                  :style="{ fontSize: `${fontSizes.base - 3}px` }"
                 >
                   ID: {{ workflow.id.split('-').pop() }}
                 </span>
@@ -291,7 +293,7 @@ const getCurrentStepName = (workflow) => {
             </div>
             
             <div class="table-cell">
-              <span :style="{ fontSize: `${financeStore.fontSizes.base - 1}px` }">
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }">
                 {{ getCurrentStepName(workflow) }}
               </span>
             </div>
@@ -306,7 +308,7 @@ const getCurrentStepName = (workflow) => {
                 </div>
                 <span 
                   class="progress-text"
-                  :style="{ fontSize: `${financeStore.fontSizes.base - 2}px` }"
+                  :style="{ fontSize: `${fontSizes.base - 2}px` }"
                 >
                   {{ getWorkflowProgress(workflow) }}%
                 </span>
@@ -314,7 +316,7 @@ const getCurrentStepName = (workflow) => {
             </div>
             
             <div class="table-cell">
-              <span :style="{ fontSize: `${financeStore.fontSizes.base - 2}px` }">
+              <span :style="{ fontSize: `${fontSizes.base - 2}px` }">
                 {{ new Date(workflow.created_at).toLocaleDateString() }}
               </span>
             </div>
@@ -335,10 +337,10 @@ const getCurrentStepName = (workflow) => {
         <!-- Empty State -->
         <div v-else class="empty-state">
           <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
-          <h3 :style="{ fontSize: `${financeStore.fontSizes.base + 2}px` }" class="text-gray-600 dark:text-gray-400">
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="text-gray-600 dark:text-gray-400">
             No Active Onboarding Workflows
           </h3>
-          <p :style="{ fontSize: `${financeStore.fontSizes.base}px` }" class="text-gray-500 dark:text-gray-500">
+          <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-500 dark:text-gray-500">
             Start a new vendor onboarding process to get started.
           </p>
           <FinanceButton
@@ -357,7 +359,7 @@ const getCurrentStepName = (workflow) => {
       <div v-if="recentWorkflows.length > 0" class="recent-workflows-section">
         <h2 
           class="section-title"
-          :style="{ fontSize: `${financeStore.fontSizes.base + 4}px` }"
+          :style="{ fontSize: `${fontSizes.base + 4}px` }"
         >
           Recent Workflows
         </h2>
@@ -372,7 +374,7 @@ const getCurrentStepName = (workflow) => {
             <div class="card-header">
               <h3 
                 class="card-title"
-                :style="{ fontSize: `${financeStore.fontSizes.base}px` }"
+                :style="{ fontSize: `${fontSizes.base}px` }"
               >
                 {{ workflow.data.company_name || 'Unnamed Vendor' }}
               </h3>
@@ -386,7 +388,7 @@ const getCurrentStepName = (workflow) => {
             <div class="card-content">
               <p 
                 class="card-step"
-                :style="{ fontSize: `${financeStore.fontSizes.base - 2}px` }"
+                :style="{ fontSize: `${fontSizes.base - 2}px` }"
               >
                 Current Step: {{ getCurrentStepName(workflow) }}
               </p>
@@ -399,7 +401,7 @@ const getCurrentStepName = (workflow) => {
                 </div>
                 <span 
                   class="progress-text"
-                  :style="{ fontSize: `${financeStore.fontSizes.base - 3}px` }"
+                  :style="{ fontSize: `${fontSizes.base - 3}px` }"
                 >
                   {{ getWorkflowProgress(workflow) }}%
                 </span>
@@ -409,7 +411,7 @@ const getCurrentStepName = (workflow) => {
             <div class="card-footer">
               <span 
                 class="card-date"
-                :style="{ fontSize: `${financeStore.fontSizes.base - 3}px` }"
+                :style="{ fontSize: `${fontSizes.base - 3}px` }"
               >
                 {{ new Date(workflow.created_at).toLocaleDateString() }}
               </span>

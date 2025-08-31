@@ -1,28 +1,30 @@
+<!--
+  Workflow Wrapper Component
+  @version 1.1.1
+  @date 30-Aug-2025
+  @description Wrapper component for ERP.finance management
+-->
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useFinanceStore } from './stores/financeStore';
+import FinanceLayout from './components/layout/FinanceLayout.vue';
+import InfoBoard from './components/InfoBoard.vue';
+import FinanceDashboard from './components/dashboard/FinanceDashboard.vue';
+import GeneralLedger from './components/GeneralLedger.vue';
+import AccountsPayable from './components/AccountsPayable.vue';
+import AccountsReceivable from './components/AccountsReceivable.vue';
+import CashFlow from './components/CashFlow.vue';
+import TaxManagement from './components/TaxManagement.vue';
+import FixedAssets from './components/FixedAssets.vue';
+import Reporting from './components/Reporting.vue';
+import BudgetingForecasting from './components/BudgetingForecasting.vue';
+import ComplianceAudit from './components/ComplianceAudit.vue';
 
-import GeneralLedger from './GeneralLedger.vue';
-import AccountsPayable from './AccountsPayable.vue';
-import AccountsReceivable from './AccountsReceivable.vue';
-import CashFlow from './CashFlow.vue';
-import TaxManagement from './TaxManagement.vue';
-
-import FixedAssets from './FixedAssets.vue';
-import Reporting from './Reporting.vue';
-import BudgetingForecasting from './BudgetingForecasting.vue';
-import ComplianceAudit from './ComplianceAudit.vue';
-import InfoBoard from './InfoBoard.vue';
-import FinanceDashboard from './dashboard/FinanceDashboard.vue';
-import FinanceLayout from './layout/FinanceLayout.vue';
-
-import { useFinanceStore } from '../stores/financeStore';
-import { useInfoBoxes } from '../composables/useInfoBoxes';
-import FinanceSettingsPanel from './FinanceSettingsPanel.vue';
-import { darkModeClasses } from '../utils/darkMode';
+// Import the Framework Settings Panel from shared location
+import FrameworkSettingsPanel from '../../shared/components/FrameworkSettingsPanel.vue';
 
 const store = useFinanceStore();
 
-// Tabs: add Dashboard as default
 const tabs = [
   { id: 'infoboard', label: 'ERP Finance', icon: 'fas fa-info-circle', color: 'text-blue-500', component: InfoBoard },
   { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-gauge', color: 'text-indigo-500', component: FinanceDashboard },
@@ -34,36 +36,16 @@ const tabs = [
   { id: 'reporting', label: 'Reporting', icon: 'fas fa-chart-bar', color: 'text-cyan-600', component: Reporting },
   { id: 'budgeting', label: 'Budgeting', icon: 'fas fa-chart-pie', color: 'text-pink-600', component: BudgetingForecasting },
   { id: 'compliance', label: 'Compliance', icon: 'fas fa-shield-alt', color: 'text-teal-600', component: ComplianceAudit },
-  { id: 'tax-management', label: 'Tax Management', icon: 'fas fa-file-invoice-dollar', color: 'text-amber-500', component: TaxManagement },
+  { id: 'tax-management', label: 'Tax Management', icon: 'fas fa-file-invoice-dollar', color: 'text-amber-500', component: TaxManagement }
 ];
 
 const activeTab = ref('dashboard');
 
-// Use the info boxes composable
-const {
-  activeInfo,
-  packageTables,
-  sharedEntities,
-  versionUpdates,
-  moduleDescription,
-  navigateToEntity,
-  toggleInfoBox,
-  getEntityColorClasses
-} = useInfoBoxes();
-
-// Load settings on mount
-onMounted(() => {
-  store.loadSettings();
-  console.log('Finance component mounted, settings loaded:', store.settings);
-});
-
-// Simplified activeComponent computed - dashboard now has its own component
 const activeComponent = computed(() => {
   const tab = tabs.find(t => t.id === activeTab.value);
   return tab ? tab.component : GeneralLedger;
 });
 
-// Handle tab switching from infobox navigation
 function handleTabSwitch(event) {
   const { tabId } = event.detail;
   if (tabs.find(t => t.id === tabId)) {
@@ -71,23 +53,15 @@ function handleTabSwitch(event) {
   }
 }
 
+// Add the missing function
 function handleSettingsChanged(change) {
   if (change.type === 'fontSize') {
-    // Font size changes are handled automatically by the useStyling composable
-    console.log('Font size changed to:', change.value);
+    console.debug('Framework font size changed to:', change.value);
   } else if (change.type === 'settings') {
-    // Handle other settings changes
-    console.log('Settings changed:', change.value);
-    
-    // Apply dark mode setting if changed
-    if (change.value.darkMode !== undefined) {
-      // This could trigger a global dark mode change
-      console.log('Dark mode setting:', change.value.darkMode);
-    }
+    console.debug('Framework settings changed:', change.value);
   }
 }
 
-// Set up event listeners
 onMounted(() => {
   window.addEventListener('switchFinanceTab', handleTabSwitch);
 });
@@ -95,8 +69,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('switchFinanceTab', handleTabSwitch);
 });
-
-
 </script>
 
 <template>
@@ -104,7 +76,6 @@ onUnmounted(() => {
     <component :is="activeComponent" @tab-change="activeTab = $event" />
   </FinanceLayout>
   
-  <!-- Settings Panel -->
-  <FinanceSettingsPanel @settingsChanged="handleSettingsChanged" />
+  <!-- Framework Settings Panel (no circular reference) -->
+  <FrameworkSettingsPanel @settingsChanged="handleSettingsChanged" />
 </template>
-

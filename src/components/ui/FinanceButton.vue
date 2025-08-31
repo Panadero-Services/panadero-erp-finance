@@ -1,6 +1,10 @@
 <script setup>
 import { computed } from 'vue';
-import { useFinanceStore } from '../../stores/financeStore';
+//import { useFinanceStore } from '../../stores/financeStore';
+
+import { useScaling } from '../../../../shared/composables/useScaling.js'
+const { fontSizes, scalingStyles, spacing } = useScaling()
+
 
 // Props
 const props = defineProps({
@@ -73,7 +77,7 @@ const props = defineProps({
 const emit = defineEmits(['click']);
 
 // Store
-const store = useFinanceStore();
+//const store = useFinanceStore();
 
 // Computed classes
 const variantClasses = {
@@ -110,8 +114,8 @@ const sizeClasses = {
 
 // Computed dynamic styles
 const dynamicStyles = computed(() => ({
-  fontSize: `${store.fontSizes.base}px`,
-  ...store.scalingStyles.buttonPadding
+  fontSize: `${fontSizes.base}px`,
+  ...scalingStyles.buttonPadding
 }));
 
 // Event handlers
@@ -125,7 +129,7 @@ const handleClick = (event) => {
   <button
     :type="type"
     :disabled="disabled"
-    :style="dynamicStyles"
+    :style="[scalingStyles.textFontSize, scalingStyles.buttonPadding]" 
     :class="[
       'finance-button group',
       variantClasses[variant],

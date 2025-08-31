@@ -2,15 +2,15 @@
 import { ref, onMounted } from 'vue';
 import { useReporting } from '../composables/useReporting';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
-import { useFinanceStore } from '../stores/financeStore';
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
+import { useScaling } from '../../../shared/composables/useScaling.js'
 
-const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
-// Remove all computed styles - use store directly
+// Remove all computed styles - use directly
 
 // Filters state
 const filters = ref({
@@ -96,8 +96,8 @@ function deleteReport(reportId) {
 <template>
   <div class="reporting dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Financial Reporting</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="scalingStyles.titleFontSize" class="font-semibold dark:text-white">Financial Reporting</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <FinanceDropdown
@@ -120,7 +120,7 @@ function deleteReport(reportId) {
           />
         </div>
         <!-- Buttons -->
-        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <div :style="scalingStyles.buttonGap" class="flex items-center">
           <FinanceButton
             @click="handleNewReport"
             variant="primary"
@@ -150,7 +150,7 @@ function deleteReport(reportId) {
     </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <FinanceValueCard title="Total Revenue" :value="totalRevenue" rows="2-row" format="currency" color="positive" icon="fas fa-arrow-up" trend="up" />
 
       <FinanceValueCard title="Total Expenses" :value="totalExpenses" rows="2-row" format="currency" color="negative" icon="fas fa-arrow-down" trend="down" />
@@ -159,7 +159,7 @@ function deleteReport(reportId) {
     </div>
 
     <!-- Financial Position -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <FinanceValueCard 
         title="Total Assets"
         :value="totalAssets"
@@ -191,53 +191,53 @@ function deleteReport(reportId) {
         </div>
 
     <!-- Reports Table -->
-    <div :style="store.scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
-      <div :style="store.scalingStyles.cardPadding" class="border-b dark:border-gray-700">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Generated Reports</h3>
+    <div :style="scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
+      <div :style="scalingStyles.cardPadding" class="border-b dark:border-gray-700">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Generated Reports</h3>
       </div>
       <div class="overflow-x-auto">
-        <table :style="store.scalingStyles.borderRadius" class="w-full border-collapse">
+        <table :style="scalingStyles.borderRadius" class="w-full border-collapse">
           <thead>
             <tr class="bg-gray-50 dark:bg-gray-700">
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Report Name</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Type</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Period</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Last Run</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Report Name</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Type</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Period</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Last Run</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="report in filteredReports" :key="report.id" class="dark:text-gray-100 dark:border-gray-600" :style="store.scalingStyles.tableRowHeight">
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ report.name }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ report.type }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ report.period }}</td>
-              <td :style="[store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+            <tr v-for="report in filteredReports" :key="report.id" class="dark:text-gray-100 dark:border-gray-600" :style="scalingStyles.tableRowHeight">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ report.name }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ report.type }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ report.period }}</td>
+              <td :style="[scalingStyles.paddingScale]" class="border dark:border-gray-600">
                 <StatusBadge :status="report.status" />
               </td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(report.lastRun) }}</td>
-              <td :style="store.scalingStyles.paddingScale" class="border dark:border-gray-600">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(report.lastRun) }}</td>
+              <td :style="scalingStyles.paddingScale" class="border dark:border-gray-600">
                 <div class="flex gap-2">
                   <button 
                     @click="viewReport(report)" 
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     title="View Report"
                   >
-                    <i class="fas fa-eye" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-eye" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="downloadReport(report)" 
                     class="p-2 rounded-md hover:bg-green-50 dark:hover:bg-green-900/20 text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors"
                     title="Download Report"
                   >
-                    <i class="fas fa-download" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-download" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="deleteReport(report.id)" 
                     class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     title="Delete Report"
                   >
-                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-trash" :style="scalingStyles.iconSize"></i>
                   </button>
                 </div>
               </td>

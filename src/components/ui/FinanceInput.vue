@@ -1,6 +1,8 @@
 <script setup>
 import { computed } from 'vue';
-import { useFinanceStore } from '../../stores/financeStore';
+//import { useFinanceStore } from '../../stores/financeStore';
+import { useScaling } from '../../../../shared/composables/useScaling.js'
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Props
 const props = defineProps({
@@ -93,13 +95,13 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(['update:modelValue', 'input', 'change', 'focus', 'blur']);
 
-// Store
-const store = useFinanceStore();
+// Store and scaling
+//const store = useFinanceStore();
 
 // Computed dynamic styles
 const dynamicStyles = computed(() => ({
-  fontSize: `${store.fontSizes.base}px`,
-  ...store.scalingStyles.buttonPadding
+  fontSize: `${fontSizes.base}px`,
+  ...scalingStyles.buttonPadding
 }));
 
 // Computed classes
@@ -164,7 +166,7 @@ const handleBlur = (event) => {
     <label 
       v-if="label" 
       class="block text-sm font-medium mb-1"
-      :style="{ fontSize: `${store.fontSizes.base - 2}px` }"
+    :style="[scalingStyles.textFontSize, scalingStyles.buttonPadding]" 
     >
       {{ label }}
       <span v-if="required" class="text-red-500 ml-1">*</span>
@@ -188,7 +190,7 @@ const handleBlur = (event) => {
         :disabled="disabled"
         :required="required"
         :class="inputClasses"
-        :style="dynamicStyles"
+    :style="[scalingStyles.textFontSize, scalingStyles.buttonPadding]" 
         @input="handleInput"
         @change="handleChange"
         @focus="handleFocus"
@@ -208,7 +210,7 @@ const handleBlur = (event) => {
     <p 
       v-if="helpText && !error" 
       class="mt-1 text-gray-500 dark:text-gray-400"
-      :style="{ fontSize: `${store.fontSizes.base - 3}px` }"
+    :style="[scalingStyles.textFontSize, scalingStyles.buttonPadding]" 
     >
       {{ helpText }}
     </p>
@@ -217,7 +219,7 @@ const handleBlur = (event) => {
     <p 
       v-if="error" 
       class="mt-1 text-red-500 dark:text-red-400"
-      :style="{ fontSize: `${store.fontSizes.base - 3}px` }"
+    :style="[scalingStyles.textFontSize, scalingStyles.buttonPadding]" 
     >
       {{ error }}
     </p>
@@ -396,3 +398,4 @@ const handleBlur = (event) => {
   width: 100% !important;
 }
 </style>
+

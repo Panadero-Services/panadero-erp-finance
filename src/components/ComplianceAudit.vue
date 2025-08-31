@@ -2,15 +2,13 @@
 import { ref, onMounted } from 'vue';
 import { useCompliance } from '../composables/useCompliance';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
-import { useFinanceStore } from '../stores/financeStore';
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
+import { useScaling } from '../../../shared/composables/useScaling.js'
 
-const store = useFinanceStore();
-
-// Remove all computed styles - use store directly
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Filters state
 const filters = ref({
@@ -87,8 +85,8 @@ function deleteAuditLog(logId) {
 <template>
   <div class="compliance-audit dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Compliance & Audit</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="scalingStyles.titleFontSize" class="font-semibold dark:text-white">Compliance & Audit</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <FinanceDropdown
@@ -111,7 +109,7 @@ function deleteAuditLog(logId) {
           />
         </div>
         <!-- Buttons -->
-        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <div :style="scalingStyles.buttonGap" class="flex items-center">
           <FinanceButton
             @click="handleNewAudit"
             variant="primary"
@@ -141,7 +139,7 @@ function deleteAuditLog(logId) {
     </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <FinanceValueCard title="Total Audits" :value="totalAudits" rows="2-row" format="number" color="neutral" icon="fas fa-clipboard-list" />
 
       <FinanceValueCard title="Passed" :value="passedAudits" rows="2-row" format="number" color="positive" icon="fas fa-check-circle" />
@@ -152,46 +150,46 @@ function deleteAuditLog(logId) {
     </div>
 
     <!-- Audit Logs Table -->
-    <div :style="store.scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
-      <div :style="store.scalingStyles.cardPadding" class="border-b dark:border-gray-700">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Audit Logs</h3>
+    <div :style="scalingStyles.sectionMargin" class="bg-white dark:bg-gray-800 rounded-lg shadow border dark:border-gray-700">
+      <div :style="scalingStyles.cardPadding" class="border-b dark:border-gray-700">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-700 dark:text-gray-300">Audit Logs</h3>
       </div>
       <div class="overflow-x-auto">
-        <table :style="store.scalingStyles.borderRadius" class="w-full border-collapse">
+        <table :style="scalingStyles.borderRadius" class="w-full border-collapse">
         <thead>
             <tr class="bg-gray-50 dark:bg-gray-700">
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Action</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">User</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Timestamp</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">IP Address</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Action</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">User</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Timestamp</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">IP Address</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
-            <tr v-for="log in filteredAuditLogs" :key="log.id" class="dark:text-gray-100 dark:border-gray-600" :style="store.scalingStyles.tableRowHeight">
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ log.action }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ log.user }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDateTime(log.timestamp) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ log.ip_address }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+            <tr v-for="log in filteredAuditLogs" :key="log.id" class="dark:text-gray-100 dark:border-gray-600" :style="scalingStyles.tableRowHeight">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ log.action }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ log.user }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDateTime(log.timestamp) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ log.ip_address }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">
                 <StatusBadge :status="log.status" />
               </td>
-              <td :style="store.scalingStyles.paddingScale" class="border dark:border-gray-600">
+              <td :style="scalingStyles.paddingScale" class="border dark:border-gray-600">
                 <div class="flex gap-2">
                   <button 
                     @click="viewAuditLog(log)" 
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     title="View Details"
                   >
-                    <i class="fas fa-eye" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-eye" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="deleteAuditLog(log.id)" 
                     class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     title="Delete Log"
                   >
-                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-trash" :style="scalingStyles.iconSize"></i>
                   </button>
                 </div>
               </td>

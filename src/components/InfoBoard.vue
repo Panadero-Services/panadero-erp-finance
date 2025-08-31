@@ -1,16 +1,20 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useFinanceStore } from '../stores/financeStore.js'
-import InfoSection from './sections/InfoSection.vue'
-import UIElementsSection from './sections/UIElementsSection.vue'
-import WorkflowInfoSection from './sections/WorkflowInfoSection.vue'
-import WorkflowManagementSection from './sections/WorkflowManagementSection.vue'
+import { useScaling } from '../../../shared/composables/useScaling.js'
 
-import WorkflowSection from './sections/WorkflowSection.vue'
+import InfoSection from './sections/InfoSection.vue'
+import InfoSection2 from './sections/InfoSection2.vue'
+import UIElementsSection from './sections/UIElementsSection.vue'
+
+//import WorkflowInfoSection from './sections/WorkflowInfoSection.vue'
+//import WorkflowManagementSection from './sections/WorkflowManagementSection.vue'
+//import WorkflowSection from './sections/WorkflowSection.vue'
 
 import APIsSection from './sections/APIsSection.vue'
 
 const store = useFinanceStore()
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Tab management
 const activeTab = ref('info')
@@ -29,9 +33,10 @@ const hasPermission = (tab) => permissions.value[tab] || false
 // Available tabs
 const tabs = [
   { id: 'info', name: 'Info', icon: 'fas fa-info-circle', permission: 'info' },
+  { id: 'info2', name: 'Info2', icon: 'fas fa-info-circle', permission: 'info' },
   { id: 'uiElements', name: 'UI Elements', icon: 'fas fa-palette', permission: 'uiElements' },
-  { id: 'workflowInfo', name: 'Workflow Info', icon: 'fas fa-info-circle', permission: 'info' },
-  { id: 'workflowSection', name: 'Workflows', icon: 'fas fa-sitemap', permission: 'workflows' },
+  //{ id: 'workflowInfo', name: 'Workflow Info', icon: 'fas fa-info-circle', permission: 'info' },
+  //{ id: 'workflowSection', name: 'Workflows', icon: 'fas fa-sitemap', permission: 'workflows' },
   //{ id: 'apis', name: 'APIs', icon: 'fas fa-code', permission: 'apis' }
   { id: 'apis', name: 'APIs', icon: 'fas fa-code', permission: 'info' }
 ]
@@ -63,7 +68,7 @@ const switchTab = (tabId) => {
                 ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             ]"
-            :style="store.scalingStyles.textFontSize"
+            :style="scalingStyles.textFontSize"
           >
             <i :class="tab.icon" class="mr-2"></i>
             {{ tab.name }}
@@ -77,14 +82,19 @@ const switchTab = (tabId) => {
       <!-- Info Tab -->
       <InfoSection v-if="activeTab === 'info'" />
 
+      <!-- Info Tab -->
+      <InfoSection2 v-if="activeTab === 'info2'" />
+
+
+
       <!-- UI Elements Tab -->
       <UIElementsSection v-else-if="activeTab === 'uiElements'" />
 
-      <!-- Workflow Info Tab -->
-      <WorkflowInfoSection v-else-if="activeTab === 'workflowInfo'" />
+      <!-- Workflow Info Tab 
+      <WorkflowInfoSection v-else-if="activeTab === 'workflowInfo'" />-->
 
-      <!-- Workflow System Tab -->
-      <WorkflowSection v-else-if="activeTab === 'workflowSection'" />
+      <!-- Workflow System Tab 
+      <WorkflowSection v-else-if="activeTab === 'workflowSection'" />-->
 
       <!-- APIs Tab -->
       <APIsSection v-else-if="activeTab === 'apis'" :has-access="permissions.apis" />

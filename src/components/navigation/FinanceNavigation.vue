@@ -1,5 +1,7 @@
 <script setup>
 import { useFinanceStore } from '../../stores/financeStore';
+import { useScaling } from '../../../../shared/composables/useScaling.js';
+import { onMounted } from 'vue';
 
 const props = defineProps({
   activeTab: { type: String, required: true },
@@ -8,22 +10,30 @@ const props = defineProps({
 
 const emit = defineEmits(['tab-change']);
 
-const store = useFinanceStore();
+const store = useFinanceStore(); // Only for business data
+const { fontSizes, scalingStyles, spacing } = useScaling(); // For styling
 
 const handleTabClick = (tabId) => {
   emit('tab-change', tabId);
 };
+
+// Debug: Log the tabs being received
+onMounted(() => {
+  console.debug('FinanceNavigation received tabs:', props.tabs);
+  console.debug('Tabs structure:', props.tabs.map(tab => ({ id: tab.id, label: tab.label, icon: tab.icon })));
+});
 </script>
 
 <template>
   <!-- Horizontal Bar Navigation -->
-  <div :style="store.scalingStyles.sectionMargin" class="flex flex-row lg:flex-col overflow-x-auto py-2">
-    <div :style="store.scalingStyles.buttonGap" class="flex gap-0">
+  <div :style="scalingStyles.sectionMargin" class="flex flex-row lg:flex-col overflow-x-auto py-2">
+    <div :style="scalingStyles.buttonGap" class="flex gap-0">
+
       <button
         v-for="tab in tabs"
         :key="tab.id"
         @click="handleTabClick(tab.id)"
-        :style="store.scalingStyles.buttonPadding"
+        :style="scalingStyles.buttonPadding"
         :class="[
           'flex items-center gap-1 rounded-lg font-medium transition-all duration-200 ease-in-out transform hover:scale-105',
           activeTab === tab.id 
@@ -34,7 +44,7 @@ const handleTabClick = (tabId) => {
         <!-- Icon with dynamic color and enhanced styling -->
         <div class="relative group">
           <i 
-            :style="store.scalingStyles.textFontSize" 
+            :style="scalingStyles.textFontSize" 
             :class="[
               tab.icon,
               activeTab === tab.id 
@@ -51,13 +61,17 @@ const handleTabClick = (tabId) => {
         
         <!-- Label with enhanced typography -->
         <span 
-          :style="{ fontSize: `${store.fontSizes.base}px` }" 
+          :style="{ fontSize: `${fontSizes.base}px` }" 
           class="truncate font-medium"
           :class="activeTab === tab.id ? 'text-white' : 'text-gray-700 dark:text-gray-300'"
         >
           {{ tab.label }}
         </span>
       </button>
+
+
+
+
     </div>
   </div>
 </template>

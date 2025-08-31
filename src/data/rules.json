@@ -57,6 +57,7 @@
     },
     "changelog": {
       "format": "keep-a-changelog format",
+      "versioning" : "work with versioning in top of component if changed by AI", 
       "sections": ["Added", "Changed", "Fixed", "Removed"],
       "breaking_changes": "clearly mark breaking changes"
     }

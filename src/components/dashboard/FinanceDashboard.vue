@@ -1,9 +1,11 @@
 <script setup>
-import { computed } from 'vue';
-import { useFinanceStore } from '../../stores/financeStore';
+import { ref, computed, onMounted, watch } from 'vue'
+import { useFinanceStore } from '../../stores/financeStore.js'
+import { useScaling } from '../../../../shared/composables/useScaling.js'
 import FinanceValueCard from '../ui/FinanceValueCard.vue';
 
-const store = useFinanceStore();
+const store = useFinanceStore()
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // All computed properties for dashboard data
 const currentPeriod = computed(() => store.currentPeriod);
@@ -95,7 +97,7 @@ const navigateToTab = (tabId) => {
 <template>
   <div class="space-y-6">
     <!-- KPI cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <FinanceValueCard title="Current Period" :value="currentPeriod" :subtitle="`Journal Entries: ${journalEntriesCount}`" rows="3-row" color="info" icon="fas fa-calendar" />
 
       <FinanceValueCard title="Receivables Outstanding" :value="receivablesOutstanding" subtitle="Top overdue AR below" rows="3-row" format="currency" color="auto" :max-good="15000" :max-warning="30000" icon="fas fa-arrow-circle-up" trend="up" />
@@ -106,74 +108,74 @@ const navigateToTab = (tabId) => {
     </div>
 
     <!-- Grids: recent JE, overdue AP/AR, cash categories -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 xl:grid-cols-3 gap-4">
       <!-- Recent Journal Entries -->
-      <div :style="[store.scalingStyles.cardPadding, store.scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div :style="[scalingStyles.cardPadding, scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div class="mb-3 flex items-center justify-between">
-          <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Recent Journal Entries</h3>
-          <button :style="[store.scalingStyles.buttonPadding, { fontSize: `${store.fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('general-ledger')">Open GL</button>
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Recent Journal Entries</h3>
+          <button :style="[scalingStyles.buttonPadding, { fontSize: `${fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('general-ledger')">Open GL</button>
         </div>
         <div class="divide-y dark:divide-gray-700">
           <div v-for="e in recentJournalEntries" :key="e.id" class="py-3">
             <div class="flex items-center justify-between">
-              <div :style="{ fontSize: `${store.fontSizes.base}px` }" class="font-medium text-gray-800 dark:text-gray-200">{{ e.description }}</div>
-              <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">{{ shortDate(e.timestamp) }}</div>
+              <div :style="{ fontSize: `${fontSizes.base}px` }" class="font-medium text-gray-800 dark:text-gray-200">{{ e.description }}</div>
+              <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">{{ shortDate(e.timestamp) }}</div>
             </div>
-            <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="mt-1 text-gray-500 dark:text-gray-400">Lines: {{ e.lines.length }} • Period: {{ e.period }}</div>
+            <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="mt-1 text-gray-500 dark:text-gray-400">Lines: {{ e.lines.length }} • Period: {{ e.period }}</div>
           </div>
-          <div v-if="recentJournalEntries.length === 0" :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="py-6 text-center text-gray-500 dark:text-gray-400 italic">No entries</div>
+          <div v-if="recentJournalEntries.length === 0" :style="{ fontSize: `${fontSizes.base - 2}px` }" class="py-6 text-center text-gray-500 dark:text-gray-400 italic">No entries</div>
         </div>
       </div>
 
       <!-- Overdue AP -->
-      <div :style="[store.scalingStyles.cardPadding, store.scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div :style="[scalingStyles.cardPadding, scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div class="mb-3 flex items-center justify-between">
-          <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Overdue Payables</h3>
-          <button :style="[store.scalingStyles.buttonPadding, { fontSize: `${store.fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('accounts-payable')">Open AP</button>
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Overdue Payables</h3>
+          <button :style="[scalingStyles.buttonPadding, { fontSize: `${fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('accounts-payable')">Open AP</button>
         </div>
         <div class="divide-y dark:divide-gray-700">
           <div v-for="p in overdueAP" :key="p.id" class="py-3">
             <div class="flex items-center justify-between">
-              <div :style="{ fontSize: `${store.fontSizes.base}px` }" class="font-medium text-gray-800 dark:text-gray-200">{{ p.vendor_name }} — {{ p.invoice_no }}</div>
-              <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-rose-600 dark:text-red-400 font-semibold">+{{ daysDiff(p.due_date) }}d</div>
+              <div :style="{ fontSize: `${fontSizes.base}px` }" class="font-medium text-gray-800 dark:text-gray-200">{{ p.vendor_name }} — {{ p.invoice_no }}</div>
+              <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="text-rose-600 dark:text-red-400 font-semibold">+{{ daysDiff(p.due_date) }}d</div>
             </div>
-            <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="mt-1 text-gray-500 dark:text-gray-400">Due: {{ shortDate(p.due_date) }} • Outstanding: {{ fmt((Number(p.amount)||0) - (Number(p.paid_amount)||0)) }}</div>
+            <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="mt-1 text-gray-500 dark:text-gray-400">Due: {{ shortDate(p.due_date) }} • Outstanding: {{ fmt((Number(p.amount)||0) - (Number(p.paid_amount)||0)) }}</div>
           </div>
-          <div v-if="overdueAP.length === 0" :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="py-6 text-center text-gray-500 dark:text-gray-400 italic">No overdue payables</div>
+          <div v-if="overdueAP.length === 0" :style="{ fontSize: `${fontSizes.base - 2}px` }" class="py-6 text-center text-gray-500 dark:text-gray-400 italic">No overdue payables</div>
         </div>
       </div>
 
       <!-- Overdue AR -->
-      <div :style="[store.scalingStyles.cardPadding, store.scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+      <div :style="[scalingStyles.cardPadding, scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
         <div class="mb-3 flex items-center justify-between">
-          <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Overdue Receivables</h3>
-          <button :style="[store.scalingStyles.buttonPadding, { fontSize: `${store.fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('accounts-receivable')">Open AR</button>
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Overdue Receivables</h3>
+          <button :style="[scalingStyles.buttonPadding, { fontSize: `${fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('accounts-receivable')">Open AR</button>
         </div>
         <div class="divide-y dark:divide-gray-700">
           <div v-for="r in overdueAR" :key="r.id" class="py-3">
             <div class="flex items-center justify-between">
-              <div :style="{ fontSize: `${store.fontSizes.base}px` }" class="font-medium text-gray-800 dark:text-gray-200">{{ r.customer_name }} — {{ r.invoice_no }}</div>
-              <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-rose-600 dark:text-red-400 font-semibold">+{{ daysDiff(r.due_date) }}d</div>
+              <div :style="{ fontSize: `${fontSizes.base}px` }" class="font-medium text-gray-800 dark:text-gray-200">{{ r.customer_name }} — {{ r.invoice_no }}</div>
+              <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="text-rose-600 dark:text-red-400 font-semibold">+{{ daysDiff(r.due_date) }}d</div>
             </div>
-            <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="mt-1 text-gray-500 dark:text-gray-400">Due: {{ shortDate(r.due_date) }} • Outstanding: {{ fmt((Number(r.amount)||0) - (Number(r.received_amount)||0)) }}</div>
+            <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="mt-1 text-gray-500 dark:text-gray-400">Due: {{ shortDate(r.due_date) }} • Outstanding: {{ fmt((Number(r.amount)||0) - (Number(r.received_amount)||0)) }}</div>
           </div>
-          <div v-if="overdueAR.length === 0" :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="py-6 text-center text-gray-500 dark:text-gray-400 italic">No overdue receivables</div>
+          <div v-if="overdueAR.length === 0" :style="{ fontSize: `${fontSizes.base - 2}px` }" class="py-6 text-center text-gray-500 dark:text-gray-400 italic">No overdue receivables</div>
         </div>
       </div>
     </div>
 
     <!-- Cash by Category -->
-    <div :style="[store.scalingStyles.cardPadding, store.scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+    <div :style="[scalingStyles.cardPadding, scalingStyles.borderRadius]" class="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
       <div class="mb-3 flex items-center justify-between">
-        <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Cash Flow by Category ({{ currentPeriod }})</h3>
-        <button :style="[store.scalingStyles.buttonPadding, { fontSize: `${store.fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('cash-flow')">Open Cash Flow</button>
+        <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white">Cash Flow by Category ({{ currentPeriod }})</h3>
+        <button :style="[scalingStyles.buttonPadding, { fontSize: `${fontSizes.base - 2}px` }]" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" @click="navigateToTab('cash-flow')">Open Cash Flow</button>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        <div v-for="row in cashByCategory" :key="row.name" :style="[store.scalingStyles.borderRadius, { padding: '12px' }]" class="border dark:border-gray-600">
-          <div :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">{{ row.name }}</div>
-          <div :style="{ fontSize: `${store.fontSizes.base + 6}px` }" class="mt-1 font-semibold" :class="row.value>=0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-red-400'">{{ fmt(row.value) }}</div>
+        <div v-for="row in cashByCategory" :key="row.name" :style="[scalingStyles.borderRadius, { padding: '12px' }]" class="border dark:border-gray-600">
+          <div :style="{ fontSize: `${fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400">{{ row.name }}</div>
+          <div :style="{ fontSize: `${fontSizes.base + 6}px` }" class="mt-1 font-semibold" :class="row.value>=0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-red-400'">{{ fmt(row.value) }}</div>
         </div>
-        <div v-if="cashByCategory.length === 0" :style="{ fontSize: `${store.fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400 italic p-3">No cash flow data</div>
+        <div v-if="cashByCategory.length === 0" :style="{ fontSize: `${fontSizes.base - 2}px` }" class="text-gray-500 dark:text-gray-400 italic p-3">No cash flow data</div>
       </div>
     </div>
   </div>

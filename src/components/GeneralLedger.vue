@@ -7,8 +7,10 @@ import StatusBadge from './ui/StatusBadge.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
+import { useScaling } from '../../../shared/composables/useScaling.js'
 
 const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Remove all computed styles - use store directly
 
@@ -187,8 +189,8 @@ function exportGL() {
 <template>
   <div class="general-ledger dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">General Ledger</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="scalingStyles.titleFontSize" class="font-semibold dark:text-white">General Ledger</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <FinanceDropdown v-model="filters.period" :options="['', ...availablePeriods]" placeholder="All Periods" variant="ghost" size="normal" />
@@ -196,7 +198,7 @@ function exportGL() {
         </div>
 
         <!-- Buttons -->
-        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <div :style="scalingStyles.buttonGap" class="flex items-center">
           <FinanceButton variant="primary" @click="handleNewEntry">New Entry</FinanceButton>
           <FinanceButton variant="success" @click="exportGL">Export GL</FinanceButton>
           <FinanceButton variant="secondary" @click="handleClosePeriod">Close Period</FinanceButton>
@@ -205,12 +207,12 @@ function exportGL() {
       </div>
     </div>
 
-    <div :style="store.scalingStyles.smallFontSize" class="mb-4 text-gray-600 dark:text-gray-400">
+    <div :style="scalingStyles.smallFontSize" class="mb-4 text-gray-600 dark:text-gray-400">
       Current Period: {{ currentPeriod }}
     </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <FinanceValueCard title="Journal Entries" :value="journalEntries.length" rows="2-row" format="number" color="info" icon="fas fa-list" />
       <FinanceValueCard title="Active Accounts" :value="Object.keys(trialBalance).length" rows="2-row" format="number" color="info" icon="fas fa-chart-pie" />
       <FinanceValueCard title="Total Debits" :value="totalDebits" rows="2-row" format="currency" color="positive" icon="fas fa-plus-circle" />
@@ -218,14 +220,14 @@ function exportGL() {
     </div>
 
     <!-- Balance Status -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <FinanceValueCard title="Balance Status" :value="isBalanced ? 'Balanced ✓' : 'Unbalanced ✗'" rows="2-row" :color="isBalanced ? 'positive' : 'negative'" icon="fas fa-balance-scale" />
       <FinanceValueCard title="Difference" :value="balanceDifference" rows="2-row" format="currency" color="auto" :max-good="0" :max-warning="100" icon="fas fa-calculator" />
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded border dark:border-gray-700 mb-6">
       <div class="p-4 border-b bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Journal Entries</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Journal Entries</h3>
       </div>
       
       <div v-if="filteredJournalEntries.length > 0" class="overflow-x-auto">
@@ -259,7 +261,7 @@ function exportGL() {
 
     <div class="bg-white dark:bg-gray-800 rounded border dark:border-gray-700 mb-6">
       <div class="p-4 border-b bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Trial Balance</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Trial Balance</h3>
       </div>
       
       <div v-if="Object.keys(trialBalance).length > 0" class="overflow-x-auto">
@@ -288,15 +290,15 @@ function exportGL() {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Journal Entry</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Journal Entry</h3>
         <form @submit.prevent="handleNewEntry">
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
             <input v-model="newEntry.description" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" placeholder="Enter description" />
           </div>
           
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Entry Lines</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Entry Lines</label>
             <div class="space-y-3">
               <div v-for="(line, index) in newEntry.lines" :key="index" class="grid grid-cols-4 gap-2 items-center">
                 <FinanceDropdown 
@@ -323,12 +325,12 @@ function exportGL() {
                 </button>
               </div>
             </div>
-            <button type="button" @click="addLine" :style="store.scalingStyles.smallFontSize" class="mt-2 px-3 py-1 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded">+ Add Line</button>
+            <button type="button" @click="addLine" :style="scalingStyles.smallFontSize" class="mt-2 px-3 py-1 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded">+ Add Line</button>
           </div>
           
           <!-- Balance Validation Display -->
           <div class="mb-4 p-3 rounded border" :class="{ 'border-green-200 bg-green-50 dark:border-green-600 dark:bg-green-900/20': isBalanced, 'border-red-200 bg-red-50 dark:border-red-600 dark:bg-red-900/20': !isBalanced }">
-            <div class="grid grid-cols-2 gap-4" :style="store.scalingStyles.smallFontSize">
+            <div class="grid grid-cols-2 gap-4" :style="scalingStyles.smallFontSize">
               <div>
                 <span class="font-medium dark:text-gray-200">Total Debits:</span> 
                 <span class="ml-2 dark:text-gray-100">{{ formatCurrency(totalDebits) }}</span>

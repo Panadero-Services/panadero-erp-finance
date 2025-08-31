@@ -1,6 +1,6 @@
 {
   "name": "panadero-erp-finance",
-  "version": "1.10.0",
+  "version": "1.2.0",
   "description": "ERP Finance Module - Comprehensive financial management system with complete workflow management",
   "main": "index.js",
   "type": "module",
@@ -35,5 +35,6 @@
   "bugs": {
     "url": "https://github.com/Panadero-Services/panadero-erp-finance/issues"
   },
-  "homepage": "https://github.com/Panadero-Services/panadero-erp-finance#readme"
+  "homepage": "https://github.com/Panadero-Services/panadero-erp-finance#readme",
+  "panaderoConfig": "./config.json"
 }

@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useFinanceStore } from '../../stores/financeStore.js'
+import { useScaling } from '../../../../shared/composables/useScaling.js'
 import FinanceValueCard from '../ui/FinanceValueCard.vue'
 import FinanceButtonDemo from '../demo/FinanceButtonDemo.vue'
 import FinanceDropdownDemo from '../demo/FinanceDropdownDemo.vue'
@@ -10,6 +11,7 @@ import StatusBadgeDemo from '../demo/StatusBadgeDemo.vue'
 import FinanceValueCardDemo from '../demo/FinanceValueCardDemo.vue'
 
 const store = useFinanceStore()
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Selected demo component
 const selectedDemo = ref('buttons')
@@ -55,7 +57,7 @@ function getIconForDemo(demoType) {
     
     <!-- UI Components Stats Dashboard -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <h2 :style="{ fontSize: `${store.fontSizes.base + 6}px` }" class="col-span-full font-bold text-gray-900 dark:text-white mb-4">Stats Dashboard</h2>
+      <h2 :style="{ fontSize: `${fontSizes.base + 6}px` }" class="col-span-full font-bold text-gray-900 dark:text-white mb-4">Stats Dashboard</h2>
       
       <FinanceValueCard 
         title="Total Components" 
@@ -94,7 +96,7 @@ function getIconForDemo(demoType) {
     <!-- Interactive Demo Center -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
       <div class="mb-6">
-        <h2 :style="{ fontSize: `${store.fontSizes.base + 4}px` }" class="font-bold text-gray-900 dark:text-white mb-4">Interactive Demo Center</h2>
+        <h2 :style="{ fontSize: `${fontSizes.base + 4}px` }" class="font-bold text-gray-900 dark:text-white mb-4">Interactive Demo Center</h2>
         
         <!-- Demo Selection Buttons -->
         <div class="flex flex-wrap gap-3">
@@ -108,7 +110,7 @@ function getIconForDemo(demoType) {
                 ? 'bg-indigo-600 border-indigo-600 text-white shadow-md'
                 : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-600 hover:border-indigo-300 dark:hover:border-indigo-400'
             ]"
-            :style="{ fontSize: `${store.fontSizes.base - 1}px` }"
+            :style="{ fontSize: `${fontSizes.base - 1}px` }"
           >
             <i :class="getIconForDemo(option.value)" class="text-sm"></i>
             <span>{{ option.label }}</span>
@@ -125,7 +127,7 @@ function getIconForDemo(demoType) {
         <StatusBadgeDemo v-else-if="selectedDemo === 'badges'" />
         <FinanceValueCardDemo v-else-if="selectedDemo === 'cards'" />
         <div v-else class="text-center py-8">
-          <p :style="{ fontSize: `${store.fontSizes.base}px` }" class="text-gray-500 dark:text-gray-400">
+          <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-500 dark:text-gray-400">
             Select a component demo from the dropdown above
           </p>
         </div>
@@ -134,78 +136,78 @@ function getIconForDemo(demoType) {
 
     <!-- Advanced Analytics -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <h2 :style="{ fontSize: `${store.fontSizes.base + 4}px` }" class="font-bold text-gray-900 dark:text-white mb-6">Advanced Analytics</h2>
+      <h2 :style="{ fontSize: `${fontSizes.base + 4}px` }" class="font-bold text-gray-900 dark:text-white mb-6">Advanced Analytics</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <!-- Component Usage Breakdown -->
         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">Component Usage</h3>
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">Component Usage</h3>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceButton</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">42 instances</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceButton</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">42 instances</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceValueCard</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">38 instances</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceValueCard</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">38 instances</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceDropdown</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">18 instances</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceDropdown</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">18 instances</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceInput</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">24 instances</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">FinanceInput</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">24 instances</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">StatusBadge</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">15 instances</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">StatusBadge</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">15 instances</span>
             </div>
           </div>
         </div>
 
         <!-- Design System Metrics -->
         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">Design System</h3>
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">Design System</h3>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Color Variants</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">12 types</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Color Variants</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">12 types</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Size Options</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">4 sizes</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Size Options</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">4 sizes</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Icon Support</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">Font Awesome</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Icon Support</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">Font Awesome</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Scaling</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">Dynamic</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Scaling</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-gray-900 dark:text-white">Dynamic</span>
             </div>
           </div>
         </div>
 
         <!-- Performance Metrics -->
         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <h3 :style="{ fontSize: `${store.fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">Performance</h3>
+          <h3 :style="{ fontSize: `${fontSizes.base + 2}px` }" class="font-semibold text-gray-900 dark:text-white mb-3">Performance</h3>
           <div class="space-y-2">
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Bundle Size</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">275KB</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Bundle Size</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">275KB</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Load Time</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">< 1s</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Load Time</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">< 1s</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Reusability</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">95%</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Reusability</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">95%</span>
             </div>
             <div class="flex justify-between">
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Accessibility</span>
-              <span :style="{ fontSize: `${store.fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">WCAG 2.1</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="text-gray-600 dark:text-gray-400">Accessibility</span>
+              <span :style="{ fontSize: `${fontSizes.base - 1}px` }" class="font-medium text-green-600 dark:text-green-400">WCAG 2.1</span>
             </div>
           </div>
         </div>

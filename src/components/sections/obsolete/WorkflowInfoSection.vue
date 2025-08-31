@@ -1,11 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useFinanceStore } from '../../stores/financeStore.js'
+import { useScaling } from '../../../../shared/composables/useScaling.js'
 
 //import { WorkflowDemo, WorkflowStatistics, WorkflowCard } from '@panadero-workflow'
 //import { WorkflowDemo, WorkflowStatistics, WorkflowCard } from '../../packages/panadero-workflow/index.js'
 
 const store = useFinanceStore()
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Event handlers for workflow dashboard
 const handleWorkflowSelected = (workflow) => {

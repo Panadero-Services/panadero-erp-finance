@@ -5,6 +5,20 @@ All notable changes to the Financial ERP Workflow Management System will be docu
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-08-31
+
+### 🔧 Shared Package Integration Architecture
+- **Shared Composables Integration** - useGenericInfoBoxes from shared package for consistent info display patterns across ERP modules
+- **FinanceInfoBoxes Enhancement** - Dedicated finance-specific composable extending generic info box functionality with 14 finance tables
+- **Framework Settings Integration** - Shared FrameworkSettingsPanel component for unified ERP module settings management
+- **Scaling Composables Standardization** - useScaling from shared package across all 25+ finance components for consistent responsive behavior
+- **Generic Layout System** - Standardized layout components from shared package for ERP module consistency and maintainability
+- **Package Isolation Complete** - Full separation from workflow dependencies with independent versioning and streamlined finance-only functionality
+- **Component Standardization** - All finance components following shared naming conventions and architecture patterns from framework
+- **Store Architecture Independence** - Finance-specific store with generic composable integration for shared functionality patterns
+- **Navigation Enhancement** - FinanceNavigation using shared scaling and layout patterns for consistent ERP module experience
+- **Configuration Management** - Shared framework configuration loader for consistent package settings and metadata management
+
 ## [1.10.0] - 2025-08-20
 
 ### 🏗️ Major Architecture Refactoring

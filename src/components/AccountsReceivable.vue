@@ -4,12 +4,14 @@ import { ref, onMounted } from 'vue';
 import { useAccountsReceivable } from '../composables/useAccountsReceivable';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
 import { useFinanceStore } from '../stores/financeStore';
+import { useScaling } from '../../../shared/composables/useScaling.js'
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 
 const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Remove all computed styles - use store directly
 
@@ -265,8 +267,8 @@ onMounted(async () => {
 <template>
   <div class="accounts-receivable dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Accounts Receivable</h2>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <h2 :style="scalingStyles.titleFontSize" class="font-semibold dark:text-white">Accounts Receivable</h2>
+      <div :style="scalingStyles.buttonGap" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           
@@ -314,7 +316,7 @@ onMounted(async () => {
       </div>
 
     <!-- Summary Cards -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       <FinanceValueCard title="Total Receivables" :value="summary.total" rows="2-row" format="currency" color="neutral" icon="fas fa-receipt" />
 
       <FinanceValueCard title="Received Amount" :value="summary.received" rows="2-row" format="currency" color="positive" icon="fas fa-check-circle" />
@@ -325,7 +327,7 @@ onMounted(async () => {
     </div>
 
     <!-- Aging Summary -->
-    <div :style="store.scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
+    <div :style="scalingStyles.sectionMargin" class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-4">
       <FinanceValueCard title="Current" :value="summary.aging.current" rows="2-row" format="currency" color="positive" size="small" />
 
       <FinanceValueCard title="1-30 Days" :value="summary.aging['30days']" rows="2-row" format="currency" color="warning" size="small" />
@@ -340,37 +342,37 @@ onMounted(async () => {
     <!-- Receivables Table -->
     <div class="bg-white dark:bg-gray-800 rounded border dark:border-gray-700 mb-6">
       <div class="p-4 border-b bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Receivables</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold dark:text-white">Receivables</h3>
       </div>
 
       <div v-if="receivables.length > 0" class="overflow-x-auto">
         <table class="w-full border-collapse">
           <thead>
             <tr class="bg-gray-50 dark:bg-gray-700 text-left">
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Invoice #</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Customer</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Date</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Due Date</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Amount</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Received</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Outstanding</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Invoice #</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Customer</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Date</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Due Date</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Amount</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Received</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Outstanding</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Status</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="receivable in receivables" :key="receivable.id" 
                 :class="{ 'bg-red-50 dark:bg-red-900/20': isOverdue(receivable) }" 
                 class="hover:bg-gray-50 dark:hover:bg-gray-700 dark:text-gray-100"
-                :style="store.scalingStyles.tableRowHeight">
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ receivable.invoice_no }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ receivable.customer_name }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(receivable.invoice_date) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(receivable.due_date) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.amount) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.received_amount) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.amount - receivable.received_amount) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+                :style="scalingStyles.tableRowHeight">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ receivable.invoice_no }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ receivable.customer_name }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(receivable.invoice_date) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(receivable.due_date) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.amount) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.received_amount) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(receivable.amount - receivable.received_amount) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">
                 <StatusBadge :status="receivable.status" />
               </td>
               <td class="p-3 border dark:border-gray-600">
@@ -381,7 +383,7 @@ onMounted(async () => {
                     class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-md transition-colors"
                     :title="'Record payment for ' + receivable.invoice_no"
                   >
-                    <i class="fas fa-dollar-sign" :style="store.scalingStyles.iconSizeSmall"></i>
+                    <i class="fas fa-dollar-sign" :style="scalingStyles.iconSizeSmall"></i>
                   Record Payment
                 </button>
                   <button 
@@ -389,21 +391,21 @@ onMounted(async () => {
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     :title="'View details for ' + receivable.invoice_no"
                   >
-                    <i class="fas fa-eye" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-eye" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="editReceivable(receivable)" 
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     :title="'Edit ' + receivable.invoice_no"
                   >
-                    <i class="fas fa-edit" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-edit" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="deleteReceivable(receivable)" 
                     class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     :title="'Delete ' + receivable.invoice_no"
                   >
-                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-trash" :style="scalingStyles.iconSize"></i>
                   </button>
                 </div>
               </td>
@@ -422,11 +424,11 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Receivable</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Receivable</h3>
         <form @submit.prevent="handleNewReceivable">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Customer</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Customer</label>
               <FinanceDropdown 
                 v-model="newReceivable.customer_id" 
                 :options="[{ label: 'Select Customer', value: '' }, ...customers.map(c => ({ label: c.name, value: c.id }))]"
@@ -440,27 +442,27 @@ onMounted(async () => {
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Number</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Number</label>
               <input v-model="newReceivable.invoice_no" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
             </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Date</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Invoice Date</label>
               <input type="date" v-model="newReceivable.invoice_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Due Date</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Due Date</label>
               <input type="date" v-model="newReceivable.due_date" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
               <input type="number" v-model="newReceivable.amount" step="0.01" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
               <FinanceDropdown 
                 v-model="newReceivable.category" 
                 :options="categoryOptions"
@@ -475,12 +477,12 @@ onMounted(async () => {
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
             <input v-model="newReceivable.description" placeholder="Invoice description" class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
             <textarea v-model="newReceivable.notes" class="w-full border rounded p-2 h-20 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
           </div>
 
@@ -504,16 +506,16 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Record Payment</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Record Payment</h3>
         <form @submit.prevent="handlePayment">
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Date</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Payment Date</label>
               <input type="date" v-model="payment.date" required class="w-full border rounded p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
           </div>
 
             <div>
-              <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
             <input type="number" 
                    v-model="payment.amount" 
                    :max="selectedReceivable.amount - selectedReceivable.received_amount"
@@ -524,12 +526,12 @@ onMounted(async () => {
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 mb-2">Reference Number</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 mb-2">Reference Number</label>
             <input v-model="payment.reference_no" required class="w-full border rounded p-2" />
           </div>
 
           <div class="mb-4">
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 mb-2">Notes</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 mb-2">Notes</label>
             <textarea v-model="payment.notes" class="w-full border rounded p-2 h-20"></textarea>
           </div>
 
@@ -553,17 +555,17 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-        <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Bulk Actions</h3>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Bulk Actions</h3>
         <div class="space-y-4">
           <div>
-            <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Select Receivables</label>
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Select Receivables</label>
             <div class="max-h-40 overflow-y-auto border rounded p-2 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600">
               <div v-for="receivable in receivables" :key="receivable.id" class="flex items-center gap-2 py-1">
                 <input type="checkbox" 
                        :value="receivable.id" 
                        v-model="selectedReceivables" 
                        class="rounded" />
-                <span :style="store.scalingStyles.smallFontSize" class="dark:text-gray-100">{{ receivable.invoice_no }} - {{ receivable.customer_name }} ({{ formatCurrency(receivable.amount) }})</span>
+                <span :style="scalingStyles.smallFontSize" class="dark:text-gray-100">{{ receivable.invoice_no }} - {{ receivable.customer_name }} ({{ formatCurrency(receivable.amount) }})</span>
               </div>
             </div>
           </div>
@@ -571,19 +573,19 @@ onMounted(async () => {
           <div class="flex flex-wrap gap-2">
             <button @click="bulkRecordPayment" 
                     :disabled="selectedReceivables.length === 0"
-                    :style="store.scalingStyles.buttonPadding"
+                    :style="scalingStyles.buttonPadding"
                     class="bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
               Record Payment
             </button>
             <button @click="bulkExport" 
                     :disabled="selectedReceivables.length === 0"
-                    :style="store.scalingStyles.buttonPadding"
+                    :style="scalingStyles.buttonPadding"
                     class="bg-green-600 text-white rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">
               Export Selected
             </button>
             <button @click="bulkDelete" 
                     :disabled="selectedReceivables.length === 0"
-                    :style="store.scalingStyles.buttonPadding"
+                    :style="scalingStyles.buttonPadding"
                     class="bg-red-600 text-white rounded hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600">
               Delete Selected
             </button>

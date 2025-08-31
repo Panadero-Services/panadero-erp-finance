@@ -4,13 +4,15 @@
 import { ref, onMounted } from 'vue';
 import { useCashFlow } from '../composables/useCashFlow';
 import { useInvoiceApi } from '../composables/useInvoiceApi';
-import { useFinanceStore } from '../stores/financeStore';
+//import { useFinanceStore } from '../stores/financeStore';
 import StatusBadge from './ui/StatusBadge.vue';
 import FinanceValueCard from './ui/FinanceValueCard.vue';
 import FinanceButton from './ui/FinanceButton.vue';
 import FinanceDropdown from './ui/FinanceDropdown.vue';
 
-const store = useFinanceStore();
+//const store = useFinanceStore();
+import { useScaling } from '../../../shared/composables/useScaling.js'
+const { fontSizes, scalingStyles, spacing } = useScaling()
 
 // Remove all computed styles - use store directly
 
@@ -163,18 +165,18 @@ onMounted(async () => {
 <template>
   <div class="cash-flow dark:bg-gray-900">
     <div class="flex items-center justify-between mb-6">
-      <h2 :style="store.scalingStyles.titleFontSize" class="font-semibold dark:text-white">Cash Flow Management</h2>
+      <h2 :style="scalingStyles.titleFontSize" class="font-semibold dark:text-white">Cash Flow Management</h2>
       <div class="flex items-center gap-2">
       </div>
-      <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+      <div :style="scalingStyles.gapScale" class="flex items-center">
         <!-- Filters -->
         <div class="flex items-center gap-2 mr-4">
           <input 
             v-model="filters.period" 
             type="text" 
             placeholder="Period (YYYY-MM)" 
-            :style="[store.scalingStyles.inputPadding, store.scalingStyles.textFontSize]"
-            class="border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            :style="[scalingStyles.inputPadding,, scalingStyles.textFontSize]"
+            class="border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-blue-400"
           >
           <FinanceDropdown
             v-model="filters.category"
@@ -184,7 +186,7 @@ onMounted(async () => {
           />
         </div>
         <!-- Buttons -->
-        <div :style="store.scalingStyles.buttonGap" class="flex items-center">
+        <div :style="[scalingStyles.buttonPadding, scalingStyles.gapScale]" class="flex items-center">
           <FinanceButton
             @click="showNewTransactionForm = true"
             variant="primary"
@@ -203,30 +205,30 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div :style="store.scalingStyles.sectionMargin" class="cf-summary">
+    <div :style="spacing.sectionMargin" class="cf-summary">
       <FinanceValueCard title="Operating Activities" :value="summary.operating" rows="2-row" format="currency" color="auto" :min-good="0" :min-warning="-10000" icon="fas fa-cogs" />
       <FinanceValueCard title="Investing Activities" :value="summary.investing" rows="2-row" format="currency" color="auto" :min-good="0" :min-warning="-50000" icon="fas fa-chart-line" />
       <FinanceValueCard title="Financing Activities" :value="summary.financing" rows="2-row" format="currency" color="auto" :min-good="0" :min-warning="-25000" icon="fas fa-university" />
       <FinanceValueCard title="Net Cash Flow" :value="summary.netCashFlow" rows="2-row" format="currency" color="auto" :min-good="1000" :min-warning="-1000" icon="fas fa-money-bill-wave" />
     </div>
 
-    <div :style="store.scalingStyles.sectionMargin" class="cf-totals">
+    <div :style="spacing.sectionMargin" class="cf-totals">
       <FinanceValueCard title="Total Inflow" :value="summary.totalInflow" rows="2-row" format="currency" color="positive" icon="fas fa-arrow-up" trend="up" />
       <FinanceValueCard title="Total Outflow" :value="summary.totalOutflow" rows="2-row" format="currency" color="negative" icon="fas fa-arrow-down" trend="down" />
     </div>
 
     <div class="cf-content">
       <div v-if="transactions.length > 0" class="transactions-list">
-        <table :style="store.scalingStyles.borderRadius" class="w-full border-collapse bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
+        <table :style="scalingStyles.borderRadius" class="w-full border-collapse bg-white dark:bg-gray-800 rounded border dark:border-gray-700">
           <thead>
-            <tr class="bg-gray-50 dark:bg-gray-700" :style="store.scalingStyles.tableHeaderHeight">
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Date</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Category</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Description</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Type</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Amount</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Reference</th>
-              <th :style="[store.scalingStyles.tableHeader, store.scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Actions</th>
+            <tr class="bg-gray-50 dark:bg-gray-700" :style="scalingStyles.tableHeaderHeight">
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Date</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Category</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Description</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Type</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Amount</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Reference</th>
+              <th :style="[scalingStyles.tableHeader, scalingStyles.paddingScale]" class="border dark:border-gray-600 dark:text-gray-200">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -234,31 +236,31 @@ onMounted(async () => {
               v-for="transaction in transactions" 
               :key="transaction.id" 
               class="dark:text-gray-100 dark:border-gray-600"
-              :style="store.scalingStyles.tableRowHeight"
+              :style="scalingStyles.tableRowHeight"
             >
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(transaction.transaction_date) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.category_name }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.description }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatDate(transaction.transaction_date) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.category_name }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.description }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">
                 <StatusBadge :status="transaction.type" />
               </td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(transaction.amount) }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.reference_no || '-' }}</td>
-              <td :style="[store.scalingStyles.textFontSize, store.scalingStyles.paddingScale]" class="border dark:border-gray-600">
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ formatCurrency(transaction.amount) }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">{{ transaction.reference_no || '-' }}</td>
+              <td :style="[scalingStyles.textFontSize, scalingStyles.paddingScale]" class="border dark:border-gray-600">
                 <div class="flex items-center gap-1">
                   <button 
                     @click="editTransaction(transaction)" 
                     class="p-2 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
                     title="Edit Transaction"
                   >
-                    <i class="fas fa-edit" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-edit" :style="scalingStyles.iconSize"></i>
                   </button>
                   <button 
                     @click="handleDeleteTransaction(transaction.id)" 
                     class="p-2 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     title="Delete Transaction"
                   >
-                    <i class="fas fa-trash" :style="store.scalingStyles.iconSize"></i>
+                    <i class="fas fa-trash" :style="scalingStyles.iconSize"></i>
                   </button>
                 </div>
               </td>
@@ -266,7 +268,7 @@ onMounted(async () => {
           </tbody>
         </table>
       </div>
-      <div v-else :style="store.scalingStyles.smallFontSize" class="no-transactions text-gray-500 dark:text-gray-400 p-6 text-center italic">
+      <div v-else :style="scalingStyles.titleFontSizee" class="no-transactions text-gray-500 dark:text-gray-400 p-6 text-center italic">
         No transactions found for the selected criteria
       </div>
     </div>
@@ -277,11 +279,11 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-            <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">New Cash Flow Transaction</h3>
+            <h3 :style="scalingStyles.titleFontSizeSize" class="font-semibold mb-4 dark:text-white">New Cash Flow Transaction</h3>
             <form @submit.prevent="handleNewTransaction">
               <div class="grid grid-cols-2 gap-4 mb-4">
                                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
                     <FinanceDropdown
                       v-model="newTransaction.category_id"
                       :options="categories"
@@ -294,12 +296,12 @@ onMounted(async () => {
                   </div>
 
                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Transaction Date</label>
-                    <input type="date" v-model="newTransaction.transaction_date" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Transaction Date</label>
+                    <input type="date" v-model="newTransaction.transaction_date" required :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                   </div>
 
                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
                     <FinanceDropdown
                       v-model="newTransaction.type"
                       :options="typeOptions"
@@ -309,19 +311,19 @@ onMounted(async () => {
                   </div>
 
                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
-                    <input type="number" v-model="newTransaction.amount" step="0.01" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+                    <input type="number" v-model="newTransaction.amount" step="0.01" required :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                   </div>
               </div>
 
               <div class="mb-4">
-                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
-                <textarea v-model="newTransaction.description" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding, store.scalingStyles.textareaHeight]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
+                <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                <textarea v-model="newTransaction.description" required :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding, scalingStyles.textareaHeight]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
               </div>
 
               <div class="mb-4">
-                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
-                <input v-model="newTransaction.reference_no" :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
+                <input v-model="newTransaction.reference_no" :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
               </div>
 
               <div class="flex justify-end gap-2">
@@ -353,11 +355,11 @@ onMounted(async () => {
       <div class="z-30 fixed top-1/2 left-1/2 w-full max-w-4xl h-[850px] opacity-95 bg-gradient-to-bl rounded-sm shadow-lg shadow-gray-400 focus:outline focus:outline-2 focus:outline-purple-500 motion-safe:hover:scale-[1.01] transition-all duration-250 transform -translate-x-1/2 -translate-y-1/2 p-6 pt-10 bg-gray-100 text-gray-600 from-gray-200/50 via-transparent dark:bg-gray-900 dark:from-gray-600/50 dark:to-gray-900/50 dark:text-gray-300 dark:shadow-gray-600">
         <div class="h-full flex flex-col">
           <div class="flex-1 overflow-y-auto">
-            <h3 :style="store.scalingStyles.subtitleFontSize" class="font-semibold mb-4 dark:text-white">Edit Transaction</h3>
+            <h3 :style="scalingStyles.titleFontSizeSize" class="font-semibold mb-4 dark:text-white">Edit Transaction</h3>
             <form @submit.prevent="handleEditTransaction">
               <div class="grid grid-cols-2 gap-4 mb-4">
                                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
+                   <label :style="scalingStyles.titleFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Category</label>
                     <FinanceDropdown
                       v-model="editingTransaction.category_id"
                       :options="categories"
@@ -369,12 +371,12 @@ onMounted(async () => {
                   </div>
 
                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Transaction Date</label>
-                    <input type="date" v-model="editingTransaction.transaction_date" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Transaction Date</label>
+                    <input type="date" v-model="editingTransaction.transaction_date" required :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                   </div>
 
                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
                     <FinanceDropdown
                       v-model="editingTransaction.type"
                       :options="typeOptions"
@@ -384,19 +386,19 @@ onMounted(async () => {
                   </div>
 
                   <div>
-                    <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
-                    <input type="number" v-model="editingTransaction.amount" step="0.01" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                    <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Amount</label>
+                    <input type="number" v-model="editingTransaction.amount" step="0.01" required :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
                   </div>
               </div>
 
               <div class="mb-4">
-                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
-                <textarea v-model="editingTransaction.description" required :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding, store.scalingStyles.textareaHeight]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
+                <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                <textarea v-model="editingTransaction.description" required :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding, scalingStyles.textareaHeight]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"></textarea>
               </div>
 
               <div class="mb-4">
-                <label :style="store.scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
-                <input v-model="editingTransaction.reference_no" :style="[store.scalingStyles.textFontSize, store.scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
+                <label :style="scalingStyles.titleFontSizee" class="block font-medium text-gray-700 dark:text-gray-200 mb-2">Reference Number</label>
+                <input v-model="editingTransaction.reference_no" :style="[scalingStyles.titleFontSize, scalingStyles.inputPadding]" class="w-full border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600" />
               </div>
 
               <div class="flex justify-end gap-2">

@@ -1,8 +1,10 @@
 <script setup>
 import { computed } from 'vue';
 import { useFinanceStore } from '../../stores/financeStore';
+import { useScaling } from '../../../../shared/composables/useScaling.js';
 
 const store = useFinanceStore();
+const { fontSizes, scalingStyles, spacing } = useScaling();
 
 const props = defineProps({
   // Content
@@ -93,25 +95,27 @@ const props = defineProps({
   }
 });
 
-// Computed styles based on size
+// Computed styles based on size - FIXED to use .value properly
 const sizeStyles = computed(() => {
+  const baseSize = fontSizes.value?.base || 14;
+  
   const sizes = {
     small: {
-      titleSize: `${store.fontSizes.base - 3}px`,
-      valueSize: `${store.fontSizes.base + 2}px`,
-      subtitleSize: `${store.fontSizes.base - 4}px`,
+      titleSize: `${baseSize - 3}px`,
+      valueSize: `${baseSize + 2}px`,
+      subtitleSize: `${baseSize - 4}px`,
       padding: '0.75rem'
     },
     normal: {
-      titleSize: `${store.fontSizes.base - 2}px`,
-      valueSize: `${store.fontSizes.base + 6}px`,
-      subtitleSize: `${store.fontSizes.base - 2}px`,
+      titleSize: `${baseSize - 2}px`,
+      valueSize: `${baseSize + 6}px`,
+      subtitleSize: `${baseSize - 2}px`,
       padding: '1rem'
     },
     large: {
-      titleSize: `${store.fontSizes.base}px`,
-      valueSize: `${store.fontSizes.base + 10}px`,
-      subtitleSize: `${store.fontSizes.base - 1}px`,
+      titleSize: `${baseSize}px`,
+      valueSize: `${baseSize + 10}px`,
+      subtitleSize: `${baseSize - 1}px`,
       padding: '1.5rem'
     }
   };
