@@ -28,6 +28,10 @@ const props = defineProps({
   canGoBack: {
     type: Boolean,
     default: true
+  },
+  scaling: {
+    type: Object,
+    required: true
   }
 })
 
@@ -47,9 +51,9 @@ const stepName = computed(() => {
   return step?.name || `Step ${props.currentStep + 1}`
 })
 
-// Dynamic font sizes
-const _body = computed(() => `${settings.fontSizesComputed.value.body}px`)
-const _caption = computed(() => `${settings.fontSizesComputed.value.caption}px`)
+// Dynamic font sizes - ONLY changing styling references
+const _body = computed(() => props.scaling.font.body) // WAS: `${settings.fontSizesComputed.value.body}px`
+const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.fontSizesComputed.value.caption}px`
 
 // Get color classes from store
 const getColorClasses = (colorType, element) => {

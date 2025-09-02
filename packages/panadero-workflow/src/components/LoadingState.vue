@@ -24,6 +24,10 @@ const props = defineProps({
   workflowStore: {
     type: Object,
     required: true
+  },
+  scaling: {
+    type: Object,
+    required: true
   }
 })
 
@@ -35,10 +39,10 @@ const isLoading = computed(() => props.loadingConfigWorkflows)
 const hasWorkflows = computed(() => props.configWorkflows.length > 0)
 const hasModules = computed(() => props.workflowModules.length > 0)
 
-// Dynamic font sizes
-const _h3 = computed(() => `${settings.fontSizesComputed.value.h3}px`)
-const _body = computed(() => `${settings.fontSizesComputed.value.body}px`)
-const _caption = computed(() => `${settings.fontSizesComputed.value.caption}px`)
+// Dynamic font sizes - ONLY changing styling references
+const _h3 = computed(() => props.scaling.font.heading) // WAS: `${settings.fontSizesComputed.value.h3}px`
+const _body = computed(() => props.scaling.font.body) // WAS: `${settings.fontSizesComputed.value.body}px`
+const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.fontSizesComputed.value.caption}px`
 
 // Get color classes from store
 const getColorClasses = (colorType, element) => {

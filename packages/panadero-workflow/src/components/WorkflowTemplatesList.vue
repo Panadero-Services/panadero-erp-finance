@@ -10,7 +10,7 @@ import WorkflowCard from './Card.vue'
 // Props
 const props = defineProps({
   allWorkflows: { type: Array, required: true },
-  fontSizes: { type: Object, default: true}
+  scaling: { type: Object, default: true}
 })
 
 // Emits
@@ -18,8 +18,8 @@ const emit = defineEmits(['start-workflow'])
 
 
 // Dynamic font sizes
-const _base = computed(() => `${props.fontSizes.base}`)
-const _body = computed(() => `${props.fontSizes.body}`)
+const _base = computed(() => `${props.scaling.base}`)
+const _body = computed(() => `${props.scaling.font.body}`)
 
 const _gridLayout = computed(() => { 
   if (_base.value < 10) return `grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2`
@@ -44,7 +44,7 @@ function handleStartWorkflow(workflow) {
         v-for="workflow in allWorkflows" 
         :key="workflow.id"
         :workflow="workflow"
-        :fontSizes="fontSizes"
+        :scaling="scaling"
         :clickable="false"
       >
         <!-- Custom actions slot -->

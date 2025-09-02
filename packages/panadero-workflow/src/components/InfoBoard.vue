@@ -1,12 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
-//import { useFinanceStore } from '../stores/financeStore.js'
+
 import InfoSection from './sections/InfoSection2.vue'
 //import WorkflowInfoSection from './sections/WorkflowInfoSection.vue'
 //import WorkflowSection from './sections/WorkflowSection.vue'
 import APIsSection from './sections/APIsSection.vue'
 
 //const store = useFinanceStore()
+
+const props = defineProps({
+  scaling: {
+    type: Object,
+    required: true
+  }
+});
+
 
 // Tab management
 const activeTab = ref('info')
@@ -57,8 +65,10 @@ const switchTab = (tabId) => {
                 ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'
             ]"
+            :style="{ fontSize: scaling.font.base }" 
           >
             <i :class="tab.icon" class="mr-2"></i>
+
             {{ tab.name }}
           </button>
         </nav>
@@ -77,7 +87,7 @@ const switchTab = (tabId) => {
       <WorkflowSection v-else-if="activeTab === 'workflowSection'" />
 -->
       <!-- APIs Tab -->
-      <APIsSection v-else-if="activeTab === 'apis'" :has-access="permissions.apis" />
+      <APIsSection v-else-if="activeTab === 'apis'" :has-access="permissions.apis" :scaling="scaling" />
     </div>
   </div>
 </template>

@@ -14,6 +14,10 @@ const props = defineProps({
   workflowStore: {
     type: Object,
     required: true
+  },
+  scaling: {
+    type: Object,
+    required: true
   }
 })
 
@@ -46,10 +50,10 @@ const stats = computed(() => { // KEEP: stats name as in your template
   }
 })
 
-// Dynamic font sizes - FULL dynamic sizing
-const _caption = computed(() => { return `${settings.fontSizesComputed.value.caption}px`; });
-const _value = computed(() => { return `${settings.fontSizesComputed.value.h4}px`; });
-const _padding = computed(() => { return `${settings.fontSizesComputed.value.h4/2}px`; });
+// Dynamic font sizes - ONLY changing styling references
+const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.fontSizesComputed.value.caption}px`
+const _value = computed(() => props.scaling.font.title) // WAS: `${settings.fontSizesComputed.value.h4}px`
+const _padding = computed(() => props.scaling.space.small) // WAS: `${settings.fontSizesComputed.value.h4/2}px`
 const _gridLayout = computed(() => { 
       if (settings.fontSizes.value.base < 12) return `grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2`;
       if (settings.fontSizes.value.base < 16) return `grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2`;

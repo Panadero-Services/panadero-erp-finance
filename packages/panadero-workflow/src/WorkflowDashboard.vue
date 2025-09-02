@@ -11,8 +11,8 @@ import { useWorkflowDashboard } from './composables/useWorkflowDashboard.js'
 import ActiveWorkflowsList from './components/ActiveWorkflowsList.vue'
 import WorkflowTemplatesList from './components/WorkflowTemplatesList.vue'
 import LoadingState from './components/LoadingState.vue'
-import WorkflowStartOverlay from './components/WorkflowStartOverlay.vue'
-import WorkflowModal from './components/Modal.vue'
+import WorkflowStartOverlay from './components/modal1/WorkflowStartOverlay.vue'
+import WorkflowModal from './components/modal1/ModalWrapper.vue'
 
 // Props - RECEIVE the store from parent
 const props = defineProps({
@@ -20,7 +20,7 @@ const props = defineProps({
     type: Object,
     required: true
   },
-  fontSizes: {
+  scaling: {
     type: Object,
     default: true
   }
@@ -72,7 +72,7 @@ async function handleStartWorkflow(workflow) {
 
 // Lifecycle
 onMounted(() => {
-  console.debug('WorkflowDashboard mounted',  props.fontSizes)
+  console.debug('WorkflowDashboard mounted',  props.scaling)
   console.debug('Store object:', props.workflowStore)
   console.debug('Available templates:', props.workflowStore.builtInTemplates)
 })
@@ -85,7 +85,7 @@ onMounted(() => {
       v-if="activeWorkflows.length > 0"
       :active-workflows="activeWorkflows"
       :workflow-store="workflowStore"
-      :fontSizes="fontSizes"
+      :scaling="scaling"
       @open-modal="openWorkflowModal"
       @delete-workflow="deleteActiveWorkflow"
     />
@@ -97,6 +97,7 @@ onMounted(() => {
       :config-workflows="configWorkflows"
       :workflow-modules="workflowModules"
       :workflow-store="workflowStore"
+      :scaling="scaling"
     />
 
     <!-- Workflow Templates List -->
@@ -104,7 +105,7 @@ onMounted(() => {
       v-else
       :all-workflows="allWorkflows"
       :workflow-store="workflowStore"
-      :fontSizes="fontSizes"
+      :scaling="scaling"
       @start-workflow="handleStartWorkflow"
     />
 
@@ -123,6 +124,7 @@ onMounted(() => {
       :show="showWorkflowModal"
       :active-workflow="selectedActiveWorkflow"
       :workflow-store="props.workflowStore"
+      :scaling="scaling"
       @close="closeWorkflowModal"
     />
   </div>
