@@ -131,6 +131,41 @@ export const useWorkflowStore = defineStore('workflow', () => {
 
   // Core workflow methods - consolidated to work with workflows only
   
+  // API function to fetch entity data structure
+  async function fetchEntityDataStructure(entityName) {
+    try {
+      console.debug(`🔄 Fetching data structure for entity: ${entityName}`);
+      
+      // API endpoint to get entity schema/structure
+      const apiEndpoint = `/api/entities/${entityName}/schema`;
+      
+      const response = await axios.get(apiEndpoint, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.status === 200 && response.data) {
+        console.debug(`✅ Successfully fetched data structure for ${entityName}:`, response.data);
+        return response.data;
+      } else {
+        throw new Error(`Invalid response from API: ${response.status}`);
+      }
+    } catch (error) {
+      console.error(`❌ Failed to fetch data structure for entity ${entityName}:`, error);
+      
+      // Return fallback structure if API fails
+      return {
+        entity: entityName,
+        fields: [],
+        validation: {},
+        relationships: [],
+        error: `Failed to fetch schema: ${error.message}`
+      };
+    }
+  }
+
   function createWorkflowInstance(templateId, data = {}) {
     const _template = builtInTemplates.value.find(t => t.id === templateId);
     
@@ -157,6 +192,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
       created_by: data.created_by || 'system',
       data: data,
       steps: [],
+      entityDataStructure: null, // Will be populated when workflow starts
       history: [
         {
           timestamp: new Date().toISOString(),
@@ -188,6 +224,18 @@ export const useWorkflowStore = defineStore('workflow', () => {
       const _template = builtInTemplates.value.find(t => t.id === _workflow.template_id);
       if (_template && _template.getSteps) {
         const _stepDefinitions = await _template.getSteps();
+        
+        // Fetch entity data structure from API
+        if (_template.entity) {
+          try {
+            const entityDataStructure = await fetchEntityDataStructure(_template.entity);
+            _workflow.entityDataStructure = entityDataStructure;
+            console.debug(`✅ Loaded data structure for entity: ${_template.entity}`, entityDataStructure);
+          } catch (error) {
+            console.warn(`⚠️ Failed to fetch data structure for entity ${_template.entity}:`, error);
+            // Continue without data structure - will use fallback
+          }
+        }
         
         // Validate the loaded workflow structure
         const { validateWorkflow } = useWorkflowValidation();
@@ -420,6 +468,53 @@ export const useWorkflowStore = defineStore('workflow', () => {
     return _workflow;
   }
 
+  function advanceCurrentStep(instanceId, user = 'system') {
+    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
+    if (!_workflow) {
+      throw new Error(`Workflow instance ${instanceId} not found`);
+    }
+
+    const currentStepIndex = _workflow.currentStep;
+    const nextStepIndex = currentStepIndex + 1;
+
+    if (nextStepIndex >= _workflow.steps.length) {
+      // This case should ideally not be reached if advanceWorkflow is called correctly
+      // but as a fallback, we can advance to the last step if it's not completed
+      if (_workflow.status !== WORKFLOW_STATES.COMPLETED) {
+        _workflow.status = WORKFLOW_STATES.COMPLETED;
+        _workflow.completed_at = new Date().toISOString();
+        _workflow.updated_at = new Date().toISOString();
+        _workflow.history.push({
+          timestamp: new Date().toISOString(),
+          action: 'workflow_completed',
+          user: user,
+          details: 'Workflow completed by advancing to last step'
+        });
+        executeCompletionActions(_workflow);
+      }
+      return _workflow;
+    }
+
+    const nextStep = _workflow.steps[nextStepIndex];
+    nextStep.status = STEP_STATES.ACTIVE;
+    nextStep.started_at = new Date().toISOString();
+    
+    _workflow.currentStep = nextStepIndex;
+    _workflow.status = WORKFLOW_STATES.ACTIVE;
+    _workflow.updated_at = new Date().toISOString();
+
+    _workflow.history.push({
+      timestamp: new Date().toISOString(),
+      action: 'step_started',
+      user: user,
+      step_index: nextStepIndex,
+      step_name: nextStep.name,
+      details: `Step "${nextStep.name}" started`
+    });
+
+    return _workflow;
+  }
+
   // Helper functions
   function validateStepData(step, data) {
     const errors = [];
@@ -547,10 +642,12 @@ export const useWorkflowStore = defineStore('workflow', () => {
     // Methods - only core methods
     createWorkflowInstance,
     startWorkflow,
+    fetchEntityDataStructure,
     completeStep,
     approveStep,
     rejectStep,
     advanceWorkflow,
+    advanceCurrentStep,
     getWorkflowById,
     getWorkflowsByTemplate,
     getWorkflowsByStatus,

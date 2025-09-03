@@ -25,6 +25,10 @@ const props = defineProps({
     type: Number,
     default: 0
   },
+  viewedStep: {
+    type: Number,
+    default: 0
+  },
   scaling: {
     type: Object,
     required: true
@@ -49,6 +53,13 @@ const stepProgress = computed(() => {
 
 const stepStatus = computed(() => {
   return currentStepData.value.status || 'pending'
+})
+
+// Simple logic: current step = editable, past steps = read-only completed, future steps = locked preview
+
+// Get the viewed step data (for display only)
+const viewedStepData = computed(() => {
+  return props.workflow.steps?.[props.viewedStep] || {}
 })
 
 // Dynamic font sizes - ONLY changing styling references
@@ -94,70 +105,31 @@ const needsApproval = computed(() => {
   return currentStepData.value.type === 'approval'
 })
 
-// Handle entity selection completion
+// Handle entity selection - just save data, don't complete step
 const handleEntitySelected = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
     data: stepData
   })
-  
-  // Complete the step in the store
-  try {
-    props.workflowStore.completeStep(
-      props.workflow.instanceId || props.workflow.id,
-      props.currentStep,
-      stepData,
-      'current_user'
-    )
-    console.debug('Step completed successfully')
-  } catch (error) {
-    console.error('Failed to complete step:', error)
-  }
 }
 
-// Handle form data updates  
+// Handle form data updates - just save data, don't complete step
 const handleFormDataUpdated = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
     data: stepData
   })
-  
-  // Complete the step in the store
-  try {
-    props.workflowStore.completeStep(
-      props.workflow.instanceId || props.workflow.id,
-      props.currentStep,
-      stepData,
-      'current_user'
-    )
-    console.debug('Form step completed successfully')
-  } catch (error) {
-    console.error('Failed to complete form step:', error)
-  }
 }
 
-// Handle checklist updates
+// Handle checklist updates - just save data, don't complete step
 const handleChecklistUpdated = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
     data: stepData
   })
-  
-  // Complete the step in the store if all required items are checked
-  try {
-    props.workflowStore.completeStep(
-      props.workflow.instanceId || props.workflow.id,
-      props.currentStep,
-      stepData,
-      'current_user'
-    )
-    console.debug('Checklist step completed successfully')
-  } catch (error) {
-    console.error('Failed to complete checklist step:', error)
-  }
 }
 
-// Handle approval updates
+// Handle approval updates - just save data, don't complete step
 const handleApprovalUpdated = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
@@ -182,12 +154,15 @@ console.debug('ModalCurrentStep workflowStore:', props.workflowStore)
   <div class="space-y-6 bg-gray-50 dark:bg-gray-800">
     <!-- NO STEP HEADER - Information shown in modal header instead -->
     
+    <!-- EDITABLE CONTENT - Current step only if not completed -->
+    <div v-if="viewedStep === currentStep && viewedStepData.status !== 'completed'">
     <!-- Entity Selection for vendor selection steps -->
     <WorkflowEntitySelection 
       v-if="needsEntitySelection"
       :step="currentStepData"
       :step-data="currentStepData.data || {}"
       :scaling="scaling"
+        :active-workflow="workflow"
       @update-step-data="handleEntitySelected"
       @step-completed="$emit('step-completed')"
     />
@@ -198,6 +173,7 @@ console.debug('ModalCurrentStep workflowStore:', props.workflowStore)
       :step="currentStepData"
       :step-data="currentStepData.data || {}"
       :scaling="scaling"
+        :active-workflow="workflow"
       @update-step-data="handleFormDataUpdated"
       @step-completed="$emit('step-completed')"
     />
@@ -208,6 +184,7 @@ console.debug('ModalCurrentStep workflowStore:', props.workflowStore)
       :step="currentStepData"
       :step-data="currentStepData.data || {}"
       :scaling="scaling"
+        :active-workflow="workflow"
       @update-step-data="handleChecklistUpdated"
       @step-completed="$emit('step-completed')"
     />
@@ -218,9 +195,137 @@ console.debug('ModalCurrentStep workflowStore:', props.workflowStore)
       :step="currentStepData"
       :step-data="currentStepData.data || {}"
       :scaling="scaling"
+        :active-workflow="workflow"
       @update-step-data="handleApprovalUpdated"
       @step-completed="$emit('step-completed')"
     />
+    </div>
+    
+    <!-- READ-ONLY COMPLETED - Past steps OR completed current step -->
+    <div v-else-if="viewedStep < currentStep || viewedStepData.status === 'completed'">
+      <!-- Completed Step Header -->
+      <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg mb-4">
+        <div class="flex items-center">
+          <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-3"></i>
+          <div>
+            <h3 :style="{ fontSize: scaling.font.subtitle }" class="font-medium text-green-800 dark:text-green-200">
+              Step {{ viewedStep + 1 }} - {{ viewedStepData.name || 'Unknown Step' }}
+            </h3>
+            <p :style="{ fontSize: scaling.font.caption }" class="text-green-700 dark:text-green-300">
+              This step has been completed
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Read-only step content -->
+      <div class="opacity-75 pointer-events-none">
+        <!-- Entity Selection Preview -->
+        <WorkflowEntitySelection 
+          v-if="viewedStepData.type === 'shared_entity_selection'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :info-only="true"
+        />
+        
+        <!-- Form Submission Preview -->
+        <WorkflowForm 
+          v-if="viewedStepData.type === 'form_submission'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :read-only-preview="true"
+        />
+        
+        <!-- Checklist Preview -->
+        <WorkflowChecklist 
+          v-if="viewedStepData.type === 'checklist'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :info-only="true"
+        />
+        
+        <!-- Approval Preview -->
+        <WorkflowApproval 
+          v-if="viewedStepData.type === 'approval'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :info-only="true"
+        />
+      </div>
+    </div>
+
+    <!-- LOCKED PREVIEW - Future steps -->
+    <div v-else>
+      <!-- Lock Screen -->
+      <div class="p-6 text-center">
+        <div class="text-gray-500 dark:text-gray-400">
+          <i class="fas fa-lock text-4xl mb-4"></i>
+          <h3 :style="{ fontSize: scaling.font.subtitle }" class="font-medium mb-2">
+            Step {{ viewedStep + 1 }} - {{ viewedStepData.name || 'Unknown Step' }}
+          </h3>
+          <p :style="{ fontSize: scaling.font.body }" class="text-gray-600 dark:text-gray-300">
+            This step is not yet available. Complete the previous steps to unlock this step.
+          </p>
+          <div class="mt-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+              <i class="fas fa-info-circle mr-1"></i>
+              Current Step: {{ currentStep + 1 }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Read-only step content preview -->
+      <div class="opacity-60 pointer-events-none">
+        <!-- Entity Selection Preview -->
+        <WorkflowEntitySelection 
+          v-if="viewedStepData.type === 'shared_entity_selection'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :info-only="true"
+        />
+        
+        <!-- Form Submission Preview -->
+        <WorkflowForm 
+          v-if="viewedStepData.type === 'form_submission'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :read-only-preview="true"
+        />
+        
+        <!-- Checklist Preview -->
+        <WorkflowChecklist 
+          v-if="viewedStepData.type === 'checklist'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :info-only="true"
+        />
+        
+        <!-- Approval Preview -->
+        <WorkflowApproval 
+          v-if="viewedStepData.type === 'approval'"
+          :step="viewedStepData"
+          :step-data="viewedStepData.data || {}"
+          :scaling="scaling"
+          :active-workflow="workflow"
+          :info-only="true"
+        />
+      </div>
+    </div>
     
     <!-- NO STEP DESCRIPTION - Shown in modal header instead -->
     

@@ -5,13 +5,11 @@
   @description Pure layout wrapper for workflow modal - handles layout, events, and data passing only
 -->
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import ModalHeader from './ModalHeader.vue'
 import ModalFooter from './ModalFooter.vue'
 import WorkflowStepper from './WorkflowStepper.vue'
 import WorkflowStepInfo from './WorkflowStepInfo.vue'
-
-
 import ModalCurrentStep from './ModalCurrentStep.vue'
 
 
@@ -41,6 +39,7 @@ const emit = defineEmits(['close'])
 
 // State
 const activeTab = ref('steps')
+const viewedStep = ref(0) // UI state for viewing steps (Previous/Next buttons)
 
 // Computed
 const hasConfigWorkflow = computed(() => {
@@ -55,6 +54,13 @@ const currentStep = computed(() => {
   return props.activeWorkflow?.currentStep || 0
 })
 
+// Initialize viewedStep to currentStep when workflow changes
+watch(() => props.activeWorkflow?.currentStep, (newStep) => {
+  if (newStep !== undefined) {
+    viewedStep.value = newStep
+  }
+}, { immediate: true })
+
 // Methods
 function closeModal() {
   emit('close')
@@ -63,6 +69,19 @@ function closeModal() {
 
 function handleTabChange(tabId) {
   activeTab.value = tabId
+}
+
+// Navigation methods for viewing steps (Previous/Next buttons)
+function goToPreviousStep() {
+  if (viewedStep.value > 0) {
+    viewedStep.value--
+  }
+}
+
+function goToNextStep() {
+  if (viewedStep.value < workflowSteps.value.length - 1) {
+    viewedStep.value++
+  }
 }
 
 // Handle step data updates - pass through to store
@@ -118,11 +137,12 @@ onMounted(() => {
              style="min-width: 0; flex-shrink: 0; flex-basis: 25%;">
           
           <!-- Column 1 Content -->
-          <div class="flex-1 overflow-y-auto p-4">
+          <div class="flex-1 overflow-y-auto p-2">
 
             <WorkflowStepper 
               :workflow-steps="workflowSteps"
               :current-step="currentStep"
+              :viewed-step="viewedStep"
               :scaling="scaling"
             />
           </div>
@@ -131,13 +151,15 @@ onMounted(() => {
         <!-- COLUMN 2: Middle - Step Info (25%) -->
         <div class="w-full lg:w-1/4 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 overflow-hidden" 
              style="min-width: 0; flex-shrink: 0; flex-basis: 25%;">
-          <div class="flex-1 overflow-y-auto p-4">
+          <div class="flex-1 overflow-y-auto p-2">
           
             <!-- Column 2 Content -->
             <WorkflowStepInfo 
               :workflow-steps="workflowSteps"
               :current-step="currentStep"
+              :viewed-step="viewedStep"
               :scaling="scaling"
+              :active-workflow="activeWorkflow"
             />
             </div>
         </div>
@@ -147,12 +169,13 @@ onMounted(() => {
              style="min-width: 0; flex-shrink: 0; flex-basis: 50%;">
           
           <!-- Column 3 Content -->
-          <div class="flex-1 overflow-y-auto p-4">
+          <div class="flex-1 overflow-y-auto p-2">
             <!-- Step Content Only - No Duplicate Headers or Info -->
             <ModalCurrentStep 
               :workflow="activeWorkflow"  
               :workflow-store="workflowStore"
               :current-step="currentStep"
+              :viewed-step="viewedStep"
               :scaling="scaling"
               @step-data-updated="handleStepDataUpdated"
             />
@@ -166,7 +189,11 @@ onMounted(() => {
       <ModalFooter 
         :workflow-steps="workflowSteps" 
         :active-workflow="activeWorkflow"
+        :current-step="currentStep"
+        :viewed-step="viewedStep"
         :scaling="scaling"
+        @previous-step="goToPreviousStep"
+        @next-step="goToNextStep"
       />
     </div>
   </div>

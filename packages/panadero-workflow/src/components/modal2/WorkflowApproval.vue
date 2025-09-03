@@ -5,7 +5,11 @@
 -->
 <script setup>
 import { ref, computed } from 'vue'
+import { useColors } from './useColors.js'
 //import { useWorkflowSettings } from '../composables/useWorkflowSettings.js'
+
+// Color system
+const { colors } = useColors()
 
 // Props
 const props = defineProps({
@@ -24,6 +28,10 @@ const props = defineProps({
   infoOnly: {
     type: Boolean,
     default: false
+  },
+  activeWorkflow: {
+    type: Object,
+    default: null
   }
 })
 
@@ -117,6 +125,31 @@ async function submitApproval() {
     isSubmitting.value = false
   }
 }
+
+// Get all collected data from all steps
+function getAllCollectedData() {
+  if (!props.activeWorkflow?.steps) return null
+  
+  const allData = {}
+  
+  // Collect data from all steps
+  props.activeWorkflow.steps.forEach((step, index) => {
+    if (step.data) {
+      Object.assign(allData, step.data)
+    }
+  })
+  
+  // Add entity data structure fields (empty if not filled)
+  if (props.activeWorkflow.entityDataStructure?.fields) {
+    props.activeWorkflow.entityDataStructure.fields.forEach(field => {
+      if (!(field.name in allData)) {
+        allData[field.name] = null // Show empty fields
+      }
+    })
+  }
+  
+  return Object.keys(allData).length > 0 ? allData : null
+}
 </script>
 
 <template>
@@ -127,14 +160,14 @@ async function submitApproval() {
     </h3>
     
     <!-- Info Only Mode - For Column 2 Display -->
-    <div v-if="infoOnly" class="bg-white dark:bg-gray-800 rounded-lg p-3">
-      <h4 :style="{ fontSize: scaling.font.caption }" class="font-medium text-gray-700 dark:text-gray-300 mb-2">
+    <div v-if="infoOnly" :class="['rounded-lg p-3', colors.primary.bg]">
+      <h4 :style="{ fontSize: scaling.font.caption }" :class="['font-medium mb-2', colors.primary.textMuted]">
         <i class="fas fa-check-circle text-green-600 mr-1"></i>
         Approval Required
       </h4>
       <div class="space-y-2">
         <div v-if="props.step.approver_roles" class="flex items-center space-x-2">
-          <span :style="{ fontSize: scaling.font.caption }" class="text-gray-500 dark:text-gray-400">
+          <span :style="{ fontSize: scaling.font.caption }" :class="colors.secondary.text">
             <i class="fas fa-user-shield mr-1"></i>Approver Roles:
           </span>
           <div class="flex flex-wrap gap-1">
@@ -145,6 +178,17 @@ async function submitApproval() {
             </span>
           </div>
         </div>
+        
+        <!-- Current Step Data Only -->
+        <div v-if="approvalDecision !== null || comments" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+          <div :style="{ fontSize: scaling.font.small }" :class="['font-medium mb-2', colors.primary.textMuted]">
+            <i class="fas fa-database mr-1 text-blue-600"></i>
+            Step Data
+          </div>
+          <div :class="['bg-gray-100 dark:bg-gray-700 rounded p-2 font-mono text-xs overflow-x-auto', colors.secondary.text]">
+            {{ JSON.stringify({ approved: approvalDecision, comments: comments }, null, 2) }}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -152,24 +196,24 @@ async function submitApproval() {
     <div v-else class="space-y-6">
     
     <!-- Approval Information -->
-    <div class="bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
+    <div :class="['rounded-lg border p-4', colors.secondary.bg, colors.secondary.border]">
       <div class="flex justify-between items-start mb-3">
-        <h4 :style="{ fontSize: _value }" class="font-semibold text-gray-900 dark:text-white">
+        <h4 :style="{ fontSize: _value }" :class="['font-semibold', colors.primary.text]">
           <i class="fas fa-user-check text-blue-600 mr-2"></i>
           Approval Required
         </h4>
       </div>
       
       <div class="space-y-3">
-        <div v-if="props.step.description" class="text-gray-600 dark:text-gray-400">
+        <div v-if="props.step.description" :class="colors.secondary.text">
           <p :style="{ fontSize: _bodySmall }">{{ props.step.description }}</p>
         </div>
       </div>
     </div>
 
     <!-- Approval Decision -->
-    <div class="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
-      <h5 :style="{ fontSize: _bodySmall }" class="font-medium text-gray-900 dark:text-white mb-3">
+    <div :class="['rounded-lg border p-4', colors.primary.bg, colors.secondary.border]">
+      <h5 :style="{ fontSize: _bodySmall }" :class="['font-medium mb-3', colors.primary.text]">
         Decision
       </h5>
       
@@ -215,8 +259,8 @@ async function submitApproval() {
     </div>
 
     <!-- Comments -->
-    <div class="bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-4">
-      <h5 :style="{ fontSize: _bodySmall }" class="font-medium text-gray-900 dark:text-white mb-3">
+    <div :class="['rounded-lg border p-4', colors.primary.bg, colors.secondary.border]">
+      <h5 :style="{ fontSize: _bodySmall }" :class="['font-medium mb-3', colors.primary.text]">
         Comments (Optional)
       </h5>
       
@@ -225,7 +269,7 @@ async function submitApproval() {
         @input="handleCommentsChange($event.target.value)"
         placeholder="Add any comments or notes about your decision..."
         rows="3"
-        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-vertical"
+        :class="['w-full px-3 py-2 border rounded-md text-sm transition-colors resize-vertical', colors.form.border, colors.form.focus, colors.form.input, colors.primary.text]"
         :style="{ fontSize: _body }"
       ></textarea>
     </div>
@@ -235,7 +279,7 @@ async function submitApproval() {
       <button
         @click="submitApproval"
         :disabled="!canSubmit"
-        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        :class="['px-6 py-3 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed', colors.form.button]"
         :style="{ fontSize: _body }"
       >
         <i v-if="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>

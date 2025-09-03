@@ -11,8 +11,8 @@ import { useWorkflowDashboard } from './composables/useWorkflowDashboard.js'
 import ActiveWorkflowsList from './components/ActiveWorkflowsList.vue'
 import WorkflowTemplatesList from './components/WorkflowTemplatesList.vue'
 import LoadingState from './components/LoadingState.vue'
-import WorkflowStartOverlay from './components/modal1/WorkflowStartOverlay.vue'
-import WorkflowModal from './components/modal1/ModalWrapper.vue'
+import WorkflowStartOverlay from './components/modal2/WorkflowStartOverlay.vue'
+import WorkflowModal from './components/modal2/ModalWrapper.vue'
 
 // Props - RECEIVE the store from parent
 const props = defineProps({

@@ -32,6 +32,7 @@ const emit = defineEmits(['close'])
 
 // Dynamic configuration data
 const moduleDisplayNames = {
+  'demo': 'Demo',
   'gl': 'General Ledger',
   'ap': 'Accounts Payable', 
   'ar': 'Accounts Receivable',
@@ -69,6 +70,8 @@ const complexityColors = {
   'high': 'text-red-600 dark:text-red-400',
   'critical': 'text-purple-600 dark:text-purple-400'
 }
+
+
 
 // Computed properties
 const workflowTemplate = computed(() => {
@@ -116,10 +119,10 @@ const leftDetailsConfig = computed(() => [
     valueClass: 'font-medium text-gray-900 dark:text-white'
   },
   {
-    key: 'category',
-    label: 'Category',
-    value: formatDisplayText(workflowTemplate.value.category || props.activeWorkflow?.category),
-    show: !!(workflowTemplate.value.category || props.activeWorkflow?.category),
+    key: 'entity',
+    label: 'Entity',
+    value: formatDisplayText(workflowTemplate.value.entity || props.activeWorkflow?.entity) || 'General',
+    show: !!(workflowTemplate.value.entity || props.activeWorkflow?.entity),
     valueClass: 'font-medium text-gray-900 dark:text-white'
   },
   {
@@ -182,6 +185,8 @@ function getModuleDisplayName(module) {
   // Check if module exists in our configuration
   return moduleDisplayNames[module.toLowerCase()] || formatDisplayText(module)
 }
+
+
 
 function getStatusColor(status) {
   if (!status) return 'text-gray-600 dark:text-gray-400'

@@ -18,6 +18,14 @@ const props = defineProps({
     type: Object,
     default: null
   },
+  currentStep: {
+    type: Number,
+    default: 0
+  },
+  viewedStep: {
+    type: Number,
+    default: 0
+  },
   workflowStore: {
     type: Object,
     required: true
@@ -28,6 +36,9 @@ const props = defineProps({
   }
 })
 
+// Emits
+const emit = defineEmits(['previous-step', 'next-step'])
+
 // Composables
 //const settings = useWorkflowSettings()
 //const workflowStore = useWorkflowStore()
@@ -36,41 +47,16 @@ const props = defineProps({
 const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.fontSizesComputed.value.caption}px`
 const _body = computed(() => props.scaling.font.body) // WAS: `${settings.fontSizesComputed.value.caption}px`
 
-// Computed
-const currentStepIndex = computed(() => props.activeWorkflow.currentStep || 0)
-
-// Methods
+// Methods - Only control viewedStep, NOT currentStep!
 function goToPreviousStep() {
-  if (currentStepIndex.value > 0) {
-    // Update the workflow instance's current step directly
-    if (props.activeWorkflow?.isInMemory) {
-      props.activeWorkflow.currentStep = currentStepIndex.value - 1
-    }
+  if (props.viewedStep > 0) {
+    emit('previous-step')
   }
 }
 
 function goToNextStep() {
-  if (currentStepIndex.value < props.workflowSteps.length - 1) {
-    const currentStep = props.workflowSteps[currentStepIndex.value]
-    
-    // Mark current step as completed if it has data
-    if (currentStep && currentStep.data && Object.keys(currentStep.data).length > 0) {
-      try {
-        props.workflowStore.completeStep(
-          props.activeWorkflow.instanceId || props.activeWorkflow.id,
-          currentStepIndex.value,
-          currentStep.data,
-          'current_user'
-        )
-      } catch (error) {
-        console.warn('Could not complete step:', error)
-      }
-    }
-    
-    // Update current step
-    if (props.activeWorkflow?.isInMemory) {
-      props.activeWorkflow.currentStep = currentStepIndex.value + 1
-    }
+  if (props.viewedStep < props.workflowSteps.length - 1) {
+    emit('next-step')
   }
 }
 </script>
@@ -91,7 +77,7 @@ function goToNextStep() {
       <div class="flex space-x-3">
         <button 
           @click="goToPreviousStep"
-          :disabled="currentStepIndex === 0"
+          :disabled="viewedStep === 0"
           :style="{ fontSize: _body }" 
           class="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fas fa-arrow-left mr-2"></i>
@@ -99,7 +85,7 @@ function goToNextStep() {
         </button>
         <button 
           @click="goToNextStep"
-          :disabled="currentStepIndex >= workflowSteps.length - 1"
+          :disabled="viewedStep >= workflowSteps.length - 1"
           :style="{ fontSize: _body }" 
           class="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           <i class="fas fa-arrow-right mr-2"></i>

@@ -13,7 +13,7 @@ export const steps = [
     type: 'shared_entity_selection',
     entity_type: 'vendor',
     required: true,
-    order: 1,
+    order: 0,
 
     entity_selection: {
       api_endpoint: '/api/vendors',
@@ -30,7 +30,7 @@ export const steps = [
     description: 'Configure vendor-specific financial settings and parameters for finance_vendors table',
     type: 'form_submission',
     required: true,
-    order: 2,
+    order: 1,
 
     form_schema: {
       sections: [
