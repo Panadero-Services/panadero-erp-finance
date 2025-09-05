@@ -101,6 +101,7 @@ import { WorkflowDashboard } from '../../packages/panadero-workflow/Dashboard.vu
 - Maintain component reusability
 
 ## Version History
+- **v1.2.3**: Component Standardization & Props Unification, Step Type Component Harmony
 - **v1.2.2**: Modal2 Architecture & DRY Refactoring, Production Cleanup, Template Structure Fixes
 - **v1.2.1**: Isolated Package Architecture, Shared Composables Integration, Framework Standardization
 - **v1.0.17**: Layout & Stepper Enhancements, Modal Organization, Final Combined Versioning

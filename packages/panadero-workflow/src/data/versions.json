@@ -1,10 +1,27 @@
 {
-  "current": "1.2.2",
+  "current": "1.2.3",
   "releases": [
+    {
+      "version": "v1.2.3",
+      "date": "04 Sep 2025",
+      "status": "current",
+      "features": [
+        "WorkflowEntitySelection v2.0.0 - Standardized entity selection with unified props pattern across all 4 workflow step components",
+        "ModalCurrentStep v1.3.0 - Enhanced current step routing with date-stamped 04-Sep-2025 improvements and DRY refactoring completion",
+        "Standardized Props Architecture - Unified props structure (step, stepData, scaling, workflowStore) implemented across all 4 step type components",
+        "Component Pattern Consistency - Same standardized header, submit method, and info-only mode patterns across all step components",
+        "ModalHeader v2.4.0 - Compact elegant header with fully dynamic module mapping and configurable data-driven approach maintenance",
+        "ModalInfo v2.0.0 - Comprehensive workflow information display with template details and enhanced step overview continued refinement",
+        "Step Type Component Harmony - All 4 workflow step components now follow identical structural patterns for maintainability and consistency",
+        "Props Validation Enhancement - Standardized prop validation and default values across all step type components for reliable data handling",
+        "Component Interface Unification - Same emit patterns and method signatures across all workflow step components for predictable behavior",
+        "Color System Integration - useColors composable fully integrated across all standardized step components for consistent theming"
+      ]
+    },
     {
       "version": "v1.2.2",
       "date": "03 Sep 2025",
-      "status": "current",
+      "status": "maintenance",
       "features": [
         "Modal2 Component Suite - Complete refactoring of modal components with enhanced architecture in dedicated modal2 directory",
         "ModalCurrentStep v1.3.0 - DRY refactored current step component with improved component routing and step type handling",

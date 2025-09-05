@@ -110,15 +110,29 @@ function clearSelection() {
 function submitStep() {
   if (!canSubmit.value) return
   
-  // Update step data in store
-/*  props.workflowStore.updateStepData(props.activeWorkflow.id, props.step.id, {
-    selectedEntity: selectedEntity.value,
-    completed: true,
-    completedAt: new Date().toISOString()
-  })*/
+  // Store the selected entity in step data
+  if (selectedEntity.value) {
+    // Update the step data with selected entity
+    const stepData = {
+      selectedEntity: selectedEntity.value,
+      completed: true,
+      completedAt: new Date().toISOString()
+    }
+    
+    // Store in workflow step data
+    if (activeWorkflow.value) {
+      const currentStepIndex = activeWorkflow.value.currentStep - 1
+      if (activeWorkflow.value.steps[currentStepIndex]) {
+        activeWorkflow.value.steps[currentStepIndex].data = {
+          ...activeWorkflow.value.steps[currentStepIndex].data,
+          ...stepData
+        }
+      }
+    }
+  }
   
   // Advance to next step
-  props.workflowStore.advanceCurrentStep(props.workflowId) // Use workflowId instead of activeWorkflow.id
+  props.workflowStore.advanceCurrentStep(props.workflowId)
 }
 
 // Lifecycle

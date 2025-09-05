@@ -5,6 +5,20 @@ All notable changes to the Panadero Workflow Management System will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-09-04
+
+### 🎯 Component Standardization & Props Unification
+- **WorkflowEntitySelection v2.0.0** - Standardized entity selection with unified props pattern across all 4 workflow step components
+- **ModalCurrentStep v1.3.0** - Enhanced current step routing with date-stamped 04-Sep-2025 improvements and DRY refactoring completion
+- **Standardized Props Architecture** - Unified props structure (step, stepData, scaling, workflowStore) implemented across all 4 step type components
+- **Component Pattern Consistency** - Same standardized header, submit method, and info-only mode patterns across WorkflowEntitySelection, WorkflowForm, WorkflowChecklist, WorkflowApproval
+- **ModalHeader v2.4.0** - Compact elegant header with fully dynamic module mapping and configurable data-driven approach maintenance
+- **ModalInfo v2.0.0** - Comprehensive workflow information display with template details and enhanced step overview continued refinement
+- **Step Type Component Harmony** - All 4 workflow step components now follow identical structural patterns for maintainability and consistency
+- **Props Validation Enhancement** - Standardized prop validation and default values across all step type components for reliable data handling
+- **Component Interface Unification** - Same emit patterns and method signatures across all workflow step components for predictable behavior
+- **Color System Integration** - useColors composable fully integrated across all standardized step components for consistent theming
+
 ## [1.2.2] - 2025-09-03
 
 ### 🔧 Modal2 Architecture & DRY Refactoring

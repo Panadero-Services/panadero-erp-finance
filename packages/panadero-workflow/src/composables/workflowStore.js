@@ -455,47 +455,24 @@ function advanceCurrentStep(workflowId, user = 'system') {
     throw new Error(`Workflow ${workflowId} not found`)
   }
 
-  // Simple increment
+  // Mark current step as completed
+  const currentStepIndex = workflow.currentStep - 1
+  if (workflow.steps[currentStepIndex]) {
+    workflow.steps[currentStepIndex].status = STEP_STATES.COMPLETED
+    workflow.steps[currentStepIndex].completed_at = new Date().toISOString()
+  }
+
+  // Advance to next step
   workflow.currentStep += 1
   workflow.updated_at = new Date().toISOString()
-  
-  console.debug('🚀 ADVANCED STEP:', {
-    workflowId,
-    newCurrentStep: workflow.currentStep,
-    totalSteps: workflow.steps.length
-  })
-  
-  // Check if workflow is complete
-  if (workflow.currentStep > workflow.steps.length) {
-    workflow.status = WORKFLOW_STATES.COMPLETED
-    workflow.completed_at = new Date().toISOString()
-    
-    workflow.history.push({
-      timestamp: new Date().toISOString(),
-      action: 'workflow_completed',
-      user: user,
-      details: 'Workflow completed successfully'
-    })
-    
-    executeCompletionActions(workflow)
-  } else {
-    // Update current step status
-    const currentStepIndex = workflow.currentStep - 1 // Convert to 0-based for array access
-    if (workflow.steps[currentStepIndex]) {
-      workflow.steps[currentStepIndex].status = STEP_STATES.ACTIVE
-      workflow.steps[currentStepIndex].started_at = new Date().toISOString()
-    }
-    
-    workflow.history.push({
-      timestamp: new Date().toISOString(),
-      action: 'step_started',
-      user: user,
-      step_index: workflow.currentStep,
-      step_name: workflow.steps[currentStepIndex]?.name || 'Unknown',
-      details: `Step ${workflow.currentStep} started`
-    })
+
+  // Activate next step if it exists
+  const nextStepIndex = workflow.currentStep - 1
+  if (workflow.steps[nextStepIndex]) {
+    workflow.steps[nextStepIndex].status = STEP_STATES.ACTIVE
+    workflow.steps[nextStepIndex].started_at = new Date().toISOString()
   }
-  
+
   return workflow
 }
 
