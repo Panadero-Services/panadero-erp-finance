@@ -1,10 +1,27 @@
 {
-  "current": "1.2.1",
+  "current": "1.2.2",
   "releases": [
+    {
+      "version": "v1.2.2",
+      "date": "03 Sep 2025",
+      "status": "current",
+      "features": [
+        "Modal2 Component Suite - Complete refactoring of modal components with enhanced architecture in dedicated modal2 directory",
+        "ModalCurrentStep v1.3.0 - DRY refactored current step component with improved component routing and step type handling",
+        "WorkflowEntitySelection v1.4.0 - Complete rewrite to fix template structure and follow development rules with cleanup",
+        "Modal v1.3.8 - Enhanced modal orchestration with unified scaling and modular component integration",
+        "Centralized Color System - New useColors composable for consistent color management across modal2 components",
+        "DRY Component Architecture - Systematic removal of duplicate code patterns across ModalHeader, ModalCurrentStep, and core components",
+        "Production Cleanup - Removed debug visual elements and entity_selector separation for cleaner production code",
+        "Template Structure Fixes - Fixed Vue template structure violations and implemented proper development rule compliance",
+        "Component Separation - Enhanced separation of concerns between step types and workflow management components",
+        "Workflow Dashboard Integration - Updated WorkflowDashboard to use modal2 components (WorkflowStartOverlay, ModalWrapper)"
+      ]
+    },
     {
       "version": "v1.2.1",
       "date": "30 Aug 2025",
-      "status": "current",
+      "status": "maintenance",
       "features": [
         "Shared Composables Integration - useGenericInfoBoxes from shared package for consistent info display patterns",
         "WorkflowInfoBoxes Enhancement - Dedicated workflow-specific composable extending generic info box functionality",

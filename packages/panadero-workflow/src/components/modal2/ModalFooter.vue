@@ -1,4 +1,4 @@
-\<!--
+<!--
   Modal Footer Component
   @version 1.1.4
   @description Modal footer with simplified store usage
@@ -14,26 +14,32 @@ const props = defineProps({
     type: Array,
     default: () => []
   },
-  activeWorkflow: {
+  workflowStore: {
     type: Object,
-    default: null
+    required: true
   },
-  currentStep: {
-    type: Number,
-    default: 0
+  workflowId: {
+    type: [String, Number],
+    required: true
   },
   viewedStep: {
     type: Number,
     default: 0
   },
-  workflowStore: {
-    type: Object,
-    required: true
-  },
   scaling: {
     type: Object,
     required: true
   }
+})
+
+// Get activeWorkflow from store reactively (SSOT)
+const activeWorkflow = computed(() => {
+  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
+})
+
+// Get currentStep from activeWorkflow
+const currentStep = computed(() => {
+  return activeWorkflow.value?.currentStep || 0
 })
 
 // Emits

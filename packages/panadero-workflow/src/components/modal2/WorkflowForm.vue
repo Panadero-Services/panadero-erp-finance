@@ -36,16 +36,24 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  activeWorkflow: {
+  workflowStore: {
     type: Object,
-    default: null
+    required: true
+  },
+  workflowId: {
+    type: [String, Number],
+    required: true
   }
 })
 
+// Get activeWorkflow from store reactively (SSOT)
+const activeWorkflow = computed(() => {
+  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
+})
 
 
 // Emits
-const emit = defineEmits(['update-step-data', 'step-completed'])
+const emit = defineEmits(['update-step-data'])
 
 // Composables
 //const settings = useWorkflowSettings()
@@ -83,13 +91,6 @@ async function submitForm() {
     }
     
     // Emit completion
-    emit('step-completed', {
-      stepId: props.step.id,
-      formData: formData.value,
-      completedAt: new Date().toISOString()
-    })
-    
-    // Update step data
     emit('update-step-data', props.step.id, {
       formData: formData.value,
       completed: true,
@@ -144,20 +145,20 @@ function getRequiredFields() {
 
 // Get all collected data from all steps
 function getAllCollectedData() {
-  if (!props.activeWorkflow?.steps) return null
+  if (!activeWorkflow.value?.steps) return null
   
   const allData = {}
   
   // Collect data from all steps
-  props.activeWorkflow.steps.forEach((step, index) => {
+  activeWorkflow.value.steps.forEach((step, index) => {
     if (step.data) {
       Object.assign(allData, step.data)
     }
   })
   
   // Add entity data structure fields (empty if not filled)
-  if (props.activeWorkflow.entityDataStructure?.fields) {
-    props.activeWorkflow.entityDataStructure.fields.forEach(field => {
+  if (activeWorkflow.value.entityDataStructure?.fields) {
+    activeWorkflow.value.entityDataStructure.fields.forEach(field => {
       if (!(field.name in allData)) {
         allData[field.name] = null // Show empty fields
       }

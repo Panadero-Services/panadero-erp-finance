@@ -1,6 +1,6 @@
 /**
  * Vendor Onboarding Workflow
- * @version 1.3.0
+ * @version 1.3.1
  * Complete vendor registration and validation process
  * @changes Step 1: shared_entity_selection for vendor selection, Step 2: form_submission for financial data
  */
@@ -13,7 +13,8 @@ export const steps = [
     type: 'shared_entity_selection',
     entity_type: 'vendor',
     required: true,
-    order: 0,
+
+    order: 1,
 
     entity_selection: {
       api_endpoint: '/api/vendors',
@@ -30,7 +31,7 @@ export const steps = [
     description: 'Configure vendor-specific financial settings and parameters for finance_vendors table',
     type: 'form_submission',
     required: true,
-    order: 1,
+    order: 2,
 
     form_schema: {
       sections: [

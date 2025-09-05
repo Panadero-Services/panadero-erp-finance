@@ -55,7 +55,12 @@ const workflowSteps = computed(() => {
 })
 
 const currentStep = computed(() => {
-  return props.activeWorkflow?.currentStep || 0  // ← Return the INDEX, not the step object
+  // Get current step from workflow store (SSOT)
+  if (props.activeWorkflow?.id && props.workflowStore) {
+    const workflow = props.workflowStore.workflows.find(w => w.id === props.activeWorkflow.id)
+    return workflow?.currentStep || 0
+  }
+  return props.activeWorkflow?.currentStep || 0
 })
 
 // Tab management
@@ -102,58 +107,6 @@ function getStepTypeDisplay(stepIndex) {
   }
 }
 
-// Handle step data updates
-const handleStepDataUpdated = (eventData) => {
-  console.debug('🔵 MODAL: handleStepDataUpdated called with:', eventData)
-  console.debug('🔵 props.activeWorkflow exists:', !!props.activeWorkflow)
-  console.debug('🔵 props.workflowStore exists:', !!props.workflowStore)
-  
-  try {
-    const { stepIndex, data } = eventData
-    
-    // Update the workflow step data in the store
-    if (props.activeWorkflow && props.workflowStore) {
-      console.debug('🔵 Both props exist, proceeding...')
-      
-      // Find the workflow in the store
-      const workflowId = props.activeWorkflow.instanceId
-      console.debug('🔵 workflowId:', workflowId)
-      
-      const workflow = props.workflowStore.workflows.find(w => w.id === workflowId)
-      console.debug('🔵 workflow found:', !!workflow)
-      console.debug('🔵 workflow.steps exists:', !!workflow?.steps)
-      console.debug('🔵 stepIndex:', stepIndex)
-      console.debug('🔵 workflow.steps[stepIndex] exists:', !!workflow?.steps?.[stepIndex])
-      
-      if (workflow && workflow.steps && workflow.steps[stepIndex]) {
-        console.debug('🔵 All conditions met, updating step data...')
-        
-        // Update the step data
-        if (!workflow.steps[stepIndex].data) {
-          workflow.steps[stepIndex].data = {}
-        }
-        Object.assign(workflow.steps[stepIndex].data, data)
-        
-        console.debug('🔵 SUCCESSFULLY updated step data:', workflow.steps[stepIndex])
-      } else {
-        console.debug('🔴 Could not find workflow or step:', {
-          workflowFound: !!workflow,
-          stepsExist: !!workflow?.steps,
-          stepExists: !!workflow?.steps?.[stepIndex],
-          totalSteps: workflow?.steps?.length
-        })
-      }
-    } else {
-      console.debug('🔴 Missing props:', {
-        activeWorkflow: !!props.activeWorkflow,
-        workflowStore: !!props.workflowStore
-      })
-    }
-  } catch (error) {
-    console.error('🔴 Error updating step data:', error)
-  }
-}
-
 // Lifecycle
 onMounted(() => {
   console.debug('Modal mounted')
@@ -185,7 +138,7 @@ onMounted(() => {
           <!-- Minimal Stepper Header -->
           <div class="p-3 border-b border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
             <h3 :style="{ fontSize: scaling.font.subtitle }" class="font-semibold text-gray-900 dark:text-white mb-2">
-              Workflow steps {{ currentStep + 1 }}/{{ workflowSteps.length }}
+              Workflow steps {{ currentStep }}/{{ workflowSteps.length }}
             </h3>
           </div>
 
@@ -266,7 +219,7 @@ onMounted(() => {
                   Current Step
                 </h4>
                 <div :style="{ fontSize: scaling.font.body }" class="text-gray-900 dark:text-white font-medium">
-                  {{ workflowSteps[currentStep]?.name || `Step ${currentStep + 1}` }}
+                  {{ workflowSteps[currentStep]?.name || `Step ${currentStep}` }}
                 </div>
               </div>
               
@@ -302,7 +255,7 @@ onMounted(() => {
                   Progress
                 </h4>
                 <div :style="{ fontSize: scaling.font.title }" class="text-blue-600 dark:text-blue-400 font-bold">
-                  {{ workflowSteps.length > 0 ? Math.round(((currentStep + 1) / workflowSteps.length) * 100) : 0 }}%
+                  {{ workflowSteps.length > 0 ? Math.round((currentStep / workflowSteps.length) * 100) : 0 }}%
                 </div>
               </div>
             </div>
@@ -319,9 +272,8 @@ onMounted(() => {
             <ModalCurrentStep 
               :workflow="activeWorkflow"  
               :workflow-store="workflowStore"
-              :current-step="currentStep"
+              :viewed-step="viewedStep"
               :scaling="scaling"
-              @step-data-updated="handleStepDataUpdated"
             />
           </div>
         </div>

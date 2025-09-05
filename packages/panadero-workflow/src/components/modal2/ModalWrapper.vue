@@ -12,7 +12,6 @@ import WorkflowStepper from './WorkflowStepper.vue'
 import WorkflowStepInfo from './WorkflowStepInfo.vue'
 import ModalCurrentStep from './ModalCurrentStep.vue'
 
-
 // Props
 const props = defineProps({
   show: {
@@ -22,6 +21,11 @@ const props = defineProps({
   activeWorkflow: {
     type: Object,
     default: null
+  },
+  
+  workflowId: {
+    type: [String, Number],
+    required: true
   },
   workflowStore: {
     type: Object,
@@ -37,29 +41,33 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(['close'])
 
+// Get activeWorkflow from store reactively (SSOT)
+const activeWorkflow = computed(() => {
+  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
+})
+
 // State
 const activeTab = ref('steps')
-const viewedStep = ref(0) // UI state for viewing steps (Previous/Next buttons)
+// Line 41: Start viewedStep at 1 to match 1-based currentStep
+const viewedStep = ref(1) // UI state for viewing steps (Previous/Next buttons)
 
 // Computed
 const hasConfigWorkflow = computed(() => {
-  return props.activeWorkflow?.configWorkflow || props.activeWorkflow?.template?._source === 'config_file'
+  return activeWorkflow.value?.configWorkflow || activeWorkflow.value?.template?._source === 'config_file'
 })
 
 const workflowSteps = computed(() => {
-  return props.activeWorkflow?.steps || props.activeWorkflow?.template?.steps || []
+  return activeWorkflow.value?.steps || activeWorkflow.value?.template?.steps || []
 })
 
-const currentStep = computed(() => {
-  return props.activeWorkflow?.currentStep || 0
+// ✅ CORRECT - Using SSOT directly
+const currentStepData = computed(() => {
+  return activeWorkflow.value?.steps?.[activeWorkflow.value?.currentStep - 1] || {}
 })
 
-// Initialize viewedStep to currentStep when workflow changes
-watch(() => props.activeWorkflow?.currentStep, (newStep) => {
-  if (newStep !== undefined) {
-    viewedStep.value = newStep
-  }
-}, { immediate: true })
+const isEditableMode = computed(() => {
+  return viewedStep.value === activeWorkflow.value?.currentStep && currentStepData.value.status !== 'completed'
+})
 
 // Methods
 function closeModal() {
@@ -73,38 +81,14 @@ function handleTabChange(tabId) {
 
 // Navigation methods for viewing steps (Previous/Next buttons)
 function goToPreviousStep() {
-  if (viewedStep.value > 0) {
+  if (viewedStep.value > 1) { // ← Change from 0 to 1
     viewedStep.value--
   }
 }
 
 function goToNextStep() {
-  if (viewedStep.value < workflowSteps.value.length - 1) {
+  if (viewedStep.value < workflowSteps.value.length) { // ← Remove -1
     viewedStep.value++
-  }
-}
-
-// Handle step data updates - pass through to store
-const handleStepDataUpdated = (eventData) => {
-  console.debug('🔵 MODAL WRAPPER: handleStepDataUpdated called with:', eventData)
-  
-  try {
-    const { stepIndex, data } = eventData
-    
-    if (props.activeWorkflow && props.workflowStore) {
-      const workflowId = props.activeWorkflow.instanceId
-      const workflow = props.workflowStore.workflows.find(w => w.id === workflowId)
-      
-      if (workflow && workflow.steps && workflow.steps[stepIndex]) {
-        if (!workflow.steps[stepIndex].data) {
-          workflow.steps[stepIndex].data = {}
-        }
-        Object.assign(workflow.steps[stepIndex].data, data)
-        console.debug('🔵 SUCCESSFULLY updated step data:', workflow.steps[stepIndex])
-      }
-    }
-  } catch (error) {
-    console.error('🔴 Error updating step data:', error)
   }
 }
 
@@ -123,7 +107,9 @@ onMounted(() => {
       
       <!-- Modal Header (fixed) -->
       <ModalHeader 
-        :active-workflow="activeWorkflow"
+          :active-workflow="activeWorkflow"
+        :workflow-id="workflowId"
+        :workflow-store="workflowStore"
         :has-config-workflow="hasConfigWorkflow"
         :scaling="scaling"
         @close="closeModal"
@@ -140,8 +126,9 @@ onMounted(() => {
           <div class="flex-1 overflow-y-auto p-2">
 
             <WorkflowStepper 
-              :workflow-steps="workflowSteps"
-              :current-step="currentStep"
+              :workflow-store="workflowStore"
+                  :active-workflow="activeWorkflow"
+              :workflow-id="workflowId"
               :viewed-step="viewedStep"
               :scaling="scaling"
             />
@@ -155,11 +142,11 @@ onMounted(() => {
           
             <!-- Column 2 Content -->
             <WorkflowStepInfo 
-              :workflow-steps="workflowSteps"
-              :current-step="currentStep"
+              :workflow-store="workflowStore"
+                  :active-workflow="activeWorkflow"
+              :workflow-id="workflowId"
               :viewed-step="viewedStep"
               :scaling="scaling"
-              :active-workflow="activeWorkflow"
             />
             </div>
         </div>
@@ -172,12 +159,10 @@ onMounted(() => {
           <div class="flex-1 overflow-y-auto p-2">
             <!-- Step Content Only - No Duplicate Headers or Info -->
             <ModalCurrentStep 
-              :workflow="activeWorkflow"  
               :workflow-store="workflowStore"
-              :current-step="currentStep"
+              :workflow-id="workflowId"
               :viewed-step="viewedStep"
               :scaling="scaling"
-              @step-data-updated="handleStepDataUpdated"
             />
           </div>
           </div>
@@ -187,9 +172,10 @@ onMounted(() => {
 
       <!-- Modal Footer (fixed) -->
       <ModalFooter 
-        :workflow-steps="workflowSteps" 
-        :active-workflow="activeWorkflow"
-        :current-step="currentStep"
+        :workflow-steps="workflowSteps"
+        :workflow-store="workflowStore"
+            :active-workflow="activeWorkflow"
+        :workflow-id="workflowId"
         :viewed-step="viewedStep"
         :scaling="scaling"
         @previous-step="goToPreviousStep"

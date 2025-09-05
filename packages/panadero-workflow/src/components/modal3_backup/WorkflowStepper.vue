@@ -5,19 +5,13 @@
   @description Vertical stepper component for workflow progress display
 -->
 <script setup>
-import { computed } from 'vue'
-
 // Props
 const props = defineProps({
-  workflowStore: {
-    type: Object,
+  workflowSteps: {
+    type: Array,
     required: true
   },
-  workflowId: {
-    type: [String, Number],
-    required: true
-  },
-  viewedStep: {
+  currentStep: {
     type: Number,
     default: 0
   },
@@ -25,20 +19,6 @@ const props = defineProps({
     type: Object,
     required: true
   }
-})
-
-// Get activeWorkflow from store reactively (SSOT)
-const activeWorkflow = computed(() => {
-  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
-})
-
-// Get data from store reactively
-const workflowSteps = computed(() => {
-  return activeWorkflow.value?.steps || []
-})
-
-const currentStep = computed(() => {
-  return activeWorkflow.value?.currentStep || 0
 })
 
 // Get step type icon
@@ -80,7 +60,7 @@ function getStepStatus(step, stepIdx, currentStep) {
     <!-- Stepper Header -->
     <div class="mb-4">
       <h3 :style="{ fontSize: scaling.font.body }" class="font-semibold text-gray-900 dark:text-white mb-2">
-        Workflow Steps {{ currentStep }}/{{ workflowSteps.length }}
+        Workflow Steps {{ currentStep + 1 }}/{{ workflowSteps.length }}
       </h3>
     </div>
     

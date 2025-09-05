@@ -32,6 +32,7 @@ const emit = defineEmits(['close'])
 
 // Dynamic configuration data
 const moduleDisplayNames = {
+  'demo': 'Demo',
   'gl': 'General Ledger',
   'ap': 'Accounts Payable', 
   'ar': 'Accounts Receivable',
@@ -69,6 +70,8 @@ const complexityColors = {
   'high': 'text-red-600 dark:text-red-400',
   'critical': 'text-purple-600 dark:text-purple-400'
 }
+
+
 
 // Computed properties
 const workflowTemplate = computed(() => {
@@ -116,10 +119,10 @@ const leftDetailsConfig = computed(() => [
     valueClass: 'font-medium text-gray-900 dark:text-white'
   },
   {
-    key: 'category',
-    label: 'Category',
-    value: formatDisplayText(workflowTemplate.value.category || props.activeWorkflow?.category),
-    show: !!(workflowTemplate.value.category || props.activeWorkflow?.category),
+    key: 'entity',
+    label: 'Entity',
+    value: formatDisplayText(workflowTemplate.value.entity || props.activeWorkflow?.entity) || 'General',
+    show: !!(workflowTemplate.value.entity || props.activeWorkflow?.entity),
     valueClass: 'font-medium text-gray-900 dark:text-white'
   },
   {
@@ -143,7 +146,7 @@ const rightDetailsConfig = computed(() => [
   {
     key: 'id',
     label: 'ID',
-    value: (props.activeWorkflow?.workflowNr || props.activeWorkflow?.id)?.split('-').pop(),
+    value: props.activeWorkflow?.workflowNr || props.activeWorkflow?.id,
     show: !!(props.activeWorkflow?.workflowNr || props.activeWorkflow?.id),
     valueClass: 'bg-gray-200 dark:bg-gray-600  rounded font-mono text-gray-900 dark:text-gray-100',
     isCode: true
@@ -181,6 +184,13 @@ function getModuleDisplayName(module) {
   
   // Check if module exists in our configuration
   return moduleDisplayNames[module.toLowerCase()] || formatDisplayText(module)
+}
+
+function getEntityDisplayName(templateId) {
+  if (!templateId) return 'General'
+  
+  // Check if entity exists in our mapping
+  return entityMapping[templateId] || formatDisplayText(templateId)
 }
 
 function getStatusColor(status) {
@@ -231,7 +241,7 @@ const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.
 
               <h2 :style="{ fontSize: _h2 }" :class="textClasses.title">
               <i :style="{ fontSize: _body }" class="fas fa-sitemap text-indigo-600 dark:text-indigo-400 "></i>
-                {{ workflowName }} version 3
+                {{ workflowName }} version 2
               </h2>
               <p v-if="workflowDescription" 
                  :style="{ fontSize: _caption }" 

@@ -10,16 +10,15 @@ import { useColors } from './useColors.js'
 
 // Color system
 const { colors } = useColors()
-
 // Props
 const props = defineProps({
-  workflowStore: {
-    type: Object,
+  workflowSteps: {
+    type: Array,
     required: true
   },
-  workflowId: {
-    type: [String, Number],
-    required: true
+  currentStep: {
+    type: Number,
+    default: 0
   },
   viewedStep: {
     type: Number,
@@ -28,21 +27,11 @@ const props = defineProps({
   scaling: {
     type: Object,
     required: true
+  },
+  activeWorkflow: {
+    type: Object,
+    default: null
   }
-})
-
-// Get activeWorkflow from store reactively (SSOT)
-const activeWorkflow = computed(() => {
-  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
-})
-
-// Get data from store reactively
-const workflowSteps = computed(() => {
-  return activeWorkflow.value?.steps || []
-})
-
-const currentStep = computed(() => {
-  return activeWorkflow.value?.currentStep || 0
 })
 
 // Get form field count
@@ -211,12 +200,12 @@ function getOtherStepData(step) {
 
 // Get all collected data from all steps
 function getAllCollectedData() {
-  if (!activeWorkflow.value?.steps) return null
+  if (!props.activeWorkflow?.steps) return null
   
   const allData = {}
   
   // Collect data from all steps
-  activeWorkflow.value.steps.forEach((step, index) => {
+  props.activeWorkflow.steps.forEach((step, index) => {
     if (step.data) {
       // For selectedEntity, only keep essential info to save space
       if (step.data.selectedEntity) {
@@ -232,8 +221,8 @@ function getAllCollectedData() {
   })
   
   // Add entity data structure fields (empty if not filled)
-  if (activeWorkflow.value.entityDataStructure?.fields) {
-    activeWorkflow.value.entityDataStructure.fields.forEach(field => {
+  if (props.activeWorkflow.entityDataStructure?.fields) {
+    props.activeWorkflow.entityDataStructure.fields.forEach(field => {
       if (!(field.name in allData)) {
         allData[field.name] = null // Show empty fields
       }
@@ -248,8 +237,8 @@ function getCompleteTableStructure() {
   const allData = {}
   
   // First, collect all data from steps
-  if (activeWorkflow.value?.steps) {
-    activeWorkflow.value.steps.forEach((step, index) => {
+  if (props.activeWorkflow?.steps) {
+    props.activeWorkflow.steps.forEach((step, index) => {
       if (step.data) {
         // For selectedEntity, map it to vendor_id for entity selection steps
         if (step.data.selectedEntity && step.type === 'shared_entity_selection') {
@@ -272,12 +261,12 @@ function getCompleteTableStructure() {
   }
   
   // If we have entity data structure, use it to create complete structure
-  if (activeWorkflow.value?.entityDataStructure?.fields) {
+  if (props.activeWorkflow?.entityDataStructure?.fields) {
     const completeStructure = {}
     
     // Add all fields from entity data structure
     // FIXED: Use Object.entries instead of forEach since fields is an object
-    Object.entries(activeWorkflow.value.entityDataStructure.fields).forEach(([fieldName, fieldData]) => {
+    Object.entries(props.activeWorkflow.entityDataStructure.fields).forEach(([fieldName, fieldData]) => {
       completeStructure[fieldName] = allData[fieldName] || null
     })
     
@@ -300,11 +289,13 @@ function formatFieldName(key) {
   return key // Just return the original field name without any conversion
 }
 
-// Line 299: Fix array access for 1-based viewedStep
+
+
+
 const progressPercentage = computed(() => {
-  if (!workflowSteps.value[props.viewedStep - 1]) return -1;
+  if (!props.workflowSteps[props.viewedStep]) return -1;
   
-  const step = workflowSteps.value[props.viewedStep - 1];
+  const step = props.workflowSteps[props.viewedStep];
   
   if (step.type === 'checklist') {
     return getChecklistProgress(step);
@@ -326,6 +317,7 @@ const progressPercentage = computed(() => {
   
   return -1;
 });
+
 </script>
 
 
@@ -347,10 +339,10 @@ const progressPercentage = computed(() => {
     <div class="flex justify-between"  :class="['mb-3 rounded-lg px-4 py-2 border', colors.secondary.bg, colors.secondary.border]">
 
       <!-- Title-->
-      <div v-if="workflowSteps[viewedStep - 1]" class="flex items-center ">
-        <i :class="getStepIcon(workflowSteps[viewedStep - 1].type)" class="mr-2"></i>
+      <div v-if="workflowSteps[viewedStep]" class="flex items-center ">
+        <i :class="getStepIcon(workflowSteps[viewedStep].type)" class="mr-2"></i>
         <span :style="{ fontSize: scaling.font.body }" :class="[colors.secondary.text, 'capitalize']">
-          {{ workflowSteps[viewedStep - 1].type?.replace(/_/g, ' ') || 'Unknown' }}
+          {{ workflowSteps[viewedStep].type?.replace(/_/g, ' ') || 'Unknown' }}
         </span>
       </div>
 
@@ -378,69 +370,69 @@ const progressPercentage = computed(() => {
 
 
     <!-- Template Information Body -->
-    <div v-if="workflowSteps[viewedStep - 1]" :class="['rounded-lg p-4 border', colors.secondary.bg, colors.secondary.border]">
+    <div v-if="workflowSteps[viewedStep]" :class="['rounded-lg p-4 border', colors.secondary.bg, colors.secondary.border]">
       <div :style="{ fontSize: scaling.font.label }" :class="[colors.secondary.text, 'space-y-2']">
         <!-- Step Status -->
         <div class="flex justify-between">
           <span class="font-medium">Status:</span>
-          <span :class="getStepStatusClass(workflowSteps[viewedStep - 1])" class="font-medium">
-            {{ getStepStatusText(workflowSteps[viewedStep - 1]) }}
+          <span :class="getStepStatusClass(workflowSteps[viewedStep])" class="font-medium">
+            {{ getStepStatusText(workflowSteps[viewedStep]) }}
           </span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].entity_type" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].entity_type" class="flex justify-between">
           <span class="font-medium">Entity Type:</span>
-          <span>{{ workflowSteps[viewedStep - 1].entity_type }}</span>
+          <span>{{ workflowSteps[viewedStep].entity_type }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].entity_selection?.api_endpoint" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].entity_selection?.api_endpoint" class="flex justify-between">
           <span class="font-medium">API Endpoint:</span>
-          <span class="font-mono">{{ workflowSteps[viewedStep - 1].entity_selection.api_endpoint }}</span>
+          <span class="font-mono">{{ workflowSteps[viewedStep].entity_selection.api_endpoint }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].entity_selection?.allow_create_new !== undefined" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].entity_selection?.allow_create_new !== undefined" class="flex justify-between">
           <span class="font-medium">Allow Create New:</span>
-          <span>{{ workflowSteps[viewedStep - 1].entity_selection.allow_create_new ? 'Yes' : 'No' }}</span>
+          <span>{{ workflowSteps[viewedStep].entity_selection.allow_create_new ? 'Yes' : 'No' }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].form_schema?.sections" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].form_schema?.sections" class="flex justify-between">
           <span class="font-medium">Total Fields:</span>
-          <span>{{ getFormFieldCount(workflowSteps[viewedStep - 1]) }}</span>
+          <span>{{ getFormFieldCount(workflowSteps[viewedStep]) }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].form_schema?.sections" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].form_schema?.sections" class="flex justify-between">
           <span class="font-medium">Sections:</span>
-          <span>{{ workflowSteps[viewedStep - 1].form_schema.sections.length }}</span>
+          <span>{{ workflowSteps[viewedStep].form_schema.sections.length }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].approvers?.length" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].approvers?.length" class="flex justify-between">
           <span class="font-medium">Approvers:</span>
-          <span>{{ workflowSteps[viewedStep - 1].approvers.length }}</span>
+          <span>{{ workflowSteps[viewedStep].approvers.length }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].approval_required !== undefined" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].approval_required !== undefined" class="flex justify-between">
           <span class="font-medium">Approval Required:</span>
-          <span>{{ workflowSteps[viewedStep - 1].approval_required ? 'Yes' : 'No' }}</span>
+          <span>{{ workflowSteps[viewedStep].approval_required ? 'Yes' : 'No' }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].checklist_items?.length" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].checklist_items?.length" class="flex justify-between">
           <span class="font-medium">Checklist Items:</span>
-          <span>{{ workflowSteps[viewedStep - 1].checklist_items.length }}</span>
+          <span>{{ workflowSteps[viewedStep].checklist_items.length }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].required !== undefined" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].required !== undefined" class="flex justify-between">
           <span class="font-medium">Required:</span>
-          <span>{{ workflowSteps[viewedStep - 1].required ? 'Yes' : 'No' }}</span>
+          <span>{{ workflowSteps[viewedStep].required ? 'Yes' : 'No' }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].order" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].order" class="flex justify-between">
           <span class="font-medium">Order:</span>
-          <span>{{ workflowSteps[viewedStep - 1].order }}</span>
+          <span>{{ workflowSteps[viewedStep].order }}</span>
         </div>
         
-        <div v-if="workflowSteps[viewedStep - 1].estimated_duration" class="flex justify-between">
+        <div v-if="workflowSteps[viewedStep].estimated_duration" class="flex justify-between">
           <span class="font-medium">Duration:</span>
-          <span>{{ workflowSteps[viewedStep - 1].estimated_duration }}</span>
+          <span>{{ workflowSteps[viewedStep].estimated_duration }}</span>
         </div>
 
       </div>
@@ -496,19 +488,19 @@ const progressPercentage = computed(() => {
     </div>
 
     <!-- PROGRESS BAR FOR CHECKLIST - UNDER KEY/VALUE PAIRS -->
-    <div v-if="workflowSteps[viewedStep - 1].type === 'checklist'" class="mt-6">
+    <div v-if="workflowSteps[viewedStep].type === 'checklist'" class="mt-6">
       <div class="w-full bg-gray-300 rounded-full h-3">
-        <div class="bg-green-500 h-3 rounded-full" :style="{ width: `${getChecklistProgress(workflowSteps[viewedStep - 1])}%` }"></div>
+        <div class="bg-green-500 h-3 rounded-full" :style="{ width: `${getChecklistProgress(workflowSteps[viewedStep])}%` }"></div>
       </div>
-       <!--<div :class="['mt-1 text-center', colors.secondary.text]" :style="{ fontSize: scaling.font.small }">{{ getCompletedChecklistItems(workflowSteps[viewedStep - 1]) }} of {{ getTotalChecklistItems(workflowSteps[viewedStep - 1]) }} items checked</div> -->
+       <!--<div :class="['mt-1 text-center', colors.secondary.text]" :style="{ fontSize: scaling.font.small }">{{ getCompletedChecklistItems(workflowSteps[viewedStep]) }} of {{ getTotalChecklistItems(workflowSteps[viewedStep]) }} items checked</div> -->
     </div>
 
     <!-- PROGRESS BAR FOR FORM SUBMISSION - UNDER KEY/VALUE PAIRS -->
-    <div v-if="workflowSteps[viewedStep - 1].type === 'form_submission'" class="mt-6">
+    <div v-if="workflowSteps[viewedStep].type === 'form_submission'" class="mt-6">
       <div class="w-full bg-gray-300 rounded-full h-3">
-        <div class="bg-blue-500 h-3 rounded-full" :style="{ width: `${getFormProgress(workflowSteps[viewedStep - 1])}%` }"></div>
+        <div class="bg-blue-500 h-3 rounded-full" :style="{ width: `${getFormProgress(workflowSteps[viewedStep])}%` }"></div>
       </div>
-      <!--<div :class="['mt-1 text-center', colors.secondary.text]"  :style="{ fontSize: scaling.font.small }">{{ getCompletedFormFields(workflowSteps[viewedStep - 1]) }} of {{ getFormFieldCount(workflowSteps[viewedStep - 1]) }} fields filled</div>-->
+      <!--<div :class="['mt-1 text-center', colors.secondary.text]"  :style="{ fontSize: scaling.font.small }">{{ getCompletedFormFields(workflowSteps[viewedStep]) }} of {{ getFormFieldCount(workflowSteps[viewedStep]) }} fields filled</div>-->
     </div>
 
 

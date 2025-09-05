@@ -1,7 +1,7 @@
 /**
  * Workflow Dashboard Composable
  * @version 1.1.2
- * @date 27-Jan-2025
+ * @date 27-Aug-2025
  * @description Centralized logic for workflow dashboard functionality with reactive store integration
  */
 import { ref, computed, onMounted } from 'vue'
@@ -11,8 +11,6 @@ export function useWorkflowDashboard() {
   const workflowStore = useWorkflowStore()
 
   // Reactive state
-  const selectedWorkflow = ref(null)
-  const showOverlay = ref(false)
   const selectedActiveWorkflow = ref(null)
   const showWorkflowModal = ref(false)
   const activeTab = ref('info')
@@ -22,24 +20,13 @@ export function useWorkflowDashboard() {
   // Reactive store data - just use the store directly
 // Reactive store data - FIXED: Use workflows instead of inMemoryWorkflows
 const activeWorkflows = computed(() => {
-  return workflowStore.workflows.map(instance => { // ← FIXED
-    // Find the template for this instance
+  return workflowStore.workflows.map(instance => {
+    // Just add template info if needed, but keep original field names
     const template = workflowStore.builtInTemplates.find(t => t.id === instance.template_id)
     
     return {
-      workflowNr: instance.id,
-      instanceId: instance.id,
-      name: instance.name || template?.name || 'Unknown Workflow',
-      module: template?.module || 'general',
-      category: template?.category || 'general',
-      complexity: template?.complexity || 'medium',
-      startedAt: new Date(instance.created_at),
-      status: instance.status,
-      template: instance.template, // ← Use stored template
-      configWorkflow: null,
-      steps: instance.steps || [],
-      currentStep: instance.currentStep || 0,
-      isInMemory: true
+      ...instance,  // ← KEEP ALL ORIGINAL FIELDS!
+      template: instance.template || template,  // ← Add template if missing
     }
   })
 })
@@ -114,16 +101,6 @@ const activeWorkflows = computed(() => {
   })
 
   // Workflow management methods
-  function openWorkflowOverlay(workflow) {
-    selectedWorkflow.value = workflow
-    showOverlay.value = true
-  }
-
-  function closeOverlay() {
-    showOverlay.value = false
-    selectedWorkflow.value = null
-  }
-
   function openWorkflowModal(activeWorkflow) {
     selectedActiveWorkflow.value = activeWorkflow
     showWorkflowModal.value = true
@@ -140,70 +117,51 @@ async function startWorkflowDirectly(workflow) {
     // Use workflow directly from store
     const fullWorkflow = workflow
 
-    // FIXED: Use createWorkflowInstance instead of createInMemoryWorkflow
-    const instance = workflowStore.createWorkflowInstance(fullWorkflow.id, {
+    // FIXED: Create workflow instance
+    const instance = await workflowStore.createWorkflowInstance(fullWorkflow.id, {
       created_by: 'current_user',
       workflow_data: {
         name: fullWorkflow.name,
         description: fullWorkflow.description,
-        category: fullWorkflow.category,
-        module: fullWorkflow.module,
-        complexity: fullWorkflow.complexity,
-        estimated_duration: fullWorkflow.estimated_duration
+        // ... other data
       }
     })
-    
-    // FIXED: Use startWorkflow instead of startInMemoryWorkflow
-    await workflowStore.startWorkflow(instance.id)
-    
-    // Create the active workflow object for the modal
-    const activeWorkflow = {
-      workflowNr: instance.id,
-      instanceId: instance.id,
-      name: fullWorkflow.name,
-      module: fullWorkflow.module,
-      category: fullWorkflow.category,
-      complexity: fullWorkflow.complexity,
-      startedAt: new Date(),
-      status: 'active',
-      template: fullWorkflow,
-      configWorkflow: null,
-      steps: instance.steps,
-      currentStep: instance.currentStep || 0,
-      isInMemory: true
-    }
+
+    // FIXED: Start the workflow to load steps and entity data
+    const startedWorkflow = await workflowStore.startWorkflow(instance.id)
     
     // Open the big modal directly
-    selectedActiveWorkflow.value = activeWorkflow
+    selectedActiveWorkflow.value = startedWorkflow
     showWorkflowModal.value = true
     
     console.debug(`Started workflow: ${fullWorkflow.name}`, {
-      instance,
-      activeWorkflow,
-      source: 'store',
-      stepsCount: instance.steps.length,
-      template: instance.template
+      instance: instance,
+      activeWorkflow: selectedActiveWorkflow.value,
+      source: "store",
+      stepsCount: startedWorkflow?.steps?.length || 0,
+      template: fullWorkflow
     })
   } catch (error) {
     console.error('Failed to start workflow:', error)
+    throw error
   }
 }
 
   // Load workflow details (simplified)
-  async function loadWorkflowDetails(workflowId) {
+  async function loadWorkflowDetails(_id) {
     try {
       // Find workflow in store templates
-      const workflow = workflowStore.builtInTemplates?.find(w => w.id === workflowId)
+      const workflow = workflowStore.builtInTemplates?.find(w => w.id === _id)
       return workflow || null
     } catch (error) {
-      console.error(`Failed to load workflow details for ${workflowId}:`, error)
+      console.error(`Failed to load workflow details for ${_id}:`, error)
       return null
     }
   }
 
   function deleteActiveWorkflow(workflowToDelete) {
     // FIXED: Remove from workflows instead of inMemoryWorkflows
-    const instanceIndex = workflowStore.workflows.findIndex(w => w.id === workflowToDelete.instanceId)
+    const instanceIndex = workflowStore.workflows.findIndex(w => w.id === workflowToDelete.id)
     if (instanceIndex > -1) {
       workflowStore.workflows.splice(instanceIndex, 1)
       
@@ -241,9 +199,6 @@ async function startWorkflowDirectly(workflow) {
 
   return {
     // State
-    selectedWorkflow,
-    showOverlay,
-    activeWorkflows,
     selectedActiveWorkflow,
     showWorkflowModal,
     activeTab,
@@ -251,12 +206,11 @@ async function startWorkflowDirectly(workflow) {
     loadingConfigWorkflows,
     
     // Computed
+    activeWorkflows,  // ← ADD THIS LINE!
     workflowModules,
     allWorkflows,
     
     // Methods
-    openWorkflowOverlay,
-    closeOverlay,
     openWorkflowModal,
     closeWorkflowModal,
     startWorkflowDirectly,

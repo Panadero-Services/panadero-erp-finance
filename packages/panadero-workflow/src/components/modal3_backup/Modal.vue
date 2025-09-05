@@ -55,7 +55,12 @@ const workflowSteps = computed(() => {
 })
 
 const currentStep = computed(() => {
-  return props.activeWorkflow?.currentStep || 0  // ← Return the INDEX, not the step object
+  // Get current step from workflow store to make it reactive
+  if (props.activeWorkflow?.instanceId && props.workflowStore) {
+    const workflow = props.workflowStore.workflows.find(w => w.id === props.activeWorkflow.instanceId)
+    return workflow?.currentStep || 0
+  }
+  return props.activeWorkflow?.currentStep || 0
 })
 
 // Tab management
@@ -99,58 +104,6 @@ function getStepTypeDisplay(stepIndex) {
       return 'Approval Required'
     default:
       return step.type || 'Unknown'
-  }
-}
-
-// Handle step data updates
-const handleStepDataUpdated = (eventData) => {
-  console.debug('🔵 MODAL: handleStepDataUpdated called with:', eventData)
-  console.debug('🔵 props.activeWorkflow exists:', !!props.activeWorkflow)
-  console.debug('🔵 props.workflowStore exists:', !!props.workflowStore)
-  
-  try {
-    const { stepIndex, data } = eventData
-    
-    // Update the workflow step data in the store
-    if (props.activeWorkflow && props.workflowStore) {
-      console.debug('🔵 Both props exist, proceeding...')
-      
-      // Find the workflow in the store
-      const workflowId = props.activeWorkflow.instanceId
-      console.debug('🔵 workflowId:', workflowId)
-      
-      const workflow = props.workflowStore.workflows.find(w => w.id === workflowId)
-      console.debug('🔵 workflow found:', !!workflow)
-      console.debug('🔵 workflow.steps exists:', !!workflow?.steps)
-      console.debug('🔵 stepIndex:', stepIndex)
-      console.debug('🔵 workflow.steps[stepIndex] exists:', !!workflow?.steps?.[stepIndex])
-      
-      if (workflow && workflow.steps && workflow.steps[stepIndex]) {
-        console.debug('🔵 All conditions met, updating step data...')
-        
-        // Update the step data
-        if (!workflow.steps[stepIndex].data) {
-          workflow.steps[stepIndex].data = {}
-        }
-        Object.assign(workflow.steps[stepIndex].data, data)
-        
-        console.debug('🔵 SUCCESSFULLY updated step data:', workflow.steps[stepIndex])
-      } else {
-        console.debug('🔴 Could not find workflow or step:', {
-          workflowFound: !!workflow,
-          stepsExist: !!workflow?.steps,
-          stepExists: !!workflow?.steps?.[stepIndex],
-          totalSteps: workflow?.steps?.length
-        })
-      }
-    } else {
-      console.debug('🔴 Missing props:', {
-        activeWorkflow: !!props.activeWorkflow,
-        workflowStore: !!props.workflowStore
-      })
-    }
-  } catch (error) {
-    console.error('🔴 Error updating step data:', error)
   }
 }
 
@@ -321,7 +274,6 @@ onMounted(() => {
               :workflow-store="workflowStore"
               :current-step="currentStep"
               :scaling="scaling"
-              @step-data-updated="handleStepDataUpdated"
             />
           </div>
         </div>

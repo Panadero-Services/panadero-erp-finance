@@ -10,6 +10,9 @@ import axios from 'axios';
 import { getAllWorkflowTemplates } from '../data/workflowTemplatesConfig.js';
 import { useWorkflowValidation } from './useWorkflowValidation.js';
 
+// Add this at the top after the imports
+let nextWorkflowId = 1
+
 export const useWorkflowStore = defineStore('workflow', () => {
   // Settings - centralized configuration
   // 22.08.2025 needs work !! --> standarardize over modules and put in generic composable
@@ -117,7 +120,7 @@ export const useWorkflowStore = defineStore('workflow', () => {
 
   const pendingApprovals = computed(() => 
     workflows.value.filter(w => 
-      w.currentStep && w.steps[w.currentStep]?.status === STEP_STATES.REQUIRES_APPROVAL
+      w.currentStep && w.steps[w.currentStep - 1]?.status === STEP_STATES.REQUIRES_APPROVAL
     )
   );
 
@@ -178,13 +181,13 @@ export const useWorkflowStore = defineStore('workflow', () => {
     }
 
     const _workflow = {
-      id: `${templateId}-${Date.now()}`,
+      id: nextWorkflowId++,
       template_id: templateId,
       template: _template, // ← ADD THIS: Store the full template object
       name: _template.name,
       description: _template.description,
       status: WORKFLOW_STATES.DRAFT,
-      currentStep: 0,
+      currentStep: 1, // ← CHANGE FROM 0 TO 1
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       started_at: null,
@@ -209,14 +212,14 @@ export const useWorkflowStore = defineStore('workflow', () => {
     return _workflow;
   }
 
-  async function startWorkflow(instanceId) {
-    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
+  async function startWorkflow(workflowId) {
+    const _workflow = workflows.value.find(w => w.id === workflowId); // RENAMED: was workflowInstances
     if (!_workflow) {
-      throw new Error(`Workflow instance ${instanceId} not found`);
+      throw new Error(`Workflow instance ${workflowId} not found`);
     }
 
     if (_workflow.status !== WORKFLOW_STATES.DRAFT) {
-      throw new Error(`Workflow ${instanceId} cannot be started (current status: ${_workflow.status})`);
+      throw new Error(`Workflow ${workflowId} cannot be started (current status: ${_workflow.status})`);
     }
 
     try {
@@ -247,16 +250,37 @@ export const useWorkflowStore = defineStore('workflow', () => {
           // Continue with warnings, but log them for debugging
         }
         
-        // Initialize steps - much cleaner approach
-        _workflow.steps = _stepDefinitions.map(step => ({
-          ...step,
-          status: STEP_STATES.PENDING,
-          started_at: null,
-          completed_at: null,
-          data: {},
-          approvals: [],
-          comments: []
-        }));
+        // Use the step definitions that were already loaded
+        if (_stepDefinitions && _stepDefinitions.length > 0) {
+          // Use actual template steps
+          _workflow.steps = _stepDefinitions.map((step, index) => ({
+            id: step.id || `step_${index + 1}`,
+            name: step.name || `Step ${index + 1}`,
+            description: step.description || '',
+            type: step.type || 'form_submission',
+            status: STEP_STATES.PENDING,
+            started_at: null,
+            completed_at: null,
+            data: {},
+            approvals: [],
+            comments: [],
+            // Copy all other step properties
+            ...step
+          }));
+        } else {
+          // Fallback - create basic steps
+          const _stepsCount = 1;
+          _workflow.steps = Array.from({ length: _stepsCount }, (_, index) => ({
+            id: `step_${index + 1}`,
+            name: `Step ${index + 1}`,
+            status: STEP_STATES.PENDING,
+            started_at: null,
+            completed_at: null,
+            data: {},
+            approvals: [],
+            comments: []
+          }));
+        }
       } else {
         // Simple fallback - just create basic steps
         const _stepsCount = _template?.steps || 1;
@@ -281,7 +305,8 @@ export const useWorkflowStore = defineStore('workflow', () => {
       if (_workflow.steps.length > 0) {
         _workflow.steps[0].status = STEP_STATES.ACTIVE;
         _workflow.steps[0].started_at = new Date().toISOString();
-        _workflow.currentStep = 0;
+        _workflow.currentStep = 1; // ← CHANGE FROM 0 TO 1
+        console.debug('🚀 WORKFLOW STARTED: currentStep set to 1, first step activated');
       }
 
       _workflow.history.push({
@@ -298,15 +323,15 @@ export const useWorkflowStore = defineStore('workflow', () => {
     }
   }
 
-  function completeStep(instanceId, stepIndex, data = {}, user = 'system') {
-    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
+  function completeStep(workflowId, stepIndex, data = {}, user = 'system') {
+    const _workflow = workflows.value.find(w => w.id === workflowId); // RENAMED: was workflowInstances
     if (!_workflow) {
-      throw new Error(`Workflow instance ${instanceId} not found`);
+      throw new Error(`Workflow instance ${workflowId} not found`);
     }
 
-    const _step = _workflow.steps[stepIndex];
+    const _step = _workflow.steps[stepIndex - 1]; // ← CHANGE: stepIndex - 1 for array access
     if (!_step) {
-      throw new Error(`Step ${stepIndex} not found in workflow ${instanceId}`);
+      throw new Error(`Step ${stepIndex} not found in workflow ${workflowId}`);
     }
 
     if (_step.status !== STEP_STATES.ACTIVE) {
@@ -347,13 +372,13 @@ export const useWorkflowStore = defineStore('workflow', () => {
     }
 
     // Move to next step or complete workflow
-    return advanceWorkflow(instanceId, user);
+    return advanceCurrentStep(workflowId, user);
   }
 
-  function approveStep(instanceId, stepIndex, approverId, comments = '') {
-    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
+  function approveStep(workflowId, stepIndex, approverId, comments = '') {
+    const _workflow = workflows.value.find(w => w.id === workflowId); // RENAMED: was workflowInstances
     if (!_workflow) {
-      throw new Error(`Workflow instance ${instanceId} not found`);
+      throw new Error(`Workflow instance ${workflowId} not found`);
     }
 
     const _step = _workflow.steps[stepIndex];
@@ -381,20 +406,20 @@ export const useWorkflowStore = defineStore('workflow', () => {
     });
 
     // Move to next step
-    return advanceWorkflow(instanceId, approverId);
+    return advanceCurrentStep(workflowId, approverId);
   }
 
-  function rejectStep(instanceId, stepIndex, approverId, reason = '') {
+  function rejectStep(workflowId, stepIndex, approverId, reason = '') {
 
 
-    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
+    const _workflow = workflows.value.find(w => w.id === workflowId); // RENAMED: was workflowInstances
     if (!_workflow) {
-      throw new Error(`Workflow instance ${instanceId} not found`);
+      throw new Error(`Workflow instance ${workflowId} not found`);
     }
 
     const _step = _workflow.steps[stepIndex];
     if (!_step) {
-      throw new Error(`Step ${stepIndex} not found in workflow ${instanceId}`);
+      throw new Error(`Step ${stepIndex} not found in workflow ${workflowId}`);
     }
 
     if (_step.status !== STEP_STATES.REQUIRES_APPROVAL) {
@@ -420,100 +445,61 @@ export const useWorkflowStore = defineStore('workflow', () => {
     return _workflow;
   }
 
-  function advanceWorkflow(instanceId, user = 'system') {
-    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
-    if (!_workflow) {
-      throw new Error(`Workflow instance ${instanceId} not found`);
-    }
 
-    const nextStepIndex = _workflow.currentStep + 1;
+
+
+// ✅ KEEP ONLY THIS ONE - Enhanced version
+function advanceCurrentStep(workflowId, user = 'system') {
+  const workflow = workflows.value.find(w => w.id === workflowId)
+  if (!workflow) {
+    throw new Error(`Workflow ${workflowId} not found`)
+  }
+
+  // Simple increment
+  workflow.currentStep += 1
+  workflow.updated_at = new Date().toISOString()
+  
+  console.debug('🚀 ADVANCED STEP:', {
+    workflowId,
+    newCurrentStep: workflow.currentStep,
+    totalSteps: workflow.steps.length
+  })
+  
+  // Check if workflow is complete
+  if (workflow.currentStep > workflow.steps.length) {
+    workflow.status = WORKFLOW_STATES.COMPLETED
+    workflow.completed_at = new Date().toISOString()
     
-    if (nextStepIndex >= _workflow.steps.length) {
-      // Workflow complete
-      _workflow.status = WORKFLOW_STATES.COMPLETED;
-      _workflow.completed_at = new Date().toISOString();
-      _workflow.updated_at = new Date().toISOString();
-
-      _workflow.history.push({
-        timestamp: new Date().toISOString(),
-        action: 'workflow_completed',
-        user: user,
-        details: 'Workflow completed successfully'
-      });
-
-      // Execute completion actions
-      executeCompletionActions(_workflow);
-      
-      return _workflow;
-    }
-
-    // Start next step
-    const nextStep = _workflow.steps[nextStepIndex];
-    nextStep.status = STEP_STATES.ACTIVE;
-    nextStep.started_at = new Date().toISOString();
+    workflow.history.push({
+      timestamp: new Date().toISOString(),
+      action: 'workflow_completed',
+      user: user,
+      details: 'Workflow completed successfully'
+    })
     
-    _workflow.currentStep = nextStepIndex;
-    _workflow.status = WORKFLOW_STATES.ACTIVE;
-    _workflow.updated_at = new Date().toISOString();
-
-    _workflow.history.push({
+    executeCompletionActions(workflow)
+  } else {
+    // Update current step status
+    const currentStepIndex = workflow.currentStep - 1 // Convert to 0-based for array access
+    if (workflow.steps[currentStepIndex]) {
+      workflow.steps[currentStepIndex].status = STEP_STATES.ACTIVE
+      workflow.steps[currentStepIndex].started_at = new Date().toISOString()
+    }
+    
+    workflow.history.push({
       timestamp: new Date().toISOString(),
       action: 'step_started',
       user: user,
-      step_index: nextStepIndex,
-      step_name: nextStep.name,
-      details: `Step "${nextStep.name}" started`
-    });
-
-    return _workflow;
+      step_index: workflow.currentStep,
+      step_name: workflow.steps[currentStepIndex]?.name || 'Unknown',
+      details: `Step ${workflow.currentStep} started`
+    })
   }
+  
+  return workflow
+}
 
-  function advanceCurrentStep(instanceId, user = 'system') {
-    const _workflow = workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
-    if (!_workflow) {
-      throw new Error(`Workflow instance ${instanceId} not found`);
-    }
 
-    const currentStepIndex = _workflow.currentStep;
-    const nextStepIndex = currentStepIndex + 1;
-
-    if (nextStepIndex >= _workflow.steps.length) {
-      // This case should ideally not be reached if advanceWorkflow is called correctly
-      // but as a fallback, we can advance to the last step if it's not completed
-      if (_workflow.status !== WORKFLOW_STATES.COMPLETED) {
-        _workflow.status = WORKFLOW_STATES.COMPLETED;
-        _workflow.completed_at = new Date().toISOString();
-        _workflow.updated_at = new Date().toISOString();
-        _workflow.history.push({
-          timestamp: new Date().toISOString(),
-          action: 'workflow_completed',
-          user: user,
-          details: 'Workflow completed by advancing to last step'
-        });
-        executeCompletionActions(_workflow);
-      }
-      return _workflow;
-    }
-
-    const nextStep = _workflow.steps[nextStepIndex];
-    nextStep.status = STEP_STATES.ACTIVE;
-    nextStep.started_at = new Date().toISOString();
-    
-    _workflow.currentStep = nextStepIndex;
-    _workflow.status = WORKFLOW_STATES.ACTIVE;
-    _workflow.updated_at = new Date().toISOString();
-
-    _workflow.history.push({
-      timestamp: new Date().toISOString(),
-      action: 'step_started',
-      user: user,
-      step_index: nextStepIndex,
-      step_name: nextStep.name,
-      details: `Step "${nextStep.name}" started`
-    });
-
-    return _workflow;
-  }
 
   // Helper functions
   function validateStepData(step, data) {
@@ -562,8 +548,8 @@ export const useWorkflowStore = defineStore('workflow', () => {
   }
 
   // Utility functions
-  function getWorkflowById(instanceId) {
-    return workflows.value.find(w => w.id === instanceId); // RENAMED: was workflowInstances
+  function getWorkflowById(workflowId) {
+    return workflows.value.find(w => w.id === workflowId); // RENAMED: was workflowInstances
   }
 
   function getWorkflowsByTemplate(templateId) {
@@ -646,7 +632,6 @@ export const useWorkflowStore = defineStore('workflow', () => {
     completeStep,
     approveStep,
     rejectStep,
-    advanceWorkflow,
     advanceCurrentStep,
     getWorkflowById,
     getWorkflowsByTemplate,

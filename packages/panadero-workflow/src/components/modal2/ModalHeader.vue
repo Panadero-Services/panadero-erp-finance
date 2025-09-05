@@ -146,7 +146,7 @@ const rightDetailsConfig = computed(() => [
   {
     key: 'id',
     label: 'ID',
-    value: (props.activeWorkflow?.workflowNr || props.activeWorkflow?.id)?.split('-').pop(),
+    value: props.activeWorkflow?.workflowNr || props.activeWorkflow?.id,
     show: !!(props.activeWorkflow?.workflowNr || props.activeWorkflow?.id),
     valueClass: 'bg-gray-200 dark:bg-gray-600  rounded font-mono text-gray-900 dark:text-gray-100',
     isCode: true
@@ -249,20 +249,7 @@ const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.
                 {{ workflowDescription }}
               </p>
             </div>
-
-            <!-- Progress Ring -->
-            <div class="relative w-12 h-12">
-              <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                <path class="text-gray-200 dark:text-gray-700" stroke="currentColor" stroke-width="3" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-                <path class="text-gray-400 dark:text-blue-600" stroke="currentColor" stroke-width="3" fill="none" 
-                      :stroke-dasharray="`${progressPercentage}, 100`"
-                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"></path>
-              </svg>
-              <div :style="{ fontSize: _small }" class="absolute inset-0 flex items-center justify-center">
-                <span class="font-bold text-gray-900 dark:text-white">{{ progressPercentage }}%</span>
-              </div>
-            </div>
-
+{{activeWorkflow.currentStep}} 
           </div>
         </div>
 

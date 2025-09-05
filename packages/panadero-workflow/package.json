@@ -1,6 +1,6 @@
 {
   "name": "panadero-workflow",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Financial ERP Workflow Management System with comprehensive step types and modal interface",
   "main": "index.js",
   "exports": {

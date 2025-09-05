@@ -219,6 +219,144 @@ Route::get('/model-config/{module}/{table}', [ModelConfigController::class, 'get
     ->middleware(['web', 'auth:sanctum']);
 
 // ============================================================================
+// ENTITY SCHEMA ROUTES
+// ============================================================================
+Route::get('/entities/{entity}/schema', function ($entity) {
+    try {
+        // Map entity names to model classes
+        $modelMap = [
+            'finance_vendors' => \App\Models\FinanceVendor::class,
+            'vendors' => \App\Models\Vendor::class,
+            'users' => \App\Models\User::class,
+            'posts' => \App\Models\Post::class,
+            'projects' => \App\Models\Project::class,
+            // Add more entities as needed
+        ];
+
+        if (!isset($modelMap[$entity])) {
+            return response()->json([
+                'error' => 'Entity not found',
+                'entity' => $entity,
+                'available_entities' => array_keys($modelMap)
+            ], 404);
+        }
+
+        $modelClass = $modelMap[$entity];
+        $model = new $modelClass;
+
+        // Get table information
+        $tableName = $model->getTable();
+        $fillable = $model->getFillable();
+        $casts = $model->getCasts();
+        $hidden = $model->getHidden();
+
+        // Get validation rules if available
+        $validationRules = [];
+        if (method_exists($model, 'validationRules')) {
+            $validationRules = $model::validationRules();
+        }
+
+        // Build field definitions
+        $fields = [];
+        
+        // Add primary key
+        $fields['id'] = [
+            'type' => 'integer',
+            'primary' => true,
+            'auto_increment' => true,
+            'fillable' => false
+        ];
+
+        // Add fillable fields
+        foreach ($fillable as $field) {
+            $fields[$field] = [
+                'type' => getFieldType($field, $casts[$field] ?? null),
+                'fillable' => true,
+                'required' => in_array($field, array_keys($validationRules)) && 
+                             strpos($validationRules[$field], 'required') !== false,
+                'hidden' => in_array($field, $hidden),
+                'cast' => $casts[$field] ?? null,
+                'validation' => $validationRules[$field] ?? null
+            ];
+        }
+
+        // Add timestamps
+        $fields['created_at'] = [
+            'type' => 'timestamp',
+            'fillable' => false,
+            'required' => false,
+            'hidden' => false
+        ];
+        $fields['updated_at'] = [
+            'type' => 'timestamp',
+            'fillable' => false,
+            'required' => false,
+            'hidden' => false
+        ];
+
+        return response()->json([
+            'table' => $tableName,
+            'model' => $modelClass,
+            'fields' => $fields,
+            'validation_rules' => $validationRules,
+            'fillable' => $fillable,
+            'hidden' => $hidden,
+            'casts' => $casts
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Failed to generate schema',
+            'entity' => $entity,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+})->name('api.entities.schema');
+
+// Helper function to determine field type
+if (!function_exists('getFieldType')) {
+    function getFieldType($fieldName, $cast = null) {
+        if ($cast) {
+            switch ($cast) {
+                case 'integer':
+                case 'int':
+                    return 'integer';
+                case 'decimal:2':
+                case 'float':
+                case 'double':
+                    return 'decimal';
+                case 'boolean':
+                case 'bool':
+                    return 'boolean';
+                case 'array':
+                case 'json':
+                    return 'array';
+                case 'date':
+                    return 'date';
+                case 'datetime':
+                case 'timestamp':
+                    return 'timestamp';
+                default:
+                    return 'string';
+            }
+        }
+        
+        // Fallback based on field name
+        if (strpos($fieldName, '_id') !== false) {
+            return 'integer';
+        }
+        if (in_array($fieldName, ['created_at', 'updated_at', 'deleted_at'])) {
+            return 'timestamp';
+        }
+        if (in_array($fieldName, ['is_active', 'is_approved', 'is_locked', 'is_1099_vendor'])) {
+            return 'boolean';
+        }
+        
+        return 'string';
+    }
+}
+
+// ============================================================================
 // RESOURCE ROUTES
 // ============================================================================
 Route::get('/resource/{table}', [ResourceController::class, 'index']);

@@ -5,6 +5,20 @@ All notable changes to the Panadero Workflow Management System will be documente
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2025-09-03
+
+### 🔧 Modal2 Architecture & DRY Refactoring
+- **Modal2 Component Suite** - Complete refactoring of modal components with enhanced architecture in dedicated modal2 directory
+- **ModalCurrentStep v1.3.0** - DRY refactored current step component with improved component routing and step type handling
+- **WorkflowEntitySelection v1.4.0** - Complete rewrite to fix template structure and follow development rules with cleanup
+- **Modal v1.3.8** - Enhanced modal orchestration with unified scaling and modular component integration
+- **Centralized Color System** - New useColors composable for consistent color management across modal2 components
+- **DRY Component Architecture** - Systematic removal of duplicate code patterns across ModalHeader, ModalCurrentStep, and core components
+- **Production Cleanup** - Removed debug visual elements and entity_selector separation for cleaner production code
+- **Template Structure Fixes** - Fixed Vue template structure violations and implemented proper development rule compliance
+- **Component Separation** - Enhanced separation of concerns between step types and workflow management components
+- **Workflow Dashboard Integration** - Updated WorkflowDashboard to use modal2 components (WorkflowStartOverlay, ModalWrapper)
+
 ## [1.2.1] - 2025-08-30
 
 ### 🔧 Isolated Package Architecture

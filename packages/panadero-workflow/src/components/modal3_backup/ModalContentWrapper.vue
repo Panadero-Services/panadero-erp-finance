@@ -26,6 +26,10 @@ const props = defineProps({
   scaling: {
     type: Object,
     required: true
+  },
+  activeWorkflow: {
+    type: Object,
+    default: null
   }
 })
 
@@ -142,6 +146,7 @@ const stepTypeConfig = computed(() => {
               :step="currentStep"
               :step-data="stepData"
               :scaling="scaling"
+              :active-workflow="activeWorkflow"
               @update-step-data="emit('update-step-data', $event)"
               @step-completed="emit('step-completed', $event)"
             />
@@ -152,6 +157,7 @@ const stepTypeConfig = computed(() => {
               :step="currentStep"
               :step-data="stepData"
               :scaling="scaling"
+              :active-workflow="activeWorkflow"
               @update-step-data="emit('update-step-data', $event)"
               @step-completed="emit('step-completed', $event)"
             />
@@ -162,6 +168,7 @@ const stepTypeConfig = computed(() => {
               :step="currentStep"
               :step-data="stepData"
               :scaling="scaling"
+              :active-workflow="activeWorkflow"
               @update-step-data="emit('update-step-data', $event)"
               @step-completed="emit('step-completed', $event)"
             />
@@ -172,6 +179,7 @@ const stepTypeConfig = computed(() => {
               :step="currentStep"
               :step-data="stepData"
               :scaling="scaling"
+              :active-workflow="activeWorkflow"
               @update-step-data="emit('update-step-data', $event)"
               @step-completed="emit('step-completed', $event)"
               @approval-requested="emit('approval-requested', $event)"

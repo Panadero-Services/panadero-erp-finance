@@ -25,6 +25,10 @@ const props = defineProps({
     type: Number,
     default: 0
   },
+  viewedStep: {
+    type: Number,
+    default: 0
+  },
   scaling: {
     type: Object,
     required: true
@@ -51,10 +55,75 @@ const stepStatus = computed(() => {
   return currentStepData.value.status || 'pending'
 })
 
+// Simple logic: current step = editable, past steps = read-only completed, future steps = locked preview
+
+// Get the viewed step data (for display only)
+const viewedStepData = computed(() => {
+  return props.workflow.steps?.[props.viewedStep] || {}
+})
+
 // Dynamic font sizes - ONLY changing styling references
 const _h3 = computed(() => props.scaling.font.subtitle) // WAS: `${settings.fontSizesComputed.value.h3}px`
 const _body = computed(() => props.scaling.font.body) // WAS: `${settings.fontSizesComputed.value.body}px`
 const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.fontSizesComputed.value.caption}px`
+
+// DRY: Get the appropriate step component based on step type
+const getStepComponent = (stepData) => {
+  switch (stepData.type) {
+    case 'shared_entity_selection':
+      return 'WorkflowEntitySelection'
+    case 'form_submission':
+      return 'WorkflowForm'
+    case 'checklist':
+      return 'WorkflowChecklist'
+    case 'approval':
+      return 'WorkflowApproval'
+    default:
+      return null
+  }
+}
+
+// DRY: Get step component props
+const getStepProps = (stepData, isReadOnly = false) => {
+  const baseProps = {
+    step: stepData,
+    'step-data': stepData.data || {},
+    scaling: props.scaling,
+    'active-workflow': props.workflow
+  }
+
+  // Add read-only props based on component type
+  if (isReadOnly) {
+    if (stepData.type === 'form_submission') {
+      baseProps['read-only-preview'] = true
+    } else {
+      baseProps['info-only'] = true
+    }
+  }
+
+  return baseProps
+}
+
+// DRY: Get step component events
+const getStepEvents = (isReadOnly = false) => {
+  if (isReadOnly) {
+    return {} // No events for read-only mode
+  }
+
+  return {
+    'update-step-data': (stepId, stepData) => {
+      const handlerMap = {
+        'shared_entity_selection': handleEntitySelected,
+        'form_submission': handleFormDataUpdated,
+        'checklist': handleChecklistUpdated,
+        'approval': handleApprovalUpdated
+      }
+      const handler = handlerMap[viewedStepData.value.type]
+      if (handler) handler(stepId, stepData)
+    },
+    'step-completed': () => emit('step-completed')
+  }
+}
 
 // Get color classes from store
 const getColorClasses = (colorType, element) => {
@@ -94,70 +163,31 @@ const needsApproval = computed(() => {
   return currentStepData.value.type === 'approval'
 })
 
-// Handle entity selection completion
+// Handle entity selection - just save data, don't complete step
 const handleEntitySelected = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
     data: stepData
   })
-  
-  // Complete the step in the store
-  try {
-    props.workflowStore.completeStep(
-      props.workflow.instanceId || props.workflow.id,
-      props.currentStep,
-      stepData,
-      'current_user'
-    )
-    console.debug('Step completed successfully')
-  } catch (error) {
-    console.error('Failed to complete step:', error)
-  }
 }
 
-// Handle form data updates  
+// Handle form data updates - just save data, don't complete step
 const handleFormDataUpdated = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
     data: stepData
   })
-  
-  // Complete the step in the store
-  try {
-    props.workflowStore.completeStep(
-      props.workflow.instanceId || props.workflow.id,
-      props.currentStep,
-      stepData,
-      'current_user'
-    )
-    console.debug('Form step completed successfully')
-  } catch (error) {
-    console.error('Failed to complete form step:', error)
-  }
 }
 
-// Handle checklist updates
+// Handle checklist updates - just save data, don't complete step
 const handleChecklistUpdated = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
     data: stepData
   })
-  
-  // Complete the step in the store if all required items are checked
-  try {
-    props.workflowStore.completeStep(
-      props.workflow.instanceId || props.workflow.id,
-      props.currentStep,
-      stepData,
-      'current_user'
-    )
-    console.debug('Checklist step completed successfully')
-  } catch (error) {
-    console.error('Failed to complete checklist step:', error)
-  }
 }
 
-// Handle approval updates
+// Handle approval updates - just save data, don't complete step
 const handleApprovalUpdated = (stepId, stepData) => {
   emit('step-data-updated', {
     stepIndex: props.currentStep,
@@ -180,49 +210,82 @@ console.debug('ModalCurrentStep workflowStore:', props.workflowStore)
 
 <template>
   <div class="space-y-6 bg-gray-50 dark:bg-gray-800">
-    <!-- NO STEP HEADER - Information shown in modal header instead -->
+    <!-- Step Header -->
+    <div class="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+      <h2 :style="{ fontSize: scaling.font.title }" class="font-semibold text-gray-900 dark:text-white">
+        Step {{ viewedStep + 1 }} - {{ viewedStepData.name || 'Unknown Step' }}
+      </h2>
+      <p v-if="viewedStepData.description" :style="{ fontSize: scaling.font.body }" class="text-gray-600 dark:text-gray-300 mt-1">
+        {{ viewedStepData.description }}
+      </p>
+    </div>
     
-    <!-- Entity Selection for vendor selection steps -->
-    <WorkflowEntitySelection 
-      v-if="needsEntitySelection"
-      :step="currentStepData"
-      :step-data="currentStepData.data || {}"
-      :scaling="scaling"
-      @update-step-data="handleEntitySelected"
-      @step-completed="$emit('step-completed')"
-    />
+    <!-- EDITABLE CONTENT - Current step only if not completed -->
+    <div v-if="viewedStep === currentStep && viewedStepData.status !== 'completed'">
+      <component
+        :is="getStepComponent(viewedStepData)"
+        v-bind="getStepProps(viewedStepData, false)"
+        v-on="getStepEvents(false)"
+      />
+    </div>
     
-    <!-- Form Submission for financial information steps -->
-    <WorkflowForm 
-      v-if="needsFormSubmission"
-      :step="currentStepData"
-      :step-data="currentStepData.data || {}"
-      :scaling="scaling"
-      @update-step-data="handleFormDataUpdated"
-      @step-completed="$emit('step-completed')"
-    />
-    
-    <!-- Checklist for due diligence steps -->
-    <WorkflowChecklist 
-      v-if="needsChecklist"
-      :step="currentStepData"
-      :step-data="currentStepData.data || {}"
-      :scaling="scaling"
-      @update-step-data="handleChecklistUpdated"
-      @step-completed="$emit('step-completed')"
-    />
-    
-    <!-- Approval for contract negotiation and final approval steps -->
-    <WorkflowApproval 
-      v-if="needsApproval"
-      :step="currentStepData"
-      :step-data="currentStepData.data || {}"
-      :scaling="scaling"
-      @update-step-data="handleApprovalUpdated"
-      @step-completed="$emit('step-completed')"
-    />
-    
-    <!-- NO STEP DESCRIPTION - Shown in modal header instead -->
+    <!-- READ-ONLY COMPLETED - Past steps OR completed current step -->
+    <div v-else-if="viewedStep < currentStep || viewedStepData.status === 'completed'">
+      <!-- Completed Step Header -->
+      <div class="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg mb-4">
+        <div class="flex items-center">
+          <i class="fas fa-check-circle text-green-600 dark:text-green-400 mr-3"></i>
+          <div>
+            <h3 :style="{ fontSize: scaling.font.subtitle }" class="font-medium text-green-800 dark:text-green-200">
+              Step {{ viewedStep + 1 }} - {{ viewedStepData.name || 'Unknown Step' }}
+            </h3>
+            <p :style="{ fontSize: scaling.font.caption }" class="text-green-700 dark:text-green-300">
+              This step has been completed
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Read-only step content -->
+      <div class="opacity-75 pointer-events-none">
+        <component
+          :is="getStepComponent(viewedStepData)"
+          v-bind="getStepProps(viewedStepData, true)"
+          v-on="getStepEvents(true)"
+        />
+      </div>
+    </div>
+
+    <!-- LOCKED PREVIEW - Future steps -->
+    <div v-else>
+      <!-- Lock Screen -->
+      <div class="p-6 text-center">
+        <div class="text-gray-500 dark:text-gray-400">
+          <i class="fas fa-lock text-4xl mb-4"></i>
+          <h3 :style="{ fontSize: scaling.font.subtitle }" class="font-medium mb-2">
+            Step {{ viewedStep + 1 }} - {{ viewedStepData.name || 'Unknown Step' }}
+          </h3>
+          <p :style="{ fontSize: scaling.font.body }" class="text-gray-600 dark:text-gray-300">
+            This step is not yet available. Complete the previous steps to unlock this step.
+          </p>
+          <div class="mt-4">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+              <i class="fas fa-info-circle mr-1"></i>
+              Current Step: {{ currentStep + 1 }}
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Read-only step content preview -->
+      <div class="opacity-60 pointer-events-none">
+        <component
+          :is="getStepComponent(viewedStepData)"
+          v-bind="getStepProps(viewedStepData, true)"
+          v-on="getStepEvents(true)"
+        />
+      </div>
+    </div>
     
     <!-- Step Data Display -->
     <div v-if="currentStepData.data && Object.keys(currentStepData.data).length > 0" class="space-y-3 border rounded-lg p-3 bg-gray-100 dark:bg-gray-800" >
