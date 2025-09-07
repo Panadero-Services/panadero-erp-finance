@@ -597,4 +597,6 @@ Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
     Route::post('/audit-logs', [AuditLogController::class, 'store']);
 });
 
+Route::post('/ai/call', [\App\Http\Controllers\AIServiceController::class, 'callAI'])->name('ai.call');
+
 

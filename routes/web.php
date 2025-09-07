@@ -916,7 +916,7 @@ Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
 
 
 
-    Route::post('/api/ai/call', [\App\Http\Controllers\AIServiceController::class, 'callAI'])->name('ai.call');
+    //Route::post('/api/ai/call', [\App\Http\Controllers\AIServiceController::class, 'callAI'])->name('ai.call');
     Route::post('/api/ai/test', function() {
         return response()->json(['status' => 'working']);
     })->middleware('api');
