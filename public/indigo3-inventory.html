@@ -4,171 +4,570 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indigo3 Inventory Management - Next-Generation ERP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'fade-in': 'fadeIn 0.8s ease-out forwards',
-                        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' }
-                        }
-                    }
-                }
-            }
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            color: white; min-height: 100vh;
         }
-    </script>
-</head>
-<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white min-h-screen">
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <!-- Background Animation -->
-        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20"></div>
-        <div class="absolute inset-0">
-            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        </div>
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+        }
+        .hero-animation {
+            position: absolute; top: 25%; left: 25%; width: 24rem; height: 24rem;
+            background: rgba(99, 102, 241, 0.1); border-radius: 50%; filter: blur(3rem);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .hero-animation:nth-child(2) { top: 75%; left: 75%; background: rgba(168, 85, 247, 0.1); animation-delay: 1s; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 72rem; }
+        .badge {
+            display: inline-flex; align-items: center; padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.2); border-radius: 9999px;
+            border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 1.5rem;
+        }
+        .badge-text { color: #a5b4fc; font-size: 0.875rem; font-weight: 500; }
+        .hero-title {
+            font-size: 3.75rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, white 0%, #a5b4fc 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 5rem; } }
+        .hero-subtitle {
+            font-size: 1.25rem; color: #d1d5db; margin-bottom: 2rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        @media (min-width: 768px) { .hero-subtitle { font-size: 1.5rem; } }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .btn-primary {
+            padding: 1rem 2rem; background: #4f46e5; color: white; border-radius: 0.5rem;
+            font-weight: 600; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+        }
+        .btn-primary:hover { background: #4338ca; transform: scale(1.05); }
+        .btn-secondary {
+            padding: 1rem 2rem; border: 1px solid #a5b4fc; color: white; background: transparent;
+            border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer;
+        }
+        .btn-secondary:hover { background: rgba(99, 102, 241, 0.2); }
+        .section { padding: 5rem 1.5rem; }
+        .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
+        @media (min-width: 768px) { .section-title { font-size: 3rem; } }
+        .section-subtitle {
+            font-size: 1.25rem; color: #d1d5db; text-align: center; max-width: 48rem;
+            margin: 0 auto 4rem;
+        }
+        .features-grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+        @media (min-width: 768px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s;
+        }
+        .feature-card:hover { border-color: rgba(99, 102, 241, 0.5); transform: scale(1.05); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .feature-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .feature-description { color: #d1d5db; }
+        .timeline { position: relative; }
+        .timeline-line {
+            position: absolute; left: 50%; transform: translateX(-50%); width: 4px; height: 100%;
+            background: linear-gradient(to bottom, #4f46e5, #a855f7);
+        }
+        .timeline-item { position: relative; display: flex; align-items: center; margin-bottom: 3rem; }
+        .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+        .timeline-content { width: 50%; padding: 0 2rem; }
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timeline-card.completed { border-color: rgba(34, 197, 94, 0.5); }
+        .timeline-card.in-progress { border-color: rgba(234, 179, 8, 0.5); }
+        .timeline-card.upcoming { border-color: rgba(156, 163, 175, 0.5); }
+        .timeline-header { display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .timeline-year { font-size: 1.5rem; font-weight: 700; margin-right: 0.75rem; }
+        .timeline-year.completed { color: #22c55e; }
+        .timeline-year.in-progress { color: #eab308; }
+        .timeline-year.upcoming { color: #9ca3af; }
+        .timeline-status {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+        }
+        .timeline-status.completed { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .timeline-status.in-progress { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .timeline-status.upcoming { background: rgba(156, 163, 175, 0.2); color: #d1d5db; }
+        .timeline-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .timeline-description { color: #d1d5db; }
+        .timeline-dot {
+            position: absolute; left: 50%; transform: translateX(-50%); width: 1rem; height: 1rem;
+            border-radius: 50%; border: 4px solid #0f172a;
+        }
+        .timeline-dot.completed { background: #22c55e; }
+        .timeline-dot.in-progress { background: #eab308; }
+        .timeline-dot.upcoming { background: #9ca3af; }
+        .ai-portal { background: rgba(0, 0, 0, 0.2); }
+        .ai-grid { display: grid; gap: 3rem; grid-template-columns: 1fr; }
+        @media (min-width: 1024px) { .ai-grid { grid-template-columns: repeat(2, 1fr); } }
+        .ai-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .ai-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #a5b4fc; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; }
+        .form-input, .form-select {
+            width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; color: white;
+        }
+        .form-input::placeholder { color: #9ca3af; }
+        .chat-container {
+            height: 20rem; overflow-y: auto; margin-bottom: 1rem; padding: 1rem;
+            background: rgba(0, 0, 0, 0.2); border-radius: 0.5rem;
+        }
+        .chat-message { margin-bottom: 1rem; }
+        .chat-message.user { text-align: right; }
+        .chat-message.ai { text-align: left; }
+        .chat-bubble {
+            display: inline-block; max-width: 80%; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.875rem;
+        }
+        .chat-bubble.user { background: #4f46e5; color: white; }
+        .chat-bubble.ai { background: rgba(255, 255, 255, 0.1); color: #e5e7eb; }
+        .chat-input-group { display: flex; gap: 0.5rem; }
+        .chat-input {
+            flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem; color: white;
+        }
+        .chat-input:focus { outline: none; border-color: #4f46e5; }
+        .chat-input::placeholder { color: #9ca3af; }
+        .chat-send {
+            padding: 0.75rem 1.5rem; background: #4f46e5; color: white; border: none;
+            border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background 0.3s;
+        }
+        .chat-send:hover { background: #4338ca; }
+        .cta-section { background: rgba(0, 0, 0, 0.2); }
+        .cta-content { max-width: 64rem; margin: 0 auto; text-align: center; }
+        .cta-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .cta-title { font-size: 3rem; } }
+        .cta-subtitle { font-size: 1.25rem; color: #d1d5db; margin-bottom: 2rem; }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; margin-bottom: 3rem; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .innovation-text { color: #9ca3af; margin-bottom: 1rem; }
+        .innovation-brands {
+            display: flex; justify-content: center; align-items: center; gap: 2rem;
+            font-size: 1.5rem; font-weight: 700;
+        }
+        .brand-indigo2 { color: #a5b4fc; }
+        .brand-arrow { color: #6b7280; }
+        .brand-indigo3 { color: #c084fc; }
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
         
-        <div class="relative z-10 text-center max-w-6xl mx-auto px-6">
-            <div class="mb-8">
-                <div class="inline-flex items-center px-4 py-2 bg-indigo-500/20 rounded-full border border-indigo-400/30 mb-6">
-                    <span class="text-indigo-300 text-sm font-medium">Indigo3 - Coming 2025</span>
-                </div>
-                <h1 class="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent">
-                    Inventory Management
-                </h1>
-                <p class="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                    Revolutionary ERP inventory management powered by AI agents. 
-                    Built on 10 years of modular architecture innovation.
-                </p>
+        /* Dashboard Styles */
+        .kpi-grid {
+            display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            margin-bottom: 3rem;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 1rem;
+        }
+        .kpi-icon { font-size: 2.5rem; }
+        .kpi-content { flex: 1; }
+        .kpi-value { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .kpi-label { color: #d1d5db; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .kpi-change { font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+        .kpi-change.positive { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .kpi-change.negative { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        
+        .dashboard-grid {
+            display: grid; gap: 2rem; grid-template-columns: 1fr;
+        }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dashboard-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #a5b4fc; }
+        
+        .chart-container { height: 200px; display: flex; align-items: end; gap: 1rem; padding: 1rem 0; }
+        .chart-bars { display: flex; align-items: end; gap: 1rem; height: 100%; width: 100%; }
+        .chart-bar {
+            flex: 1; background: linear-gradient(to top, #4f46e5, #a855f7); border-radius: 0.25rem 0.25rem 0 0;
+            position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 0.5rem;
+        }
+        .bar-label { font-size: 0.75rem; color: #d1d5db; text-align: center; }
+        .bar-value { font-size: 0.875rem; font-weight: 600; color: white; text-align: center; }
+        
+        .shipments-list { space-y: 1rem; }
+        .shipment-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem; 
+            background: rgba(255, 255, 255, 0.05); border-radius: 0.5rem; margin-bottom: 0.75rem;
+        }
+        .shipment-info { flex: 1; }
+        .shipment-id { font-weight: 600; margin-bottom: 0.25rem; }
+        .shipment-destination { font-size: 0.875rem; color: #d1d5db; }
+        .shipment-status {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; margin-right: 1rem;
+        }
+        .shipment-status.shipped { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .shipment-status.in-transit { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        .shipment-status.pending { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .shipment-status.delivered { background: rgba(107, 114, 128, 0.2); color: #d1d5db; }
+        .shipment-time { font-size: 0.75rem; color: #9ca3af; }
+        
+        .alerts-list { space-y: 0.75rem; }
+        .alert-item {
+            display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem;
+        }
+        .alert-item.critical { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; }
+        .alert-item.warning { background: rgba(234, 179, 8, 0.1); border-left: 4px solid #eab308; }
+        .alert-item.info { background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; }
+        .alert-icon { font-size: 1.25rem; }
+        .alert-content { flex: 1; }
+        .alert-product { font-weight: 600; margin-bottom: 0.25rem; }
+        .alert-stock { font-size: 0.875rem; color: #d1d5db; }
+        
+        .suppliers-list { space-y: 0.75rem; }
+        .supplier-item {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem;
+            background: rgba(255, 255, 255, 0.05); border-radius: 0.5rem; margin-bottom: 0.75rem;
+        }
+        .supplier-info { flex: 1; }
+        .supplier-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .supplier-orders { font-size: 0.875rem; color: #d1d5db; }
+        .supplier-rating { color: #fbbf24; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-animation"></div>
+        
+        <div class="hero-content">
+            <div class="badge">
+                <span class="badge-text">Indigo3 - Coming 2025</span>
             </div>
-            
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-                    Request Demo
-                </button>
-                <button class="px-8 py-4 border border-indigo-400 hover:bg-indigo-500/20 rounded-lg font-semibold transition-all duration-300">
-                    Learn More
-                </button>
+            <h1 class="hero-title">Inventory Management</h1>
+            <p class="hero-subtitle">
+                Revolutionary ERP inventory management powered by AI agents. 
+                Built on 10 years of modular architecture innovation.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn-primary">Request Demo</button>
+                <button class="btn-secondary">Learn More</button>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section class="py-20 px-6">
-        <div class="max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6">Why Choose Indigo3?</h2>
-                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                    Experience the next generation of inventory management with AI-powered insights and modular architecture.
-                </p>
+    <section class="section fade-in">
+        <div class="container">
+            <h2 class="section-title">Why Choose Indigo3?</h2>
+            <p class="section-subtitle">
+                Experience the next generation of inventory management with AI-powered insights and modular architecture.
+            </p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3 class="feature-title">Real-time Inventory Tracking</h3>
+                    <p class="feature-description">Monitor stock levels across multiple warehouses with live updates and automated alerts.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">AI-Powered Insights</h3>
+                    <p class="feature-description">Get intelligent recommendations for stock optimization, demand forecasting, and supplier management.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Advanced Analytics</h3>
+                    <p class="feature-description">Comprehensive reporting and analytics to make data-driven inventory decisions.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">Automated Workflows</h3>
+                    <p class="feature-description">Streamline purchase orders, stock movements, and supplier communications with smart automation.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🏢</div>
+                    <h3 class="feature-title">Multi-Warehouse Management</h3>
+                    <p class="feature-description">Manage inventory across multiple locations with centralized control and distributed visibility.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3 class="feature-title">Seamless Integration</h3>
+                    <p class="feature-description">Connect with existing ERP, accounting, and e-commerce systems through our modular architecture.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="section fade-in">
+        <div class="container">
+            <h2 class="section-title">Live Dashboard</h2>
+            <p class="section-subtitle">
+                Real-time inventory insights and performance metrics at your fingertips.
+            </p>
+            
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon">📦</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">2,847</div>
+                        <div class="kpi-label">Total Items</div>
+                        <div class="kpi-change positive">+12%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">🚚</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">156</div>
+                        <div class="kpi-label">Pending Shipments</div>
+                        <div class="kpi-change negative">-8%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">$2.4M</div>
+                        <div class="kpi-label">Inventory Value</div>
+                        <div class="kpi-change positive">+5%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">⚡</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">94%</div>
+                        <div class="kpi-label">Order Accuracy</div>
+                        <div class="kpi-change positive">+2%</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 hover:transform hover:scale-105">
-                    <div class="text-4xl mb-4">📦</div>
-                    <h3 class="text-xl font-semibold mb-3">Real-time Inventory Tracking</h3>
-                    <p class="text-gray-300">Monitor stock levels across multiple warehouses with live updates and automated alerts.</p>
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Stock Levels Chart -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Stock Levels Overview</h3>
+                    <div class="chart-container">
+                        <div class="chart-bars">
+                            <div class="chart-bar" style="height: 85%">
+                                <span class="bar-label">Electronics</span>
+                                <span class="bar-value">85%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 62%">
+                                <span class="bar-label">Clothing</span>
+                                <span class="bar-value">62%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 78%">
+                                <span class="bar-label">Home & Garden</span>
+                                <span class="bar-value">78%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 45%">
+                                <span class="bar-label">Sports</span>
+                                <span class="bar-value">45%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 91%">
+                                <span class="bar-label">Books</span>
+                                <span class="bar-value">91%</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 hover:transform hover:scale-105">
-                    <div class="text-4xl mb-4">🤖</div>
-                    <h3 class="text-xl font-semibold mb-3">AI-Powered Insights</h3>
-                    <p class="text-gray-300">Get intelligent recommendations for stock optimization, demand forecasting, and supplier management.</p>
+                <!-- Recent Shipments -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Recent Shipments</h3>
+                    <div class="shipments-list">
+                        <div class="shipment-item">
+                            <div class="shipment-info">
+                                <div class="shipment-id">#SH-2025-001</div>
+                                <div class="shipment-destination">New York, NY</div>
+                            </div>
+                            <div class="shipment-status shipped">Shipped</div>
+                            <div class="shipment-time">2 hours ago</div>
+                        </div>
+                        
+                        <div class="shipment-item">
+                            <div class="shipment-info">
+                                <div class="shipment-id">#SH-2025-002</div>
+                                <div class="shipment-destination">Los Angeles, CA</div>
+                            </div>
+                            <div class="shipment-status in-transit">In Transit</div>
+                            <div class="shipment-time">5 hours ago</div>
+                        </div>
+                        
+                        <div class="shipment-item">
+                            <div class="shipment-info">
+                                <div class="shipment-id">#SH-2025-003</div>
+                                <div class="shipment-destination">Chicago, IL</div>
+                            </div>
+                            <div class="shipment-status pending">Pending</div>
+                            <div class="shipment-time">1 day ago</div>
+                        </div>
+                        
+                        <div class="shipment-item">
+                            <div class="shipment-info">
+                                <div class="shipment-id">#SH-2025-004</div>
+                                <div class="shipment-destination">Miami, FL</div>
+                            </div>
+                            <div class="shipment-status delivered">Delivered</div>
+                            <div class="shipment-time">2 days ago</div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 hover:transform hover:scale-105">
-                    <div class="text-4xl mb-4">📊</div>
-                    <h3 class="text-xl font-semibold mb-3">Advanced Analytics</h3>
-                    <p class="text-gray-300">Comprehensive reporting and analytics to make data-driven inventory decisions.</p>
+                <!-- Low Stock Alerts -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Low Stock Alerts</h3>
+                    <div class="alerts-list">
+                        <div class="alert-item critical">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <div class="alert-product">iPhone 15 Pro</div>
+                                <div class="alert-stock">3 units remaining</div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item warning">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <div class="alert-product">MacBook Air M2</div>
+                                <div class="alert-stock">7 units remaining</div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item warning">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <div class="alert-product">Samsung Galaxy S24</div>
+                                <div class="alert-stock">12 units remaining</div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert-item info">
+                            <div class="alert-icon">ℹ️</div>
+                            <div class="alert-content">
+                                <div class="alert-product">iPad Pro 12.9"</div>
+                                <div class="alert-stock">18 units remaining</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 hover:transform hover:scale-105">
-                    <div class="text-4xl mb-4">🔄</div>
-                    <h3 class="text-xl font-semibold mb-3">Automated Workflows</h3>
-                    <p class="text-gray-300">Streamline purchase orders, stock movements, and supplier communications with smart automation.</p>
-                </div>
-                
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 hover:transform hover:scale-105">
-                    <div class="text-4xl mb-4">🏢</div>
-                    <h3 class="text-xl font-semibold mb-3">Multi-Warehouse Management</h3>
-                    <p class="text-gray-300">Manage inventory across multiple locations with centralized control and distributed visibility.</p>
-                </div>
-                
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10 hover:border-indigo-400/50 transition-all duration-300 hover:transform hover:scale-105">
-                    <div class="text-4xl mb-4">🔗</div>
-                    <h3 class="text-xl font-semibold mb-3">Seamless Integration</h3>
-                    <p class="text-gray-300">Connect with existing ERP, accounting, and e-commerce systems through our modular architecture.</p>
+                <!-- Top Suppliers -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Top Suppliers</h3>
+                    <div class="suppliers-list">
+                        <div class="supplier-item">
+                            <div class="supplier-info">
+                                <div class="supplier-name">TechCorp Solutions</div>
+                                <div class="supplier-orders">24 orders this month</div>
+                            </div>
+                            <div class="supplier-rating">★★★★★</div>
+                        </div>
+                        
+                        <div class="supplier-item">
+                            <div class="supplier-info">
+                                <div class="supplier-name">Global Electronics</div>
+                                <div class="supplier-orders">18 orders this month</div>
+                            </div>
+                            <div class="supplier-rating">★★★★☆</div>
+                        </div>
+                        
+                        <div class="supplier-item">
+                            <div class="supplier-info">
+                                <div class="supplier-name">Premium Components</div>
+                                <div class="supplier-orders">15 orders this month</div>
+                            </div>
+                            <div class="supplier-rating">★★★★★</div>
+                        </div>
+                        
+                        <div class="supplier-item">
+                            <div class="supplier-info">
+                                <div class="supplier-name">Fast Supply Co.</div>
+                                <div class="supplier-orders">12 orders this month</div>
+                            </div>
+                            <div class="supplier-rating">★★★☆☆</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- AI Agent Portal Section -->
-    <section class="py-20 px-6 bg-black/20">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6">AI Agent Portal</h2>
-                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                    Interact with our intelligent AI agents to get insights, recommendations, and automated assistance for your inventory management.
-                </p>
-            </div>
+    <section class="section ai-portal fade-in">
+        <div class="container">
+            <h2 class="section-title">AI Agent Portal</h2>
+            <p class="section-subtitle">
+                Interact with our intelligent AI agents to get insights, recommendations, and automated assistance for your inventory management.
+            </p>
             
-            <div class="grid lg:grid-cols-2 gap-12">
+            <div class="ai-grid">
                 <!-- AI Configuration -->
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
-                    <h3 class="text-2xl font-bold mb-6 text-indigo-300">Configure Your AI Agent</h3>
+                <div class="ai-card">
+                    <h3 class="ai-title">Configure Your AI Agent</h3>
                     
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-2">AI Provider</label>
-                            <select class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white">
-                                <option value="openai">OpenAI GPT-4</option>
-                                <option value="claude">Anthropic Claude</option>
-                                <option value="ollama">Ollama (Local)</option>
-                                <option value="custom">Custom API</option>
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium mb-2">API Key</label>
-                            <input type="password" placeholder="Enter your API key" class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm font-medium mb-2">Model</label>
-                            <select class="w-full p-3 bg-white/10 border border-white/20 rounded-lg text-white">
-                                <option value="gpt-4">GPT-4</option>
-                                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                                <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-                                <option value="claude-3-haiku">Claude 3 Haiku</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">AI Provider</label>
+                        <select class="form-select" id="aiProvider">
+                            <option value="openai">OpenAI GPT-4</option>
+                            <option value="claude">Anthropic Claude</option>
+                            <option value="ollama">Ollama (Local)</option>
+                            <option value="custom">Custom API</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">API Key</label>
+                        <input type="password" placeholder="Enter your API key" class="form-input" id="apiKey">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Model</label>
+                        <select class="form-select" id="aiModel">
+                            <option value="gpt-4">GPT-4</option>
+                            <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                            <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                            <option value="claude-3-haiku">Claude 3 Haiku</option>
+                        </select>
                     </div>
                 </div>
                 
                 <!-- AI Chat Interface -->
-                <div class="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
-                    <h3 class="text-2xl font-bold mb-6 text-indigo-300">Chat with AI Agent</h3>
+                <div class="ai-card">
+                    <h3 class="ai-title">Chat with AI Agent</h3>
                     
-                    <!-- Messages -->
-                    <div class="h-80 overflow-y-auto mb-4 space-y-4">
-                        <div class="text-center text-gray-400 py-8">
-                            Start a conversation with your AI inventory assistant...
+                    <div class="chat-container" id="chatContainer">
+                        <div class="chat-message ai">
+                            <div class="chat-bubble ai">
+                                Start a conversation with your AI inventory assistant...
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Input -->
-                    <div class="flex space-x-2">
-                        <input placeholder="Ask about inventory management..." class="flex-1 p-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-indigo-400">
-                        <button class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition-colors">
-                            Send
-                        </button>
+                    <div class="chat-input-group">
+                        <input type="text" placeholder="Ask about inventory management..." class="chat-input" id="chatInput">
+                        <button class="chat-send" id="chatSend">Send</button>
                     </div>
                 </div>
             </div>
@@ -176,192 +575,164 @@
     </section>
 
     <!-- Timeline Section -->
-    <section class="py-20 px-6">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold mb-6">10 Years of Innovation</h2>
-                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
-                    From Indigo2 to Indigo3 - A decade of modular architecture and AI agent development.
-                </p>
-            </div>
+    <section class="section fade-in">
+        <div class="container">
+            <h2 class="section-title">10 Years of Innovation</h2>
+            <p class="section-subtitle">
+                From Indigo2 to Indigo3 - A decade of modular architecture and AI agent development.
+            </p>
             
-            <div class="relative">
-                <!-- Timeline line -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-indigo-500 to-purple-500"></div>
+            <div class="timeline">
+                <div class="timeline-line"></div>
                 
-                <div class="space-y-12">
-                    <div class="relative flex items-center flex-row">
-                        <div class="w-1/2 px-8">
-                            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-green-400/50">
-                                <div class="flex items-center mb-2">
-                                    <span class="text-2xl font-bold mr-3 text-green-400">2015</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-300">COMPLETED</span>
-                                </div>
-                                <h3 class="text-xl font-semibold mb-2">Indigo2 Launch</h3>
-                                <p class="text-gray-300">First generation modular ERP system with agent architecture foundation</p>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2015</span>
+                                <span class="timeline-status completed">COMPLETED</span>
                             </div>
+                            <h3 class="timeline-title">Indigo2 Launch</h3>
+                            <p class="timeline-description">First generation modular ERP system with agent architecture foundation</p>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-slate-900 bg-green-400"></div>
                     </div>
-                    
-                    <div class="relative flex items-center flex-row-reverse">
-                        <div class="w-1/2 px-8">
-                            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-green-400/50">
-                                <div class="flex items-center mb-2">
-                                    <span class="text-2xl font-bold mr-3 text-green-400">2018</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-300">COMPLETED</span>
-                                </div>
-                                <h3 class="text-xl font-semibold mb-2">Agent Framework</h3>
-                                <p class="text-gray-300">Advanced AI agent integration for automated business processes</p>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2018</span>
+                                <span class="timeline-status completed">COMPLETED</span>
                             </div>
+                            <h3 class="timeline-title">Agent Framework</h3>
+                            <p class="timeline-description">Advanced AI agent integration for automated business processes</p>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-slate-900 bg-green-400"></div>
                     </div>
-                    
-                    <div class="relative flex items-center flex-row">
-                        <div class="w-1/2 px-8">
-                            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-green-400/50">
-                                <div class="flex items-center mb-2">
-                                    <span class="text-2xl font-bold mr-3 text-green-400">2021</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-300">COMPLETED</span>
-                                </div>
-                                <h3 class="text-xl font-semibold mb-2">Cloud Migration</h3>
-                                <p class="text-gray-300">Full cloud deployment with enhanced scalability and security</p>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2021</span>
+                                <span class="timeline-status completed">COMPLETED</span>
                             </div>
+                            <h3 class="timeline-title">Cloud Migration</h3>
+                            <p class="timeline-description">Full cloud deployment with enhanced scalability and security</p>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-slate-900 bg-green-400"></div>
                     </div>
-                    
-                    <div class="relative flex items-center flex-row-reverse">
-                        <div class="w-1/2 px-8">
-                            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-yellow-400/50">
-                                <div class="flex items-center mb-2">
-                                    <span class="text-2xl font-bold mr-3 text-yellow-400">2024</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-300">IN PROGRESS</span>
-                                </div>
-                                <h3 class="text-xl font-semibold mb-2">Indigo3 Development</h3>
-                                <p class="text-gray-300">Next-generation modular architecture with enhanced AI capabilities</p>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card in-progress">
+                            <div class="timeline-header">
+                                <span class="timeline-year in-progress">2024</span>
+                                <span class="timeline-status in-progress">IN PROGRESS</span>
                             </div>
+                            <h3 class="timeline-title">Indigo3 Development</h3>
+                            <p class="timeline-description">Next-generation modular architecture with enhanced AI capabilities</p>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-slate-900 bg-yellow-400"></div>
                     </div>
-                    
-                    <div class="relative flex items-center flex-row">
-                        <div class="w-1/2 px-8">
-                            <div class="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-gray-400/50">
-                                <div class="flex items-center mb-2">
-                                    <span class="text-2xl font-bold mr-3 text-gray-400">2025</span>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-300">UPCOMING</span>
-                                </div>
-                                <h3 class="text-xl font-semibold mb-2">Indigo3 Launch</h3>
-                                <p class="text-gray-300">Revolutionary ERP platform with advanced AI agents and modular design</p>
+                    <div class="timeline-dot in-progress"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card upcoming">
+                            <div class="timeline-header">
+                                <span class="timeline-year upcoming">2025</span>
+                                <span class="timeline-status upcoming">UPCOMING</span>
                             </div>
+                            <h3 class="timeline-title">Indigo3 Launch</h3>
+                            <p class="timeline-description">Revolutionary ERP platform with advanced AI agents and modular design</p>
                         </div>
-                        <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 rounded-full border-4 border-slate-900 bg-gray-400"></div>
                     </div>
+                    <div class="timeline-dot upcoming"></div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 px-6 bg-black/20">
-        <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-4xl md:text-5xl font-bold mb-6">Ready to Transform Your Inventory Management?</h2>
-            <p class="text-xl text-gray-300 mb-8">
-                Join the next generation of ERP with Indigo3. Experience the power of AI agents and modular architecture.
-            </p>
-            
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
-                    Request Early Access
-                </button>
-                <button class="px-8 py-4 border border-indigo-400 hover:bg-indigo-500/20 rounded-lg font-semibold transition-all duration-300">
-                    Schedule Demo
-                </button>
-            </div>
-            
-            <div class="mt-12 text-center">
-                <p class="text-gray-400 mb-4">Built on 10 years of innovation</p>
-                <div class="flex justify-center items-center space-x-8 text-2xl font-bold">
-                    <span class="text-indigo-300">Indigo2</span>
-                    <span class="text-gray-500">→</span>
-                    <span class="text-purple-300">Indigo3</span>
+    <section class="section cta-section fade-in">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Transform Your Inventory Management?</h2>
+                <p class="cta-subtitle">
+                    Join the next generation of ERP with Indigo3. Experience the power of AI agents and modular architecture.
+                </p>
+                
+                <div class="cta-buttons">
+                    <button class="btn-primary">Request Early Access</button>
+                    <button class="btn-secondary">Schedule Demo</button>
+                </div>
+                
+                <div class="innovation-text">Built on 10 years of innovation</div>
+                <div class="innovation-brands">
+                    <span class="brand-indigo2">Indigo2</span>
+                    <span class="brand-arrow">→</span>
+                    <span class="brand-indigo3">Indigo3</span>
                 </div>
             </div>
         </div>
     </section>
 
     <script>
-        // Simple intersection observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
+        // Intersection Observer for animations
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
+                if (entry.isIntersecting) entry.target.classList.add('visible');
             });
         }, observerOptions);
 
-        // Observe all sections
-        document.querySelectorAll('section').forEach(section => {
-            section.style.opacity = '0';
-            section.style.transform = 'translateY(30px)';
-            section.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-            observer.observe(section);
+        document.querySelectorAll('.fade-in').forEach(section => observer.observe(section));
+
+        // AI Chat functionality
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const chatContainer = document.getElementById('chatContainer');
+
+        function addMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user' : 'ai'}`;
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = `chat-bubble ${isUser ? 'user' : 'ai'}`;
+            bubbleDiv.textContent = content;
+            messageDiv.appendChild(bubbleDiv);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                chatInput.value = '';
+                setTimeout(() => {
+                    const responses = [
+                        `I understand you're asking about "${message}". As an AI inventory assistant, I can help you with stock optimization, demand forecasting, and supplier management. How can I assist you further?`,
+                        `Great question about "${message}"! I can provide insights on inventory turnover, reorder points, and supplier performance. What specific aspect would you like to explore?`,
+                        `Regarding "${message}", I can help you analyze inventory patterns, predict demand, and optimize your supply chain. What would you like to know more about?`
+                    ];
+                    addMessage(responses[Math.floor(Math.random() * responses.length)], false);
+                }, 1000);
+            }
+        }
+
+        chatSend.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+        document.querySelectorAll('.btn-primary, .btn-secondary').forEach(button => {
+            button.addEventListener('click', () => {
+                alert('Thank you for your interest! This is a demo landing page. In a real implementation, this would connect to our contact system.');
+            });
         });
-
-        // Simple AI chat functionality
-        const chatInput = document.querySelector('input[placeholder="Ask about inventory management..."]');
-        const chatButton = document.querySelector('button:contains("Send")');
-        const chatContainer = document.querySelector('.h-80');
-
-        if (chatButton) {
-            chatButton.addEventListener('click', () => {
-                const message = chatInput.value.trim();
-                if (message) {
-                    // Add user message
-                    const userMessage = document.createElement('div');
-                    userMessage.className = 'flex justify-end';
-                    userMessage.innerHTML = `
-                        <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-indigo-600 text-white">
-                            ${message}
-                        </div>
-                    `;
-                    chatContainer.appendChild(userMessage);
-                    
-                    // Clear input
-                    chatInput.value = '';
-                    
-                    // Simulate AI response
-                    setTimeout(() => {
-                        const aiMessage = document.createElement('div');
-                        aiMessage.className = 'flex justify-start';
-                        aiMessage.innerHTML = `
-                            <div class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg bg-white/10 text-gray-200">
-                                I understand you're asking about "${message}". As an AI inventory assistant, I can help you with stock optimization, demand forecasting, and supplier management. How can I assist you further?
-                            </div>
-                        `;
-                        chatContainer.appendChild(aiMessage);
-                        chatContainer.scrollTop = chatContainer.scrollHeight;
-                    }, 1000);
-                }
-            });
-        }
-
-        // Allow Enter key to send message
-        if (chatInput) {
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    chatButton.click();
-                }
-            });
-        }
     </script>
 </body>
 </html>
