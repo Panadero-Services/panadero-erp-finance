@@ -87,12 +87,12 @@ const _bodySmall = computed(() => props.scaling.font.small) // WAS: `${settings.
 
 // Computed
 const canSubmit = computed(() => {
-  return approvalDecision?.value !== null && !isSubmitting.value
+  return approvalDecision.value !== null && !isSubmitting.value
 })
 
 const approvalStatus = computed(() => {
-  if (approvalDecision?.value === true) return { text: 'Approved', class: 'text-green-600 bg-green-100 dark:bg-green-900/30' }
-  if (approvalDecision?.value === false) return { text: 'Rejected', class: 'text-red-600 bg-red-100 dark:bg-red-900/30' }
+  if (approvalDecision.value === true) return { text: 'Approved', class: 'text-green-600 bg-green-100 dark:bg-green-900/30' }
+  if (approvalDecision.value === false) return { text: 'Rejected', class: 'text-red-600 bg-red-100 dark:bg-red-900/30' }
   return { text: 'Pending', class: 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30' }
 })
 
@@ -158,9 +158,10 @@ function getAllCollectedData() {
 <template>
   <div class="space-y-4">
 
+    <!--
     <h3 :style="{ fontSize: scaling.font.body }" class="font-semibold text-gray-900 dark:text-white mt-2">
       Step {{ props.step.order || '?' }} -  Input section
-    </h3>
+    </h3>-->
     
     <!-- Info Only Mode - For Column 2 Display -->
     <div v-if="infoOnly" :class="['rounded-lg p-3', colors.primary.bg]">
@@ -227,7 +228,7 @@ function getAllCollectedData() {
             @click="handleApproval(true)"
             :class="[
               'flex-1 px-4 py-3 rounded-lg border-2 font-medium transition-colors',
-              approvalDecision?.value === true
+              approvalDecision === true
                 ? 'bg-green-600 border-green-600 text-white'
                 : 'border-green-300 text-green-700 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20'
             ]"
@@ -241,7 +242,7 @@ function getAllCollectedData() {
             @click="handleApproval(false)"
             :class="[
               'flex-1 px-4 py-3 rounded-lg border-2 font-medium transition-colors',
-              approvalDecision?.value === false
+              approvalDecision === false
                 ? 'bg-red-600 border-red-600 text-white'
                 : 'border-red-300 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20'
             ]"
@@ -253,7 +254,7 @@ function getAllCollectedData() {
         </div>
         
         <!-- Current Status -->
-        <div v-if="approvalDecision?.value !== null" class="text-center">
+        <div v-if="approvalDecision !== null" class="text-center">
           <span :class="['px-3 py-1 rounded-full text-sm font-medium', approvalStatus.class]">
             {{ approvalStatus.text }}
           </span>

@@ -31,6 +31,9 @@ use App\Http\Controllers\Finance\FixedAssetController;
 use App\Http\Controllers\Finance\BudgetController;
 use App\Http\Controllers\Finance\AuditLogController;
 
+
+
+
 /*
 |--------------------------------------------------------------------------
 | SPECIFIC API ROUTES
@@ -593,6 +596,5 @@ Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
     Route::get('/audit-logs', [AuditLogController::class, 'index']);
     Route::post('/audit-logs', [AuditLogController::class, 'store']);
 });
-
 
 

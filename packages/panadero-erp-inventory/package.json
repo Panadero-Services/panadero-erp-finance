@@ -1,0 +1,40 @@
+{
+  "name": "panadero-erp-inventory",
+  "version": "1.0.0",
+  "description": "ERP Inventory Module - Comprehensive inventory management system with complete workflow management",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "echo \"Development mode - import from packages/panadero-erp-inventory\"",
+    "build": "echo \"Build complete\"",
+    "lint": "echo \"Linting complete\""
+  },
+  "keywords": [
+    "erp",
+    "inventory",
+    "stock-management",
+    "warehouse-management",
+    "supply-chain",
+    "purchase-orders",
+    "supplier-management",
+    "inventory-reports",
+    "workflow-management",
+    "business-process",
+    "approval-system"
+  ],
+  "author": "JaWsome.Orbit",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Panadero-Services/panadero-erp-inventory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Panadero-Services/panadero-erp-inventory/issues"
+  },
+  "homepage": "https://github.com/Panadero-Services/panadero-erp-inventory#readme",
+  "panaderoConfig": "./config.json"
+}

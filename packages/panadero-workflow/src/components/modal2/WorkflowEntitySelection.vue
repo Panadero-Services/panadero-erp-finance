@@ -48,7 +48,7 @@ const selectedEntity = ref(props.stepData.selectedEntity || null)
 const searchQuery = ref('')
 const isLoading = ref(false)
 const availableEntities = ref([])
-const apiError = ref(null) // ← ADD ERROR STATE
+const apiError = ref(null) // ADD ERROR STATE
 
 // Computed
 const apiEndpoint = computed(() => props.step.entity_selection?.api_endpoint || '/api/vendors')
@@ -76,7 +76,7 @@ async function fetchEntities() {
   if (!apiEndpoint.value) return
   
   isLoading.value = true
-  apiError.value = null // ← CLEAR PREVIOUS ERRORS
+  apiError.value = null // CLEAR PREVIOUS ERRORS
   
   try {
     const response = await fetch(apiEndpoint.value)
@@ -143,7 +143,7 @@ onMounted(() => {
 
 <template>
   <div class="space-y-4">
-    <!-- STANDARDIZED HEADER - Same for all 4 components -->
+    <!-- STANDARDIZED HEADER - Same for all 4 components
     <div class="flex items-center justify-between">
       <h3 :style="{ fontSize: scaling.font.subtitle }" class="font-semibold text-gray-900 dark:text-white">
         {{ step.name || 'Entity Selection' }} {{activeWorkflow.currentStep == step.order}}
@@ -151,7 +151,7 @@ onMounted(() => {
       <span :style="{ fontSize: scaling.font.caption }" class="text-gray-500 dark:text-gray-400">
         Step {{ step.order || '?' }} 
       </span>
-    </div>
+    </div> -->
 
     <div class="text-right text-xxs"> activeWorkflow.id: {{activeWorkflow.id}}</div>
     <div class="text-right text-xxs"> activeWorkflow.currentStep: {{activeWorkflow.currentStep}}</div>

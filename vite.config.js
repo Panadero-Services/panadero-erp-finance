@@ -27,6 +27,18 @@ export default defineConfig({
             host: process.env.VITE_SERVER_HOST, // Use your network IP
             port: parseInt(process.env.VITE_SERVER_PORT),
         },
+        proxy: {
+            '/api/openai': {
+                target: 'https://api.openai.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/openai/, '/v1')
+            },
+            '/api/claude': {
+                target: 'https://api.anthropic.com',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api\/claude/, '/v1')
+            }
+        }
     },
     build: {
         chunkSizeWarningLimit: 5000,
@@ -46,7 +58,9 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': '/resources/js',
-            'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/client/src/index.js')
+            'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/client/src/index.js'),
+            'panadero-erp-finance': resolve(__dirname, 'packages/panadero-erp-finance'),
+            'panadero-erp-inventory': resolve(__dirname, 'packages/panadero-erp-inventory'),
         }
     },
     optimizeDeps: {

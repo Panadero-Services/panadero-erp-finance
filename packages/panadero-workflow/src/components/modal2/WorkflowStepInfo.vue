@@ -338,7 +338,7 @@ const progressPercentage = computed(() => {
     <!-- Stepper Header -->
     <div class="mb-4">
       <h3 :style="{ fontSize: scaling.font.body }" class="font-semibold text-gray-900 dark:text-white mb-2">
-        Step Information
+        Step {{ viewedStep }} Information
       </h3>
     </div>
     

@@ -1,0 +1,79 @@
+{
+  "name": "panadero-erp-inventory",
+  "version": "1.0.0",
+  "description": "ERP Inventory Module - Complete inventory management with stock tracking, warehousing, and supply chain",
+  "type": "erp-module",
+  "category": "inventory",
+  "color": "blue",
+  "icon": "PackageIcon",
+  "tabs": [
+    {
+      "name": "Dashboard",
+      "url": "/home/dashboard",
+      "route": "home.dashboard"
+    },
+    {
+      "name": "Stock Management",
+      "url": "/erp/inventory",
+      "route": "erp.inventory",
+      "tab": "stock"
+    },
+    {
+      "name": "Warehouse Management",
+      "url": "/erp/inventory",
+      "route": "erp.inventory",
+      "tab": "warehouse"
+    },
+    {
+      "name": "Purchase Orders",
+      "url": "/erp/inventory",
+      "route": "erp.inventory",
+      "tab": "purchase-orders"
+    },
+    {
+      "name": "Supplier Management",
+      "url": "/erp/inventory",
+      "route": "erp.inventory",
+      "tab": "suppliers"
+    },
+    {
+      "name": "Inventory Reports",
+      "url": "/erp/inventory",
+      "route": "erp.inventory",
+      "tab": "reports"
+    },
+    {
+      "name": "Agent Portal",
+      "url": "/erp/inventory",
+      "route": "erp.inventory",
+      "tab": "agent-portal"
+    }
+  ],
+  "features": [
+    "Stock Management",
+    "Warehouse Management", 
+    "Purchase Orders",
+    "Supplier Management",
+    "Inventory Reports",
+    "Agent Portal",
+    "Workflow Integration",
+    "Dynamic Font Sizing",
+    "Action Buttons",
+    "AI Integration"
+  ],
+  "dependencies": [
+    "vue",
+    "pinia",
+    "decimal.js",
+    "axios"
+  ],
+  "workflow": {
+    "enabled": true,
+    "templates": [
+      "inventory-approval",
+      "purchase-order-approval",
+      "stock-adjustment-approval",
+      "supplier-onboarding"
+    ]
+  }
+}

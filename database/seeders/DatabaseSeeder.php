@@ -112,6 +112,9 @@ class DatabaseSeeder extends Seeder
             // Rentals
             RentalSeeder::class,             // Rental management
             RentalDetailSeeder::class,       // Rental details
+            
+            // ERP Inventory System
+            InventoryDatabaseSeeder::class,     // ERP Inventory system
         ]);
 
         // ===== STEP 11: FINANCE CORE SYSTEM =====

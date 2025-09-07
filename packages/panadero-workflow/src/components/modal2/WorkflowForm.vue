@@ -7,7 +7,7 @@
   @cleanup Removed entity_selector code - separation of concerns
 -->
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useColors } from './useColors.js'
 //import { useWorkflowSettings } from '../composables/useWorkflowSettings.js'
 
@@ -16,67 +16,50 @@ const { colors } = useColors()
 
 // Props
 const props = defineProps({
-  step: {
-    type: Object,
-    required: true
-  },
-  stepData: {
-    type: Object,
-    default: () => ({})
-  },
-  scaling: {
-    type: Object,
-    required: true
-  },
-  infoOnly: {
-    type: Boolean,
-    default: false
-  },
-  readOnlyPreview: {
-    type: Boolean,
-    default: false
-  },
-  workflowStore: {
-    type: Object,
-    required: true
-  },
-  workflowId: {
-    type: [String, Number],
-    required: true
-  }
+  step: { type: Object, required: true },
+  stepData: { type: Object, default: () => ({}) },
+  scaling: { type: Object, required: true },
+  infoOnly: { type: Boolean, default: false },
+  workflowStore: { type: Object, required: true },
+  workflowId: { type: [String, Number], required: true },
+  activeWorkflow: { type: Object, default: null }
 })
-
-// Get activeWorkflow from store reactively (SSOT)
-const activeWorkflow = computed(() => {
-  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
-})
-
 
 // Emits
 const emit = defineEmits(['update-step-data'])
 
-// Composables
-//const settings = useWorkflowSettings()
-
 // State
+const formData = ref({ ...props.stepData.formData || {} })
 const isSubmitting = ref(false)
-const formData = ref(props.stepData.formData || {})
 
-// Dynamic font sizes - ONLY changing styling references
-const _value = computed(() => props.scaling.font.subtitle) // WAS: `${settings.fontSizesComputed.value.h4}px`
-const _body = computed(() => props.scaling.font.body) // WAS: `${settings.fontSizesComputed.value.body}px`
-const _bodySmall = computed(() => props.scaling.font.small) // WAS: `${settings.fontSizesComputed.value.bodySmall}px`
-const _caption = computed(() => props.scaling.font.caption) // WAS: `${settings.fontSizesComputed.value.caption}px`
+// Dynamic font sizes
+const _value = computed(() => props.scaling.font.subtitle)
+const _body = computed(() => props.scaling.font.body)
+const _bodySmall = computed(() => props.scaling.font.small)
+const _caption = computed(() => props.scaling.font.caption)
 
-
-
-// Methods
+// 1. FIX REACTIVITY: Proper store update
 function updateField(fieldName, value) {
   formData.value[fieldName] = value
+  
+  // CRITICAL FIX: Update the store immediately for Column 2 reactivity
+  if (props.activeWorkflow?.steps) {
+    const currentStepIndex = props.activeWorkflow.currentStep - 1
+    if (props.activeWorkflow.steps[currentStepIndex]) {
+      // Ensure the data object exists
+      if (!props.activeWorkflow.steps[currentStepIndex].data) {
+        props.activeWorkflow.steps[currentStepIndex].data = {}
+      }
+      // Update formData in the store
+      props.activeWorkflow.steps[currentStepIndex].data.formData = { ...formData.value }
+    }
+  }
+  
+  // Also emit for compatibility
   emit('update-step-data', props.step.id, { formData: formData.value })
 }
 
-async function submitForm() {
+async function submitStep() {
   if (!canSubmit.value) return
   
   isSubmitting.value = true
@@ -97,15 +80,17 @@ async function submitForm() {
       completedAt: new Date().toISOString()
     })
     
+    // Advance to next step using SSOT
+    props.workflowStore.advanceCurrentStep(props.workflowId)
+    
   } catch (error) {
     console.error('Form submission failed:', error)
-    // You could add error handling UI here
   } finally {
     isSubmitting.value = false
   }
 }
 
-// Computed
+// Computed - USE JSON CONFIG SYSTEM
 const formFields = computed(() => {
   if (!props.step.form_schema?.sections) return []
   
@@ -119,14 +104,25 @@ const formFields = computed(() => {
 })
 
 const completedFields = computed(() => {
-  return formFields.value.filter(field => formData.value[field.name]).length
+  return formFields.value.filter(field => {
+    const value = formData.value[field.name]
+    return value !== null && value !== undefined && value !== ''
+  }).length
+})
+
+const progressPercentage = computed(() => {
+  if (formFields.value.length === 0) return 0
+  return Math.round((completedFields.value / formFields.value.length) * 100)
 })
 
 const canSubmit = computed(() => {
   if (!props.step.form_schema) return false
   
   const requiredFields = getRequiredFields()
-  return requiredFields.every(field => formData.value[field.name]) && !isSubmitting.value
+  return requiredFields.every(field => {
+    const value = formData.value[field.name]
+    return value !== null && value !== undefined && value !== ''
+  }) && !isSubmitting.value
 })
 
 function getRequiredFields() {
@@ -145,20 +141,20 @@ function getRequiredFields() {
 
 // Get all collected data from all steps
 function getAllCollectedData() {
-  if (!activeWorkflow.value?.steps) return null
+  if (!props.activeWorkflow?.steps) return null
   
   const allData = {}
   
   // Collect data from all steps
-  activeWorkflow.value.steps.forEach((step, index) => {
+  props.activeWorkflow.steps.forEach((step, index) => {
     if (step.data) {
       Object.assign(allData, step.data)
     }
   })
   
   // Add entity data structure fields (empty if not filled)
-  if (activeWorkflow.value.entityDataStructure?.fields) {
-    activeWorkflow.value.entityDataStructure.fields.forEach(field => {
+  if (props.activeWorkflow.entityDataStructure?.fields) {
+    props.activeWorkflow.entityDataStructure.fields.forEach(field => {
       if (!(field.name in allData)) {
         allData[field.name] = null // Show empty fields
       }
@@ -170,43 +166,40 @@ function getAllCollectedData() {
 </script>
 
 <template>
+<div class="space-y-4">
 
-  <div class="space-y-4">
+  <!-- Header in line with other step types 
+  <h3 :style="{ fontSize: scaling.font.body }" class="font-semibold text-gray-900 dark:text-white mt-2">
+    Step {{ props.step.order || '?' }} - Input section
+  </h3>-->
+  
+  <!-- INFO ONLY MODE - Column 2 (no progress bar here) -->
+  <div v-if="infoOnly" :class="['rounded-lg border p-4', colors.secondary.bg, colors.secondary.border]">
+    <h4 :style="{ fontSize: scaling.font.body }" :class="['font-medium mb-2', colors.primary.text]">
+      <i class="fas fa-edit text-green-600 mr-2"></i>
+      Form Submission
+    </h4>
 
-    <h3 :style="{ fontSize: scaling.font.body }" class="font-semibold text-gray-900 dark:text-white mt-2">
-      Step {{ props.step.order || '?' }} -  Input section
-    </h3>
+    <div v-if="formFields.length > 0" :class="['text-sm', colors.secondary.text]">
+      {{ formFields.length }} fields to complete
+    </div>
     
-    <!-- Info Only Mode - For Column 2 Display -->
-    <div v-if="infoOnly" :class="['rounded-lg p-3', colors.primary.bg]">
-      <h4 :style="{ fontSize: scaling.font.caption }" :class="['font-medium mb-2', colors.primary.textMuted]">
-        <i class="fas fa-edit text-green-600 mr-1"></i>
-        Form Details
-      </h4>
-      <div class="space-y-2">
-        <div v-if="formFields.length > 0" :class="['text-sm', colors.secondary.text]">
-          {{ formFields.length }} fields to complete
-        </div>
-        <div v-if="completedFields > 0" class="text-sm">
-          <span :class="colors.secondary.text">Completed: </span>
-          <span class="font-medium text-green-600 dark:text-green-400">{{ completedFields }}/{{ formFields.length }}</span>
-        </div>
-        
-        <!-- Current Step Data Only -->
-        <div v-if="Object.keys(formData).length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
-          <div :style="{ fontSize: scaling.font.small }" :class="['font-medium mb-2', colors.primary.textMuted]">
-            <i class="fas fa-database mr-1 text-blue-600"></i>
-            Step Data
-          </div>
-          <div :class="['bg-gray-100 dark:bg-gray-700 rounded p-2 font-mono text-xs overflow-x-auto', colors.secondary.text]">
-            formData: {{ JSON.stringify(formData, null, 2) }}
-          </div>
-        </div>
+    <!-- Current Step Data Only -->
+    <div v-if="Object.keys(formData).length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+      <div :style="{ fontSize: scaling.font.small }" :class="['font-medium mb-2', colors.primary.textMuted]">
+        <i class="fas fa-database mr-1 text-blue-600"></i>
+        Step Data
+      </div>
+      <div :class="['bg-gray-100 dark:bg-gray-700 rounded p-2 font-mono text-xs overflow-x-auto', colors.secondary.text]">
+        formData: {{ JSON.stringify(formData, null, 2) }}
       </div>
     </div>
+  </div>
+  
+  <!-- FULL INTERACTIVE MODE - Column 3 -->
+  <div v-else class="space-y-6">
 
-    <!-- Full Component Mode - For Column 3 Display -->
-    <div v-else class="space-y-6">
+
 
     <!-- Form Information -->
     <div :class="['rounded-lg border p-4', colors.secondary.bg, colors.secondary.border]">
@@ -215,7 +208,35 @@ function getAllCollectedData() {
           <i class="fas fa-edit text-green-600 mr-2"></i>
           Form Submission Required
         </h4>
+
+
+    <!-- 2. MOVE PROGRESS BAR BACK TO COLUMN 3 -->
+    <div class="">
+      <div class="flex justify-between items-center mb-1">
+        <span :style="{ fontSize: _bodySmall }" class="font-medium text-blue-800 dark:text-blue-200">
+        </span>
+        <span :style="{ fontSize: _bodySmall }" class="text-blue-600 dark:text-blue-300">
+          {{ completedFields }}/{{ formFields.length }} 
+        </span>
+        <span :style="{ fontSize: _bodySmall }" class="text-blue-600 dark:text-blue-300 ml-16">completed 
+        </span>
       </div>
+      <div class="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-1.5">
+        <div 
+          class="bg-blue-600 dark:bg-blue-400 h-1.5 rounded-full transition-all duration-300"
+          :style="{ width: `${progressPercentage}%` }"
+        ></div>
+      </div>
+    </div>
+
+
+
+
+      </div>
+
+
+
+
       
       <div class="space-y-3">
         <div v-if="props.step.description" :class="colors.secondary.text">
@@ -224,7 +245,12 @@ function getAllCollectedData() {
       </div>
     </div>
 
-    <!-- Form Fields -->
+
+
+
+
+
+    <!-- Form Fields from JSON Config -->
     <div v-if="props.step.form_schema?.sections" class="space-y-6">
       
       <div v-for="section in props.step.form_schema.sections" :key="section.title" 
@@ -232,44 +258,67 @@ function getAllCollectedData() {
         
         <h5 :style="{ fontSize: _body }" :class="['font-medium border-b pb-2 mb-4', colors.primary.text, colors.secondary.border]">
           {{ section.title }}
-            {{ props.step.form_schema.sections?.length || 0 }} sections with form fields
-          
         </h5>
         
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div v-for="field in section.fields" :key="field.name" class="space-y-2">
+        <!-- Grid 2-column layout for fields -->
+        <div class="grid md:grid-cols-2 gap-4">
+          <div v-for="field in section.fields" :key="field.name" class="space-y-1">
+            
+            <!-- Field Label -->
             <label :style="{ fontSize: _bodySmall }" :class="['block font-medium', colors.primary.textMuted]">
               {{ field.label }}
-              <span v-if="field.required" class="text-red-500">*</span>
+              <span v-if="field.required" class="text-red-500 ml-1">*</span>
             </label>
             
             <!-- Text Input -->
-            <input v-if="field.type === 'text' || field.type === 'email' || field.type === 'tel' || field.type === 'url'"
-                   :type="field.type"
-                   :value="formData[field.name] || ''"
-                   :style="{ fontSize: _body }"
-                   :class="['w-full px-3 py-2 border rounded-lg transition-colors', colors.form.border, colors.form.focus, colors.form.input, colors.primary.text]"
-                   :placeholder="`Enter ${field.label.toLowerCase()}`"
-                   :disabled="readOnlyPreview"
-                   @input="updateField(field.name, $event.target.value)">
+            <input 
+              v-if="field.type === 'text' || field.type === 'number'"
+              :type="field.type"
+              :value="formData[field.name] || ''"
+              @input="updateField(field.name, $event.target.value)"
+              :placeholder="field.placeholder || ''"
+              :class="['block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none', colors.form.border, colors.form.focus, colors.form.input]"
+              :style="{ fontSize: _body }"
+            />
             
-            <!-- Textarea -->
-            <textarea v-else-if="field.type === 'textarea'"
-                      :value="formData[field.name] || ''"
-                      :style="{ fontSize: _body }"
-                      :class="['w-full px-3 py-2 border rounded-lg transition-colors resize-vertical', colors.form.border, colors.form.focus, colors.form.input, colors.primary.text]"
-                      :rows="field.attributes?.rows || 3"
-                      :placeholder="`Enter ${field.label.toLowerCase()}`"
-                      :disabled="readOnlyPreview"
-                      @input="updateField(field.name, $event.target.value)"></textarea>
+            <!-- ADD: Date Input -->
+            <input 
+              v-else-if="field.type === 'date'"
+              type="date"
+              :value="formData[field.name] || ''"
+              @input="updateField(field.name, $event.target.value)"
+              :class="['block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none', colors.form.border, colors.form.focus, colors.form.input]"
+              :style="{ fontSize: _body }"
+            />
+
+            <!-- ADD: DateTime-Local Input -->
+            <input 
+              v-else-if="field.type === 'datetime-local'"
+              type="datetime-local"
+              :value="formData[field.name] || ''"
+              @input="updateField(field.name, $event.target.value)"
+              :class="['block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none', colors.form.border, colors.form.focus, colors.form.input]"
+              :style="{ fontSize: _body }"
+            />
+
+            <!-- ADD: Month Input -->
+            <input 
+              v-else-if="field.type === 'month'"
+              type="month"
+              :value="formData[field.name] || ''"
+              @input="updateField(field.name, $event.target.value)"
+              :class="['block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none', colors.form.border, colors.form.focus, colors.form.input]"
+              :style="{ fontSize: _body }"
+            />
             
-            <!-- Select -->
-            <select v-else-if="field.type === 'select'"
-                    :value="formData[field.name] || ''"
-                    :style="{ fontSize: _body }"
-                    :class="['w-full px-3 py-2 border rounded-lg transition-colors', colors.form.border, colors.form.focus, colors.form.input, colors.primary.text]"
-                    :disabled="readOnlyPreview"
-                    @change="updateField(field.name, $event.target.value)">
+            <!-- Select Dropdown -->
+            <select 
+              v-else-if="field.type === 'select'"
+              :value="formData[field.name] || ''"
+              @change="updateField(field.name, $event.target.value)"
+              :class="['block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none', colors.form.border, colors.form.focus, colors.form.input]"
+              :style="{ fontSize: _body }"
+            >
               <option value="">Select {{ field.label.toLowerCase() }}</option>
               <option v-for="option in field.options" :key="option" :value="option">{{ option }}</option>
             </select>
@@ -279,25 +328,23 @@ function getAllCollectedData() {
               <input type="checkbox" 
                      :checked="formData[field.name] || false"
                      class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
-                     :disabled="readOnlyPreview"
                      @change="updateField(field.name, $event.target.checked)">
               <span :style="{ fontSize: _body }" :class="colors.primary.textMuted">
                 {{ field.label }}
               </span>
             </label>
             
+            <!-- Textarea -->
+            <textarea 
+              v-else-if="field.type === 'textarea'"
+              :value="formData[field.name] || ''"
+              @input="updateField(field.name, $event.target.value)"
+              :placeholder="field.placeholder || ''"
+              rows="3"
+              :class="['block w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none', colors.form.border, colors.form.focus, colors.form.input]"
+              :style="{ fontSize: _body }"
+            ></textarea>
 
-            <!-- File Upload -->
-            <div v-else-if="field.type === 'file'" 
-                 class="w-full px-6 py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors cursor-pointer">
-              <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 dark:text-gray-500 mb-2"></i>
-              <p :style="{ fontSize: _bodySmall }" :class="colors.secondary.text">
-                Upload {{ field.label.toLowerCase() }}
-              </p>
-              <p :style="{ fontSize: _caption }" :class="[colors.secondary.text, 'mt-1']">
-                {{ field.attributes?.accept || 'All files' }} • Max {{ field.attributes?.maxSize || '10MB' }}
-              </p>
-            </div>
           </div>
         </div>
       </div>
@@ -315,16 +362,21 @@ function getAllCollectedData() {
     </div>
 
     <!-- Submit Button -->
-    <div v-if="!readOnlyPreview" class="flex justify-end">
+    <div class="flex justify-end">
       <button
-        @click="submitForm"
+        @click="submitStep"
         :disabled="!canSubmit"
-        :class="['px-6 py-3 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed', colors.form.button]"
+        :class="[
+          'px-6 py-2 rounded-lg font-medium transition-colors',
+          canSubmit
+            ? 'bg-blue-600 hover:bg-blue-700 text-white'
+            : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+        ]"
         :style="{ fontSize: _body }"
       >
         <i v-if="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>
-        <i v-else class="fas fa-paper-plane mr-2"></i>
-        {{ isSubmitting ? 'Submitting...' : 'Submit Form' }}
+        <i v-else class="fas fa-check mr-2"></i>
+        {{ isSubmitting ? 'Confirming...' : 'Confirm Form' }}
       </button>
     </div>
   </div>

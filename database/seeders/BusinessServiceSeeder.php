@@ -327,14 +327,15 @@ class BusinessServiceSeeder extends Seeder
         'description' => 'Complete inventory management with stock tracking, warehousing, and supply chain',
         'color' => 'blue',
         'version' => 'v1.0.00',
-        'icon' => 'CubeIcon',
+        'icon' => 'PackageIcon',
         'options' => [
             ['name' => 'Dashboard', 'url' => '/home/dashboard', 'route' => 'home.dashboard'],
             ['name' => 'Stock Management', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'stock'],
             ['name' => 'Warehouse Management', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'warehouse'],
             ['name' => 'Purchase Orders', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'purchase-orders'],
             ['name' => 'Supplier Management', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'suppliers'],
-            ['name' => 'Inventory Reports', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'reports']
+            ['name' => 'Inventory Reports', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'reports'],
+            ['name' => 'Agent Portal', 'url' => '/erp/inventory', 'route' => 'erp.inventory', 'tab' => 'agent-portal']
         ],
         'status' => 'ready',
         'progress' => 5,

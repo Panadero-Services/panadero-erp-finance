@@ -7,6 +7,7 @@
 const BASIC_TEMPLATES = [
   // Core Business Workflows
   { name: 'Vendor Onboarding', id: 'vendor-onboarding', steps: 5, avgTime: '3-5 days', category: 'procurement', module: 'demo', entity: 'finance_vendors', complexity: 'high', description: 'Complete vendor registration and validation process' },
+  { name: 'Employee Vacancy', id: 'employee-vacancy', steps: 5, avgTime: '2-3 weeks', category: 'hr', module: 'demo', entity: 'employee_vacancies', complexity: 'medium', description: 'Complete employee vacancy posting and hiring process' },
   { name: 'Employee Onboarding', id: 'employee-onboarding', steps: 7, avgTime: '1-2 weeks', category: 'hr', module: 'demo', entity: 'employees', complexity: 'high', description: 'Complete employee onboarding process' },
   { name: 'Purchase Request', id: 'purchase-request', steps: 4, avgTime: '2-3 days', category: 'procurement', module: 'demo', entity: 'purchase_requests', complexity: 'medium', description: 'Request approval for purchasing goods or services' },
   { name: 'Contract Renewal', id: 'contract-renewal', steps: 6, avgTime: '2-3 weeks', category: 'legal', module: 'demo', entity: 'contracts', complexity: 'medium', description: 'Review and renew existing contracts' },
@@ -26,6 +27,7 @@ const BASIC_TEMPLATES = [
 // ===== WORKFLOW DEFINITIONS (Lazy loaded when needed) =====
 const WORKFLOW_DEFINITIONS = {
   'vendor-onboarding': () => import('./workflows/VendorOnboardingWorkflow.js'),
+  'employee-vacancy': () => import('./workflows/EmployeeVacancyWorkflow.js'),
   'employee-onboarding': () => import('./workflows/employeeOnboardingSteps.js'),
   'purchase-request': () => import('./workflows/purchaseRequestSteps.js'),
   'contract-renewal': () => import('./workflows/contractRenewalSteps.js'),

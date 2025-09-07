@@ -383,7 +383,9 @@ Route::middleware([
 
 
 
-
+    // ========================================
+    // ERP FINANCE ROUTES
+    // ========================================
 
     Route::get('erp/finance', function () {
         return Inertia::render('erp/Finance', [
@@ -391,6 +393,19 @@ Route::middleware([
             'baseSections' => Section::where('page_id','0')->get()
         ]);
     })->name('epr/finance');
+
+
+    // ========================================
+    // ERP INVENTORY ROUTES
+    // ========================================
+    Route::get('erp/inventory', function () {
+        return Inertia::render('erp/Inventory', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get(),
+            'title' => 'ERP Inventory Management'
+        ]);
+    })->name('erp.inventory');
+
 
 
 
@@ -901,7 +916,7 @@ Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
 
 
 
-
-
-
-    
+    Route::post('/api/ai/call', [\App\Http\Controllers\AIServiceController::class, 'callAI'])->name('ai.call');
+    Route::post('/api/ai/test', function() {
+        return response()->json(['status' => 'working']);
+    })->middleware('api');

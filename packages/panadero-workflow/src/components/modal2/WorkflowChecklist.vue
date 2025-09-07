@@ -4,6 +4,7 @@
   @description Handles checklist step types in workflows - step type specific
 -->
 <script setup>
+
 import { ref, computed } from 'vue'
 import { useColors } from './useColors.js'
 //import { useWorkflowSettings } from '../composables/useWorkflowSettings.js'
@@ -11,32 +12,15 @@ import { useColors } from './useColors.js'
 // Color system
 const { colors } = useColors()
 
-// Props
+// Props - ADD MISSING PROPS
 const props = defineProps({
-  step: {
-    type: Object,
-    required: true
-  },
-  stepData: {
-    type: Object,
-    default: () => ({})
-  },
-  scaling: {
-    type: Object,
-    required: true
-  },
-  infoOnly: {
-    type: Boolean,
-    default: false
-  },
-  workflowStore: {
-    type: Object,
-    required: true
-  },
-  workflowId: {
-    type: [String, Number],
-    required: true
-  }
+  step: { type: Object, required: true },
+  stepData: { type: Object, default: () => ({}) },
+  scaling: { type: Object, required: true },
+  infoOnly: { type: Boolean, default: false },
+  workflowStore: { type: Object, required: true },  // ADD
+  workflowId: { type: [String, Number], required: true },  // ADD
+  activeWorkflow: { type: Object, default: null }  // ADD
 })
 
 // Get activeWorkflow from store reactively (SSOT)
@@ -101,7 +85,20 @@ const checkedItems = computed(() => {
 })
 
 // Methods
+// FIX: Add store reactivity for progress
 function updateField(fieldName, value) {
+  // CRITICAL FIX: Update the store immediately for Column 2 reactivity
+  if (props.activeWorkflow?.steps) {
+    const currentStepIndex = props.activeWorkflow.currentStep - 1
+    if (props.activeWorkflow.steps[currentStepIndex]) {
+      if (!props.activeWorkflow.steps[currentStepIndex].data) {
+        props.activeWorkflow.steps[currentStepIndex].data = {}
+      }
+      props.activeWorkflow.steps[currentStepIndex].data[fieldName] = value
+      props.activeWorkflow.steps[currentStepIndex].data.comments = comments.value
+    }
+  }
+  
   emit('update-step-data', props.step.id, { 
     ...props.stepData,
     [fieldName]: value,
@@ -109,20 +106,29 @@ function updateField(fieldName, value) {
   })
 }
 
-function submitChecklist() {
+// FIX: Add proper step advancement
+function submitStep() {  // RENAME from submitChecklist
   if (!canSubmit.value) return
   
   isSubmitting.value = true
   
-  emit('update-step-data', props.step.id, {
-    ...props.stepData,
-    comments: comments.value,
-    completed: true
-  })
-  
-  setTimeout(() => {
+  try {
+    // Emit completion
+    emit('update-step-data', props.step.id, {
+      ...props.stepData,
+      comments: comments.value,
+      completed: true,
+      completedAt: new Date().toISOString()
+    })
+    
+    // CRITICAL FIX: Advance to next step using SSOT
+    props.workflowStore.advanceCurrentStep(props.workflowId)
+    
+  } catch (error) {
+    console.error('Checklist submission failed:', error)
+  } finally {
     isSubmitting.value = false
-  }, 1000)
+  }
 }
 
 // Get all collected data from all steps
@@ -153,10 +159,10 @@ function getAllCollectedData() {
 
 <template>
   <div class="space-y-4">
-
+    <!--
     <h3 :style="{ fontSize: scaling.font.body }" class="font-semibold text-gray-900 dark:text-white mt-2">
       Step {{ props.step.order || '?' }} -  Input section
-    </h3>
+    </h3>-->
         
     <!-- Info Only Mode - For Column 2 Display -->
     <div v-if="infoOnly" :class="['rounded-lg p-3', colors.primary.bg]">
@@ -271,7 +277,7 @@ function getAllCollectedData() {
 
     <!-- Submit Button -->
     <button 
-      @click="submitChecklist"
+      @click="submitStep" 
       :disabled="!canSubmit"
       :class="[
         'w-full px-4 py-3 rounded-lg font-medium transition-colors',

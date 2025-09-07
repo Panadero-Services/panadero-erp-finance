@@ -43,7 +43,16 @@ const emit = defineEmits(['close'])
 
 // Get activeWorkflow from store reactively (SSOT)
 const activeWorkflow = computed(() => {
-  return props.workflowStore.workflows.find(w => w.id === props.workflowId) || null
+  console.debug('ModalWrapper - Finding workflow:', {
+    workflowId: props.workflowId,
+    workflowIdType: typeof props.workflowId,
+    workflowsInStore: props.workflowStore.workflows.map(w => ({ id: w.id, idType: typeof w.id }))
+  })
+  
+  const found = props.workflowStore.workflows.find(w => w.id === props.workflowId)
+  console.debug('ModalWrapper - Found workflow:', found)
+  
+  return found || null
 })
 
 // State
@@ -60,7 +69,7 @@ const workflowSteps = computed(() => {
   return activeWorkflow.value?.steps || activeWorkflow.value?.template?.steps || []
 })
 
-// ✅ CORRECT - Using SSOT directly
+// CORRECT - Using SSOT directly
 const currentStepData = computed(() => {
   return activeWorkflow.value?.steps?.[activeWorkflow.value?.currentStep - 1] || {}
 })
@@ -81,13 +90,13 @@ function handleTabChange(tabId) {
 
 // Navigation methods for viewing steps (Previous/Next buttons)
 function goToPreviousStep() {
-  if (viewedStep.value > 1) { // ← Change from 0 to 1
+  if (viewedStep.value > 1) { // Change from 0 to 1
     viewedStep.value--
   }
 }
 
 function goToNextStep() {
-  if (viewedStep.value < workflowSteps.value.length) { // ← Remove -1
+  if (viewedStep.value < workflowSteps.value.length) { // Remove -1
     viewedStep.value++
   }
 }
