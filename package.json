@@ -42,7 +42,7 @@
         "mysql": "^2.18.1",
         "node-fetch": "^3.3.2",
         "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
-        "panadero-erp-finance": "file:packages/panadero-erp-finance",
+        "panadero-erp-finance": "github:lieuwebakker/panadero-erp-finance",
         "panadero-erp-inventory": "file:packages/panadero-erp-inventory",
         "panadero-workflow": "file:packages/panadero-workflow",
         "panadero-grid": "github:Panadero-Services/panadero-grid",
