@@ -242,6 +242,76 @@
         .supplier-name { font-weight: 600; margin-bottom: 0.25rem; }
         .supplier-orders { font-size: 0.875rem; color: #d1d5db; }
         .supplier-rating { color: #fbbf24; font-size: 1rem; }
+        
+        /* Interactive Effects */
+        .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+        .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); }
+        .chart-bar:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
+        .shipment-item:hover { background: rgba(255, 255, 255, 0.08); transform: translateX(4px); }
+        .alert-item:hover { transform: translateX(4px); }
+        .supplier-item:hover { background: rgba(255, 255, 255, 0.08); transform: translateX(4px); }
+        
+        /* Animated counters */
+        .kpi-value { transition: all 0.3s ease; }
+        .kpi-value:hover { transform: scale(1.1); color: #a5b4fc; }
+        
+        /* Pulsing animations */
+        .kpi-change.positive { animation: pulse-green 2s infinite; }
+        .kpi-change.negative { animation: pulse-red 2s infinite; }
+        
+        @keyframes pulse-green {
+            0%, 100% { background: rgba(34, 197, 94, 0.2); }
+            50% { background: rgba(34, 197, 94, 0.4); }
+        }
+        
+        @keyframes pulse-red {
+            0%, 100% { background: rgba(239, 68, 68, 0.2); }
+            50% { background: rgba(239, 68, 68, 0.4); }
+        }
+        
+        /* Status animations */
+        .shipment-status.shipped { animation: status-pulse 3s infinite; }
+        .shipment-status.in-transit { animation: status-bounce 2s infinite; }
+        
+        @keyframes status-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        @keyframes status-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+        
+        /* Chart bar animations */
+        .chart-bar { transition: all 0.3s ease; }
+        .chart-bar:hover .bar-value { transform: scale(1.2); font-weight: 700; }
+        
+        /* Alert animations */
+        .alert-item.critical { animation: alert-critical 2s infinite; }
+        .alert-item.warning { animation: alert-warning 3s infinite; }
+        
+        @keyframes alert-critical {
+            0%, 100% { border-left-color: #ef4444; }
+            50% { border-left-color: #fca5a5; }
+        }
+        
+        @keyframes alert-warning {
+            0%, 100% { border-left-color: #eab308; }
+            50% { border-left-color: #fde047; }
+        }
+        
+        /* Supplier rating hover */
+        .supplier-rating:hover { transform: scale(1.2); }
+        
+        /* Loading states */
+        .loading { opacity: 0.6; pointer-events: none; }
+        .loading::after { content: ''; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 2px solid #a5b4fc; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -732,6 +802,266 @@
             button.addEventListener('click', () => {
                 alert('Thank you for your interest! This is a demo landing page. In a real implementation, this would connect to our contact system.');
             });
+        });
+
+        // Dashboard Interactive Features
+        class DashboardManager {
+            constructor() {
+                this.kpiValues = {
+                    totalItems: 2847,
+                    pendingShipments: 156,
+                    inventoryValue: 2.4,
+                    orderAccuracy: 94
+                };
+                this.isAnimating = false;
+                this.init();
+            }
+
+            init() {
+                this.animateKPIs();
+                this.addChartInteractivity();
+                this.addShipmentUpdates();
+                this.addAlertAnimations();
+                this.addSupplierInteractions();
+                this.startDataRefresh();
+            }
+
+            animateKPIs() {
+                const kpiCards = document.querySelectorAll('.kpi-card');
+                kpiCards.forEach((card, index) => {
+                    card.addEventListener('mouseenter', () => {
+                        if (this.isAnimating) return;
+                        this.isAnimating = true;
+                        this.animateCounter(card.querySelector('.kpi-value'), index);
+                    });
+                });
+            }
+
+            animateCounter(element, index) {
+                const values = [this.kpiValues.totalItems, this.kpiValues.pendingShipments, this.kpiValues.inventoryValue, this.kpiValues.orderAccuracy];
+                const suffixes = ['', '', 'M', '%'];
+                const currentValue = values[index];
+                const suffix = suffixes[index];
+                
+                let start = 0;
+                const increment = currentValue / 20;
+                const timer = setInterval(() => {
+                    start += increment;
+                    if (start >= currentValue) {
+                        element.textContent = suffix === 'M' ? `$${currentValue}M` : 
+                                            suffix === '%' ? `${currentValue}%` : 
+                                            currentValue.toLocaleString();
+                        clearInterval(timer);
+                        this.isAnimating = false;
+                    } else {
+                        element.textContent = suffix === 'M' ? `$${Math.floor(start)}M` : 
+                                            suffix === '%' ? `${Math.floor(start)}%` : 
+                                            Math.floor(start).toLocaleString();
+                    }
+                }, 50);
+            }
+
+            addChartInteractivity() {
+                const chartBars = document.querySelectorAll('.chart-bar');
+                chartBars.forEach(bar => {
+                    bar.addEventListener('mouseenter', () => {
+                        bar.style.transform = 'scale(1.05)';
+                        bar.style.boxShadow = '0 4px 12px rgba(79, 70, 229, 0.4)';
+                        
+                        // Show tooltip
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'chart-tooltip';
+                        tooltip.textContent = `${bar.querySelector('.bar-value').textContent} stock level`;
+                        tooltip.style.cssText = `
+                            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+                            background: rgba(0, 0, 0, 0.8); color: white; padding: 4px 8px;
+                            border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 1000;
+                        `;
+                        bar.style.position = 'relative';
+                        bar.appendChild(tooltip);
+                    });
+
+                    bar.addEventListener('mouseleave', () => {
+                        bar.style.transform = 'scale(1)';
+                        bar.style.boxShadow = 'none';
+                        const tooltip = bar.querySelector('.chart-tooltip');
+                        if (tooltip) tooltip.remove();
+                    });
+                });
+            }
+
+            addShipmentUpdates() {
+                const shipmentItems = document.querySelectorAll('.shipment-item');
+                shipmentItems.forEach((item, index) => {
+                    item.addEventListener('click', () => {
+                        // Simulate status update
+                        const status = item.querySelector('.shipment-status');
+                        const time = item.querySelector('.shipment-time');
+                        
+                        if (status.classList.contains('pending')) {
+                            status.textContent = 'Shipped';
+                            status.className = 'shipment-status shipped';
+                            time.textContent = 'Just now';
+                        } else if (status.classList.contains('shipped')) {
+                            status.textContent = 'In Transit';
+                            status.className = 'shipment-status in-transit';
+                            time.textContent = 'Just now';
+                        } else if (status.classList.contains('in-transit')) {
+                            status.textContent = 'Delivered';
+                            status.className = 'shipment-status delivered';
+                            time.textContent = 'Just now';
+                        }
+                        
+                        // Add click animation
+                        item.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            item.style.transform = 'scale(1)';
+                        }, 150);
+                    });
+                });
+            }
+
+            addAlertAnimations() {
+                const alertItems = document.querySelectorAll('.alert-item');
+                alertItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        // Simulate resolving alert
+                        if (item.classList.contains('critical')) {
+                            item.style.opacity = '0.5';
+                            item.style.transform = 'translateX(-20px)';
+                            setTimeout(() => {
+                                item.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            }
+
+            addSupplierInteractions() {
+                const supplierItems = document.querySelectorAll('.supplier-item');
+                supplierItems.forEach(item => {
+                    const rating = item.querySelector('.supplier-rating');
+                    
+                    item.addEventListener('mouseenter', () => {
+                        rating.style.transform = 'scale(1.2)';
+                        rating.style.color = '#fbbf24';
+                    });
+
+                    item.addEventListener('mouseleave', () => {
+                        rating.style.transform = 'scale(1)';
+                        rating.style.color = '#fbbf24';
+                    });
+
+                    item.addEventListener('click', () => {
+                        // Simulate supplier details
+                        const name = item.querySelector('.supplier-name').textContent;
+                        alert(`Supplier Details:\n${name}\n\nIn a real implementation, this would show detailed supplier information, contact details, and performance metrics.`);
+                    });
+                });
+            }
+
+            startDataRefresh() {
+                // Simulate real-time data updates every 30 seconds
+                setInterval(() => {
+                    this.updateKPIs();
+                    this.updateShipments();
+                    this.updateAlerts();
+                }, 30000);
+            }
+
+            updateKPIs() {
+                // Simulate small changes in KPI values
+                const changes = {
+                    totalItems: Math.floor(Math.random() * 20) - 10,
+                    pendingShipments: Math.floor(Math.random() * 10) - 5,
+                    inventoryValue: (Math.random() * 0.2) - 0.1,
+                    orderAccuracy: Math.floor(Math.random() * 4) - 2
+                };
+
+                Object.keys(changes).forEach((key, index) => {
+                    const change = changes[key];
+                    const element = document.querySelectorAll('.kpi-value')[index];
+                    const changeElement = document.querySelectorAll('.kpi-change')[index];
+                    
+                    if (change !== 0) {
+                        // Add loading state
+                        element.parentElement.classList.add('loading');
+                        
+                        setTimeout(() => {
+                            element.parentElement.classList.remove('loading');
+                            
+                            // Update change indicator
+                            const isPositive = change > 0;
+                            changeElement.textContent = `${isPositive ? '+' : ''}${change}%`;
+                            changeElement.className = `kpi-change ${isPositive ? 'positive' : 'negative'}`;
+                        }, 1000);
+                    }
+                });
+            }
+
+            updateShipments() {
+                // Simulate new shipment
+                const shipmentsList = document.querySelector('.shipments-list');
+                const newShipment = document.createElement('div');
+                newShipment.className = 'shipment-item';
+                newShipment.innerHTML = `
+                    <div class="shipment-info">
+                        <div class="shipment-id">#SH-2025-${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}</div>
+                        <div class="shipment-destination">${this.getRandomCity()}</div>
+                    </div>
+                    <div class="shipment-status pending">Pending</div>
+                    <div class="shipment-time">Just now</div>
+                `;
+                
+                // Add with animation
+                newShipment.style.opacity = '0';
+                newShipment.style.transform = 'translateY(-20px)';
+                shipmentsList.insertBefore(newShipment, shipmentsList.firstChild);
+                
+                setTimeout(() => {
+                    newShipment.style.transition = 'all 0.3s ease';
+                    newShipment.style.opacity = '1';
+                    newShipment.style.transform = 'translateY(0)';
+                }, 100);
+            }
+
+            updateAlerts() {
+                // Simulate new low stock alert
+                const alertsList = document.querySelector('.alerts-list');
+                const products = ['iPhone 15 Pro', 'MacBook Air M2', 'Samsung Galaxy S24', 'iPad Pro 12.9"', 'Dell XPS 13', 'Surface Pro 9'];
+                const randomProduct = products[Math.floor(Math.random() * products.length)];
+                const randomStock = Math.floor(Math.random() * 15) + 1;
+                
+                const newAlert = document.createElement('div');
+                newAlert.className = 'alert-item warning';
+                newAlert.innerHTML = `
+                    <div class="alert-icon">⚠️</div>
+                    <div class="alert-content">
+                        <div class="alert-product">${randomProduct}</div>
+                        <div class="alert-stock">${randomStock} units remaining</div>
+                    </div>
+                `;
+                
+                newAlert.style.opacity = '0';
+                newAlert.style.transform = 'translateX(-20px)';
+                alertsList.appendChild(newAlert);
+                
+                setTimeout(() => {
+                    newAlert.style.transition = 'all 0.3s ease';
+                    newAlert.style.opacity = '1';
+                    newAlert.style.transform = 'translateX(0)';
+                }, 100);
+            }
+
+            getRandomCity() {
+                const cities = ['New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Miami, FL', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Austin, TX'];
+                return cities[Math.floor(Math.random() * cities.length)];
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new DashboardManager();
         });
     </script>
 </body>
