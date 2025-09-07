@@ -1,0 +1,130 @@
+{
+  "development_rules": {
+    "vue_standards": {
+      "sfc_structure": {
+        "order": ["script setup", "template", "style"],
+        "description": "ALWAYS follow Vue.js SFC standard: <script setup> → <template> → <style>",
+        "violation_action": "immediately_fix"
+      },
+      "component_naming": {
+        "convention": "PascalCase",
+        "prefix": "Finance",
+        "examples": ["FinanceButton", "FinanceDropdown", "WorkflowCard"]
+      },
+      "props_and_emits": {
+        "define_props": "use defineProps() with TypeScript-style definitions",
+        "define_emits": "use defineEmits() with event names array"
+      }
+    },
+    "code_quality": {
+      "no_breaking_changes": {
+        "rule": "NEVER break existing functionality when making updates",
+        "priority": "critical"
+      },
+      "dry_principle": {
+        "rule": "Don't Repeat Yourself - use centralized components and stores",
+        "examples": ["useFinanceStore", "StatusBadge", "ScaledIcon"]
+      },
+      "error_handling": {
+        "null_safety": "always add null safety checks",
+        "try_catch": "wrap risky operations in try-catch blocks"
+      }
+    },
+    "styling": {
+      "framework": "Tailwind CSS only",
+      "custom_css": "avoid custom CSS unless absolutely necessary",
+      "dark_mode": "use dark: prefixes for dark mode support",
+      "scaling": "use store.fontSizes.base for dynamic font scaling"
+    },
+    "workflow_system": {
+      "component_reusability": "make components reusable with optional props",
+      "event_handling": "single action points per component to prevent double initiation",
+      "modal_layout": "use 4-column grid layout for workflow modals",
+      "overflow_handling": "proper scrolling containers for modal content"
+    }
+  },
+  "version_management": {
+    "versioning": {
+      "scheme": "semantic versioning (MAJOR.MINOR.PATCH)",
+      "update_files": [
+        "package.json",
+        "README.md", 
+        "CHANGELOG.md",
+        "versions.json",
+        "useInfoBoxes.js",
+        "workflow/package.json"
+      ]
+    },
+    "changelog": {
+      "format": "keep-a-changelog format",
+      "versioning" : "work with versioning in top of component if changed by AI", 
+      "sections": ["Added", "Changed", "Fixed", "Removed"],
+      "breaking_changes": "clearly mark breaking changes"
+    }
+  },
+  "communication": {
+    "user_feedback": {
+      "acknowledge_mistakes": "immediately acknowledge and fix errors",
+      "no_assumptions": "ask for clarification when instructions are unclear",
+      "focus_on_changes": "only mention changes, not full implementations"
+    },
+    "progress_tracking": {
+      "use_todos": "use todo_write tool for complex multi-step tasks",
+      "parallel_execution": "execute multiple tool calls simultaneously when possible"
+    }
+  },
+  "file_structure": {
+    "components": {
+      "location": "src/components/",
+      "subdirectories": ["workflow/", "sections/", "ui/", "demo/"]
+    },
+    "stores": {
+      "location": "src/stores/",
+      "naming": "[domain]Store.js"
+    },
+    "composables": {
+      "location": "src/composables/",
+      "naming": "use[Domain][Function].js"
+    },
+    "data": {
+      "location": "src/data/",
+      "format": "JSON files for configuration data"
+    }
+  },
+  "testing": {
+    "before_commit": [
+      "analyze module",
+      "verify no linting errors",
+      "test component functionality", 
+      "check responsive design",
+      "validate dark mode support",
+      "validate scaleable styling"
+    ]
+  },
+  "forbidden_actions": {
+    "never_do": [
+      "break existing functionality",
+      "violate Vue.js SFC standard structure",
+      "create duplicate code instead of reusing components",
+      "ignore user feedback or corrections",
+      "use custom CSS when Tailwind classes are available",
+      "create components without proper error handling", 
+      "loose scaleable styling ", 
+      "use watch(), watchers or other eventlisteners"
+    ]
+  },
+  "emergency_procedures": {
+    "if_breaking_functionality": {
+      "step_1": "immediately stop current approach",
+      "step_2": "revert to last working state", 
+      "step_3": "analyze what went wrong",
+      "step_4": "implement minimal fix without side effects"
+    },
+    "if_user_frustrated": {
+      "step_1": "acknowledge the issue",
+      "step_2": "provide clear, concise solution",
+      "step_3": "focus only on requested changes",
+      "step_4": "verify solution works before claiming completion"
+    }
+  }
+}

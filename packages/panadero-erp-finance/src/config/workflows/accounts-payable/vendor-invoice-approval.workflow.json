@@ -1,0 +1,234 @@
+{
+  "metadata": {
+    "workflowId": "ap-vendor-invoice-approval",
+    "version": "1.0.8",
+    "lastUpdated": "2025-01-27",
+    "author": "Accounts Payable Team",
+    "status": "active"
+  },
+  "workflow": {
+    "id": "ap-vendor-invoice-approval",
+    "name": "Vendor Invoice Approval",
+    "description": "Multi-level approval process for vendor invoices",
+    "category": "invoice_processing",
+    "module": "accounts_payable",
+    "version": "1.0.8",
+    "complexity": "medium",
+    "estimatedDuration": "3-6 business days",
+    "approvalLevels": 2,
+    "tags": ["invoice", "vendor", "approval", "payable"],
+    "slaSettings": {
+      "totalDuration": "3-5 business days",
+      "escalationRules": [
+        {
+          "condition": "step_overdue_by_days",
+          "value": 2,
+          "action": "notify_manager"
+        },
+        {
+          "condition": "workflow_overdue_by_days",
+          "value": 5,
+          "action": "escalate_to_director"
+        }
+      ]
+    },
+    "notificationSettings": {
+      "stepCompletion": true,
+      "approvalRequired": true,
+      "workflowCompletion": true
+    },
+    "steps": [
+      {
+        "id": "invoice_review",
+        "name": "Invoice Review & Entry",
+        "description": "Review vendor invoice and enter into system",
+        "type": "data_collection",
+        "required": true,
+        "order": 1,
+        "estimatedDuration": "20 minutes",
+        "approvalRequired": false,
+        "formSchema": {
+          "sections": [
+            {
+              "title": "Invoice Details",
+              "fields": [
+                {
+                  "name": "vendor_id",
+                  "type": "select",
+                  "required": true,
+                  "label": "Vendor"
+                },
+                {
+                  "name": "invoice_number",
+                  "type": "text",
+                  "required": true,
+                  "label": "Invoice Number"
+                },
+                {
+                  "name": "invoice_date",
+                  "type": "date",
+                  "required": true,
+                  "label": "Invoice Date"
+                },
+                {
+                  "name": "due_date",
+                  "type": "date",
+                  "required": true,
+                  "label": "Due Date"
+                },
+                {
+                  "name": "total_amount",
+                  "type": "number",
+                  "required": true,
+                  "label": "Total Amount",
+                  "validation": {
+                    "min": 0.01,
+                    "step": 0.01
+                  }
+                }
+              ]
+            },
+            {
+              "title": "Line Items",
+              "fields": [
+                {
+                  "name": "line_items",
+                  "type": "dynamic_table",
+                  "required": true,
+                  "label": "Invoice Lines",
+                  "validation": {
+                    "minRows": 1
+                  },
+                  "attributes": {
+                    "columns": [
+                      {
+                        "name": "description",
+                        "type": "text",
+                        "required": true,
+                        "label": "Description"
+                      },
+                      {
+                        "name": "quantity",
+                        "type": "number",
+                        "required": true,
+                        "label": "Quantity",
+                        "validation": {
+                          "min": 0.01,
+                          "step": 0.01
+                        }
+                      },
+                      {
+                        "name": "unit_price",
+                        "type": "number",
+                        "required": true,
+                        "label": "Unit Price",
+                        "validation": {
+                          "min": 0.01,
+                          "step": 0.01
+                        }
+                      },
+                      {
+                        "name": "amount",
+                        "type": "number",
+                        "required": true,
+                        "label": "Line Amount",
+                        "validation": {
+                          "min": 0.01,
+                          "step": 0.01
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "manager_approval",
+        "name": "Manager Approval",
+        "description": "Department manager reviews and approves invoice",
+        "type": "approval",
+        "required": true,
+        "order": 2,
+        "estimatedDuration": "1-2 business days",
+        "approvalRequired": true,
+        "approverRoles": ["department_manager", "finance_manager"],
+        "formSchema": {
+          "sections": [
+            {
+              "title": "Approval Decision",
+              "fields": [
+                {
+                  "name": "approved",
+                  "type": "radio",
+                  "required": true,
+                  "label": "Decision",
+                  "options": ["Approve", "Reject"]
+                },
+                {
+                  "name": "comments",
+                  "type": "textarea",
+                  "required": false,
+                  "label": "Comments",
+                  "attributes": {
+                    "rows": 3
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "finance_approval",
+        "name": "Finance Approval",
+        "description": "Finance team final approval for payment",
+        "type": "approval",
+        "required": true,
+        "order": 3,
+        "estimatedDuration": "1 business day",
+        "approvalRequired": true,
+        "approverRoles": ["finance_manager", "controller"],
+        "formSchema": {
+          "sections": [
+            {
+              "title": "Finance Review",
+              "fields": [
+                {
+                  "name": "budget_available",
+                  "type": "checkbox",
+                  "required": true,
+                  "label": "Budget available for this expense"
+                },
+                {
+                  "name": "coding_correct",
+                  "type": "checkbox",
+                  "required": true,
+                  "label": "Account coding is correct"
+                },
+                {
+                  "name": "approved",
+                  "type": "radio",
+                  "required": true,
+                  "label": "Decision",
+                  "options": ["Approve", "Reject"]
+                },
+                {
+                  "name": "comments",
+                  "type": "textarea",
+                  "required": false,
+                  "label": "Comments",
+                  "attributes": {
+                    "rows": 3
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

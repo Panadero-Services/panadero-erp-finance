@@ -1,0 +1,430 @@
+{
+  "metadata": {
+    "version": "1.0.8",
+    "description": "Core Financial ERP Workflow Configuration",
+    "lastUpdated": "2025-01-27",
+    "author": "Financial ERP System",
+    "compatibilityVersion": "1.0.x"
+  },
+  "constants": {
+    "workflowStates": {
+      "DRAFT": "draft",
+      "ACTIVE": "active",
+      "PENDING": "pending",
+      "APPROVED": "approved",
+      "REJECTED": "rejected",
+      "COMPLETED": "completed",
+      "CANCELLED": "cancelled",
+      "FAILED": "failed"
+    },
+    "stepStates": {
+      "PENDING": "pending",
+      "ACTIVE": "active",
+      "COMPLETED": "completed",
+      "SKIPPED": "skipped",
+      "FAILED": "failed",
+      "REQUIRES_APPROVAL": "requires_approval",
+      "APPROVED": "approved",
+      "REJECTED": "rejected"
+    },
+    "actionTypes": {
+      "core": {
+        "DATA_COLLECTION": "data_collection",
+        "APPROVAL": "approval",
+        "VALIDATION": "validation",
+        "INTEGRATION": "integration",
+        "NOTIFICATION": "notification",
+        "AUTOMATION": "automation",
+        "REVIEW": "review",
+        "DOCUMENT_UPLOAD": "document_upload",
+        "BACKGROUND_CHECK": "background_check",
+        "CONDITIONAL_ROUTING": "conditional_routing"
+      },
+      "financial": {
+        "FINANCIAL_VALIDATION": "financial_validation",
+        "ACCOUNT_RECONCILIATION": "account_reconciliation",
+        "TAX_CALCULATION": "tax_calculation",
+        "BUDGET_APPROVAL": "budget_approval",
+        "COMPLIANCE_CHECK": "compliance_check",
+        "AUDIT_REVIEW": "audit_review",
+        "PERIOD_CLOSE": "period_close",
+        "ASSET_DEPRECIATION": "asset_depreciation",
+        "CASH_FLOW_ANALYSIS": "cash_flow_analysis",
+        "FINANCIAL_REPORTING": "financial_reporting"
+      }
+    },
+    "complexityLevels": {
+      "low": {
+        "name": "Low Complexity",
+        "description": "Simple workflows with minimal steps and no approvals",
+        "color": "green",
+        "icon": "check-circle"
+      },
+      "medium": {
+        "name": "Medium Complexity",
+        "description": "Moderate workflows with multiple steps and some approvals",
+        "color": "yellow",
+        "icon": "clock"
+      },
+      "high": {
+        "name": "High Complexity",
+        "description": "Complex workflows with multiple steps and approvals",
+        "color": "red",
+        "icon": "alert-triangle"
+      }
+    },
+    "workflowCategories": {
+      "daily_operations": "Daily Operations",
+      "monthly_close": "Monthly Close",
+      "quarterly_planning": "Quarterly Planning",
+      "annual_planning": "Annual Planning",
+      "invoice_processing": "Invoice Processing",
+      "vendor_management": "Vendor Management",
+      "payment_processing": "Payment Processing",
+      "billing": "Billing",
+      "collections": "Collections",
+      "customer_service": "Customer Service",
+      "forecasting": "Forecasting",
+      "daily_monitoring": "Daily Monitoring",
+      "treasury": "Treasury",
+      "monthly_review": "Monthly Review",
+      "acquisition": "Acquisition",
+      "monthly_operations": "Monthly Operations",
+      "asset_lifecycle": "Asset Lifecycle",
+      "quarterly_filing": "Quarterly Filing",
+      "annual_filing": "Annual Filing",
+      "compliance": "Compliance",
+      "audit": "Audit",
+      "regulatory": "Regulatory",
+      "management": "Management",
+      "external": "External"
+    }
+  },
+  "fieldTypes": {
+    "text": {
+      "validation": ["required", "minLength", "maxLength", "pattern"],
+      "attributes": ["placeholder", "readonly", "disabled"]
+    },
+    "textarea": {
+      "validation": ["required", "minLength", "maxLength"],
+      "attributes": ["placeholder", "rows", "readonly", "disabled"]
+    },
+    "email": {
+      "validation": ["required", "email"],
+      "attributes": ["placeholder", "readonly", "disabled"]
+    },
+    "url": {
+      "validation": ["required", "url"],
+      "attributes": ["placeholder", "readonly", "disabled"]
+    },
+    "tel": {
+      "validation": ["required", "tel"],
+      "attributes": ["placeholder", "readonly", "disabled"]
+    },
+    "number": {
+      "validation": ["required", "min", "max", "step"],
+      "attributes": ["placeholder", "readonly", "disabled"]
+    },
+    "date": {
+      "validation": ["required", "min", "max"],
+      "attributes": ["readonly", "disabled"]
+    },
+    "select": {
+      "validation": ["required"],
+      "attributes": ["options", "multiple", "readonly", "disabled"]
+    },
+    "multi-select": {
+      "validation": ["required", "minItems", "maxItems"],
+      "attributes": ["options", "readonly", "disabled"]
+    },
+    "radio": {
+      "validation": ["required"],
+      "attributes": ["options", "readonly", "disabled"]
+    },
+    "checkbox": {
+      "validation": ["required"],
+      "attributes": ["readonly", "disabled"]
+    },
+    "file": {
+      "validation": ["required", "fileSize", "fileType"],
+      "attributes": ["accept", "multiple", "maxSize", "readonly", "disabled"]
+    },
+    "dynamic_table": {
+      "validation": ["required", "minRows", "maxRows"],
+      "attributes": ["columns", "readonly", "disabled"]
+    }
+  },
+  "modules": {
+    "procurement": {
+      "name": "Procurement",
+      "description": "Vendor management and procurement workflows",
+      "icon": "fas fa-handshake",
+      "color": "blue"
+    },
+    "general_ledger": {
+      "name": "General Ledger",
+      "description": "Core accounting and journal entry workflows",
+      "icon": "fas fa-book",
+      "color": "indigo"
+    },
+    "accounts_payable": {
+      "name": "Accounts Payable",
+      "description": "Vendor management and payment workflows",
+      "icon": "fas fa-money-bill-wave",
+      "color": "red"
+    },
+    "accounts_receivable": {
+      "name": "Accounts Receivable",
+      "description": "Customer billing and collection workflows",
+      "icon": "fas fa-receipt",
+      "color": "green"
+    },
+    "cash_flow": {
+      "name": "Cash Flow Management",
+      "description": "Cash flow forecasting and management workflows",
+      "icon": "fas fa-chart-line",
+      "color": "purple"
+    },
+    "budgeting": {
+      "name": "Budgeting & Forecasting",
+      "description": "Budget creation, approval, and variance analysis workflows",
+      "icon": "fas fa-chart-pie",
+      "color": "yellow"
+    },
+    "fixed_assets": {
+      "name": "Fixed Assets",
+      "description": "Asset acquisition, depreciation, and disposal workflows",
+      "icon": "fas fa-building",
+      "color": "gray"
+    },
+    "tax_management": {
+      "name": "Tax Management",
+      "description": "Tax calculation, filing, and compliance workflows",
+      "icon": "fas fa-file-invoice-dollar",
+      "color": "orange"
+    },
+    "compliance_audit": {
+      "name": "Compliance & Audit",
+      "description": "Regulatory compliance and audit trail workflows",
+      "icon": "fas fa-shield-alt",
+      "color": "cyan"
+    },
+    "financial_reporting": {
+      "name": "Financial Reporting",
+      "description": "Financial statement and report preparation workflows",
+      "icon": "fas fa-chart-bar",
+      "color": "pink"
+    }
+  },
+  "sharedEntities": {
+    "vendors": {
+      "name": "Vendors",
+      "description": "Shared vendor registry accessible across all modules",
+      "apiEndpoint": "/api/table/vendors",
+      "displayField": "name",
+      "identifierField": "id", 
+      "searchFields": ["name", "vendor_code", "legal_name"],
+      "permissions": ["read"],
+      "fields": {
+        "id": "Vendor ID",
+        "name": "Company Name",
+        "vendor_code": "Vendor Code",
+        "legal_name": "Legal Name",
+        "contact_person": "Contact Person",
+        "email": "Email",
+        "phone": "Phone",
+        "status": "Status"
+      }
+    }
+  },
+  "roleDefinitions": {
+    "system_admin": {
+      "name": "System Administrator",
+      "permissions": ["create_workflow", "edit_workflow", "delete_workflow", "approve_all"],
+      "description": "Full access to all workflow operations"
+    },
+    "procurement_manager": {
+      "name": "Procurement Manager",
+      "permissions": ["approve_vendor_onboarding", "approve_purchase_orders"],
+      "description": "Manages vendor relationships and procurement processes"
+    },
+    "finance_manager": {
+      "name": "Finance Manager",
+      "permissions": ["approve_invoices", "approve_payments", "financial_validation"],
+      "description": "Oversees financial transactions and approvals"
+    },
+    "department_manager": {
+      "name": "Department Manager",
+      "permissions": ["approve_department_expenses", "budget_requests"],
+      "description": "Manages department-level approvals and budgets"
+    },
+    "controller": {
+      "name": "Controller",
+      "permissions": ["financial_reporting", "period_close", "audit_review"],
+      "description": "Senior financial oversight and reporting"
+    },
+    "cfo": {
+      "name": "Chief Financial Officer",
+      "permissions": ["strategic_approvals", "high_value_transactions", "budget_approval"],
+      "description": "Executive financial oversight"
+    },
+    "legal_counsel": {
+      "name": "Legal Counsel",
+      "permissions": ["contract_review", "legal_approval", "compliance_review"],
+      "description": "Legal review and compliance oversight"
+    },
+    "accountant": {
+      "name": "Accountant",
+      "permissions": ["journal_entries", "reconciliation", "basic_approvals"],
+      "description": "Day-to-day accounting operations"
+    },
+    "tax_accountant": {
+      "name": "Tax Accountant",
+      "permissions": ["tax_calculations", "tax_filings", "tax_compliance"],
+      "description": "Tax-related processes and compliance"
+    }
+  },
+  "validationRules": {
+    "email_format": {
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+      "message": "Please enter a valid email address"
+    },
+    "tax_id_format": {
+      "pattern": "^\\d{2}-\\d{7}$",
+      "message": "Tax ID must be in format XX-XXXXXXX"
+    },
+    "debit_credit_balance": {
+      "type": "custom",
+      "function": "validateDebitCreditBalance",
+      "message": "Total debits must equal total credits"
+    },
+    "at_least_two_lines": {
+      "type": "custom",
+      "function": "validateMinimumLines",
+      "message": "At least two account lines are required"
+    },
+    "phone_format": {
+      "pattern": "^\\+?[1-9]\\d{1,14}$",
+      "message": "Please enter a valid phone number"
+    },
+    "url_format": {
+      "pattern": "^https?:\\/\\/[\\w\\-_]+(\\.[\\w\\-_]+)+([\\w\\-\\.,@?^=%&:/~\\+#]*[\\w\\-\\@?^=%&/~\\+#])?$",
+      "message": "Please enter a valid URL"
+    }
+  },
+  "integrationSettings": {
+    "externalSystems": {
+      "erp_system": {
+        "name": "Main ERP System",
+        "apiEndpoint": "/api/erp",
+        "enabled": true,
+        "syncEvents": ["workflow_completed", "step_approved"]
+      },
+      "email_service": {
+        "name": "Email Notification Service",
+        "apiEndpoint": "/api/notifications/email",
+        "enabled": true,
+        "syncEvents": ["approval_required", "workflow_completed", "step_overdue"]
+      },
+      "document_storage": {
+        "name": "Document Storage Service",
+        "apiEndpoint": "/api/documents",
+        "enabled": true,
+        "syncEvents": ["document_uploaded", "workflow_completed"]
+      },
+      "audit_log": {
+        "name": "Audit Trail System",
+        "apiEndpoint": "/api/audit",
+        "enabled": true,
+        "syncEvents": ["step_completed", "workflow_created", "approval_given"]
+      }
+    },
+    "webhooks": {
+      "workflow_events": {
+        "enabled": true,
+        "endpoints": [
+          {
+            "url": "/webhook/workflow-status",
+            "events": ["workflow_completed", "workflow_failed"],
+            "authentication": "bearer_token"
+          }
+        ]
+      }
+    }
+  },
+  "uiConfiguration": {
+    "themes": {
+      "default": {
+        "primary": "#6366f1",
+        "secondary": "#64748b",
+        "success": "#10b981",
+        "warning": "#f59e0b",
+        "danger": "#ef4444",
+        "info": "#3b82f6"
+      }
+    },
+    "layouts": {
+      "dashboard": {
+        "columns": 4,
+        "cardSpacing": "1rem",
+        "responsive": true
+      },
+      "workflow_form": {
+        "maxWidth": "800px",
+        "sectionSpacing": "2rem",
+        "fieldSpacing": "1rem"
+      }
+    },
+    "components": {
+      "stepper": {
+        "orientation": "horizontal",
+        "showProgress": true,
+        "showEstimatedTime": true
+      },
+      "forms": {
+        "showValidationOnSubmit": true,
+        "showRequiredIndicators": true,
+        "animateTransitions": true
+      }
+    }
+  },
+  "performanceSettings": {
+    "caching": {
+      "workflowTemplates": {
+        "enabled": true,
+        "ttl": 3600
+      },
+      "userPermissions": {
+        "enabled": true,
+        "ttl": 1800
+      }
+    },
+    "batchProcessing": {
+      "enabled": true,
+      "batchSize": 50,
+      "intervalMs": 1000
+    },
+    "monitoring": {
+      "enableMetrics": true,
+      "enableTracing": true,
+      "logLevel": "info"
+    }
+  },
+  "workflowRegistry": {
+    "enabled": true,
+    "autoLoad": true,
+    "workflowDirectories": [
+      "./workflows/procurement/",
+      "./workflows/general-ledger/",
+      "./workflows/accounts-payable/",
+      "./workflows/accounts-receivable/",
+      "./workflows/cash-flow/",
+      "./workflows/budgeting/",
+      "./workflows/fixed-assets/",
+      "./workflows/tax-management/",
+      "./workflows/compliance-audit/",
+      "./workflows/financial-reporting/"
+    ],
+    "filePattern": "*.workflow.json"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "panadero-erp-finance",
+  "version": "1.2.0",
+  "description": "ERP Finance Module - Comprehensive financial management system with complete workflow management",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "echo \"Development mode - import from packages/panadero-erp-finance\"",
+    "build": "echo \"Build complete\"",
+    "lint": "echo \"Linting complete\""
+  },
+  "keywords": [
+    "erp",
+    "finance",
+    "accounting",
+    "workflow-management",
+    "business-process",
+    "approval-system",
+    "general-ledger",
+    "accounts-payable",
+    "accounts-receivable",
+    "cash-flow",
+    "tax-management"
+  ],
+  "author": "JaWsome.Orbit",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Panadero-Services/panadero-erp-finance.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Panadero-Services/panadero-erp-finance/issues"
+  },
+  "homepage": "https://github.com/Panadero-Services/panadero-erp-finance#readme",
+  "panaderoConfig": "./config.json"
+}
