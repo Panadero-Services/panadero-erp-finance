@@ -27,10 +27,21 @@ createInertiaApp({
         // Register the game component globally
         // app.component('SolarSysGame', SolarSysGame);
         
-        const sessionStore = useSessionStore();
-        
         // Add timeout and error handling for session initialization
         const initApp = async () => {
+            // Check if this is a public route that doesn't need session management
+            const currentPath = window.location.pathname;
+            const publicRoutes = ['/indigo3/inventory', '/login', '/register'];
+            
+            if (publicRoutes.includes(currentPath)) {
+                console.log('Public route detected, skipping session initialization');
+                app.mount(el);
+                return;
+            }
+            
+            // Only create session store for protected routes
+            const sessionStore = useSessionStore();
+            
             try {
                 await Promise.race([
                     sessionStore.ensureFreshToken(),

@@ -599,4 +599,25 @@ Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
 
 Route::post('/ai/call', [\App\Http\Controllers\AIServiceController::class, 'callAI'])->name('ai.call');
 
+// ============================================================================
+// INVENTORY API ROUTES
+// ============================================================================
+Route::prefix('inventory')->group(function () {
+    Route::get('/purchase-orders', function () {
+        return DB::table('inventory_purchase_orders')->get();
+    });
+    Route::get('/suppliers', function () {
+        return DB::table('inventory_suppliers')->get();
+    });
+    Route::get('/items', function () {
+        return DB::table('inventory_items')->get();
+    });
+    Route::get('/warehouses', function () {
+        return DB::table('inventory_warehouses')->get();
+    });
+    Route::get('/stock-movements', function () {
+        return DB::table('inventory_stock_movements')->get();
+    });
+});
+
 
