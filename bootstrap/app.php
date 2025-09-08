@@ -10,6 +10,7 @@ use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\EnsureTokenIsValid;
 use App\Http\Middleware\RoleAccessMiddleware;
 use App\Http\Middleware\LoadUserRoles;
+use App\Http\Middleware\Cors;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -20,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
+            Cors::class,
             ValidateCsrfToken::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,

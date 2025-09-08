@@ -981,6 +981,110 @@
         </div>
     </section>
 
+    <!-- AI Chat Assistant -->
+    <div id="ai-chat-widget" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1001;">
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle" onclick="toggleAIChat()" style="
+            width: 4rem; height: 4rem; border-radius: 50%; 
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            border: none; box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; position: relative;
+        ">
+            <span id="chat-icon" style="font-size: 1.5rem;">🤖</span>
+            <div id="chat-notification" style="
+                position: absolute; top: -5px; right: -5px; width: 1rem; height: 1rem;
+                background: #ef4444; border-radius: 50%; display: none;
+                animation: pulse 2s infinite;
+            "></div>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="ai-chat-window" style="
+            position: absolute; bottom: 5rem; right: 0; width: 24rem; height: 32rem;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none; flex-direction: column; overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        ">
+            <!-- Chat Header -->
+            <div style="
+                padding: 1rem; background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            ">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 style="color: white; margin: 0; font-size: 1rem; font-weight: 600;">ERP HR AI Assistant</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.75rem;">Ask me about HR workflows and processes</p>
+                    </div>
+                    <button onclick="toggleAIChat()" style="
+                        background: none; border: none; color: white; font-size: 1.25rem;
+                        cursor: pointer; padding: 0.25rem;
+                    ">×</button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" style="
+                flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;
+            ">
+                <div class="ai-message">
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: 0.75rem;
+                        max-width: 85%; color: white; font-size: 0.875rem; line-height: 1.4;
+                    ">
+                        👋 Hi! I'm your ERP HR AI Assistant. I can help you with:
+                        <br><br>
+                        • HR workflow processes
+                        <br>• Recruitment & hiring  
+                        <br>• Employee management
+                        <br>• Performance reviews
+                        <br><br>
+                        Try asking: "How do I onboard a new employee?" or "Show me the recruitment process"
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div style="
+                padding: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.2);
+            ">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input id="chat-input" type="text" placeholder="Ask me about HR processes..." style="
+                        flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem;
+                        color: white; font-size: 0.875rem;
+                    " onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendChatMessage()" style="
+                        padding: 0.75rem; background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+                        border: none; border-radius: 0.5rem; color: white; cursor: pointer;
+                        font-size: 0.875rem; font-weight: 600;
+                    ">Send</button>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="sendQuickQuestion('How do I onboard a new employee?')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Onboarding</button>
+                        <button onclick="sendQuickQuestion('Show me recruitment workflow')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Recruitment</button>
+                        <button onclick="sendQuickQuestion('What are the performance features?')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Performance</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
         <div class="container">
@@ -1043,6 +1147,246 @@
         function scrollToContact() {
             document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
         }
+
+        // AI Chat Assistant Functionality
+        class ERPHrAI {
+            constructor() {
+                this.isTyping = false;
+                this.chatHistory = [];
+                this.knowledgeBase = this.initializeKnowledgeBase();
+            }
+
+            initializeKnowledgeBase() {
+                return {
+                    workflows: {
+                        'recruitment': {
+                            steps: ['Job Requisition', 'Posting', 'Application Review', 'Interview Process', 'Background Check', 'Offer'],
+                            description: 'Complete recruitment process from job requisition to offer acceptance',
+                            complexity: 'High',
+                            time: '2-4 weeks'
+                        },
+                        'onboarding': {
+                            steps: ['Welcome Package', 'Documentation', 'System Access', 'Training Schedule', 'Orientation', 'Integration'],
+                            description: 'Comprehensive employee onboarding from first day to full integration',
+                            complexity: 'Medium',
+                            time: '1-2 weeks'
+                        },
+                        'performance review': {
+                            steps: ['Goal Setting', 'Mid-year Check', 'Self Assessment', 'Manager Review', 'Calibration', 'Final Review'],
+                            description: 'Annual performance review cycle with continuous feedback',
+                            complexity: 'Medium',
+                            time: '3 months'
+                        },
+                        'learning development': {
+                            steps: ['Skills Assessment', 'Training Plan', 'Course Enrollment', 'Progress Tracking', 'Certification', 'Career Planning'],
+                            description: 'Employee learning and development journey tracking',
+                            complexity: 'Medium',
+                            time: '3-6 months'
+                        },
+                        'time attendance': {
+                            steps: ['Schedule Setup', 'Time Entry', 'Approval Process', 'Payroll Integration'],
+                            description: 'Time and attendance management with automated approvals',
+                            complexity: 'Low',
+                            time: 'Daily'
+                        },
+                        'employee relations': {
+                            steps: ['Issue Report', 'Investigation', 'Documentation', 'Resolution', 'Follow-up'],
+                            description: 'Employee relations case management and resolution',
+                            complexity: 'High',
+                            time: '1-4 weeks'
+                        }
+                    },
+                    features: {
+                        'recruitment': 'Complete recruitment lifecycle with job posting, application tracking, interview scheduling, and candidate evaluation',
+                        'employee': 'Comprehensive employee database with personal information, documents, and historical records',
+                        'performance': 'Performance management with goal setting, regular reviews, 360-degree feedback, and career development planning',
+                        'learning': 'Learning management system with course catalog, skill tracking, and certification management',
+                        'payroll': 'Integrated payroll processing with tax calculations, benefits administration, and compliance reporting',
+                        'analytics': 'HR analytics and reporting with employee metrics, turnover analysis, and predictive insights'
+                    },
+                    quickAnswers: {
+                        'getting started': 'Start with the Employee Dashboard to see HR metrics, then explore our Advanced Workflows to understand process automation.',
+                        'pricing': 'Contact us at +31 655 328 495 for a personalized demo and pricing discussion.',
+                        'demo': 'Click on any workflow card to see detailed step-by-step processes, or try our interactive features above.',
+                        'support': 'We provide 24/7 support, comprehensive training, and dedicated implementation assistance.',
+                        'implementation': 'Our HR implementation typically takes 4-6 weeks with full data migration and user training included.'
+                    }
+                };
+            }
+
+            async generateResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // Check for workflow questions
+                for (const [workflow, data] of Object.entries(this.knowledgeBase.workflows)) {
+                    if (lowerMessage.includes(workflow) || lowerMessage.includes(workflow.replace(' ', ''))) {
+                        return `👥 **${workflow.toUpperCase()} WORKFLOW**\n\n` +
+                               `**Description:** ${data.description}\n\n` +
+                               `**Complexity:** ${data.complexity} | **Time:** ${data.time}\n\n` +
+                               `**Steps:**\n${data.steps.map((step, i) => `${i + 1}. ${step}`).join('\n')}\n\n` +
+                               `💡 *Click on the "${workflow}" workflow card above to see the interactive demo!*`;
+                    }
+                }
+
+                // Check for feature questions
+                for (const [feature, description] of Object.entries(this.knowledgeBase.features)) {
+                    if (lowerMessage.includes(feature)) {
+                        return `🚀 **${feature.toUpperCase()} FEATURES**\n\n${description}\n\n💡 *Scroll up to see these features in action on our dashboard!*`;
+                    }
+                }
+
+                // Check for quick answers
+                for (const [key, answer] of Object.entries(this.knowledgeBase.quickAnswers)) {
+                    if (lowerMessage.includes(key) || lowerMessage.includes(key.replace(' ', ''))) {
+                        return `💡 ${answer}`;
+                    }
+                }
+
+                // General questions about HR module
+                if (lowerMessage.includes('hr') || lowerMessage.includes('human resources') || lowerMessage.includes('employee')) {
+                    return `👥 **ERP HR MODULE**\n\n` +
+                           `Our HR module includes:\n\n` +
+                           `• **Recruitment & Hiring** - Job posting, applicant tracking, and interview management\n` +
+                           `• **Employee Management** - Complete employee lifecycle from onboarding to offboarding\n` +
+                           `• **Performance Management** - Goal setting, reviews, and development planning\n` +
+                           `• **Learning & Development** - Training programs, skill tracking, and career paths\n` +
+                           `• **Time & Attendance** - Schedule management, time tracking, and leave management\n` +
+                           `• **Payroll & Benefits** - Compensation management and benefits administration\n\n` +
+                           `🎯 *Try asking about specific workflows like "recruitment" or "onboarding"!*`;
+                }
+
+                // Process-related questions
+                if (lowerMessage.includes('process') || lowerMessage.includes('how to') || lowerMessage.includes('steps')) {
+                    return `⚡ **HR PROCESSES**\n\n` +
+                           `We have ${Object.keys(this.knowledgeBase.workflows).length} main HR workflows:\n\n` +
+                           `${Object.keys(this.knowledgeBase.workflows).map(w => `• **${w.charAt(0).toUpperCase() + w.slice(1)}**`).join('\n')}\n\n` +
+                           `💡 *Ask about any specific process, or click the workflow cards above to see detailed steps!*`;
+                }
+
+                // Hiring/Recruiting questions
+                if (lowerMessage.includes('hire') || lowerMessage.includes('recruit') || lowerMessage.includes('job')) {
+                    return `🎯 **RECRUITMENT & HIRING**\n\n` +
+                           `• **Job Requisition** - Create job postings with requirements and approvals\n` +
+                           `• **Applicant Tracking** - Manage candidates through the hiring pipeline\n` +
+                           `• **Interview Management** - Schedule interviews and collect feedback\n` +
+                           `• **Background Checks** - Automated reference and background verification\n` +
+                           `• **Offer Management** - Create, negotiate, and track job offers\n` +
+                           `• **Onboarding Integration** - Seamless transition to employee onboarding\n\n` +
+                           `💼 *Ask about "recruitment workflow" to see the complete process!*`;
+                }
+
+                // Performance questions
+                if (lowerMessage.includes('performance') || lowerMessage.includes('review') || lowerMessage.includes('goal')) {
+                    return `📈 **PERFORMANCE MANAGEMENT**\n\n` +
+                           `• **Goal Setting** - SMART goals alignment with company objectives\n` +
+                           `• **Continuous Feedback** - Regular check-ins and feedback collection\n` +
+                           `• **360-Degree Reviews** - Multi-source feedback from peers and managers\n` +
+                           `• **Development Planning** - Career path and skill development tracking\n` +
+                           `• **Calibration** - Ensure fair and consistent performance ratings\n` +
+                           `• **Analytics** - Performance trends and improvement insights\n\n` +
+                           `📊 *Try "performance review workflow" to see the detailed process!*`;
+                }
+
+                // Default response
+                return `🤔 I'd love to help! I specialize in ERP HR questions. Try asking about:\n\n` +
+                       `• **Workflows:** "How do I onboard a new employee?"\n` +
+                       `• **Features:** "What performance features do you have?"\n` +
+                       `• **Processes:** "Show me the recruitment process"\n` +
+                       `• **Getting Started:** "How do I get started?"\n\n` +
+                       `💡 *Or use the quick buttons below for common questions!*`;
+            }
+
+            async addMessage(message, isUser = false) {
+                const messagesContainer = document.getElementById('chat-messages');
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'user-message' : 'ai-message';
+                messageDiv.style.cssText = `
+                    display: flex; justify-content: ${isUser ? 'flex-end' : 'flex-start'};
+                `;
+
+                const bubble = document.createElement('div');
+                bubble.style.cssText = `
+                    background: ${isUser ? 'linear-gradient(90deg, #22c55e 0%, #16a34a 100%)' : 'rgba(255, 255, 255, 0.1)'};
+                    padding: 0.75rem; border-radius: 0.75rem; max-width: 85%;
+                    color: white; font-size: 0.875rem; line-height: 1.4;
+                    word-wrap: break-word; white-space: pre-line;
+                `;
+                
+                if (isUser) {
+                    bubble.textContent = message;
+                    messageDiv.appendChild(bubble);
+                    messagesContainer.appendChild(messageDiv);
+                } else {
+                    // Typing indicator
+                    bubble.innerHTML = '💭 Thinking...';
+                    messageDiv.appendChild(bubble);
+                    messagesContainer.appendChild(messageDiv);
+                    
+                    // Simulate typing delay
+                    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+                    
+                    bubble.textContent = message;
+                }
+
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Global AI instance
+        const erpAI = new ERPHrAI();
+
+        // Chat Functions
+        function toggleAIChat() {
+            const chatWindow = document.getElementById('ai-chat-window');
+            const chatIcon = document.getElementById('chat-icon');
+            const notification = document.getElementById('chat-notification');
+            
+            if (chatWindow.style.display === 'none' || !chatWindow.style.display) {
+                chatWindow.style.display = 'flex';
+                chatIcon.textContent = '💬';
+                notification.style.display = 'none';
+            } else {
+                chatWindow.style.display = 'none';
+                chatIcon.textContent = '🤖';
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            input.value = '';
+            
+            // Add user message
+            await erpAI.addMessage(message, true);
+            
+            // Generate and add AI response
+            const response = await erpAI.generateResponse(message);
+            await erpAI.addMessage(response, false);
+        }
+
+        async function sendQuickQuestion(question) {
+            document.getElementById('chat-input').value = question;
+            await sendChatMessage();
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // Show notification after 10 seconds
+        setTimeout(() => {
+            const notification = document.getElementById('chat-notification');
+            const chatWindow = document.getElementById('ai-chat-window');
+            if (chatWindow.style.display !== 'flex') {
+                notification.style.display = 'block';
+            }
+        }, 10000);
         
         // HR Workflow Templates Data
         const hrWorkflowTemplates = {

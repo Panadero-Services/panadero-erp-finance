@@ -20,11 +20,14 @@ export default defineConfig({
         }),
     ],
     server: {
-        host: process.env.VITE_SERVER_HOST, // Use your network IP
+        host: 'localhost', // Use localhost instead of 127.0.0.1
         port: parseInt(process.env.VITE_SERVER_PORT),
-        cors: true,
+        cors: {
+            origin: ['http://localhost:8000', 'http://127.0.0.1:8000'],
+            credentials: true
+        },
         hmr: {
-            host: process.env.VITE_SERVER_HOST, // Use your network IP
+            host: 'localhost', // Use localhost instead of 127.0.0.1
             port: parseInt(process.env.VITE_SERVER_PORT),
         },
         proxy: {

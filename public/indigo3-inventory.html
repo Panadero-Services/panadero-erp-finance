@@ -1091,6 +1091,110 @@
         </div>
     </section>
 
+    <!-- AI Chat Assistant -->
+    <div id="ai-chat-widget" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1001;">
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle" onclick="toggleAIChat()" style="
+            width: 4rem; height: 4rem; border-radius: 50%; 
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border: none; box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; position: relative;
+        ">
+            <span id="chat-icon" style="font-size: 1.5rem;">🤖</span>
+            <div id="chat-notification" style="
+                position: absolute; top: -5px; right: -5px; width: 1rem; height: 1rem;
+                background: #ef4444; border-radius: 50%; display: none;
+                animation: pulse 2s infinite;
+            "></div>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="ai-chat-window" style="
+            position: absolute; bottom: 5rem; right: 0; width: 24rem; height: 32rem;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none; flex-direction: column; overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        ">
+            <!-- Chat Header -->
+            <div style="
+                padding: 1rem; background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            ">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 style="color: white; margin: 0; font-size: 1rem; font-weight: 600;">ERP Inventory AI Assistant</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.75rem;">Ask me about inventory workflows and features</p>
+                    </div>
+                    <button onclick="toggleAIChat()" style="
+                        background: none; border: none; color: white; font-size: 1.25rem;
+                        cursor: pointer; padding: 0.25rem;
+                    ">×</button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" style="
+                flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;
+            ">
+                <div class="ai-message">
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: 0.75rem;
+                        max-width: 85%; color: white; font-size: 0.875rem; line-height: 1.4;
+                    ">
+                        👋 Hi! I'm your ERP Inventory AI Assistant. I can help you with:
+                        <br><br>
+                        • Inventory management workflows
+                        <br>• Procurement processes  
+                        <br>• Warehouse operations
+                        <br>• Stock optimization
+                        <br><br>
+                        Try asking: "How do I create a purchase order?" or "Show me the goods receipt process"
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div style="
+                padding: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.2);
+            ">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input id="chat-input" type="text" placeholder="Ask me about inventory management..." style="
+                        flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem;
+                        color: white; font-size: 0.875rem;
+                    " onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendChatMessage()" style="
+                        padding: 0.75rem; background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+                        border: none; border-radius: 0.5rem; color: white; cursor: pointer;
+                        font-size: 0.875rem; font-weight: 600;
+                    ">Send</button>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="sendQuickQuestion('How do I create a purchase order?')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Purchase Order</button>
+                        <button onclick="sendQuickQuestion('Show me goods receipt workflow')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Goods Receipt</button>
+                        <button onclick="sendQuickQuestion('What are the warehouse features?')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Warehouse</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Section -->
     <section class="contact-section" id="contact">
         <div class="container">
@@ -1695,6 +1799,244 @@
             alert(`🚀 Starting ${inventoryWorkflowTemplates[workflowId].title} workflow demo!\n\nIn a real implementation, this would:\n• Create a new workflow instance\n• Load the first step\n• Initialize form data\n• Set up approval routing\n• Begin step execution\n\nWorkflow ID: ${workflowId}`);
             closeWorkflowModal();
         }
+
+        // AI Chat Assistant Functionality
+        class ERPInventoryAI {
+            constructor() {
+                this.isTyping = false;
+                this.chatHistory = [];
+                this.knowledgeBase = this.initializeKnowledgeBase();
+            }
+
+            initializeKnowledgeBase() {
+                return {
+                    workflows: {
+                        'purchase order': {
+                            steps: ['PR Creation', 'Manager Approval', 'Supplier Selection', 'PO Generation'],
+                            description: 'Complete purchase order workflow with supplier approval',
+                            complexity: 'Medium',
+                            time: '2-3 days'
+                        },
+                        'goods receipt': {
+                            steps: ['Delivery Notification', 'Physical Inspection', 'PO Matching', 'Receipt Recording', 'Inventory Update'],
+                            description: 'Complete receiving workflow with quality inspection',
+                            complexity: 'Medium',
+                            time: '1-2 days'
+                        },
+                        'supplier onboarding': {
+                            steps: ['Supplier Registration', 'Document Verification', 'Credit Check', 'Quality Assessment', 'Procurement Approval', 'System Setup'],
+                            description: 'New supplier registration and validation process',
+                            complexity: 'High',
+                            time: '1-2 weeks'
+                        },
+                        'pick pack ship': {
+                            steps: ['Pick List Generation', 'Order Picking', 'Pick Verification', 'Order Packing', 'Shipment Creation'],
+                            description: 'Complete order fulfillment from picking to shipping',
+                            complexity: 'Medium',
+                            time: '4-6 hours'
+                        },
+                        'cycle counting': {
+                            steps: ['Count Schedule', 'Physical Count', 'Variance Analysis', 'Inventory Adjustment'],
+                            description: 'Systematic inventory counting and variance resolution',
+                            complexity: 'Medium',
+                            time: '1 day'
+                        },
+                        'inventory valuation': {
+                            steps: ['Data Gathering', 'Valuation Calculation', 'Variance Analysis', 'Finance Review', 'Controller Approval'],
+                            description: 'Complete inventory valuation for financial reporting',
+                            complexity: 'High',
+                            time: '1-2 days'
+                        }
+                    },
+                    features: {
+                        'procurement': 'Complete procurement process from requisition to receipt, with supplier management and automated workflows',
+                        'warehouse': 'Advanced warehouse management with location tracking, putaway optimization, and pick path planning',
+                        'tracking': 'Real-time inventory tracking with barcode scanning, RFID support, and batch/serial number management',
+                        'optimization': 'AI-powered demand forecasting, reorder point optimization, and ABC analysis for better inventory control',
+                        'reporting': 'Comprehensive inventory reports including stock levels, movement analysis, and performance metrics',
+                        'integration': 'Seamless integration with accounting, manufacturing, and e-commerce systems'
+                    },
+                    quickAnswers: {
+                        'getting started': 'Start with the Live Dashboard to see real-time inventory metrics, then explore our Advanced Workflows to understand process automation.',
+                        'pricing': 'Contact us at +31 655 328 495 for a personalized demo and pricing discussion.',
+                        'demo': 'Click on any workflow card to see detailed step-by-step processes, or try our interactive dashboard above.',
+                        'support': 'We provide 24/7 support, comprehensive training, and dedicated implementation assistance.',
+                        'implementation': 'Our implementation typically takes 2-4 weeks with full data migration and user training included.'
+                    }
+                };
+            }
+
+            async generateResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // Check for workflow questions
+                for (const [workflow, data] of Object.entries(this.knowledgeBase.workflows)) {
+                    if (lowerMessage.includes(workflow) || lowerMessage.includes(workflow.replace(' ', ''))) {
+                        return `📦 **${workflow.toUpperCase()} WORKFLOW**\n\n` +
+                               `**Description:** ${data.description}\n\n` +
+                               `**Complexity:** ${data.complexity} | **Time:** ${data.time}\n\n` +
+                               `**Steps:**\n${data.steps.map((step, i) => `${i + 1}. ${step}`).join('\n')}\n\n` +
+                               `💡 *Click on the "${workflow}" workflow card above to see the interactive demo!*`;
+                    }
+                }
+
+                // Check for feature questions
+                for (const [feature, description] of Object.entries(this.knowledgeBase.features)) {
+                    if (lowerMessage.includes(feature)) {
+                        return `🚀 **${feature.toUpperCase()} FEATURES**\n\n${description}\n\n💡 *Scroll up to see these features in action on our live dashboard!*`;
+                    }
+                }
+
+                // Check for quick answers
+                for (const [key, answer] of Object.entries(this.knowledgeBase.quickAnswers)) {
+                    if (lowerMessage.includes(key) || lowerMessage.includes(key.replace(' ', ''))) {
+                        return `💡 ${answer}`;
+                    }
+                }
+
+                // General questions about inventory module
+                if (lowerMessage.includes('inventory') || lowerMessage.includes('stock') || lowerMessage.includes('warehouse')) {
+                    return `📦 **ERP INVENTORY MODULE**\n\n` +
+                           `Our Inventory module includes:\n\n` +
+                           `• **Procurement** - Purchase orders, supplier management, and receiving\n` +
+                           `• **Warehouse Management** - Location tracking, putaway, and picking optimization\n` +
+                           `• **Order Fulfillment** - Pick, pack, ship with carrier integration\n` +
+                           `• **Inventory Control** - Cycle counting, adjustments, and ABC analysis\n` +
+                           `• **Quality Control** - Inspection workflows and quality assurance\n` +
+                           `• **Reporting & Analytics** - Real-time dashboards and inventory insights\n\n` +
+                           `🎯 *Try asking about specific workflows like "purchase order" or "goods receipt"!*`;
+                }
+
+                // Process-related questions
+                if (lowerMessage.includes('process') || lowerMessage.includes('how to') || lowerMessage.includes('steps')) {
+                    return `⚡ **INVENTORY PROCESSES**\n\n` +
+                           `We have ${Object.keys(this.knowledgeBase.workflows).length} main inventory workflows:\n\n` +
+                           `${Object.keys(this.knowledgeBase.workflows).map(w => `• **${w.charAt(0).toUpperCase() + w.slice(1)}**`).join('\n')}\n\n` +
+                           `💡 *Ask about any specific process, or click the workflow cards above to see detailed steps!*`;
+                }
+
+                // Supplier questions
+                if (lowerMessage.includes('supplier') || lowerMessage.includes('vendor')) {
+                    return `🤝 **SUPPLIER MANAGEMENT**\n\n` +
+                           `• **Supplier Onboarding** - Complete registration and validation\n` +
+                           `• **Performance Tracking** - Delivery times, quality scores, and ratings\n` +
+                           `• **Purchase Orders** - Automated PO generation and approval workflows\n` +
+                           `• **Invoice Matching** - Three-way matching with receipts and orders\n` +
+                           `• **Supplier Portal** - Self-service access for order status and documents\n\n` +
+                           `💼 *Ask about "supplier onboarding" to see the complete workflow!*`;
+                }
+
+                // Quality questions
+                if (lowerMessage.includes('quality') || lowerMessage.includes('inspection')) {
+                    return `✅ **QUALITY CONTROL**\n\n` +
+                           `• **Incoming Inspection** - Quality checks on received goods\n` +
+                           `• **Sampling Plans** - Statistical sampling for large batches\n` +
+                           `• **Non-Conformance** - Handle defects and returns efficiently\n` +
+                           `• **Supplier Quality** - Track supplier quality performance\n` +
+                           `• **Documentation** - Complete audit trails and certificates\n\n` +
+                           `🔍 *Try "quality control workflow" to see the detailed process!*`;
+                }
+
+                // Default response
+                return `🤔 I'd love to help! I specialize in ERP Inventory questions. Try asking about:\n\n` +
+                       `• **Workflows:** "How do I create a purchase order?"\n` +
+                       `• **Features:** "What warehouse features do you have?"\n` +
+                       `• **Processes:** "Show me the goods receipt process"\n` +
+                       `• **Getting Started:** "How do I get started?"\n\n` +
+                       `💡 *Or use the quick buttons below for common questions!*`;
+            }
+
+            async addMessage(message, isUser = false) {
+                const messagesContainer = document.getElementById('chat-messages');
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'user-message' : 'ai-message';
+                messageDiv.style.cssText = `
+                    display: flex; justify-content: ${isUser ? 'flex-end' : 'flex-start'};
+                `;
+
+                const bubble = document.createElement('div');
+                bubble.style.cssText = `
+                    background: ${isUser ? 'linear-gradient(90deg, #6366f1 0%, #a855f7 100%)' : 'rgba(255, 255, 255, 0.1)'};
+                    padding: 0.75rem; border-radius: 0.75rem; max-width: 85%;
+                    color: white; font-size: 0.875rem; line-height: 1.4;
+                    word-wrap: break-word; white-space: pre-line;
+                `;
+                
+                if (isUser) {
+                    bubble.textContent = message;
+                    messageDiv.appendChild(bubble);
+                    messagesContainer.appendChild(messageDiv);
+                } else {
+                    // Typing indicator
+                    bubble.innerHTML = '💭 Thinking...';
+                    messageDiv.appendChild(bubble);
+                    messagesContainer.appendChild(messageDiv);
+                    
+                    // Simulate typing delay
+                    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+                    
+                    bubble.textContent = message;
+                }
+
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Global AI instance
+        const erpAI = new ERPInventoryAI();
+
+        // Chat Functions
+        function toggleAIChat() {
+            const chatWindow = document.getElementById('ai-chat-window');
+            const chatIcon = document.getElementById('chat-icon');
+            const notification = document.getElementById('chat-notification');
+            
+            if (chatWindow.style.display === 'none' || !chatWindow.style.display) {
+                chatWindow.style.display = 'flex';
+                chatIcon.textContent = '💬';
+                notification.style.display = 'none';
+            } else {
+                chatWindow.style.display = 'none';
+                chatIcon.textContent = '🤖';
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            input.value = '';
+            
+            // Add user message
+            await erpAI.addMessage(message, true);
+            
+            // Generate and add AI response
+            const response = await erpAI.generateResponse(message);
+            await erpAI.addMessage(response, false);
+        }
+
+        async function sendQuickQuestion(question) {
+            document.getElementById('chat-input').value = question;
+            await sendChatMessage();
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // Show notification after 10 seconds
+        setTimeout(() => {
+            const notification = document.getElementById('chat-notification');
+            const chatWindow = document.getElementById('ai-chat-window');
+            if (chatWindow.style.display !== 'flex') {
+                notification.style.display = 'block';
+            }
+        }, 10000);
 
         // Initialize dashboard when page loads
         document.addEventListener('DOMContentLoaded', () => {

@@ -754,6 +754,110 @@
         </div>
     </section>
 
+    <!-- AI Chat Assistant -->
+    <div id="ai-chat-widget" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1001;">
+        <!-- Chat Toggle Button -->
+        <button id="chat-toggle" onclick="toggleAIChat()" style="
+            width: 4rem; height: 4rem; border-radius: 50%; 
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            border: none; box-shadow: 0 8px 25px rgba(13, 148, 136, 0.4);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease; position: relative;
+        ">
+            <span id="chat-icon" style="font-size: 1.5rem;">🤖</span>
+            <div id="chat-notification" style="
+                position: absolute; top: -5px; right: -5px; width: 1rem; height: 1rem;
+                background: #ef4444; border-radius: 50%; display: none;
+                animation: pulse 2s infinite;
+            "></div>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="ai-chat-window" style="
+            position: absolute; bottom: 5rem; right: 0; width: 24rem; height: 32rem;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            border-radius: 1rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none; flex-direction: column; overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        ">
+            <!-- Chat Header -->
+            <div style="
+                padding: 1rem; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            ">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <h3 style="color: white; margin: 0; font-size: 1rem; font-weight: 600;">ERP Compliance AI Assistant</h3>
+                        <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.75rem;">Ask me about compliance workflows and regulations</p>
+                    </div>
+                    <button onclick="toggleAIChat()" style="
+                        background: none; border: none; color: white; font-size: 1.25rem;
+                        cursor: pointer; padding: 0.25rem;
+                    ">×</button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" style="
+                flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem;
+            ">
+                <div class="ai-message">
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: 0.75rem;
+                        max-width: 85%; color: white; font-size: 0.875rem; line-height: 1.4;
+                    ">
+                        👋 Hi! I'm your ERP Compliance AI Assistant. I can help you with:
+                        <br><br>
+                        • Compliance workflows & processes
+                        <br>• Risk assessment & management  
+                        <br>• Audit planning & execution
+                        <br>• Regulatory requirements
+                        <br><br>
+                        Try asking: "How do I conduct a risk assessment?" or "Show me the audit scheduling process"
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div style="
+                padding: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(0, 0, 0, 0.2);
+            ">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input id="chat-input" type="text" placeholder="Ask me about compliance management..." style="
+                        flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.5rem;
+                        color: white; font-size: 0.875rem;
+                    " onkeypress="handleChatKeyPress(event)">
+                    <button onclick="sendChatMessage()" style="
+                        padding: 0.75rem; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+                        border: none; border-radius: 0.5rem; color: white; cursor: pointer;
+                        font-size: 0.875rem; font-weight: 600;
+                    ">Send</button>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="sendQuickQuestion('How do I conduct a risk assessment?')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Risk Assessment</button>
+                        <button onclick="sendQuickQuestion('Show me audit scheduling workflow')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">Audit Scheduling</button>
+                        <button onclick="sendQuickQuestion('What are the RCA features?')" style="
+                            padding: 0.25rem 0.5rem; background: rgba(255, 255, 255, 0.1);
+                            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 0.25rem;
+                            color: white; font-size: 0.75rem; cursor: pointer;
+                        ">RCA Features</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="footer">
         <div class="container">
             <p class="footer-text">© 2025 Indigo3 Compliance Management. All rights reserved.</p>
@@ -1021,6 +1125,247 @@
             card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
             observer.observe(card);
         });
+
+        // AI Chat Assistant Functionality
+        class ERPComplianceAI {
+            constructor() {
+                this.isTyping = false;
+                this.chatHistory = [];
+                this.knowledgeBase = this.initializeKnowledgeBase();
+            }
+
+            initializeKnowledgeBase() {
+                return {
+                    workflows: {
+                        'policy approval': {
+                            steps: ['Policy Draft', 'Legal Review', 'Stakeholder Approval', 'Final Approval', 'Employee Notification'],
+                            description: 'Automated policy review and approval workflow with stakeholder notifications',
+                            complexity: 'Medium',
+                            time: '1-2 weeks'
+                        },
+                        'audit scheduling': {
+                            steps: ['Risk Assessment', 'Auditor Assignment', 'Timeline Creation', 'Stakeholder Notification', 'Audit Execution'],
+                            description: 'Intelligent audit scheduling based on risk levels and compliance requirements',
+                            complexity: 'Medium',
+                            time: '2-3 weeks'
+                        },
+                        'risk assessment': {
+                            steps: ['Risk Identification', 'AI-powered Scoring', 'Risk Owner Assignment', 'Mitigation Strategy', 'Implementation Tracking'],
+                            description: 'Automated risk assessment workflows with escalation and mitigation tracking',
+                            complexity: 'High',
+                            time: '1-2 weeks'
+                        },
+                        'report generation': {
+                            steps: ['Data Collection', 'AI Analysis', 'Template Selection', 'Report Generation', 'Stakeholder Distribution'],
+                            description: 'Automated compliance report generation and distribution to stakeholders',
+                            complexity: 'Low',
+                            time: '1-2 days'
+                        },
+                        'alert management': {
+                            steps: ['Threshold Monitoring', 'Severity Assessment', 'Recipient Identification', 'Alert Delivery', 'Escalation Monitoring'],
+                            description: 'Smart alerting system with customizable thresholds and notification channels',
+                            complexity: 'Medium',
+                            time: 'Real-time'
+                        },
+                        'remediation tracking': {
+                            steps: ['Issue Identification', 'Resource Allocation', 'Progress Monitoring', 'Quality Assurance', 'Closure Documentation'],
+                            description: 'Automated tracking of remediation efforts with progress monitoring and reporting',
+                            complexity: 'High',
+                            time: '2-8 weeks'
+                        }
+                    },
+                    features: {
+                        'regulatory': 'Stay compliant with industry regulations including SOX, GDPR, HIPAA, and ISO standards with automated monitoring',
+                        'audit': 'Complete audit trail management with tamper-proof logging, real-time monitoring, and comprehensive compliance reporting',
+                        'risk': 'Advanced risk assessment tools with automated risk scoring, mitigation strategies, and continuous monitoring capabilities',
+                        'policy': 'Centralized policy management with version control, approval workflows, and automated distribution to stakeholders',
+                        'reporting': 'Automated compliance reporting with customizable dashboards, real-time analytics, and regulatory submission capabilities',
+                        'rca': 'AI-powered Root Cause Analysis Agent for automated issue detection, pattern recognition, and predictive analytics'
+                    },
+                    quickAnswers: {
+                        'getting started': 'Start with the RCA Agent Demo to see AI-powered compliance analysis, then explore our Automated Workflows to understand process automation.',
+                        'pricing': 'Contact us at +31 655 328 495 for a personalized demo and pricing discussion.',
+                        'demo': 'Click on any workflow card to see detailed step-by-step processes, or try our RCA Agent Demo above.',
+                        'support': 'We provide 24/7 support, comprehensive training, and dedicated implementation assistance.',
+                        'implementation': 'Our compliance implementation typically takes 3-6 weeks with full regulatory assessment and user training included.'
+                    }
+                };
+            }
+
+            async generateResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // Check for workflow questions
+                for (const [workflow, data] of Object.entries(this.knowledgeBase.workflows)) {
+                    if (lowerMessage.includes(workflow) || lowerMessage.includes(workflow.replace(' ', ''))) {
+                        return `🛡️ **${workflow.toUpperCase()} WORKFLOW**\n\n` +
+                               `**Description:** ${data.description}\n\n` +
+                               `**Complexity:** ${data.complexity} | **Time:** ${data.time}\n\n` +
+                               `**Steps:**\n${data.steps.map((step, i) => `${i + 1}. ${step}`).join('\n')}\n\n` +
+                               `💡 *Click on the "${workflow}" workflow card above to see the interactive demo!*`;
+                    }
+                }
+
+                // Check for feature questions
+                for (const [feature, description] of Object.entries(this.knowledgeBase.features)) {
+                    if (lowerMessage.includes(feature)) {
+                        return `🚀 **${feature.toUpperCase()} FEATURES**\n\n${description}\n\n💡 *Scroll up to see these features in action on our dashboard!*`;
+                    }
+                }
+
+                // Check for quick answers
+                for (const [key, answer] of Object.entries(this.knowledgeBase.quickAnswers)) {
+                    if (lowerMessage.includes(key) || lowerMessage.includes(key.replace(' ', ''))) {
+                        return `💡 ${answer}`;
+                    }
+                }
+
+                // General questions about compliance module
+                if (lowerMessage.includes('compliance') || lowerMessage.includes('regulatory') || lowerMessage.includes('audit')) {
+                    return `🛡️ **ERP COMPLIANCE MODULE**\n\n` +
+                           `Our Compliance module includes:\n\n` +
+                           `• **Regulatory Compliance** - SOX, GDPR, HIPAA, ISO standards monitoring\n` +
+                           `• **Audit Trails** - Tamper-proof logging and real-time monitoring\n` +
+                           `• **Risk Management** - Automated risk scoring and mitigation strategies\n` +
+                           `• **Policy Management** - Centralized policy control with approval workflows\n` +
+                           `• **Compliance Reporting** - Automated reporting with regulatory submissions\n` +
+                           `• **AI-Powered Analysis** - Root cause analysis and predictive compliance\n\n` +
+                           `🎯 *Try asking about specific workflows like "risk assessment" or "audit scheduling"!*`;
+                }
+
+                // RCA questions
+                if (lowerMessage.includes('rca') || lowerMessage.includes('root cause') || lowerMessage.includes('analysis')) {
+                    return `🔬 **ROOT CAUSE ANALYSIS (RCA) AGENT**\n\n` +
+                           `Our AI-powered RCA Agent provides:\n\n` +
+                           `• **Automated Issue Detection** - Identifies compliance violations automatically\n` +
+                           `• **Pattern Recognition** - Analyzes historical data for trends\n` +
+                           `• **Predictive Analytics** - Forecasts potential compliance issues\n` +
+                           `• **Actionable Recommendations** - Provides specific remediation steps\n` +
+                           `• **Risk Scoring** - Quantifies impact and priority levels\n` +
+                           `• **Compliance Forecasting** - Predicts future compliance posture\n\n` +
+                           `🎯 *Try the RCA Agent Demo above to see it in action!*`;
+                }
+
+                // Process-related questions
+                if (lowerMessage.includes('process') || lowerMessage.includes('how to') || lowerMessage.includes('steps')) {
+                    return `⚡ **COMPLIANCE PROCESSES**\n\n` +
+                           `We have ${Object.keys(this.knowledgeBase.workflows).length} main compliance workflows:\n\n` +
+                           `${Object.keys(this.knowledgeBase.workflows).map(w => `• **${w.charAt(0).toUpperCase() + w.slice(1)}**`).join('\n')}\n\n` +
+                           `💡 *Ask about any specific process, or click the workflow cards above to see detailed steps!*`;
+                }
+
+                // Regulation questions
+                if (lowerMessage.includes('gdpr') || lowerMessage.includes('sox') || lowerMessage.includes('hipaa') || lowerMessage.includes('iso')) {
+                    return `📋 **REGULATORY COMPLIANCE**\n\n` +
+                           `We support compliance with major regulations:\n\n` +
+                           `• **GDPR** - Data privacy and protection requirements\n` +
+                           `• **SOX** - Sarbanes-Oxley financial reporting controls\n` +
+                           `• **HIPAA** - Healthcare information privacy and security\n` +
+                           `• **ISO Standards** - Quality management and security frameworks\n` +
+                           `• **Industry-Specific** - Customizable compliance frameworks\n\n` +
+                           `🔍 *Our automated monitoring ensures continuous compliance!*`;
+                }
+
+                // Default response
+                return `🤔 I'd love to help! I specialize in ERP Compliance questions. Try asking about:\n\n` +
+                       `• **Workflows:** "How do I conduct a risk assessment?"\n` +
+                       `• **Features:** "What are the RCA features?"\n` +
+                       `• **Processes:** "Show me the audit scheduling process"\n` +
+                       `• **Getting Started:** "How do I get started?"\n\n` +
+                       `💡 *Or use the quick buttons below for common questions!*`;
+            }
+
+            async addMessage(message, isUser = false) {
+                const messagesContainer = document.getElementById('chat-messages');
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'user-message' : 'ai-message';
+                messageDiv.style.cssText = `
+                    display: flex; justify-content: ${isUser ? 'flex-end' : 'flex-start'};
+                `;
+
+                const bubble = document.createElement('div');
+                bubble.style.cssText = `
+                    background: ${isUser ? 'linear-gradient(90deg, #0d9488 0%, #14b8a6 100%)' : 'rgba(255, 255, 255, 0.1)'};
+                    padding: 0.75rem; border-radius: 0.75rem; max-width: 85%;
+                    color: white; font-size: 0.875rem; line-height: 1.4;
+                    word-wrap: break-word; white-space: pre-line;
+                `;
+                
+                if (isUser) {
+                    bubble.textContent = message;
+                    messageDiv.appendChild(bubble);
+                    messagesContainer.appendChild(messageDiv);
+                } else {
+                    // Typing indicator
+                    bubble.innerHTML = '💭 Thinking...';
+                    messageDiv.appendChild(bubble);
+                    messagesContainer.appendChild(messageDiv);
+                    
+                    // Simulate typing delay
+                    await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+                    
+                    bubble.textContent = message;
+                }
+
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        // Global AI instance
+        const erpAI = new ERPComplianceAI();
+
+        // Chat Functions
+        function toggleAIChat() {
+            const chatWindow = document.getElementById('ai-chat-window');
+            const chatIcon = document.getElementById('chat-icon');
+            const notification = document.getElementById('chat-notification');
+            
+            if (chatWindow.style.display === 'none' || !chatWindow.style.display) {
+                chatWindow.style.display = 'flex';
+                chatIcon.textContent = '💬';
+                notification.style.display = 'none';
+            } else {
+                chatWindow.style.display = 'none';
+                chatIcon.textContent = '🤖';
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            input.value = '';
+            
+            // Add user message
+            await erpAI.addMessage(message, true);
+            
+            // Generate and add AI response
+            const response = await erpAI.generateResponse(message);
+            await erpAI.addMessage(response, false);
+        }
+
+        async function sendQuickQuestion(question) {
+            document.getElementById('chat-input').value = question;
+            await sendChatMessage();
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // Show notification after 10 seconds
+        setTimeout(() => {
+            const notification = document.getElementById('chat-notification');
+            const chatWindow = document.getElementById('ai-chat-window');
+            if (chatWindow.style.display !== 'flex') {
+                notification.style.display = 'block';
+            }
+        }, 10000);
     </script>
 </body>
 </html>

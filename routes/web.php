@@ -220,6 +220,17 @@ Route::get('home/logistics', function () {
     ]);
 })->name('home/logistics');
 
+// Public Web3 API routes
+Route::get('/getweb3records', [Web3RecordController::class, 'getweb3records'])->name('getweb3records.public');
+
+// Public Web3 page (for testing)
+Route::get('web3/public', function () {
+    return Inertia::render('Web3', [
+        'page'=> Page::with('sections')->where('title','Web3')->first(),
+        'baseSections' => Section::where('page_id','0')->get()
+    ]);
+})->name('web3.public');
+
 Route::get('home', function () {
     return redirect()->route('home/welkom');
 });
@@ -450,7 +461,7 @@ Route::middleware([
     Route::resource('web3Records', Web3RecordController::class);
     Route::get('/getrecord', [Web3RecordController::class, 'getrecord'])->name('getrecord');
     Route::get('/getweb3recordline', [Web3RecordController::class, 'getweb3recordline'])->name('getweb3recordline');
-    Route::get('/getweb3records', [Web3RecordController::class, 'getweb3records'])->name('getweb3records');
+    // Route::get('/getweb3records', [Web3RecordController::class, 'getweb3records'])->name('getweb3records');
     Route::post('/setweb3record', [Web3RecordController::class, 'setweb3record'])->name('setweb3record');
     Route::post('/setweb3recordcomplete', [Web3RecordController::class, 'setweb3recordcomplete'])->name('setweb3recordcomplete');
     Route::post('/setweb3recordline', [Web3RecordController::class, 'setweb3recordline'])->name('setweb3recordline');
