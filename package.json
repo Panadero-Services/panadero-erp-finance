@@ -44,6 +44,7 @@
         "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
         "panadero-erp-finance": "github:Panadero-Services/panadero-erp-finance",
         "panadero-erp-inventory": "file:packages/panadero-erp-inventory",
+        "panadero-erp-hr": "file:packages/panadero-erp-hr",
         "panadero-grid": "github:Panadero-Services/panadero-grid",
         "panadero-minigames": "github:lieuwebakker/panadero-minigames",
         "panadero-mood": "github:Panadero-Services/panadero-mood",

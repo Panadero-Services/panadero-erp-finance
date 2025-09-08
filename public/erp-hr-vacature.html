@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP.HR.Vacature - AI-Gedreven Recruitment Platform</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0d9488 100%);
+            color: white; min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding-top: 4rem;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(147, 51, 234, 0.2) 0%, rgba(13, 148, 136, 0.2) 100%);
+        }
+        .hero-animation {
+            position: absolute; top: 25%; left: 25%; width: 24rem; height: 24rem;
+            background: rgba(147, 51, 234, 0.1); border-radius: 50%; filter: blur(3rem);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .hero-animation:nth-child(2) { top: 75%; left: 75%; background: rgba(13, 148, 136, 0.1); animation-delay: 1s; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 72rem; }
+        .badge {
+            display: inline-flex; align-items: center; padding: 0.5rem 1rem;
+            background: rgba(147, 51, 234, 0.2); border-radius: 9999px;
+            border: 1px solid rgba(147, 51, 234, 0.3); margin-bottom: 1.5rem;
+        }
+        .badge-text { color: #c084fc; font-size: 0.875rem; font-weight: 500; }
+        .hero-title {
+            font-size: 3.75rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, white 0%, #5eead4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 5rem; } }
+        .hero-subtitle {
+            font-size: 1.25rem; color: #d1d5db; margin-bottom: 2rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        @media (min-width: 768px) { .hero-subtitle { font-size: 1.5rem; } }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 2rem; background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%);
+            color: white; text-decoration: none; border-radius: 0.5rem;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(147, 51, 234, 0.3); }
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 2rem; background: transparent; color: #d1d5db;
+            text-decoration: none; border-radius: 0.5rem; font-weight: 600;
+            border: 1px solid rgba(209, 213, 219, 0.3); transition: all 0.3s ease;
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+        .features { padding: 6rem 0; background: rgba(0, 0, 0, 0.2); }
+        .section-title {
+            font-size: 2.5rem; font-weight: 700; text-align: center; margin-bottom: 1rem;
+            background: linear-gradient(90deg, white 0%, #5eead4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .section-subtitle {
+            font-size: 1.125rem; color: #d1d5db; text-align: center; margin-bottom: 3rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 2rem; transition: all 0.3s ease;
+        }
+        .feature-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); }
+        .feature-icon {
+            width: 3rem; height: 3rem; background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%);
+            border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.5rem; font-size: 1.5rem; color: white;
+        }
+        .feature-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: white; }
+        .feature-description { color: #d1d5db; line-height: 1.6; }
+        .stats { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 3rem; font-weight: 700; color: #0d9488; margin-bottom: 0.5rem; }
+        .stat-label { color: #d1d5db; font-size: 1rem; }
+        .ai-section {
+            padding: 6rem 0; background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(13, 148, 136, 0.1) 100%);
+        }
+        .ai-content { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        @media (max-width: 768px) { .ai-content { grid-template-columns: 1fr; } }
+        .ai-text h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; color: white; }
+        .ai-text p { font-size: 1.125rem; color: #d1d5db; line-height: 1.6; margin-bottom: 2rem; }
+        .ai-features { list-style: none; }
+        .ai-features li {
+            display: flex; align-items: center; margin-bottom: 1rem;
+            color: #d1d5db; font-size: 1rem;
+        }
+        .ai-features li::before {
+            content: "✓"; color: #0d9488; font-weight: bold; margin-right: 0.75rem;
+            width: 1.5rem; height: 1.5rem; background: rgba(13, 148, 136, 0.2);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .ai-visual {
+            background: rgba(255, 255, 255, 0.05); border-radius: 1rem; padding: 3rem;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 400px; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .workflow-step {
+            display: flex; align-items: center; margin-bottom: 2rem; width: 100%;
+            padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 0.5rem;
+        }
+        .workflow-number {
+            width: 2.5rem; height: 2.5rem; background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; margin-right: 1rem; color: white;
+        }
+        .workflow-text { color: #d1d5db; font-size: 0.875rem; }
+        .demo-section { padding: 6rem 0; background: rgba(0, 0, 0, 0.4); }
+        .demo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .demo-card {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 2rem; text-align: center; transition: all 0.3s ease;
+        }
+        .demo-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); }
+        .demo-icon {
+            width: 4rem; height: 4rem; background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%);
+            border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1.5rem; font-size: 2rem; color: white;
+        }
+        .demo-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: white; }
+        .demo-description { color: #d1d5db; line-height: 1.6; margin-bottom: 1.5rem; }
+        .demo-metric { font-size: 2rem; font-weight: 700; color: #0d9488; }
+        .cta-section { padding: 6rem 0; background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(13, 148, 136, 0.2) 100%); }
+        .cta-content { text-align: center; max-width: 48rem; margin: 0 auto; }
+        .footer { padding: 3rem 0; background: rgba(0, 0, 0, 0.5); text-align: center; }
+        .footer-text { color: #9ca3af; font-size: 0.875rem; }
+        
+        /* AI Agent Section Styles */
+        .agent-section { padding: 6rem 0; background: linear-gradient(135deg, rgba(147, 51, 234, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%); }
+        .agent-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
+        @media (max-width: 768px) { .agent-grid { grid-template-columns: 1fr; } }
+        
+        .agent-panel {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);
+        }
+        .agent-header { text-align: center; margin-bottom: 2rem; }
+        .agent-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: white; }
+        .agent-subtitle { color: #d1d5db; font-size: 0.875rem; }
+        
+        .agent-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        .agent-btn {
+            padding: 0.75rem 1rem; border-radius: 0.75rem; border: none; cursor: pointer;
+            font-weight: 600; font-size: 0.875rem; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .agent-btn.primary {
+            background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%);
+            color: white;
+        }
+        .agent-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3); }
+        .agent-btn.secondary {
+            background: rgba(255, 255, 255, 0.1); color: #d1d5db;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .agent-btn.secondary:hover { background: rgba(255, 255, 255, 0.15); color: white; }
+        
+        .demo-output {
+            min-height: 200px; background: rgba(0, 0, 0, 0.3); border-radius: 0.75rem;
+            padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 0.875rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .demo-loading {
+            display: flex; align-items: center; justify-content: center; height: 100px;
+            color: #d1d5db; font-style: italic;
+        }
+        .demo-result { color: #5eead4; line-height: 1.6; }
+        .demo-highlight { color: #fbbf24; font-weight: 600; }
+        .demo-success { color: #10b981; }
+        .demo-metric { color: #c084fc; font-weight: 700; }
+        
+        .typing-animation::after {
+            content: '|'; animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        
+        /* Navigation Header Styles */
+        .nav-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0; transition: all 0.3s ease;
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-size: 1rem; font-weight: 700; color: white;
+            background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-links {
+            display: flex; gap: 1.5rem; align-items: center;
+        }
+        .nav-link {
+            color: #d1d5db; text-decoration: none; font-size: 0.875rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+        .nav-link:hover {
+            color: white; background: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            color: #5eead4; background: rgba(147, 51, 234, 0.2);
+        }
+        @media (max-width: 768px) {
+            .nav-links { gap: 0.75rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.375rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">ERP.HR.Vacature</div>
+            <div class="nav-links">
+                <a href="indigo3-hr.html" class="nav-link">Indigo3 HR</a>
+                <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="erp-hr-vacature.html" class="nav-link active">AI Vacature</a>
+                <a href="#agent-demo" class="nav-link" onclick="scrollToAgent()">Try Demo</a>
+                <a href="/erp/hr" class="nav-link" style="background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Sectie -->
+    <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-content">
+            <div class="badge">
+                <span class="badge-text">🤖 AI-Gedreven Recruitment Platform</span>
+            </div>
+            <h1 class="hero-title">ERP.HR.Vacature</h1>
+            <p class="hero-subtitle">
+                Revolutioneer je recruitment proces met AI-gestuurde CV-analyse en kandidaat-matching. 
+                Automatiseer vacaturebeheer en vind de perfecte kandidaten sneller dan ooit tevoren.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn-primary" onclick="window.location.href='/erp/hr/vacature'">
+                    <span>Start AI Recruitment</span>
+                </button>
+                <button class="btn-secondary" onclick="scrollToFeatures()">
+                    <span>Ontdek Mogelijkheden</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Sectie -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">AI-Gedreven Recruitment Functies</h2>
+            <p class="section-subtitle">
+                Geavanceerde AI-technologie die je recruitment proces transformeert van begin tot eind
+            </p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">Slimme CV Analyse</h3>
+                    <p class="feature-description">
+                        AI analyseert CV's automatisch op vaardigheden, werkervaring, opleidingen en competenties. 
+                        Extracteert gestructureerde data uit ongestructureerde documenten.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Kandidaat Matching</h3>
+                    <p class="feature-description">
+                        Machine learning algoritmes matchen kandidaten met vacatures op basis van vereisten, 
+                        cultuur-fit en voorspelde succeskans.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Automatiseerde Screening</h3>
+                    <p class="feature-description">
+                        Automatische pre-screening van kandidaten met AI-gedreven scoring en ranking. 
+                        Bespaar 80% tijd op initiële selectie.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Recruitment Analytics</h3>
+                    <p class="feature-description">
+                        Geavanceerde analytics en rapportages over recruitment performance, 
+                        kandidaat bronnen en hiring success rates.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3 class="feature-title">Workflow Integratie</h3>
+                    <p class="feature-description">
+                        Naadloze integratie met bestaande HR workflows en approval processen. 
+                        Behoud controle terwijl AI het werk doet.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Multi-Platform Portal</h3>
+                    <p class="feature-description">
+                        Eén platform voor alle recruitment kanalen: LinkedIn, Indeed, bedrijfswebsite. 
+                        Centraliseer kandidatendata.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistieken Sectie -->
+    <section class="stats">
+        <div class="container">
+            <h2 class="section-title">Bewezen Resultaten</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">80%</div>
+                    <div class="stat-label">Minder screening tijd</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">65%</div>
+                    <div class="stat-label">Betere match kwaliteit</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">40%</div>
+                    <div class="stat-label">Snellere plaatsing</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">90%</div>
+                    <div class="stat-label">Kandidaat tevredenheid</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Agent Interactive Demo Sectie -->
+    <section class="agent-section" id="agent-demo">
+        <div class="agent-container">
+            <h2 class="section-title">AI Agent Portal - Live Demo</h2>
+            <p class="section-subtitle">
+                Probeer onze AI-gedreven recruitment tools direct uit. Kies je rol en ervaar de kracht van geautomatiseerde HR processen.
+            </p>
+            
+            <div class="agent-grid">
+                <!-- Werkgever Panel -->
+                <div class="agent-panel">
+                    <div class="agent-header">
+                        <div class="agent-title">👔 Voor Werkgevers</div>
+                        <div class="agent-subtitle">AI-gedreven recruitment en kandidaat analyse</div>
+                    </div>
+                    
+                    <div class="agent-buttons">
+                        <button class="agent-btn primary" onclick="runEmployerDemo('analyze-cv')">
+                            📄 CV Analyseren
+                        </button>
+                        <button class="agent-btn secondary" onclick="runEmployerDemo('create-vacancy')">
+                            ➕ Vacature Maken
+                        </button>
+                        <button class="agent-btn secondary" onclick="runEmployerDemo('match-candidates')">
+                            🎯 Kandidaten Matchen
+                        </button>
+                        <button class="agent-btn primary" onclick="runEmployerDemo('generate-report')">
+                            📊 Rapport Genereren
+                        </button>
+                    </div>
+                    
+                    <div id="employer-output" class="demo-output">
+                        <div class="demo-loading">
+                            Klik op een knop om de AI Agent demo te starten...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kandidaat Panel -->
+                <div class="agent-panel">
+                    <div class="agent-header">
+                        <div class="agent-title">👤 Voor Kandidaten</div>
+                        <div class="agent-subtitle">AI-assistentie voor carrière ontwikkeling</div>
+                    </div>
+                    
+                    <div class="agent-buttons">
+                        <button class="agent-btn primary" onclick="runCandidateDemo('upload-cv')">
+                            📎 CV Uploaden
+                        </button>
+                        <button class="agent-btn secondary" onclick="runCandidateDemo('find-jobs')">
+                            🔍 Banen Zoeken
+                        </button>
+                        <button class="agent-btn secondary" onclick="runCandidateDemo('skill-assessment')">
+                            🧠 Vaardighedentest
+                        </button>
+                        <button class="agent-btn primary" onclick="runCandidateDemo('career-advice')">
+                            💡 Carrière Advies
+                        </button>
+                    </div>
+                    
+                    <div id="candidate-output" class="demo-output">
+                        <div class="demo-loading">
+                            Klik op een knop om de AI Assistentie demo te starten...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Workflow Sectie -->
+    <section class="ai-section">
+        <div class="container">
+            <div class="ai-content">
+                <div class="ai-text">
+                    <h2>AI-Gedreven Recruitment Workflow</h2>
+                    <p>
+                        Ons geavanceerde AI-systeem analyseert en verwerkt kandidatendata in real-time, 
+                        waardoor recruiters zich kunnen focussen op wat echt belangrijk is: 
+                        de menselijke connectie en cultuur-fit.
+                    </p>
+                    <ul class="ai-features">
+                        <li>Automatische CV parsing en data extractie</li>
+                        <li>Intelligente vaardigheden matching</li>
+                        <li>Voorspellende candidate scoring</li>
+                        <li>Geautomatiseerde interview scheduling</li>
+                        <li>Real-time recruitment analytics</li>
+                        <li>Bias-vrije kandidaat evaluatie</li>
+                    </ul>
+                    <button class="btn-primary" onclick="window.location.href='/demo/ai-workflow'">
+                        <span>Bekijk AI Demo</span>
+                    </button>
+                </div>
+                <div class="ai-visual">
+                    <div class="workflow-step">
+                        <div class="workflow-number">1</div>
+                        <div class="workflow-text">CV Upload & AI Parsing</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">2</div>
+                        <div class="workflow-text">Vaardigheden & Ervaring Extractie</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">3</div>
+                        <div class="workflow-text">Vacature Matching & Scoring</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">4</div>
+                        <div class="workflow-text">Geautomatiseerde Pre-screening</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="workflow-number">5</div>
+                        <div class="workflow-text">Recruiter Review & Beslissing</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Resultaten Sectie -->
+    <section class="demo-section">
+        <div class="container">
+            <h2 class="section-title">Live Demo Resultaten</h2>
+            <p class="section-subtitle">
+                Zie direct hoe onze AI-technologie jouw recruitment proces kan verbeteren
+            </p>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-icon">📄</div>
+                    <h3 class="demo-title">CV Verwerking</h3>
+                    <p class="demo-description">
+                        Analyseer 100+ CV's per minuut met 95% nauwkeurigheid
+                    </p>
+                    <div class="demo-metric">2.5s</div>
+                    <div style="color: #d1d5db; font-size: 0.875rem;">per CV analyse</div>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-icon">🎯</div>
+                    <h3 class="demo-title">Match Accuraatheid</h3>
+                    <p class="demo-description">
+                        Precisie matching tussen kandidaten en vacature vereisten
+                    </p>
+                    <div class="demo-metric">92%</div>
+                    <div style="color: #d1d5db; font-size: 0.875rem;">match precisie</div>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-icon">💰</div>
+                    <h3 class="demo-title">Kostenbesparing</h3>
+                    <p class="demo-description">
+                        Verminderde recruitment kosten door efficiency verbetering
+                    </p>
+                    <div class="demo-metric">€15K</div>
+                    <div style="color: #d1d5db; font-size: 0.875rem;">besparing per jaar</div>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-icon">⏱️</div>
+                    <h3 class="demo-title">Time-to-Hire</h3>
+                    <p class="demo-description">
+                        Snellere plaatsing door geoptimaliseerde candidate pipeline
+                    </p>
+                    <div class="demo-metric">18</div>
+                    <div style="color: #d1d5db; font-size: 0.875rem;">dagen gemiddeld</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Sectie -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="section-title">Klaar om te Beginnen?</h2>
+                <p class="section-subtitle">
+                    Start vandaag nog met AI-gedreven recruitment en transformeer je HR processen
+                </p>
+                <div class="cta-buttons">
+                    <button class="btn-primary" onclick="window.location.href='/erp/hr/vacature/demo'">
+                        <span>Vraag Gratis Demo Aan</span>
+                    </button>
+                    <button class="btn-secondary" onclick="window.location.href='/contact'">
+                        <span>Neem Contact Op</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p class="footer-text">
+                © 2025 ERP.HR.Vacature - Onderdeel van het Panadero ERP Platform
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToAgent() {
+            document.getElementById('agent-demo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Sample data voor realistische simulaties
+        const sampleCVs = [
+            {
+                name: "Sarah van der Berg",
+                position: "Senior Developer",
+                skills: ["JavaScript", "React", "Node.js", "Python", "AWS"],
+                experience: 5,
+                education: "MSc Computer Science",
+                score: 92
+            },
+            {
+                name: "Mark Janssen",
+                position: "Data Scientist", 
+                skills: ["Python", "Machine Learning", "SQL", "Tableau", "R"],
+                experience: 3,
+                education: "BSc Data Science",
+                score: 87
+            },
+            {
+                name: "Lisa Chen",
+                position: "UX Designer",
+                skills: ["Figma", "Adobe Creative Suite", "User Research", "Prototyping"],
+                experience: 4,
+                education: "BA Design",
+                score: 94
+            }
+        ];
+
+        const sampleVacancies = [
+            {
+                title: "Senior Full-Stack Developer",
+                department: "IT",
+                requirements: ["JavaScript", "React", "Node.js", "5+ jaar ervaring"],
+                salary: "€65.000 - €85.000",
+                location: "Amsterdam"
+            },
+            {
+                title: "Data Analyst",
+                department: "Analytics",
+                requirements: ["Python", "SQL", "Data Visualization", "3+ jaar ervaring"],
+                salary: "€45.000 - €60.000", 
+                location: "Utrecht"
+            }
+        ];
+
+        // Type-effect functie
+        function typeText(element, text, speed = 50) {
+            element.innerHTML = '';
+            let i = 0;
+            element.classList.add('typing-animation');
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typing-animation');
+                }
+            }
+            type();
+        }
+
+        // Werkgever demo functies
+        function runEmployerDemo(action) {
+            const output = document.getElementById('employer-output');
+            output.innerHTML = '<div class="demo-loading">AI Agent aan het werk...</div>';
+            
+            setTimeout(() => {
+                let content = '';
+                
+                switch(action) {
+                    case 'analyze-cv':
+                        const cv = sampleCVs[Math.floor(Math.random() * sampleCVs.length)];
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📄 CV Analyse Resultaat</div><br><br>
+                                <strong>Kandidaat:</strong> ${cv.name}<br>
+                                <strong>Positie:</strong> ${cv.position}<br>
+                                <strong>Ervaring:</strong> ${cv.experience} jaar<br>
+                                <strong>Opleiding:</strong> ${cv.education}<br><br>
+                                <div class="demo-highlight">🧠 Gedetecteerde Vaardigheden:</div>
+                                ${cv.skills.map(skill => `• ${skill}`).join('<br>')}<br><br>
+                                <div class="demo-success">✅ AI Match Score: <span class="demo-metric">${cv.score}%</span></div><br>
+                                <div class="demo-highlight">💡 Aanbeveling:</div>
+                                ${cv.score > 90 ? 'Uitstekende kandidaat - direct uitnodigen voor interview' : 
+                                  cv.score > 80 ? 'Goede kandidaat - geschikt voor tweede screening' : 
+                                  'Kandidaat vereist nadere beoordeling'}
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'create-vacancy':
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">➕ AI Vacature Generator</div><br><br>
+                                <strong>Functietitel:</strong> Senior Frontend Developer<br>
+                                <strong>Afdeling:</strong> IT Development<br>
+                                <strong>Salaris:</strong> €60.000 - €80.000<br><br>
+                                <div class="demo-highlight">📋 AI-Gegenereerde Functieomschrijving:</div>
+                                "Wij zoeken een ervaren frontend developer met sterke React kennis...<br><br>
+                                <div class="demo-highlight">🎯 Vereiste Vaardigheden:</div>
+                                • React.js (5+ jaar)<br>
+                                • TypeScript<br>
+                                • Modern CSS<br>
+                                • API integratie<br><br>
+                                <div class="demo-success">✅ Vacature gegenereerd en klaar voor publicatie</div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'match-candidates':
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">🎯 AI Kandidaat Matching</div><br><br>
+                                <strong>Vacature:</strong> Senior Full-Stack Developer<br><br>
+                                <div class="demo-highlight">🏆 Top Matches (${sampleCVs.length} kandidaten gescreend):</div><br>
+                                ${sampleCVs.map((cv, index) => `
+                                    <strong>${index + 1}. ${cv.name}</strong><br>
+                                    Match Score: <span class="demo-metric">${cv.score}%</span><br>
+                                    Kernvaardigheden: ${cv.skills.slice(0, 3).join(', ')}<br><br>
+                                `).join('')}
+                                <div class="demo-success">✅ ${sampleCVs.filter(cv => cv.score > 85).length} kandidaten geschikt voor interview</div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'generate-report':
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📊 Recruitment Analytics Report</div><br><br>
+                                <strong>Periode:</strong> December 2024<br>
+                                <strong>Vacatures:</strong> 12 actief<br><br>
+                                <div class="demo-highlight">📈 Key Metrics:</div>
+                                • Gemiddelde time-to-hire: <span class="demo-metric">18 dagen</span><br>
+                                • CV's gescreend: <span class="demo-metric">247</span><br>
+                                • Interviews gepland: <span class="demo-metric">34</span><br>
+                                • Successful placements: <span class="demo-metric">8</span><br><br>
+                                <div class="demo-highlight">🎯 AI Efficiency:</div>
+                                • Screening tijd bespaard: <span class="demo-success">156 uren</span><br>
+                                • Match accuraatheid: <span class="demo-metric">91%</span><br><br>
+                                <div class="demo-success">✅ Rapport gegenereerd en verzonden naar management</div>
+                            </div>
+                        `;
+                        break;
+                }
+                
+                typeText(output, content, 20);
+            }, 1500);
+        }
+
+        // Kandidaat demo functies  
+        function runCandidateDemo(action) {
+            const output = document.getElementById('candidate-output');
+            output.innerHTML = '<div class="demo-loading">AI Assistentie analyseert...</div>';
+            
+            setTimeout(() => {
+                let content = '';
+                
+                switch(action) {
+                    case 'upload-cv':
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📎 CV Upload Succesvol</div><br><br>
+                                <strong>Bestand:</strong> cv_jan_de_vries.pdf<br>
+                                <strong>Grootte:</strong> 245 KB<br><br>
+                                <div class="demo-highlight">🧠 AI Analyse Resultaten:</div>
+                                • Profiel geëxtraheerd: ✅<br>
+                                • Vaardigheden gedetecteerd: <span class="demo-metric">12</span><br>
+                                • Werkervaring: <span class="demo-metric">6 jaar</span><br>
+                                • Opleidingsniveau: HBO<br><br>
+                                <div class="demo-highlight">🎯 Automatische Matches:</div>
+                                • <span class="demo-success">3 vacatures</span> gevonden die perfect bij je passen<br>
+                                • <span class="demo-metric">87%</span> gemiddelde match score<br><br>
+                                <div class="demo-success">✅ Profiel geoptimaliseerd en actief in het systeem</div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'find-jobs':
+                        const vacancy = sampleVacancies[Math.floor(Math.random() * sampleVacancies.length)];
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">🔍 AI Job Matching Resultaten</div><br><br>
+                                <div class="demo-highlight">🏆 Top Match voor jou:</div><br>
+                                <strong>${vacancy.title}</strong><br>
+                                📍 ${vacancy.location}<br>
+                                💰 ${vacancy.salary}<br>
+                                🏢 ${vacancy.department}<br><br>
+                                <div class="demo-highlight">✅ Match Redenen:</div>
+                                ${vacancy.requirements.map(req => `• ${req}`).join('<br>')}<br><br>
+                                <strong>AI Match Score: <span class="demo-metric">94%</span></strong><br><br>
+                                <div class="demo-success">🚀 Sollicitatie automatisch voorbereid</div><br>
+                                <div class="demo-success">📧 Werkgever genotificeerd van je interesse</div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'skill-assessment':
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">🧠 AI Vaardighedenanalyse</div><br><br>
+                                <div class="demo-highlight">💪 Jouw Sterke Punten:</div>
+                                • JavaScript: <span class="demo-metric">Expert (95%)</span><br>
+                                • React: <span class="demo-metric">Gevorderd (87%)</span><br>
+                                • Python: <span class="demo-metric">Intermediate (72%)</span><br>
+                                • Project Management: <span class="demo-metric">Gevorderd (83%)</span><br><br>
+                                <div class="demo-highlight">📈 Aanbevolen Verbeteringen:</div>
+                                • TypeScript (hoge vraag in markt)<br>
+                                • AWS Certificering (salaris boost +15%)<br>
+                                • Leadership Skills (carrière progressie)<br><br>
+                                <div class="demo-success">🎯 Gepersonaliseerd leerplan gegenereerd</div><br>
+                                <div class="demo-success">📚 Online cursussen aanbevolen</div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'career-advice':
+                        content = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">💡 AI Carrière Coaching</div><br><br>
+                                <strong>Huidige Positie:</strong> Mid-level Developer<br>
+                                <strong>Marktwaarde:</strong> €55.000 - €65.000<br><br>
+                                <div class="demo-highlight">🚀 Carrière Mogelijkheden:</div>
+                                • <strong>Senior Developer</strong> (2-3 maanden)<br>
+                                  Salaris: <span class="demo-metric">+20%</span> (€66k-€78k)<br><br>
+                                • <strong>Tech Lead</strong> (12-18 maanden)<br>
+                                  Salaris: <span class="demo-metric">+45%</span> (€80k-€95k)<br><br>
+                                <div class="demo-highlight">📊 Markt Trends:</div>
+                                • React developers: <span class="demo-success">Hoge vraag</span><br>
+                                • Remote werk: <span class="demo-metric">85%</span> van vacatures<br>
+                                • AI/ML skills: <span class="demo-success">Growing demand</span><br><br>
+                                <div class="demo-success">✅ Persoonlijk actieplan aangemaakt</div>
+                            </div>
+                        `;
+                        break;
+                }
+                
+                typeText(output, content, 20);
+            }, 1500);
+        }
+
+        // Animatie effecten
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.feature-card, .demo-card, .agent-panel');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

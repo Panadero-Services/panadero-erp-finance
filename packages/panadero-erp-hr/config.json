@@ -1,0 +1,82 @@
+{
+  "name": "panadero-erp-hr",
+  "version": "1.0.0",
+  "description": "ERP HR Module - Complete human resources management with recruitment, employee management, and AI-powered resume analysis",
+  "type": "erp-module",
+  "category": "hr",
+  "color": "green",
+  "icon": "UserGroupIcon",
+  "tabs": [
+    {
+      "name": "Dashboard",
+      "url": "/home/dashboard",
+      "route": "home.dashboard"
+    },
+    {
+      "name": "Employee Management",
+      "url": "/erp/hr",
+      "route": "erp.hr",
+      "tab": "employees"
+    },
+    {
+      "name": "Recruitment",
+      "url": "/erp/hr",
+      "route": "erp.hr",
+      "tab": "recruitment"
+    },
+    {
+      "name": "Vacancies",
+      "url": "/erp/hr",
+      "route": "erp.hr",
+      "tab": "vacancies"
+    },
+    {
+      "name": "Departments",
+      "url": "/erp/hr",
+      "route": "erp.hr",
+      "tab": "departments"
+    },
+    {
+      "name": "HR Reports",
+      "url": "/erp/hr",
+      "route": "erp.hr",
+      "tab": "reports"
+    },
+    {
+      "name": "Agent Portal",
+      "url": "/erp/hr",
+      "route": "erp.hr",
+      "tab": "agent-portal"
+    }
+  ],
+  "features": [
+    "Employee Management",
+    "Recruitment System",
+    "Vacancy Management",
+    "Department Management",
+    "HR Reports",
+    "Agent Portal",
+    "AI Resume Analysis",
+    "Job Matching",
+    "Workflow Integration",
+    "Dynamic Font Sizing",
+    "Action Buttons",
+    "AI Integration"
+  ],
+  "dependencies": [
+    "vue",
+    "pinia",
+    "decimal.js",
+    "axios"
+  ],
+  "workflow": {
+    "enabled": true,
+    "templates": [
+      "employee-onboarding",
+      "vacancy-approval",
+      "recruitment-approval",
+      "performance-review",
+      "resume-analysis"
+    ]
+  }
+}

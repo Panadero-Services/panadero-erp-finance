@@ -1,0 +1,42 @@
+{
+  "name": "panadero-erp-hr",
+  "version": "1.0.0",
+  "description": "ERP HR Module - Comprehensive human resources management system with AI-powered recruitment and employee management",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "echo \"Development mode - import from packages/panadero-erp-hr\"",
+    "build": "echo \"Build complete\"",
+    "lint": "echo \"Linting complete\""
+  },
+  "keywords": [
+    "erp",
+    "hr",
+    "human-resources",
+    "recruitment",
+    "employee-management",
+    "vacancy-management",
+    "department-management",
+    "hr-reports",
+    "ai-resume-analysis",
+    "job-matching",
+    "workflow-management",
+    "business-process",
+    "approval-system"
+  ],
+  "author": "JaWsome.Orbit",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Panadero-Services/panadero-erp-hr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Panadero-Services/panadero-erp-hr/issues"
+  },
+  "homepage": "https://github.com/Panadero-Services/panadero-erp-hr#readme",
+  "panaderoConfig": "./config.json"
+}

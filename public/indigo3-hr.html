@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indigo3 HR Management - Next-Generation ERP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #065f46 50%, #0f172a 100%);
+            color: white; min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding-top: 4rem;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(16, 185, 129, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+        }
+        .hero-animation {
+            position: absolute; top: 25%; left: 25%; width: 24rem; height: 24rem;
+            background: rgba(16, 185, 129, 0.1); border-radius: 50%; filter: blur(3rem);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .hero-animation:nth-child(2) { top: 75%; left: 75%; background: rgba(34, 197, 94, 0.1); animation-delay: 1s; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 72rem; }
+        .badge {
+            display: inline-flex; align-items: center; padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.2); border-radius: 9999px;
+            border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 1.5rem;
+        }
+        .badge-text { color: #6ee7b7; font-size: 0.875rem; font-weight: 500; }
+        .hero-title {
+            font-size: 3.75rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, white 0%, #6ee7b7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 5rem; } }
+        .hero-subtitle {
+            font-size: 1.25rem; color: #d1d5db; margin-bottom: 2rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        @media (min-width: 768px) { .hero-subtitle { font-size: 1.5rem; } }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 2rem; background: linear-gradient(90deg, #10b981 0%, #22c55e 100%);
+            color: white; text-decoration: none; border-radius: 0.5rem;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3); }
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 2rem; background: transparent; color: #d1d5db;
+            text-decoration: none; border-radius: 0.5rem; font-weight: 600;
+            border: 1px solid rgba(209, 213, 219, 0.3); transition: all 0.3s ease;
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.1); color: white; }
+        .features { padding: 6rem 0; background: rgba(0, 0, 0, 0.2); }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 3rem; }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 2rem; transition: all 0.3s ease;
+        }
+        .feature-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); }
+        .feature-icon {
+            width: 3rem; height: 3rem; background: linear-gradient(90deg, #10b981 0%, #22c55e 100%);
+            border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.5rem; font-size: 1.5rem; color: white;
+        }
+        .feature-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: white; }
+        .feature-description { color: #d1d5db; line-height: 1.6; }
+        .stats { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 3rem; font-weight: 700; color: #10b981; margin-bottom: 0.5rem; }
+        .stat-label { color: #d1d5db; font-size: 1rem; }
+        .ai-section {
+            padding: 6rem 0; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(34, 197, 94, 0.1) 100%);
+        }
+        .ai-content { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        @media (max-width: 768px) { .ai-content { grid-template-columns: 1fr; } }
+        .ai-text h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; color: white; }
+        .ai-text p { font-size: 1.125rem; color: #d1d5db; line-height: 1.6; margin-bottom: 2rem; }
+        .ai-features { list-style: none; }
+        .ai-features li {
+            display: flex; align-items: center; margin-bottom: 1rem;
+            color: #d1d5db; font-size: 1rem;
+        }
+        .ai-features li::before {
+            content: "✓"; color: #10b981; font-weight: bold; margin-right: 0.75rem;
+            width: 1.5rem; height: 1.5rem; background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .ai-visual {
+            background: rgba(255, 255, 255, 0.05); border-radius: 1rem; padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;
+        }
+        .ai-visual h3 { color: #10b981; font-size: 1.5rem; margin-bottom: 1rem; }
+        .ai-visual p { color: #d1d5db; margin-bottom: 1.5rem; }
+        .ai-demo {
+            background: rgba(0, 0, 0, 0.3); border-radius: 0.5rem; padding: 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.3); margin-top: 1rem;
+        }
+        .demo-line {
+            background: linear-gradient(90deg, #10b981 0%, #22c55e 100%);
+            height: 2px; margin: 0.5rem 0; border-radius: 1px;
+            animation: loading 2s ease-in-out infinite;
+        }
+        @keyframes loading { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .cta-section {
+            padding: 6rem 0; text-align: center; background: rgba(0, 0, 0, 0.4);
+        }
+        .cta-section h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; color: white; }
+        .cta-section p { font-size: 1.125rem; color: #d1d5db; margin-bottom: 2rem; max-width: 48rem; margin-left: auto; margin-right: auto; }
+        .footer {
+            padding: 3rem 0; background: rgba(0, 0, 0, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center; color: #9ca3af;
+        }
+        .footer p { margin-bottom: 0.5rem; }
+        .footer a { color: #10b981; text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+        
+        /* Fade-in animations */
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        
+        /* Dashboard Styles */
+        .kpi-grid {
+            display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            margin-bottom: 3rem;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 1rem;
+            transition: all 0.3s ease;
+        }
+        .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+        .kpi-icon { font-size: 2.5rem; }
+        .kpi-content { flex: 1; }
+        .kpi-value { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; transition: all 0.3s ease; }
+        .kpi-value:hover { transform: scale(1.1); color: #a5b4fc; }
+        .kpi-label { color: #d1d5db; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .kpi-change { font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+        .kpi-change.positive { background: rgba(34, 197, 94, 0.2); color: #86efac; animation: pulse-green 2s infinite; }
+        .kpi-change.negative { background: rgba(239, 68, 68, 0.2); color: #fca5a5; animation: pulse-red 2s infinite; }
+        
+        .dashboard-grid {
+            display: grid; gap: 2rem; grid-template-columns: 1fr;
+        }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); }
+        .dashboard-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #a5b4fc; }
+        
+        .chart-container { height: 200px; display: flex; align-items: end; gap: 1rem; padding: 1rem 0; }
+        .chart-bars { display: flex; align-items: end; gap: 1rem; height: 100%; width: 100%; }
+        .chart-bar {
+            flex: 1; background: linear-gradient(to top, #4f46e5, #a855f7); border-radius: 0.25rem 0.25rem 0 0;
+            transition: all 0.3s ease; cursor: pointer; position: relative;
+        }
+        .chart-bar:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4); }
+        .bar-label { position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; color: #d1d5db; }
+        .bar-value { position: absolute; top: -1.5rem; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: 600; color: #a5b4fc; }
+        
+        .applications-list, .alerts-list, .departments-list {
+            max-height: 300px; overflow-y: auto;
+        }
+        .application-item, .alert-item, .department-item {
+            display: flex; align-items: center; gap: 1rem; padding: 1rem; margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.03); border-radius: 0.5rem; transition: all 0.3s ease;
+        }
+        .application-item:hover, .alert-item:hover, .department-item:hover { 
+            background: rgba(255, 255, 255, 0.08); transform: translateX(4px); 
+        }
+        .application-info, .alert-content, .department-info { flex: 1; }
+        .application-name, .alert-product, .department-name { font-weight: 600; margin-bottom: 0.25rem; }
+        .application-position, .alert-level, .department-employees { font-size: 0.875rem; color: #d1d5db; }
+        .application-score, .alert-icon, .department-budget { color: #fbbf24; font-size: 1rem; }
+        
+        .alert-item.critical { border-left: 4px solid #ef4444; }
+        .alert-item.warning { border-left: 4px solid #f59e0b; }
+        .alert-item.info { border-left: 4px solid #3b82f6; }
+        
+        @keyframes pulse-green {
+            0%, 100% { background: rgba(34, 197, 94, 0.2); }
+            50% { background: rgba(34, 197, 94, 0.4); }
+        }
+        @keyframes pulse-red {
+            0%, 100% { background: rgba(239, 68, 68, 0.2); }
+            50% { background: rgba(239, 68, 68, 0.4); }
+        }
+        
+        /* Timeline Styles */
+        .timeline { position: relative; }
+        .timeline-line {
+            position: absolute; left: 50%; transform: translateX(-50%); width: 4px; height: 100%;
+            background: linear-gradient(to bottom, #4f46e5, #a855f7);
+        }
+        .timeline-item { position: relative; display: flex; align-items: center; margin-bottom: 3rem; }
+        .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+        .timeline-content { width: 50%; padding: 0 2rem; }
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timeline-card.completed { border-color: rgba(34, 197, 94, 0.5); }
+        .timeline-card.in-progress { border-color: rgba(234, 179, 8, 0.5); }
+        .timeline-card.upcoming { border-color: rgba(156, 163, 175, 0.5); }
+        .timeline-header { display: flex; align-items: center; margin-bottom: 0.5rem; }
+        .timeline-year { font-size: 1.5rem; font-weight: 700; margin-right: 0.75rem; }
+        .timeline-year.completed { color: #22c55e; }
+        .timeline-year.in-progress { color: #eab308; }
+        .timeline-year.upcoming { color: #9ca3af; }
+        .timeline-status {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+        }
+        .timeline-status.completed { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .timeline-status.in-progress { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .timeline-status.upcoming { background: rgba(156, 163, 175, 0.2); color: #d1d5db; }
+        .timeline-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .timeline-description { color: #d1d5db; }
+        .timeline-dot {
+            position: absolute; left: 50%; transform: translateX(-50%); width: 1rem; height: 1rem;
+            border-radius: 50%; border: 4px solid #0f172a;
+        }
+        .timeline-dot.completed { background: #22c55e; }
+        .timeline-dot.in-progress { background: #eab308; }
+        .timeline-dot.upcoming { background: #9ca3af; }
+        
+        /* Navigation Header Styles */
+        .nav-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0; transition: all 0.3s ease;
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-size: 1rem; font-weight: 700; color: white;
+            background: linear-gradient(90deg, #10b981 0%, #22c55e 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-links {
+            display: flex; gap: 1.5rem; align-items: center;
+        }
+        .nav-link {
+            color: #d1d5db; text-decoration: none; font-size: 0.875rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+        .nav-link:hover {
+            color: white; background: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            color: #6ee7b7; background: rgba(16, 185, 129, 0.2);
+        }
+        @media (max-width: 768px) {
+            .nav-links { gap: 0.75rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.375rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">Indigo3 HR</div>
+            <div class="nav-links">
+                <a href="indigo3-hr.html" class="nav-link active">Indigo3 HR</a>
+                <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="erp-hr-vacature.html" class="nav-link">AI Vacature</a>
+                <a href="/erp/hr" class="nav-link" style="background: linear-gradient(90deg, #10b981 0%, #22c55e 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-content">
+            <div class="badge">
+                <span class="badge-text">🚀 Next-Generation HR Management</span>
+            </div>
+            <h1 class="hero-title">Indigo3 HR Management</h1>
+            <p class="hero-subtitle">
+                Transform your human resources with AI-powered recruitment, employee management, and organizational development. 
+                Streamline HR processes with intelligent automation and data-driven insights.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn-primary" onclick="window.location.href='/erp/hr'">
+                    <span>Launch HR System</span>
+                </button>
+                <button class="btn-secondary" onclick="scrollToFeatures()">
+                    <span>Explore Features</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <section class="features">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: white;">
+                Comprehensive HR Solutions
+            </h2>
+            <p style="text-align: center; font-size: 1.125rem; color: #d1d5db; max-width: 48rem; margin: 0 auto;">
+                Everything you need to manage your workforce effectively
+            </p>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Employee Management</h3>
+                    <p class="feature-description">
+                        Complete employee lifecycle management with personal information, 
+                        performance tracking, and organizational structure management.
+                    </p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">AI-Powered Recruitment</h3>
+                    <p class="feature-description">
+                        Intelligent resume analysis, job matching algorithms, and automated 
+                        candidate screening to find the best talent for your organization.
+                    </p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">💼</div>
+                    <h3 class="feature-title">Vacancy Management</h3>
+                    <p class="feature-description">
+                        Create and manage job postings with detailed requirements, 
+                        application tracking, and automated workflow management.
+                    </p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">🏢</div>
+                    <h3 class="feature-title">Department Management</h3>
+                    <p class="feature-description">
+                        Organize your company structure with department hierarchies, 
+                        budget management, and team performance tracking.
+                    </p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">HR Analytics</h3>
+                    <p class="feature-description">
+                        Comprehensive reporting and analytics for workforce insights, 
+                        recruitment metrics, and performance trends.
+                    </p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Workflow Integration</h3>
+                    <p class="feature-description">
+                        Built-in approval processes for hiring, performance reviews, 
+                        and organizational changes with automated notifications.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: white;">
+                Trusted by HR Teams Worldwide
+            </h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Employees Managed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Recruitment Success Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50%</div>
+                    <div class="stat-label">Time Saved on Hiring</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">System Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section class="section fade-in">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: white;">
+                Live HR Dashboard
+            </h2>
+            <p style="text-align: center; font-size: 1.125rem; color: #d1d5db; max-width: 48rem; margin: 0 auto 3rem;">
+                Real-time HR insights and performance metrics at your fingertips.
+            </p>
+            
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon">👥</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">156</div>
+                        <div class="kpi-label">Total Employees</div>
+                        <div class="kpi-change positive">+8%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">📋</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">12</div>
+                        <div class="kpi-label">Open Positions</div>
+                        <div class="kpi-change negative">-3%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">📊</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">94%</div>
+                        <div class="kpi-label">Employee Satisfaction</div>
+                        <div class="kpi-change positive">+5%</div>
+                    </div>
+                </div>
+                
+                <div class="kpi-card">
+                    <div class="kpi-icon">⚡</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value">28</div>
+                        <div class="kpi-label">Days to Hire</div>
+                        <div class="kpi-change positive">-12%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Department Distribution Chart -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Department Distribution</h3>
+                    <div class="chart-container">
+                        <div class="chart-bars">
+                            <div class="chart-bar" style="height: 85%">
+                                <span class="bar-label">Engineering</span>
+                                <span class="bar-value">35%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 70%">
+                                <span class="bar-label">Sales</span>
+                                <span class="bar-value">28%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 60%">
+                                <span class="bar-label">Marketing</span>
+                                <span class="bar-value">24%</span>
+                            </div>
+                            <div class="chart-bar" style="height: 45%">
+                                <span class="bar-label">HR</span>
+                                <span class="bar-value">13%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Applications -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Recent Applications</h3>
+                    <div class="applications-list">
+                        <div class="application-item">
+                            <div class="application-info">
+                                <div class="application-name">Sarah Johnson</div>
+                                <div class="application-position">Senior Developer</div>
+                            </div>
+                            <div class="application-score">92%</div>
+                        </div>
+                        <div class="application-item">
+                            <div class="application-info">
+                                <div class="application-name">Michael Chen</div>
+                                <div class="application-position">Marketing Manager</div>
+                            </div>
+                            <div class="application-score">87%</div>
+                        </div>
+                        <div class="application-item">
+                            <div class="application-info">
+                                <div class="application-name">Emily Davis</div>
+                                <div class="application-position">HR Coordinator</div>
+                            </div>
+                            <div class="application-score">95%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Alerts -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Performance Alerts</h3>
+                    <div class="alerts-list">
+                        <div class="alert-item critical">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <div class="alert-product">John Smith</div>
+                                <div class="alert-level">Performance Review Due</div>
+                            </div>
+                        </div>
+                        <div class="alert-item warning">
+                            <div class="alert-icon">⏰</div>
+                            <div class="alert-content">
+                                <div class="alert-product">Sarah Johnson</div>
+                                <div class="alert-level">Training Completion Pending</div>
+                            </div>
+                        </div>
+                        <div class="alert-item info">
+                            <div class="alert-icon">ℹ️</div>
+                            <div class="alert-content">
+                                <div class="alert-product">Michael Brown</div>
+                                <div class="alert-level">Promotion Eligible</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Department Budgets -->
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Department Budgets</h3>
+                    <div class="departments-list">
+                        <div class="department-item">
+                            <div class="department-info">
+                                <div class="department-name">Engineering</div>
+                                <div class="department-employees">45 employees</div>
+                            </div>
+                            <div class="department-budget">$2.4M</div>
+                        </div>
+                        <div class="department-item">
+                            <div class="department-info">
+                                <div class="department-name">Sales</div>
+                                <div class="department-employees">32 employees</div>
+                            </div>
+                            <div class="department-budget">$1.8M</div>
+                        </div>
+                        <div class="department-item">
+                            <div class="department-info">
+                                <div class="department-name">Marketing</div>
+                                <div class="department-employees">28 employees</div>
+                            </div>
+                            <div class="department-budget">$1.2M</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ai-section">
+        <div class="container">
+            <div class="ai-content">
+                <div class="ai-text">
+                    <h2>AI-Powered HR Intelligence</h2>
+                    <p>
+                        Leverage cutting-edge artificial intelligence to revolutionize your HR processes. 
+                        Our AI system analyzes resumes, matches candidates to positions, and provides 
+                        insights to optimize your workforce management.
+                    </p>
+                    <ul class="ai-features">
+                        <li>Intelligent resume analysis and scoring</li>
+                        <li>Automated job-candidate matching</li>
+                        <li>Performance prediction algorithms</li>
+                        <li>Bias-free recruitment processes</li>
+                        <li>Real-time HR analytics and insights</li>
+                        <li>Predictive workforce planning</li>
+                    </ul>
+                </div>
+                <div class="ai-visual">
+                    <h3>AI Analysis Demo</h3>
+                    <p>Resume Analysis in Progress...</p>
+                    <div class="ai-demo">
+                        <div class="demo-line" style="width: 85%;"></div>
+                        <div class="demo-line" style="width: 92%;"></div>
+                        <div class="demo-line" style="width: 78%;"></div>
+                        <div class="demo-line" style="width: 95%;"></div>
+                        <div style="margin-top: 1rem; color: #10b981; font-weight: 600;">
+                            Match Score: 92% - Strong Candidate
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section class="section fade-in">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; color: white;">
+                10 Years of Innovation
+            </h2>
+            <p style="text-align: center; font-size: 1.125rem; color: #d1d5db; max-width: 48rem; margin: 0 auto 3rem;">
+                From Indigo2 to Indigo3 - A decade of modular architecture and AI agent development.
+            </p>
+            
+            <div class="timeline">
+                <div class="timeline-line"></div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2015</span>
+                                <span class="timeline-status completed">COMPLETED</span>
+                            </div>
+                            <h3 class="timeline-title">Indigo2 Launch</h3>
+                            <p class="timeline-description">First generation modular ERP system with agent architecture foundation</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2018</span>
+                                <span class="timeline-status completed">COMPLETED</span>
+                            </div>
+                            <h3 class="timeline-title">Agent Framework</h3>
+                            <p class="timeline-description">Advanced AI agent integration for automated business processes</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2021</span>
+                                <span class="timeline-status completed">COMPLETED</span>
+                            </div>
+                            <h3 class="timeline-title">Cloud Migration</h3>
+                            <p class="timeline-description">Full cloud deployment with enhanced scalability and security</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2022</span>
+                                <span class="timeline-status completed">COMPLETED</span>
+                            </div>
+                            <h3 class="timeline-title">Web3 Blockchain integrations</h3>
+                            <p class="timeline-description">Decentralized Technologies and Isolated Containers</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot completed"></div>
+                </div>
+         
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card completed">
+                            <div class="timeline-header">
+                                <span class="timeline-year completed">2023</span>
+                                <span class="timeline-status completed">COMPLETED</span>
+                            </div>
+                            <h3 class="timeline-title">Automated Tradings</h3>
+                            <p class="timeline-description">AI Trading Agents and API Providers</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot completed"></div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card in-progress">
+                            <div class="timeline-header">
+                                <span class="timeline-year in-progress">2025</span>
+                                <span class="timeline-status in-progress">IN PROGRESS</span>
+                            </div>
+                            <h3 class="timeline-title">Indigo3 Modular ERP Functionality</h3>
+                            <p class="timeline-description">Next-generation modular architecture with enhanced AI capabilities</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot in-progress"></div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-card upcoming">
+                            <div class="timeline-header">
+                                <span class="timeline-year upcoming">2026</span>
+                                <span class="timeline-status upcoming">UPCOMING</span>
+                            </div>
+                            <h3 class="timeline-title">Indigo3 Launch - Real World Implementation</h3>
+                            <p class="timeline-description">Revolutionary ERP platform with background AI agents and modular design</p>
+                        </div>
+                    </div>
+                    <div class="timeline-dot upcoming"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your HR Management?</h2>
+            <p>
+                Join thousands of organizations already using Indigo3 HR Management 
+                to streamline their human resources and improve workforce efficiency.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn-primary" onclick="window.location.href='/erp/hr'">
+                    <span>Get Started Now</span>
+                </button>
+                <button class="btn-secondary" onclick="window.location.href='/contact'">
+                    <span>Contact Sales</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Indigo3 ERP Systems. All rights reserved.</p>
+            <p>
+                <a href="/privacy">Privacy Policy</a> | 
+                <a href="/terms">Terms of Service</a> | 
+                <a href="/support">Support</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        function scrollToFeatures() {
+            document.querySelector('.features').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intersection Observer for animations
+            const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(section => observer.observe(section));
+
+            // Dashboard Interactive Features
+            class DashboardManager {
+                constructor() {
+                    this.kpiValues = {
+                        totalEmployees: 156,
+                        openPositions: 12,
+                        employeeSatisfaction: 94,
+                        daysToHire: 28
+                    };
+                    this.isAnimating = false;
+                    this.init();
+                }
+
+                init() {
+                    this.animateKPIs();
+                    this.addChartInteractivity();
+                    this.addApplicationUpdates();
+                    this.addAlertAnimations();
+                    this.addDepartmentInteractions();
+                    this.startDataRefresh();
+                }
+
+                animateKPIs() {
+                    const kpiCards = document.querySelectorAll('.kpi-card');
+                    kpiCards.forEach((card, index) => {
+                        card.addEventListener('mouseenter', () => {
+                            if (this.isAnimating) return;
+                            this.isAnimating = true;
+                            this.animateCounter(card.querySelector('.kpi-value'), index);
+                        });
+                    });
+                }
+
+                animateCounter(element, index) {
+                    const values = [156, 12, 94, 28];
+                    const targetValue = values[index];
+                    const duration = 1000;
+                    const startTime = performance.now();
+
+                    const animate = (currentTime) => {
+                        const elapsed = currentTime - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        const currentValue = Math.floor(progress * targetValue);
+                        
+                        if (index === 2) { // Employee Satisfaction
+                            element.textContent = currentValue + '%';
+                        } else if (index === 3) { // Days to Hire
+                            element.textContent = currentValue;
+                        } else {
+                            element.textContent = currentValue.toLocaleString();
+                        }
+
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            this.isAnimating = false;
+                        }
+                    };
+
+                    requestAnimationFrame(animate);
+                }
+
+                addChartInteractivity() {
+                    const chartBars = document.querySelectorAll('.chart-bar');
+                    chartBars.forEach(bar => {
+                        bar.addEventListener('click', () => {
+                            // Add pulse effect
+                            bar.style.transform = 'scale(1.1)';
+                            setTimeout(() => {
+                                bar.style.transform = 'scale(1.05)';
+                            }, 200);
+                        });
+                    });
+                }
+
+                addApplicationUpdates() {
+                    const applications = document.querySelectorAll('.application-item');
+                    applications.forEach((app, index) => {
+                        app.addEventListener('click', () => {
+                            // Simulate application status update
+                            const score = app.querySelector('.application-score');
+                            const currentScore = parseInt(score.textContent);
+                            const newScore = Math.min(currentScore + Math.floor(Math.random() * 5), 100);
+                            score.textContent = newScore + '%';
+                            score.style.color = newScore > 90 ? '#22c55e' : newScore > 80 ? '#f59e0b' : '#ef4444';
+                        });
+                    });
+                }
+
+                addAlertAnimations() {
+                    const alerts = document.querySelectorAll('.alert-item');
+                    alerts.forEach(alert => {
+                        alert.addEventListener('click', () => {
+                            // Mark as resolved
+                            alert.style.opacity = '0.5';
+                            alert.style.transform = 'translateX(-10px)';
+                            setTimeout(() => {
+                                alert.style.display = 'none';
+                            }, 300);
+                        });
+                    });
+                }
+
+                addDepartmentInteractions() {
+                    const departments = document.querySelectorAll('.department-item');
+                    departments.forEach(dept => {
+                        dept.addEventListener('click', () => {
+                            // Show department details
+                            const budget = dept.querySelector('.department-budget');
+                            const currentBudget = budget.textContent;
+                            budget.textContent = 'View Details →';
+                            budget.style.color = '#a5b4fc';
+                            
+                            setTimeout(() => {
+                                budget.textContent = currentBudget;
+                                budget.style.color = '#fbbf24';
+                            }, 2000);
+                        });
+                    });
+                }
+
+                startDataRefresh() {
+                    // Simulate real-time data updates
+                    setInterval(() => {
+                        this.updateKPIs();
+                    }, 30000); // Update every 30 seconds
+                }
+
+                updateKPIs() {
+                    // Simulate data changes
+                    const changes = [
+                        { index: 0, change: Math.floor(Math.random() * 3) - 1 }, // Employees
+                        { index: 1, change: Math.floor(Math.random() * 3) - 1 }, // Open Positions
+                        { index: 2, change: Math.floor(Math.random() * 3) - 1 }, // Satisfaction
+                        { index: 3, change: Math.floor(Math.random() * 3) - 1 }  // Days to Hire
+                    ];
+
+                    changes.forEach(({ index, change }) => {
+                        const kpiCard = document.querySelectorAll('.kpi-card')[index];
+                        const valueElement = kpiCard.querySelector('.kpi-value');
+                        const changeElement = kpiCard.querySelector('.kpi-change');
+                        
+                        if (change !== 0) {
+                            const currentValue = parseInt(valueElement.textContent.replace(/[^\d]/g, ''));
+                            const newValue = Math.max(0, currentValue + change);
+                            
+                            if (index === 2) { // Employee Satisfaction
+                                valueElement.textContent = newValue + '%';
+                            } else if (index === 3) { // Days to Hire
+                                valueElement.textContent = newValue;
+                            } else {
+                                valueElement.textContent = newValue.toLocaleString();
+                            }
+                            
+                            // Update change indicator
+                            changeElement.textContent = change > 0 ? `+${change}%` : `${change}%`;
+                            changeElement.className = `kpi-change ${change > 0 ? 'positive' : 'negative'}`;
+                        }
+                    });
+                }
+            }
+
+            // Initialize dashboard
+            new DashboardManager();
+        });
+    </script>
+</body>
+</html>

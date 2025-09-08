@@ -125,14 +125,29 @@ class DatabaseSeeder extends Seeder
             FinanceDemoSeeder::class,        // Finance demo data
         ]);
 
-        // ===== STEP 12: VENDOR MANAGEMENT =====
+        // ===== STEP 12: HR MANAGEMENT SYSTEM =====
+        $this->command->info('👥 Seeding HR management system...');
+        
+        // Load HR seeders directly
+        require_once base_path('packages/panadero-erp-hr/database/seeders/HrDatabaseSeeder.php');
+        require_once base_path('packages/panadero-erp-hr/database/seeders/HrDepartmentSeeder.php');
+        require_once base_path('packages/panadero-erp-hr/database/seeders/HrEmployeeSeeder.php');
+        require_once base_path('packages/panadero-erp-hr/database/seeders/HrVacancySeeder.php');
+        require_once base_path('packages/panadero-erp-hr/database/seeders/HrApplicationSeeder.php');
+        require_once base_path('packages/panadero-erp-hr/database/seeders/HrPerformanceReviewSeeder.php');
+        
+        $this->call([
+            \Panadero\Erp\Hr\Database\Seeders\HrDatabaseSeeder::class,  // Complete HR system
+        ]);
+
+        // ===== STEP 13: VENDOR MANAGEMENT =====
         $this->command->info('🏢 Seeding vendor management...');
         $this->call([
             VendorSeeder::class,             // Core vendor entities (shared)
             FinanceVendorSeeder::class,      // Finance-specific vendor extensions
         ]);
 
-        // ===== STEP 13: USER ROLE ASSIGNMENTS =====
+        // ===== STEP 14: USER ROLE ASSIGNMENTS =====
         $this->command->info('👥 Assigning user roles...');
         
         // Get all users and roles
@@ -158,7 +173,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // ===== STEP 14: TEAM MANAGEMENT =====
+        // ===== STEP 15: TEAM MANAGEMENT =====
         $this->command->info('🏆 Setting up team management...');
         
         // Create demo team
@@ -175,7 +190,7 @@ class DatabaseSeeder extends Seeder
             $user->update(['current_team_id' => 1]);
         }
 
-        // ===== STEP 15: FINALIZATION =====
+        // ===== STEP 16: FINALIZATION =====
         $this->command->info('✨ Creating demo comments...');
         Comment::factory()->count(50)->create();
 
@@ -203,6 +218,10 @@ class DatabaseSeeder extends Seeder
             'Vendors' => \App\Models\Vendor::count(),
             'Finance Vendors' => \App\Models\FinanceVendor::count(),
             'Finance Accounts' => \DB::table('finance_accounts')->count(),
+            'HR Departments' => \DB::table('hr_departments')->count(),
+            'HR Employees' => \DB::table('hr_employees')->count(),
+            'HR Vacancies' => \DB::table('hr_vacancies')->count(),
+            'HR Applications' => \DB::table('hr_applications')->count(),
         ];
 
         $this->command->info('📊 SEEDING STATISTICS:');

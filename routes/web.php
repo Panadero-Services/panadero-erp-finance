@@ -406,6 +406,17 @@ Route::middleware([
         ]);
     })->name('erp.inventory');
 
+    // ========================================
+    // ERP HR ROUTES
+    // ========================================
+    Route::get('erp/hr', function () {
+        return Inertia::render('erp/Hr', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get(),
+            'title' => 'ERP HR Management'
+        ]);
+    })->name('erp.hr');
+
 
 
 
