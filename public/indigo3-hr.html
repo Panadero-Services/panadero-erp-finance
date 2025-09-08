@@ -118,6 +118,39 @@
         }
         .cta-section h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; color: white; }
         .cta-section p { font-size: 1.125rem; color: #d1d5db; margin-bottom: 2rem; max-width: 48rem; margin-left: auto; margin-right: auto; }
+        
+        /* Workflow Styles */
+        .workflow-category {
+            background: rgba(255, 255, 255, 0.05); border-radius: 1rem; padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .workflow-items { display: flex; flex-direction: column; gap: 1rem; }
+        .workflow-item {
+            background: rgba(255, 255, 255, 0.08); border-radius: 0.75rem; padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .workflow-item:hover {
+            border-color: rgba(34, 197, 94, 0.5); transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.2);
+        }
+        .workflow-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .workflow-name { font-weight: 600; color: white; }
+        .workflow-badge {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;
+            font-weight: 600; text-transform: uppercase;
+        }
+        .workflow-badge.low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .workflow-badge.medium { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .workflow-badge.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .workflow-meta {
+            color: #9ca3af; font-size: 0.875rem; margin-bottom: 0.5rem;
+        }
+        .workflow-description { color: #d1d5db; font-size: 0.875rem; line-height: 1.4; }
+        
         /* Contact Section Styles */
         .contact-section { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
         .contact-content { max-width: 48rem; margin: 0 auto; text-align: center; }
@@ -407,6 +440,210 @@
                 <div class="stat-item">
                     <div class="stat-number">99.9%</div>
                     <div class="stat-label">System Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced HR Workflow Templates -->
+    <section class="section fade-in" style="background: rgba(0, 0, 0, 0.1);">
+        <div class="container">
+            <h2 class="section-title">Advanced HR Workflows</h2>
+            <p class="section-subtitle">
+                Template-based action steps for complete HR process automation. Click on workflows to see detailed steps.
+            </p>
+            
+            <div class="workflow-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                
+                <!-- Recruitment & Hiring -->
+                <div class="workflow-category">
+                    <h3 style="color: #86efac; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🎯 Recruitment & Hiring
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('job-posting')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Job Posting & Recruitment</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 1-2 weeks</span>
+                            </div>
+                            <div class="workflow-description">Complete job posting workflow from requisition to candidate sourcing</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('candidate-screening')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Candidate Screening</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 2-3 weeks</span>
+                            </div>
+                            <div class="workflow-description">Comprehensive candidate evaluation and interview process</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Onboarding -->
+                <div class="workflow-category">
+                    <h3 style="color: #86efac; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🚀 Employee Onboarding
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('new-hire-onboarding')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">New Hire Onboarding</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>8 steps • 2-4 weeks</span>
+                            </div>
+                            <div class="workflow-description">Complete new employee onboarding from offer to full integration</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('equipment-setup')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Equipment & Access Setup</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1 week</span>
+                            </div>
+                            <div class="workflow-description">IT equipment provisioning and system access setup</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Management -->
+                <div class="workflow-category">
+                    <h3 style="color: #86efac; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📈 Performance Management
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('annual-review')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Annual Performance Review</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>7 steps • 3-4 weeks</span>
+                            </div>
+                            <div class="workflow-description">Comprehensive annual performance evaluation and goal setting</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('360-feedback')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">360° Feedback Process</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 2-3 weeks</span>
+                            </div>
+                            <div class="workflow-description">Multi-source feedback collection and analysis</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning & Development -->
+                <div class="workflow-category">
+                    <h3 style="color: #86efac; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🎓 Learning & Development
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('training-program')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Training Program Enrollment</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1-2 weeks</span>
+                            </div>
+                            <div class="workflow-description">Employee training registration and tracking process</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('career-development')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Career Development Plan</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 2-3 weeks</span>
+                            </div>
+                            <div class="workflow-description">Individual career path planning and skill development</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Time & Attendance -->
+                <div class="workflow-category">
+                    <h3 style="color: #86efac; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        ⏰ Time & Attendance
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('leave-request')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Leave Request Process</span>
+                                <span class="workflow-badge low">Low</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>3 steps • 1-3 days</span>
+                            </div>
+                            <div class="workflow-description">Employee leave application and approval workflow</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('timesheet-approval')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Timesheet Approval</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1 week</span>
+                            </div>
+                            <div class="workflow-description">Weekly timesheet submission and management approval</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employee Relations -->
+                <div class="workflow-category">
+                    <h3 style="color: #86efac; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🤝 Employee Relations
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('disciplinary-action')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Disciplinary Action</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 2-4 weeks</span>
+                            </div>
+                            <div class="workflow-description">Progressive disciplinary process with documentation</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('employee-offboarding')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Employee Offboarding</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 1-2 weeks</span>
+                            </div>
+                            <div class="workflow-description">Complete employee departure and knowledge transfer process</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Details Modal -->
+            <div id="workflow-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; padding: 2rem;">
+                <div style="max-width: 800px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border-radius: 1rem; padding: 2rem; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 id="modal-title" style="color: #86efac; font-size: 1.5rem; font-weight: 700;"></h3>
+                        <button onclick="closeWorkflowModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
+                    </div>
+                    <div id="modal-content"></div>
                 </div>
             </div>
         </div>
@@ -804,6 +1041,276 @@
 
         function scrollToContact() {
             document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // HR Workflow Templates Data
+        const hrWorkflowTemplates = {
+            'job-posting': {
+                title: 'Job Posting & Recruitment',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Job Requisition', description: 'Create job requisition with requirements', estimated: '1 hour' },
+                    { id: 2, type: 'approval', name: 'Manager Approval', description: 'Department manager approval for hiring', estimated: '2 days' },
+                    { id: 3, type: 'posting', name: 'Job Posting', description: 'Post job on internal and external platforms', estimated: '1 day' },
+                    { id: 4, type: 'sourcing', name: 'Candidate Sourcing', description: 'Active recruitment and headhunting', estimated: '1 week' },
+                    { id: 5, type: 'tracking', name: 'Application Tracking', description: 'Track and manage incoming applications', estimated: 'Ongoing' }
+                ]
+            },
+            'candidate-screening': {
+                title: 'Candidate Screening',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'application_review', name: 'Application Review', description: 'Review resumes and cover letters', estimated: '2 hours' },
+                    { id: 2, type: 'phone_screening', name: 'Phone Screening', description: 'Initial phone interview screening', estimated: '30 min per candidate' },
+                    { id: 3, type: 'skills_assessment', name: 'Skills Assessment', description: 'Technical or competency testing', estimated: '2 hours' },
+                    { id: 4, type: 'panel_interview', name: 'Panel Interview', description: 'In-person or video interview panel', estimated: '1-2 hours' },
+                    { id: 5, type: 'reference_check', name: 'Reference Check', description: 'Contact previous employers and references', estimated: '1 day' },
+                    { id: 6, type: 'final_decision', name: 'Final Decision', description: 'Make hiring decision and extend offer', estimated: '2-3 days' }
+                ]
+            },
+            'new-hire-onboarding': {
+                title: 'New Hire Onboarding',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'pre_boarding', name: 'Pre-boarding Setup', description: 'Prepare workspace and documentation', estimated: '1 week' },
+                    { id: 2, type: 'first_day', name: 'First Day Welcome', description: 'Office tour and initial introductions', estimated: '4 hours' },
+                    { id: 3, type: 'hr_orientation', name: 'HR Orientation', description: 'Company policies and benefits overview', estimated: '3 hours' },
+                    { id: 4, type: 'training_schedule', name: 'Training Schedule', description: 'Set up job-specific training plan', estimated: '1 week' },
+                    { id: 5, type: 'mentor_assignment', name: 'Mentor Assignment', description: 'Assign buddy or mentor for guidance', estimated: '30 min' },
+                    { id: 6, type: 'probation_setup', name: 'Probation Setup', description: 'Set probation goals and checkpoints', estimated: '1 hour' },
+                    { id: 7, type: 'feedback_sessions', name: 'Initial Feedback', description: 'Weekly check-ins during first month', estimated: '4 weeks' },
+                    { id: 8, type: 'integration_review', name: 'Integration Review', description: 'Full onboarding completion review', estimated: '2 hours' }
+                ]
+            },
+            'equipment-setup': {
+                title: 'Equipment & Access Setup',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'it_request', name: 'IT Equipment Request', description: 'Submit hardware and software requirements', estimated: '30 min' },
+                    { id: 2, type: 'provisioning', name: 'Equipment Provisioning', description: 'Order and configure equipment', estimated: '3-5 days' },
+                    { id: 3, type: 'account_setup', name: 'Account Setup', description: 'Create user accounts and system access', estimated: '2 hours' },
+                    { id: 4, type: 'security_setup', name: 'Security Setup', description: 'Configure security protocols and training', estimated: '1 hour' }
+                ]
+            },
+            'annual-review': {
+                title: 'Annual Performance Review',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'self_assessment', name: 'Self Assessment', description: 'Employee completes self-evaluation', estimated: '2 hours' },
+                    { id: 2, type: 'goal_review', name: 'Goal Review', description: 'Review previous year goals and achievements', estimated: '1 hour' },
+                    { id: 3, type: 'peer_feedback', name: 'Peer Feedback', description: 'Collect feedback from colleagues', estimated: '1 week' },
+                    { id: 4, type: 'manager_evaluation', name: 'Manager Evaluation', description: 'Manager completes performance assessment', estimated: '2 hours' },
+                    { id: 5, type: 'review_meeting', name: 'Review Meeting', description: 'Formal review discussion meeting', estimated: '1-2 hours' },
+                    { id: 6, type: 'goal_setting', name: 'Goal Setting', description: 'Set goals and development plans for next year', estimated: '1 hour' },
+                    { id: 7, type: 'documentation', name: 'Documentation', description: 'Finalize and file performance documentation', estimated: '30 min' }
+                ]
+            },
+            '360-feedback': {
+                title: '360° Feedback Process',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'participant_selection', name: 'Participant Selection', description: 'Select feedback providers across all levels', estimated: '1 hour' },
+                    { id: 2, type: 'survey_setup', name: 'Survey Setup', description: 'Configure 360-degree feedback surveys', estimated: '2 hours' },
+                    { id: 3, type: 'feedback_collection', name: 'Feedback Collection', description: 'Collect feedback from all participants', estimated: '2 weeks' },
+                    { id: 4, type: 'analysis', name: 'Data Analysis', description: 'Analyze and compile feedback results', estimated: '1 day' },
+                    { id: 5, type: 'feedback_session', name: 'Feedback Session', description: 'Present results to employee', estimated: '1 hour' }
+                ]
+            },
+            'training-program': {
+                title: 'Training Program Enrollment',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'needs_assessment', name: 'Training Needs Assessment', description: 'Identify training requirements', estimated: '1 hour' },
+                    { id: 2, type: 'program_selection', name: 'Program Selection', description: 'Choose appropriate training programs', estimated: '30 min' },
+                    { id: 3, type: 'enrollment', name: 'Training Enrollment', description: 'Register for training sessions', estimated: '15 min' },
+                    { id: 4, type: 'progress_tracking', name: 'Progress Tracking', description: 'Monitor training completion and progress', estimated: 'Ongoing' }
+                ]
+            },
+            'career-development': {
+                title: 'Career Development Plan',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'career_assessment', name: 'Career Assessment', description: 'Assess current skills and career interests', estimated: '2 hours' },
+                    { id: 2, type: 'gap_analysis', name: 'Skills Gap Analysis', description: 'Identify skills gaps for career progression', estimated: '1 hour' },
+                    { id: 3, type: 'path_planning', name: 'Career Path Planning', description: 'Define career trajectory and milestones', estimated: '2 hours' },
+                    { id: 4, type: 'development_plan', name: 'Development Plan', description: 'Create specific development action plan', estimated: '1 hour' },
+                    { id: 5, type: 'mentorship', name: 'Mentorship Assignment', description: 'Connect with senior mentor for guidance', estimated: '30 min' },
+                    { id: 6, type: 'progress_review', name: 'Progress Review', description: 'Quarterly progress reviews and adjustments', estimated: 'Quarterly' }
+                ]
+            },
+            'leave-request': {
+                title: 'Leave Request Process',
+                complexity: 'Low',
+                steps: [
+                    { id: 1, type: 'leave_application', name: 'Leave Application', description: 'Submit leave request with details', estimated: '15 min' },
+                    { id: 2, type: 'manager_approval', name: 'Manager Approval', description: 'Direct manager reviews and approves', estimated: '1 day' },
+                    { id: 3, type: 'calendar_update', name: 'Calendar Update', description: 'Update team calendars and schedules', estimated: '15 min' }
+                ]
+            },
+            'timesheet-approval': {
+                title: 'Timesheet Approval',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'timesheet_submission', name: 'Timesheet Submission', description: 'Employee submits weekly timesheet', estimated: '30 min' },
+                    { id: 2, type: 'manager_review', name: 'Manager Review', description: 'Manager reviews hours and projects', estimated: '1 hour' },
+                    { id: 3, type: 'approval_routing', name: 'Approval Routing', description: 'Route to payroll for processing', estimated: '15 min' },
+                    { id: 4, type: 'payroll_processing', name: 'Payroll Processing', description: 'Process approved hours for payroll', estimated: '2 days' }
+                ]
+            },
+            'disciplinary-action': {
+                title: 'Disciplinary Action',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'incident_documentation', name: 'Incident Documentation', description: 'Document performance or conduct issue', estimated: '1 hour' },
+                    { id: 2, type: 'investigation', name: 'Investigation', description: 'Investigate facts and gather evidence', estimated: '2-3 days' },
+                    { id: 3, type: 'disciplinary_meeting', name: 'Disciplinary Meeting', description: 'Formal meeting with employee', estimated: '1 hour' },
+                    { id: 4, type: 'action_determination', name: 'Action Determination', description: 'Determine appropriate disciplinary action', estimated: '1 day' },
+                    { id: 5, type: 'documentation', name: 'Documentation', description: 'Complete formal documentation', estimated: '1 hour' },
+                    { id: 6, type: 'follow_up', name: 'Follow-up Monitoring', description: 'Monitor improvement and compliance', estimated: 'Ongoing' }
+                ]
+            },
+            'employee-offboarding': {
+                title: 'Employee Offboarding',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'resignation_processing', name: 'Resignation Processing', description: 'Process resignation letter and notice', estimated: '1 hour' },
+                    { id: 2, type: 'knowledge_transfer', name: 'Knowledge Transfer', description: 'Document and transfer job responsibilities', estimated: '1 week' },
+                    { id: 3, type: 'exit_interview', name: 'Exit Interview', description: 'Conduct exit interview for feedback', estimated: '1 hour' },
+                    { id: 4, type: 'asset_return', name: 'Asset Return', description: 'Return company equipment and access cards', estimated: '1 hour' },
+                    { id: 5, type: 'final_settlement', name: 'Final Settlement', description: 'Process final pay and benefits', estimated: '2 days' }
+                ]
+            }
+        };
+
+        // HR Workflow Modal Functions
+        function showWorkflowSteps(workflowId) {
+            const workflow = hrWorkflowTemplates[workflowId];
+            if (!workflow) return;
+
+            document.getElementById('modal-title').textContent = workflow.title;
+            
+            const stepsHtml = workflow.steps.map((step, index) => {
+                const stepTypeColors = {
+                    'form_submission': '#86efac',
+                    'approval': '#fbbf24', 
+                    'validation': '#a78bfa',
+                    'automation': '#67e8f9',
+                    'review': '#f9a8d4',
+                    'posting': '#60a5fa',
+                    'sourcing': '#34d399',
+                    'tracking': '#fb7185',
+                    'application_review': '#fdba74',
+                    'phone_screening': '#94a3b8',
+                    'skills_assessment': '#f472b6',
+                    'panel_interview': '#a5b4fc',
+                    'reference_check': '#fde047',
+                    'final_decision': '#86efac',
+                    'pre_boarding': '#67e8f9',
+                    'first_day': '#34d399',
+                    'hr_orientation': '#60a5fa',
+                    'training_schedule': '#fb7185',
+                    'mentor_assignment': '#fdba74',
+                    'probation_setup': '#94a3b8',
+                    'feedback_sessions': '#f472b6',
+                    'integration_review': '#a5b4fc',
+                    'it_request': '#fde047',
+                    'provisioning': '#86efac',
+                    'account_setup': '#67e8f9',
+                    'security_setup': '#34d399',
+                    'self_assessment': '#60a5fa',
+                    'goal_review': '#fb7185',
+                    'peer_feedback': '#fdba74',
+                    'manager_evaluation': '#94a3b8',
+                    'review_meeting': '#f472b6',
+                    'goal_setting': '#a5b4fc',
+                    'documentation': '#fde047',
+                    'participant_selection': '#86efac',
+                    'survey_setup': '#67e8f9',
+                    'feedback_collection': '#34d399',
+                    'analysis': '#60a5fa',
+                    'feedback_session': '#fb7185',
+                    'needs_assessment': '#fdba74',
+                    'program_selection': '#94a3b8',
+                    'enrollment': '#f472b6',
+                    'progress_tracking': '#a5b4fc',
+                    'career_assessment': '#fde047',
+                    'gap_analysis': '#86efac',
+                    'path_planning': '#67e8f9',
+                    'development_plan': '#34d399',
+                    'mentorship': '#60a5fa',
+                    'progress_review': '#fb7185',
+                    'leave_application': '#fdba74',
+                    'manager_approval': '#94a3b8',
+                    'calendar_update': '#f472b6',
+                    'timesheet_submission': '#a5b4fc',
+                    'manager_review': '#fde047',
+                    'approval_routing': '#86efac',
+                    'payroll_processing': '#67e8f9',
+                    'incident_documentation': '#34d399',
+                    'investigation': '#60a5fa',
+                    'disciplinary_meeting': '#fb7185',
+                    'action_determination': '#fdba74',
+                    'follow_up': '#94a3b8',
+                    'resignation_processing': '#f472b6',
+                    'knowledge_transfer': '#a5b4fc',
+                    'exit_interview': '#fde047',
+                    'asset_return': '#86efac',
+                    'final_settlement': '#67e8f9'
+                };
+                
+                const stepColor = stepTypeColors[step.type] || '#d1d5db';
+                
+                return `
+                    <div style="display: flex; align-items: center; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 2rem; height: 2rem; background: ${stepColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; color: #0f172a; font-weight: 700;">
+                            ${step.id}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">${step.name}</div>
+                            <div style="color: #d1d5db; font-size: 0.875rem; margin-bottom: 0.25rem;">${step.description}</div>
+                            <div style="color: ${stepColor}; font-size: 0.75rem; font-weight: 600;">
+                                ${step.type.replace(/_/g, ' ').toUpperCase()} • ${step.estimated}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modal-content').innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="background: rgba(34,197,94,0.2); color: #86efac; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">
+                            ${workflow.complexity} Complexity
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">
+                            ${workflow.steps.length} Steps
+                        </span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #86efac; margin-bottom: 1rem; font-size: 1.125rem;">Workflow Steps</h4>
+                    ${stepsHtml}
+                </div>
+                <div style="text-align: center; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button onclick="startWorkflowDemo('${workflowId}')" style="background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%); color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; margin-right: 1rem;">
+                        Start Demo Workflow
+                    </button>
+                    <button onclick="closeWorkflowModal()" style="background: rgba(255,255,255,0.1); color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('workflow-modal').style.display = 'block';
+        }
+
+        function closeWorkflowModal() {
+            document.getElementById('workflow-modal').style.display = 'none';
+        }
+
+        function startWorkflowDemo(workflowId) {
+            alert(`🚀 Starting ${hrWorkflowTemplates[workflowId].title} workflow demo!\n\nIn a real implementation, this would:\n• Create a new workflow instance\n• Load the first step\n• Initialize form data\n• Set up approval routing\n• Begin step execution\n\nWorkflow ID: ${workflowId}`);
+            closeWorkflowModal();
         }
         
         // Add some interactive effects

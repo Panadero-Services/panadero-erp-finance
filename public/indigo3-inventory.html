@@ -348,6 +348,38 @@
             .nav-link { font-size: 0.75rem; padding: 0.375rem 0.5rem; }
         }
         
+        /* Workflow Styles */
+        .workflow-category {
+            background: rgba(255, 255, 255, 0.05); border-radius: 1rem; padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .workflow-items { display: flex; flex-direction: column; gap: 1rem; }
+        .workflow-item {
+            background: rgba(255, 255, 255, 0.08); border-radius: 0.75rem; padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .workflow-item:hover {
+            border-color: rgba(99, 102, 241, 0.5); transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+        }
+        .workflow-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .workflow-name { font-weight: 600; color: white; }
+        .workflow-badge {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;
+            font-weight: 600; text-transform: uppercase;
+        }
+        .workflow-badge.low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .workflow-badge.medium { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .workflow-badge.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .workflow-meta {
+            color: #9ca3af; font-size: 0.875rem; margin-bottom: 0.5rem;
+        }
+        .workflow-description { color: #d1d5db; font-size: 0.875rem; line-height: 1.4; }
+        
         /* Contact Section Styles */
         .contact-section { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
         .contact-content { max-width: 48rem; margin: 0 auto; text-align: center; }
@@ -448,6 +480,210 @@
                     <div class="feature-icon">🔗</div>
                     <h3 class="feature-title">Seamless Integration</h3>
                     <p class="feature-description">Connect with existing ERP, accounting, and e-commerce systems through our modular architecture.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Workflow Templates -->
+    <section class="section fade-in" style="background: rgba(0, 0, 0, 0.1);">
+        <div class="container">
+            <h2 class="section-title">Advanced Inventory Workflows</h2>
+            <p class="section-subtitle">
+                Template-based action steps for complete inventory process automation. Click on workflows to see detailed steps.
+            </p>
+            
+            <div class="workflow-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                
+                <!-- Procurement Workflows -->
+                <div class="workflow-category">
+                    <h3 style="color: #a5b4fc; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📦 Procurement
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('purchase-order')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Purchase Order Creation</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 2-3 days</span>
+                            </div>
+                            <div class="workflow-description">Complete purchase order workflow with supplier approval</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('supplier-onboarding')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Supplier Onboarding</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 1-2 weeks</span>
+                            </div>
+                            <div class="workflow-description">New supplier registration and validation process</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receiving & Inspection -->
+                <div class="workflow-category">
+                    <h3 style="color: #a5b4fc; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📥 Receiving & Inspection
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('goods-receipt')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Goods Receipt Process</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 1-2 days</span>
+                            </div>
+                            <div class="workflow-description">Complete receiving workflow with quality inspection</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('quality-control')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Quality Control Check</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>7 steps • 2-3 days</span>
+                            </div>
+                            <div class="workflow-description">Comprehensive quality assurance and testing process</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warehouse Management -->
+                <div class="workflow-category">
+                    <h3 style="color: #a5b4fc; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🏭 Warehouse Management
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('stock-putaway')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Stock Putaway Process</span>
+                                <span class="workflow-badge low">Low</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>3 steps • 2-4 hours</span>
+                            </div>
+                            <div class="workflow-description">Automated putaway location assignment and execution</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('cycle-counting')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Cycle Counting</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1 day</span>
+                            </div>
+                            <div class="workflow-description">Systematic inventory counting and variance resolution</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Fulfillment -->
+                <div class="workflow-category">
+                    <h3 style="color: #a5b4fc; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🚚 Order Fulfillment
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('pick-pack-ship')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Pick, Pack & Ship</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 4-6 hours</span>
+                            </div>
+                            <div class="workflow-description">Complete order fulfillment from picking to shipping</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('returns-processing')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Returns Processing</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1-2 days</span>
+                            </div>
+                            <div class="workflow-description">Customer return authorization and restocking process</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Control -->
+                <div class="workflow-category">
+                    <h3 style="color: #a5b4fc; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📊 Inventory Control
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('reorder-management')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Reorder Point Management</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 1 week</span>
+                            </div>
+                            <div class="workflow-description">Automated reorder point calculation and purchase recommendations</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('inventory-adjustment')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Inventory Adjustment</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>3 steps • 2-4 hours</span>
+                            </div>
+                            <div class="workflow-description">Stock level adjustments with approval and audit trail</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reporting & Analytics -->
+                <div class="workflow-category">
+                    <h3 style="color: #a5b4fc; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📈 Reporting & Analytics
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('inventory-valuation')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Inventory Valuation</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 1-2 days</span>
+                            </div>
+                            <div class="workflow-description">Complete inventory valuation for financial reporting</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('abc-analysis')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">ABC Analysis</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1 day</span>
+                            </div>
+                            <div class="workflow-description">Automated ABC classification and strategy recommendations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Details Modal -->
+            <div id="workflow-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; padding: 2rem;">
+                <div style="max-width: 800px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border-radius: 1rem; padding: 2rem; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 id="modal-title" style="color: #a5b4fc; font-size: 1.5rem; font-weight: 700;"></h3>
+                        <button onclick="closeWorkflowModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
+                    </div>
+                    <div id="modal-content"></div>
                 </div>
             </div>
         </div>
@@ -1205,6 +1441,230 @@
                 const cities = ['New York, NY', 'Los Angeles, CA', 'Chicago, IL', 'Miami, FL', 'Seattle, WA', 'Boston, MA', 'Denver, CO', 'Austin, TX'];
                 return cities[Math.floor(Math.random() * cities.length)];
             }
+        }
+
+        // Inventory Workflow Templates Data
+        const inventoryWorkflowTemplates = {
+            'purchase-order': {
+                title: 'Purchase Order Creation',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'PR Creation', description: 'Create purchase requisition with item details', estimated: '30 min' },
+                    { id: 2, type: 'approval', name: 'Manager Approval', description: 'Department manager approval for budget', estimated: '1 day' },
+                    { id: 3, type: 'supplier_selection', name: 'Supplier Selection', description: 'Select approved supplier and negotiate terms', estimated: '1 day' },
+                    { id: 4, type: 'automation', name: 'PO Generation', description: 'Generate and send purchase order to supplier', estimated: '1 hour' }
+                ]
+            },
+            'supplier-onboarding': {
+                title: 'Supplier Onboarding',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Supplier Registration', description: 'Collect supplier information and documents', estimated: '2 hours' },
+                    { id: 2, type: 'document_upload', name: 'Document Verification', description: 'Upload and verify certifications', estimated: '1 day' },
+                    { id: 3, type: 'validation', name: 'Credit Check', description: 'Perform credit and reference verification', estimated: '3 days' },
+                    { id: 4, type: 'quality_assessment', name: 'Quality Assessment', description: 'Evaluate supplier quality standards', estimated: '2 days' },
+                    { id: 5, type: 'approval', name: 'Procurement Approval', description: 'Final procurement team approval', estimated: '2 days' },
+                    { id: 6, type: 'integration', name: 'System Setup', description: 'Create supplier master data in system', estimated: '2 hours' }
+                ]
+            },
+            'goods-receipt': {
+                title: 'Goods Receipt Process',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'notification', name: 'Delivery Notification', description: 'Receive advance shipping notification', estimated: '15 min' },
+                    { id: 2, type: 'inspection', name: 'Physical Inspection', description: 'Inspect goods for damage and quantity', estimated: '1 hour' },
+                    { id: 3, type: 'validation', name: 'PO Matching', description: 'Match receipt against purchase order', estimated: '30 min' },
+                    { id: 4, type: 'form_submission', name: 'Receipt Recording', description: 'Record goods receipt in system', estimated: '30 min' },
+                    { id: 5, type: 'automation', name: 'Inventory Update', description: 'Update inventory levels automatically', estimated: '15 min' }
+                ]
+            },
+            'quality-control': {
+                title: 'Quality Control Check',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'sampling', name: 'Sample Selection', description: 'Select items for quality testing', estimated: '30 min' },
+                    { id: 2, type: 'inspection', name: 'Visual Inspection', description: 'Perform visual quality checks', estimated: '1 hour' },
+                    { id: 3, type: 'testing', name: 'Lab Testing', description: 'Conduct laboratory tests if required', estimated: '1 day' },
+                    { id: 4, type: 'documentation', name: 'Quality Documentation', description: 'Document test results and findings', estimated: '1 hour' },
+                    { id: 5, type: 'approval', name: 'QC Manager Approval', description: 'Quality manager review and approval', estimated: '4 hours' },
+                    { id: 6, type: 'conditional_routing', name: 'Accept/Reject Decision', description: 'Route to acceptance or rejection process', estimated: '30 min' },
+                    { id: 7, type: 'automation', name: 'Status Update', description: 'Update item status based on QC results', estimated: '15 min' }
+                ]
+            },
+            'stock-putaway': {
+                title: 'Stock Putaway Process',
+                complexity: 'Low',
+                steps: [
+                    { id: 1, type: 'automation', name: 'Location Assignment', description: 'System assigns optimal storage location', estimated: '5 min' },
+                    { id: 2, type: 'picking', name: 'Item Transport', description: 'Transport items to assigned location', estimated: '30 min' },
+                    { id: 3, type: 'validation', name: 'Location Confirmation', description: 'Confirm placement in correct location', estimated: '15 min' }
+                ]
+            },
+            'cycle-counting': {
+                title: 'Cycle Counting',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'automation', name: 'Count Schedule', description: 'Generate cycle count schedule', estimated: '30 min' },
+                    { id: 2, type: 'counting', name: 'Physical Count', description: 'Perform physical inventory count', estimated: '4 hours' },
+                    { id: 3, type: 'validation', name: 'Variance Analysis', description: 'Compare counts with system records', estimated: '1 hour' },
+                    { id: 4, type: 'adjustment', name: 'Inventory Adjustment', description: 'Adjust system quantities if needed', estimated: '1 hour' }
+                ]
+            },
+            'pick-pack-ship': {
+                title: 'Pick, Pack & Ship',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'automation', name: 'Pick List Generation', description: 'Generate optimized pick list', estimated: '15 min' },
+                    { id: 2, type: 'picking', name: 'Order Picking', description: 'Pick items from warehouse locations', estimated: '2 hours' },
+                    { id: 3, type: 'validation', name: 'Pick Verification', description: 'Verify picked quantities and items', estimated: '30 min' },
+                    { id: 4, type: 'packing', name: 'Order Packing', description: 'Pack items for shipment', estimated: '1 hour' },
+                    { id: 5, type: 'shipping', name: 'Shipment Creation', description: 'Create shipping labels and dispatch', estimated: '30 min' }
+                ]
+            },
+            'returns-processing': {
+                title: 'Returns Processing',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'authorization', name: 'Return Authorization', description: 'Issue return merchandise authorization', estimated: '30 min' },
+                    { id: 2, type: 'inspection', name: 'Return Inspection', description: 'Inspect returned items for condition', estimated: '1 hour' },
+                    { id: 3, type: 'conditional_routing', name: 'Disposition Decision', description: 'Determine restock, repair, or dispose', estimated: '30 min' },
+                    { id: 4, type: 'automation', name: 'Inventory Update', description: 'Update inventory based on disposition', estimated: '15 min' }
+                ]
+            },
+            'reorder-management': {
+                title: 'Reorder Point Management',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'analysis', name: 'Demand Analysis', description: 'Analyze historical demand patterns', estimated: '2 days' },
+                    { id: 2, type: 'calculation', name: 'Reorder Point Calculation', description: 'Calculate optimal reorder points', estimated: '1 day' },
+                    { id: 3, type: 'validation', name: 'Business Rule Validation', description: 'Validate against business constraints', estimated: '4 hours' },
+                    { id: 4, type: 'approval', name: 'Planning Approval', description: 'Inventory planner approval', estimated: '1 day' },
+                    { id: 5, type: 'automation', name: 'System Update', description: 'Update reorder points in system', estimated: '1 hour' },
+                    { id: 6, type: 'monitoring', name: 'Alert Setup', description: 'Configure low stock alerts', estimated: '30 min' }
+                ]
+            },
+            'inventory-adjustment': {
+                title: 'Inventory Adjustment',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Adjustment Request', description: 'Submit inventory adjustment request', estimated: '15 min' },
+                    { id: 2, type: 'validation', name: 'Reason Validation', description: 'Validate adjustment reason and documentation', estimated: '30 min' },
+                    { id: 3, type: 'approval', name: 'Supervisor Approval', description: 'Warehouse supervisor approval', estimated: '2 hours' },
+                    { id: 4, type: 'automation', name: 'Adjustment Processing', description: 'Process adjustment in system', estimated: '15 min' }
+                ]
+            },
+            'inventory-valuation': {
+                title: 'Inventory Valuation',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'data_collection', name: 'Data Gathering', description: 'Collect inventory quantities and costs', estimated: '4 hours' },
+                    { id: 2, type: 'calculation', name: 'Valuation Calculation', description: 'Calculate inventory values by method', estimated: '2 hours' },
+                    { id: 3, type: 'validation', name: 'Variance Analysis', description: 'Analyze valuation variances', estimated: '2 hours' },
+                    { id: 4, type: 'review', name: 'Finance Review', description: 'Finance team review and validation', estimated: '4 hours' },
+                    { id: 5, type: 'approval', name: 'Controller Approval', description: 'Controller final approval', estimated: '1 day' }
+                ]
+            },
+            'abc-analysis': {
+                title: 'ABC Analysis',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'data_collection', name: 'Sales Data Collection', description: 'Gather sales and usage data', estimated: '2 hours' },
+                    { id: 2, type: 'calculation', name: 'ABC Classification', description: 'Calculate ABC categories based on criteria', estimated: '1 hour' },
+                    { id: 3, type: 'validation', name: 'Business Rule Validation', description: 'Validate classifications against business rules', estimated: '2 hours' },
+                    { id: 4, type: 'review', name: 'Management Review', description: 'Review classifications and recommendations', estimated: '4 hours' }
+                ]
+            }
+        };
+
+        // Inventory Workflow Modal Functions
+        function showWorkflowSteps(workflowId) {
+            const workflow = inventoryWorkflowTemplates[workflowId];
+            if (!workflow) return;
+
+            document.getElementById('modal-title').textContent = workflow.title;
+            
+            const stepsHtml = workflow.steps.map((step, index) => {
+                const stepTypeColors = {
+                    'form_submission': '#a5b4fc',
+                    'approval': '#fbbf24', 
+                    'validation': '#86efac',
+                    'automation': '#a78bfa',
+                    'integration': '#67e8f9',
+                    'review': '#f9a8d4',
+                    'inspection': '#fde047',
+                    'picking': '#fdba74',
+                    'packing': '#94a3b8',
+                    'shipping': '#34d399',
+                    'counting': '#fb7185',
+                    'adjustment': '#f472b6',
+                    'supplier_selection': '#60a5fa',
+                    'document_upload': '#f9a8d4',
+                    'notification': '#86efac',
+                    'quality_assessment': '#fbbf24',
+                    'sampling': '#a78bfa',
+                    'testing': '#67e8f9',
+                    'documentation': '#fdba74',
+                    'conditional_routing': '#94a3b8',
+                    'authorization': '#fb7185',
+                    'analysis': '#60a5fa',
+                    'calculation': '#34d399',
+                    'monitoring': '#f472b6',
+                    'data_collection': '#a5b4fc'
+                };
+                
+                const stepColor = stepTypeColors[step.type] || '#d1d5db';
+                
+                return `
+                    <div style="display: flex; align-items: center; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 2rem; height: 2rem; background: ${stepColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; color: #0f172a; font-weight: 700;">
+                            ${step.id}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">${step.name}</div>
+                            <div style="color: #d1d5db; font-size: 0.875rem; margin-bottom: 0.25rem;">${step.description}</div>
+                            <div style="color: ${stepColor}; font-size: 0.75rem; font-weight: 600;">
+                                ${step.type.replace(/_/g, ' ').toUpperCase()} • ${step.estimated}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modal-content').innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="background: rgba(99,102,241,0.2); color: #a5b4fc; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">
+                            ${workflow.complexity} Complexity
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">
+                            ${workflow.steps.length} Steps
+                        </span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #a5b4fc; margin-bottom: 1rem; font-size: 1.125rem;">Workflow Steps</h4>
+                    ${stepsHtml}
+                </div>
+                <div style="text-align: center; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button onclick="startWorkflowDemo('${workflowId}')" style="background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%); color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; margin-right: 1rem;">
+                        Start Demo Workflow
+                    </button>
+                    <button onclick="closeWorkflowModal()" style="background: rgba(255,255,255,0.1); color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('workflow-modal').style.display = 'block';
+        }
+
+        function closeWorkflowModal() {
+            document.getElementById('workflow-modal').style.display = 'none';
+        }
+
+        function startWorkflowDemo(workflowId) {
+            alert(`🚀 Starting ${inventoryWorkflowTemplates[workflowId].title} workflow demo!\n\nIn a real implementation, this would:\n• Create a new workflow instance\n• Load the first step\n• Initialize form data\n• Set up approval routing\n• Begin step execution\n\nWorkflow ID: ${workflowId}`);
+            closeWorkflowModal();
         }
 
         // Initialize dashboard when page loads
