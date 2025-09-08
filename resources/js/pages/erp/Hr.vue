@@ -14,8 +14,8 @@ import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 const _usePage = usePage();
 
-// sections
-import HrWrapper from 'panadero-erp-hr/src/HrWrapper.vue';
+// sections - Fixed relative path for AWS compatibility
+import HrWrapper from '../../../../packages/panadero-erp-hr/src/HrWrapper.vue';
 
 // stores
 import { useSettingsStore } from '@/stores/settings';
