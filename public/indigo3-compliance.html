@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indigo3 Compliance Management - Next-Generation ERP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #0d9488 50%, #0f172a 100%);
+            color: white; min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding-top: 4rem;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(13, 148, 136, 0.2) 0%, rgba(20, 184, 166, 0.2) 100%);
+        }
+        .hero-animation {
+            position: absolute; top: 25%; left: 25%; width: 24rem; height: 24rem;
+            background: rgba(13, 148, 136, 0.1); border-radius: 50%; filter: blur(3rem);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .hero-animation:nth-child(2) { top: 75%; left: 75%; background: rgba(20, 184, 166, 0.1); animation-delay: 1s; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 72rem; }
+        .badge {
+            display: inline-flex; align-items: center; padding: 0.5rem 1rem;
+            background: rgba(13, 148, 136, 0.2); border-radius: 9999px;
+            border: 1px solid rgba(13, 148, 136, 0.3); margin-bottom: 1.5rem;
+        }
+        .badge-text { color: #5eead4; font-size: 0.875rem; font-weight: 500; }
+        .hero-title {
+            font-size: 3.75rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, white 0%, #5eead4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 5rem; } }
+        .hero-subtitle {
+            font-size: 1.25rem; color: #d1d5db; margin-bottom: 2rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        @media (min-width: 768px) { .hero-subtitle { font-size: 1.5rem; } }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .btn-primary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 2rem; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+            color: white; text-decoration: none; border-radius: 0.5rem;
+            font-weight: 600; transition: all 0.3s ease; border: none; cursor: pointer;
+            box-shadow: 0 4px 14px 0 rgba(13, 148, 136, 0.4);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px 0 rgba(13, 148, 136, 0.6); }
+        .btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 0.75rem 2rem; background: transparent; color: #5eead4;
+            text-decoration: none; border-radius: 0.5rem; font-weight: 600;
+            border: 2px solid rgba(13, 148, 136, 0.5); transition: all 0.3s ease; cursor: pointer;
+        }
+        .btn-secondary:hover { background: rgba(13, 148, 136, 0.1); border-color: #0d9488; }
+        .features { padding: 6rem 0; background: rgba(15, 23, 42, 0.8); }
+        .section-title {
+            text-align: center; font-size: 2.5rem; font-weight: 700; margin-bottom: 3rem;
+            background: linear-gradient(90deg, white 0%, #5eead4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem; margin-top: 4rem;
+        }
+        .feature-card {
+            background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(13, 148, 136, 0.2);
+            border-radius: 1rem; padding: 2rem; transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px); border-color: rgba(13, 148, 136, 0.4);
+            box-shadow: 0 20px 40px rgba(13, 148, 136, 0.1);
+        }
+        .feature-icon {
+            width: 3rem; height: 3rem; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+            border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;
+            margin-bottom: 1.5rem; font-size: 1.5rem; color: white;
+        }
+        .feature-title {
+            font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: white;
+        }
+        .feature-description {
+            color: #94a3b8; line-height: 1.6; margin-bottom: 1.5rem;
+        }
+        .rca-agent {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+            border: 2px solid rgba(13, 148, 136, 0.3); border-radius: 1rem;
+            padding: 2rem; margin-top: 2rem; position: relative; overflow: hidden;
+        }
+        .rca-agent::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+        }
+        .rca-title {
+            font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;
+            color: #5eead4; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .rca-description {
+            color: #d1d5db; margin-bottom: 1.5rem; line-height: 1.6;
+        }
+        .rca-features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-top: 1.5rem;
+        }
+        .rca-feature {
+            display: flex; align-items: center; gap: 0.5rem;
+            color: #94a3b8; font-size: 0.875rem;
+        }
+        .rca-feature::before {
+            content: '✓'; color: #0d9488; font-weight: bold;
+        }
+        .workflows {
+            background: rgba(15, 23, 42, 0.9); padding: 6rem 0;
+        }
+        .workflow-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem; margin-top: 3rem;
+        }
+        .workflow-card {
+            background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(13, 148, 136, 0.2);
+            border-radius: 1rem; padding: 1.5rem; text-align: center;
+            transition: all 0.3s ease; backdrop-filter: blur(10px);
+        }
+        .workflow-card:hover {
+            transform: translateY(-3px); border-color: rgba(13, 148, 136, 0.4);
+            box-shadow: 0 15px 30px rgba(13, 148, 136, 0.1);
+        }
+        .workflow-icon {
+            width: 2.5rem; height: 2.5rem; background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+            border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem; font-size: 1.25rem; color: white;
+        }
+        .workflow-title {
+            font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: white;
+        }
+        .workflow-description {
+            color: #94a3b8; font-size: 0.875rem; line-height: 1.5;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+            padding: 6rem 0; text-align: center;
+        }
+        .cta-title {
+            font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, white 0%, #5eead4 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .cta-subtitle {
+            font-size: 1.25rem; color: #d1d5db; margin-bottom: 3rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        .stats {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem; margin: 4rem 0;
+        }
+        .stat-item {
+            text-align: center; padding: 1.5rem;
+        }
+        .stat-number {
+            font-size: 2.5rem; font-weight: 700; color: #5eead4; margin-bottom: 0.5rem;
+        }
+        .stat-label {
+            color: #94a3b8; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .footer {
+            background: rgba(15, 23, 42, 0.95); padding: 3rem 0; text-align: center;
+            border-top: 1px solid rgba(13, 148, 136, 0.2);
+        }
+        .footer-text {
+            color: #94a3b8; margin-bottom: 1rem;
+        }
+        .footer-links {
+            display: flex; justify-content: center; gap: 2rem; margin-top: 1rem;
+        }
+        .footer-link {
+            color: #5eead4; text-decoration: none; transition: color 0.3s ease;
+        }
+        .footer-link:hover { color: #14b8a6; }
+        
+        /* Navigation Header Styles */
+        .nav-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0; transition: all 0.3s ease;
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-size: 1rem; font-weight: 700; color: white;
+            background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-links {
+            display: flex; gap: 1.5rem; align-items: center;
+        }
+        .nav-link {
+            color: #d1d5db; text-decoration: none; font-size: 0.875rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+        .nav-link:hover {
+            color: white; background: rgba(255, 255, 255, 0.1);
+        }
+        .nav-link.active {
+            color: #5eead4; background: rgba(13, 148, 136, 0.2);
+        }
+        
+        /* Interactive Workflow Styles */
+        .workflow-item {
+            background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(13, 148, 136, 0.2);
+            border-radius: 1rem; padding: 1.5rem; text-align: center;
+            transition: all 0.3s ease; backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+        .workflow-item:hover {
+            transform: translateY(-3px); border-color: rgba(13, 148, 136, 0.4);
+            box-shadow: 0 15px 30px rgba(13, 148, 136, 0.1);
+        }
+        .workflow-item.active {
+            border-color: rgba(13, 148, 136, 0.6);
+            background: rgba(13, 148, 136, 0.1);
+        }
+        .workflow-steps {
+            display: none; margin-top: 1.5rem; padding-top: 1.5rem;
+            border-top: 1px solid rgba(13, 148, 136, 0.2);
+        }
+        .workflow-steps.active { display: block; }
+        .workflow-step {
+            display: flex; align-items: center; margin-bottom: 0.75rem;
+            padding: 0.75rem; background: rgba(0, 0, 0, 0.2);
+            border-radius: 0.5rem; border-left: 3px solid #0d9488;
+        }
+        .workflow-step-number {
+            width: 2rem; height: 2rem; background: #0d9488;
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; margin-right: 1rem; font-weight: 600;
+        }
+        .workflow-step-text { color: #d1d5db; font-size: 0.875rem; }
+        
+        /* RCA Agent Demo Styles */
+        .agent-section { padding: 6rem 0; background: linear-gradient(135deg, rgba(13, 148, 136, 0.15) 0%, rgba(20, 184, 166, 0.15) 100%); }
+        .agent-container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; }
+        @media (max-width: 768px) { .agent-grid { grid-template-columns: 1fr; } }
+        
+        .agent-panel {
+            background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);
+        }
+        .agent-header { text-align: center; margin-bottom: 2rem; }
+        .agent-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: white; }
+        .agent-subtitle { color: #d1d5db; font-size: 0.875rem; }
+        
+        .agent-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+        .agent-btn {
+            padding: 0.75rem 1rem; border-radius: 0.75rem; border: none; cursor: pointer;
+            font-weight: 600; font-size: 0.875rem; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+        }
+        .agent-btn.primary {
+            background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+            color: white;
+        }
+        .agent-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3); }
+        .agent-btn.secondary {
+            background: rgba(255, 255, 255, 0.1); color: #d1d5db;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .agent-btn.secondary:hover { background: rgba(255, 255, 255, 0.15); color: white; }
+        
+        .demo-output {
+            min-height: 200px; background: rgba(0, 0, 0, 0.3); border-radius: 0.75rem;
+            padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 0.875rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .demo-loading {
+            display: flex; align-items: center; justify-content: center; height: 100px;
+            color: #d1d5db; font-style: italic;
+        }
+        .demo-result { color: #5eead4; line-height: 1.6; }
+        .demo-highlight { color: #fbbf24; font-weight: 600; }
+        .demo-success { color: #10b981; }
+        .demo-metric { color: #5eead4; font-weight: 700; }
+        
+        .typing-animation::after {
+            content: '|'; animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        
+        /* Contact Section Styles */
+        .contact-section { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
+        .contact-content { max-width: 48rem; margin: 0 auto; text-align: center; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; text-align: left; }
+        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-info, .contact-cta { 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 2rem;
+        }
+        .contact-item { display: flex; align-items: flex-start; margin-bottom: 1.5rem; color: #d1d5db; }
+        .contact-icon { margin-right: 1rem; font-size: 1.25rem; width: 2rem; }
+        
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1.125rem; }
+            .section-title { font-size: 2rem; }
+            .features-grid { grid-template-columns: 1fr; }
+            .workflow-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .footer-links { flex-direction: column; gap: 1rem; }
+            .nav-links { gap: 0.75rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.375rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">Indigo3 Compliance</div>
+            <div class="nav-links">
+                <a href="indigo3-compliance.html" class="nav-link active">Compliance</a>
+                <a href="indigo3-hr.html" class="nav-link">HR</a>
+                <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="indigo3-finance.html" class="nav-link">Finance</a>
+                <a href="#rca-demo" class="nav-link" onclick="scrollToRCA()">RCA Demo</a>
+                <a href="/erp/compliance" class="nav-link" style="background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-content">
+            <div class="badge">
+                <span class="badge-text">🛡️ Enterprise Compliance Management</span>
+            </div>
+            <h1 class="hero-title">Indigo3 Compliance</h1>
+            <p class="hero-subtitle">
+                Next-generation compliance management with AI-powered root cause analysis, 
+                regulatory oversight, and automated audit trails for enterprise-grade security.
+            </p>
+            <div class="cta-buttons">
+                <a href="/erp/compliance" class="btn-primary">Launch Compliance Module</a>
+                <a href="#features" class="btn-secondary">Explore Features</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Compliance Management</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3 class="feature-title">Regulatory Compliance</h3>
+                    <p class="feature-description">
+                        Stay compliant with industry regulations including SOX, GDPR, HIPAA, 
+                        and ISO standards with automated monitoring and reporting.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3 class="feature-title">Audit Trails</h3>
+                    <p class="feature-description">
+                        Complete audit trail management with tamper-proof logging, 
+                        real-time monitoring, and comprehensive compliance reporting.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚠️</div>
+                    <h3 class="feature-title">Risk Management</h3>
+                    <p class="feature-description">
+                        Advanced risk assessment tools with automated risk scoring, 
+                        mitigation strategies, and continuous monitoring capabilities.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3 class="feature-title">Policy Management</h3>
+                    <p class="feature-description">
+                        Centralized policy management with version control, 
+                        approval workflows, and automated distribution to stakeholders.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Compliance Reporting</h3>
+                    <p class="feature-description">
+                        Automated compliance reporting with customizable dashboards, 
+                        real-time analytics, and regulatory submission capabilities.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3 class="feature-title">AI-Powered Analysis</h3>
+                    <p class="feature-description">
+                        Advanced AI algorithms for pattern recognition, anomaly detection, 
+                        and predictive compliance analytics to prevent violations.
+                    </p>
+                </div>
+            </div>
+
+            <!-- RCA Agent Tool -->
+            <div class="rca-agent">
+                <h3 class="rca-title">
+                    🔬 Root Cause Analysis Agent
+                </h3>
+                <p class="rca-description">
+                    Our advanced AI-powered Root Cause Analysis Agent automatically identifies 
+                    compliance issues, analyzes patterns, and provides actionable insights to 
+                    prevent future violations and improve your compliance posture.
+                </p>
+                <div class="rca-features">
+                    <div class="rca-feature">Automated Issue Detection</div>
+                    <div class="rca-feature">Pattern Recognition</div>
+                    <div class="rca-feature">Predictive Analytics</div>
+                    <div class="rca-feature">Actionable Recommendations</div>
+                    <div class="rca-feature">Risk Scoring</div>
+                    <div class="rca-feature">Compliance Forecasting</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="workflows">
+        <div class="container">
+            <h2 class="section-title">Automated Workflows</h2>
+            <p class="section-subtitle">Click on any workflow to see the detailed process steps and automation flow</p>
+            <div class="workflow-grid">
+                <div class="workflow-item" onclick="showWorkflowSteps('policy-approval')">
+                    <div class="workflow-icon">📝</div>
+                    <h3 class="workflow-title">Policy Approval</h3>
+                    <p class="workflow-description">Automated policy review and approval workflows with stakeholder notifications</p>
+                    <div class="workflow-steps" id="policy-approval-steps">
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">1</div>
+                            <div class="workflow-step-text">Policy draft created and submitted for review</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">2</div>
+                            <div class="workflow-step-text">Legal team reviews and validates compliance requirements</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">3</div>
+                            <div class="workflow-step-text">Stakeholder approval workflow initiated</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">4</div>
+                            <div class="workflow-step-text">Final approval and policy publication</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">5</div>
+                            <div class="workflow-step-text">Employee notification and training assignment</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-item" onclick="showWorkflowSteps('audit-scheduling')">
+                    <div class="workflow-icon">🔍</div>
+                    <h3 class="workflow-title">Audit Scheduling</h3>
+                    <p class="workflow-description">Intelligent audit scheduling based on risk levels and compliance requirements</p>
+                    <div class="workflow-steps" id="audit-scheduling-steps">
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">1</div>
+                            <div class="workflow-step-text">Risk assessment and audit priority calculation</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">2</div>
+                            <div class="workflow-step-text">Auditor assignment and resource allocation</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">3</div>
+                            <div class="workflow-step-text">Audit timeline and milestone creation</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">4</div>
+                            <div class="workflow-step-text">Stakeholder notification and preparation</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">5</div>
+                            <div class="workflow-step-text">Audit execution and progress tracking</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-item" onclick="showWorkflowSteps('risk-assessment')">
+                    <div class="workflow-icon">⚠️</div>
+                    <h3 class="workflow-title">Risk Assessment</h3>
+                    <p class="workflow-description">Automated risk assessment workflows with escalation and mitigation tracking</p>
+                    <div class="workflow-steps" id="risk-assessment-steps">
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">1</div>
+                            <div class="workflow-step-text">Risk identification and data collection</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">2</div>
+                            <div class="workflow-step-text">AI-powered risk scoring and categorization</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">3</div>
+                            <div class="workflow-step-text">Risk owner assignment and notification</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">4</div>
+                            <div class="workflow-step-text">Mitigation strategy development and approval</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">5</div>
+                            <div class="workflow-step-text">Implementation tracking and monitoring</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-item" onclick="showWorkflowSteps('report-generation')">
+                    <div class="workflow-icon">📊</div>
+                    <h3 class="workflow-title">Report Generation</h3>
+                    <p class="workflow-description">Automated compliance report generation and distribution to stakeholders</p>
+                    <div class="workflow-steps" id="report-generation-steps">
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">1</div>
+                            <div class="workflow-step-text">Data collection from multiple compliance sources</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">2</div>
+                            <div class="workflow-step-text">AI analysis and insight generation</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">3</div>
+                            <div class="workflow-step-text">Report template selection and customization</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">4</div>
+                            <div class="workflow-step-text">Automated report generation and formatting</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">5</div>
+                            <div class="workflow-step-text">Stakeholder distribution and delivery confirmation</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-item" onclick="showWorkflowSteps('alert-management')">
+                    <div class="workflow-icon">🔔</div>
+                    <h3 class="workflow-title">Alert Management</h3>
+                    <p class="workflow-description">Smart alerting system with customizable thresholds and notification channels</p>
+                    <div class="workflow-steps" id="alert-management-steps">
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">1</div>
+                            <div class="workflow-step-text">Threshold monitoring and anomaly detection</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">2</div>
+                            <div class="workflow-step-text">Alert severity assessment and categorization</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">3</div>
+                            <div class="workflow-step-text">Recipient identification and channel selection</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">4</div>
+                            <div class="workflow-step-text">Alert delivery and acknowledgment tracking</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">5</div>
+                            <div class="workflow-step-text">Escalation and resolution monitoring</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="workflow-item" onclick="showWorkflowSteps('remediation-tracking')">
+                    <div class="workflow-icon">🔄</div>
+                    <h3 class="workflow-title">Remediation Tracking</h3>
+                    <p class="workflow-description">Automated tracking of remediation efforts with progress monitoring and reporting</p>
+                    <div class="workflow-steps" id="remediation-tracking-steps">
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">1</div>
+                            <div class="workflow-step-text">Issue identification and remediation plan creation</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">2</div>
+                            <div class="workflow-step-text">Resource allocation and timeline establishment</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">3</div>
+                            <div class="workflow-step-text">Progress monitoring and milestone tracking</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">4</div>
+                            <div class="workflow-step-text">Quality assurance and validation testing</div>
+                        </div>
+                        <div class="workflow-step">
+                            <div class="workflow-step-number">5</div>
+                            <div class="workflow-step-text">Closure documentation and lessons learned</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RCA Agent Interactive Demo Section -->
+    <section class="agent-section" id="rca-demo">
+        <div class="agent-container">
+            <h2 class="section-title">RCA Agent Portal - Live Demo</h2>
+            <p class="section-subtitle">
+                Try our AI-powered Root Cause Analysis tools directly. Experience the power of automated compliance analysis and risk assessment.
+            </p>
+            
+            <div class="agent-grid">
+                <!-- Compliance Manager Panel -->
+                <div class="agent-panel">
+                    <div class="agent-header">
+                        <div class="agent-title">🛡️ For Compliance Managers</div>
+                        <div class="agent-subtitle">AI-powered compliance analysis and risk assessment</div>
+                    </div>
+                    
+                    <div class="agent-buttons">
+                        <button class="agent-btn primary" onclick="runComplianceDemo('analyze-violation')">
+                            🔍 Analyze Violation
+                        </button>
+                        <button class="agent-btn secondary" onclick="runComplianceDemo('risk-assessment')">
+                            ⚠️ Risk Assessment
+                        </button>
+                        <button class="agent-btn secondary" onclick="runComplianceDemo('audit-analysis')">
+                            📊 Audit Analysis
+                        </button>
+                        <button class="agent-btn primary" onclick="runComplianceDemo('generate-report')">
+                            📋 Generate Report
+                        </button>
+                    </div>
+                    
+                    <div id="compliance-output" class="demo-output">
+                        <div class="demo-loading">
+                            Click on a button to start the RCA Agent demo...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auditor Panel -->
+                <div class="agent-panel">
+                    <div class="agent-header">
+                        <div class="agent-title">🔍 For Auditors</div>
+                        <div class="agent-subtitle">Advanced audit trail analysis and compliance monitoring</div>
+                    </div>
+                    
+                    <div class="agent-buttons">
+                        <button class="agent-btn primary" onclick="runAuditorDemo('trace-violation')">
+                            🔎 Trace Violation
+                        </button>
+                        <button class="agent-btn secondary" onclick="runAuditorDemo('pattern-analysis')">
+                            📈 Pattern Analysis
+                        </button>
+                        <button class="agent-btn secondary" onclick="runAuditorDemo('compliance-score')">
+                            📊 Compliance Score
+                        </button>
+                        <button class="agent-btn primary" onclick="runAuditorDemo('remediation-plan')">
+                            🔧 Remediation Plan
+                        </button>
+                    </div>
+                    
+                    <div id="auditor-output" class="demo-output">
+                        <div class="demo-loading">
+                            Click on a button to start the RCA Agent demo...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="cta-section">
+        <div class="container">
+            <h2 class="cta-title">Ready to Transform Your Compliance?</h2>
+            <p class="cta-subtitle">
+                Join leading enterprises using Indigo3 Compliance to streamline their 
+                regulatory processes and ensure continuous compliance.
+            </p>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Compliance Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50%</div>
+                    <div class="stat-label">Faster Audits</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">75%</div>
+                    <div class="stat-label">Risk Reduction</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">AI Monitoring</div>
+                </div>
+            </div>
+            <div class="cta-buttons">
+                <a href="/erp/compliance" class="btn-primary">Start Free Trial</a>
+                <a href="#contact" class="btn-secondary">Contact Sales</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title">Contact Information</h2>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3 style="color: white; margin-bottom: 1.5rem; font-size: 1.25rem;">Panadero Services</h3>
+                        <div class="contact-item">
+                            <span class="contact-icon">👤</span>
+                            <span>Luis Panadero</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <span>Stationsstraat 10<br>4571LB Axel, Netherlands</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <a href="tel:+31655328495" style="color: #5eead4; text-decoration: none;">+31 655 328 495</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">💼</span>
+                            <span>ERP Software Solutions</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">🔗</span>
+                            <a href="https://www.linkedin.com/in/lieuwe-b-172065168/" target="_blank" style="color: #5eead4; text-decoration: none;">LinkedIn Profile</a>
+                        </div>
+                    </div>
+                    <div class="contact-cta">
+                        <h3 style="color: white; margin-bottom: 1rem;">Get In Touch</h3>
+                        <p style="color: #d1d5db; margin-bottom: 2rem;">
+                            Interested in our compliance management solutions? 
+                            Contact us for a free consultation and demo.
+                        </p>
+                        <button class="btn-primary" onclick="window.location.href='tel:+31655328495'">
+                            <span>📞 Call Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="footer">
+        <div class="container">
+            <p class="footer-text">© 2025 Indigo3 Compliance Management. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="/erp/compliance" class="footer-link">Compliance Module</a>
+                <a href="/erp/finance" class="footer-link">Finance Module</a>
+                <a href="/erp/hr" class="footer-link">HR Module</a>
+                <a href="/erp/inventory" class="footer-link">Inventory Module</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll to RCA demo function
+        function scrollToRCA() {
+            document.getElementById('rca-demo').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Scroll to contact function
+        function scrollToContact() {
+            document.getElementById('contact').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+
+        // Workflow interaction functions
+        function showWorkflowSteps(workflowId) {
+            // Close all other workflow steps
+            document.querySelectorAll('.workflow-steps').forEach(steps => {
+                steps.classList.remove('active');
+            });
+            document.querySelectorAll('.workflow-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected workflow steps
+            const steps = document.getElementById(workflowId + '-steps');
+            const item = steps.closest('.workflow-item');
+            if (steps) {
+                steps.classList.add('active');
+                item.classList.add('active');
+            }
+        }
+
+        // RCA Agent Demo Functions
+        function runComplianceDemo(action) {
+            const output = document.getElementById('compliance-output');
+            output.innerHTML = '<div class="demo-loading">Analyzing compliance data...</div>';
+            
+            setTimeout(() => {
+                let result = '';
+                switch(action) {
+                    case 'analyze-violation':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">🔍 VIOLATION ANALYSIS COMPLETE</div>
+                                <br>
+                                <div class="demo-success">✓ Violation Type: Data Privacy Breach</div>
+                                <div class="demo-success">✓ Severity Level: HIGH</div>
+                                <div class="demo-success">✓ Affected Systems: 3</div>
+                                <div class="demo-success">✓ Root Cause: Unauthorized access via legacy API</div>
+                                <br>
+                                <div class="demo-highlight">📊 Risk Score: 8.5/10</div>
+                                <div class="demo-highlight">⏱️ Time to Resolution: 48 hours</div>
+                                <br>
+                                <div class="demo-metric">Recommended Actions:</div>
+                                <div>• Immediate API access revocation</div>
+                                <div>• Security patch deployment</div>
+                                <div>• Employee training update</div>
+                            </div>
+                        `;
+                        break;
+                    case 'risk-assessment':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">⚠️ RISK ASSESSMENT COMPLETE</div>
+                                <br>
+                                <div class="demo-success">✓ Total Risks Identified: 12</div>
+                                <div class="demo-success">✓ High Priority: 3</div>
+                                <div class="demo-success">✓ Medium Priority: 6</div>
+                                <div class="demo-success">✓ Low Priority: 3</div>
+                                <br>
+                                <div class="demo-highlight">📈 Top Risk Areas:</div>
+                                <div>• Data Security (Score: 8.2)</div>
+                                <div>• Access Control (Score: 7.8)</div>
+                                <div>• Process Compliance (Score: 7.1)</div>
+                                <br>
+                                <div class="demo-metric">Mitigation Priority: Immediate</div>
+                            </div>
+                        `;
+                        break;
+                    case 'audit-analysis':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📊 AUDIT ANALYSIS COMPLETE</div>
+                                <br>
+                                <div class="demo-success">✓ Audit Period: Q4 2024</div>
+                                <div class="demo-success">✓ Compliance Rate: 94.2%</div>
+                                <div class="demo-success">✓ Issues Found: 7</div>
+                                <div class="demo-success">✓ Resolved: 5</div>
+                                <br>
+                                <div class="demo-highlight">📈 Key Findings:</div>
+                                <div>• Policy adherence improved 15%</div>
+                                <div>• Training completion rate: 98%</div>
+                                <div>• Incident response time: 2.3 days</div>
+                                <br>
+                                <div class="demo-metric">Next Audit: Q1 2025</div>
+                            </div>
+                        `;
+                        break;
+                    case 'generate-report':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📋 COMPLIANCE REPORT GENERATED</div>
+                                <br>
+                                <div class="demo-success">✓ Report Type: Executive Summary</div>
+                                <div class="demo-success">✓ Period: Last 30 days</div>
+                                <div class="demo-success">✓ Recipients: 8 stakeholders</div>
+                                <div class="demo-success">✓ Format: PDF + Dashboard</div>
+                                <br>
+                                <div class="demo-highlight">📊 Report Contents:</div>
+                                <div>• Compliance metrics overview</div>
+                                <div>• Risk assessment summary</div>
+                                <div>• Action items and recommendations</div>
+                                <div>• Regulatory updates</div>
+                                <br>
+                                <div class="demo-metric">Status: Delivered to stakeholders</div>
+                            </div>
+                        `;
+                        break;
+                }
+                output.innerHTML = result;
+            }, 2000);
+        }
+
+        function runAuditorDemo(action) {
+            const output = document.getElementById('auditor-output');
+            output.innerHTML = '<div class="demo-loading">Processing audit data...</div>';
+            
+            setTimeout(() => {
+                let result = '';
+                switch(action) {
+                    case 'trace-violation':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">🔎 VIOLATION TRACE COMPLETE</div>
+                                <br>
+                                <div class="demo-success">✓ Source: User ID 12345</div>
+                                <div class="demo-success">✓ Timestamp: 2024-12-15 14:23:17</div>
+                                <div class="demo-success">✓ System: HR Database</div>
+                                <div class="demo-success">✓ Action: Unauthorized data access</div>
+                                <br>
+                                <div class="demo-highlight">📈 Trace Path:</div>
+                                <div>1. Login via VPN (14:20:15)</div>
+                                <div>2. Access HR system (14:21:30)</div>
+                                <div>3. Query sensitive data (14:22:45)</div>
+                                <div>4. Export to external device (14:23:17)</div>
+                                <br>
+                                <div class="demo-metric">Risk Level: CRITICAL</div>
+                            </div>
+                        `;
+                        break;
+                    case 'pattern-analysis':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📈 PATTERN ANALYSIS COMPLETE</div>
+                                <br>
+                                <div class="demo-success">✓ Analysis Period: 90 days</div>
+                                <div class="demo-success">✓ Data Points: 15,847</div>
+                                <div class="demo-success">✓ Patterns Found: 23</div>
+                                <div class="demo-success">✓ Anomalies: 7</div>
+                                <br>
+                                <div class="demo-highlight">🔍 Key Patterns:</div>
+                                <div>• Peak access times: 9-11 AM, 2-4 PM</div>
+                                <div>• High-risk users: 3 identified</div>
+                                <div>• Unusual data exports: 12 instances</div>
+                                <div>• Failed login attempts: 156</div>
+                                <br>
+                                <div class="demo-metric">Confidence: 94.7%</div>
+                            </div>
+                        `;
+                        break;
+                    case 'compliance-score':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">📊 COMPLIANCE SCORE CALCULATED</div>
+                                <br>
+                                <div class="demo-success">✓ Overall Score: 87.3/100</div>
+                                <div class="demo-success">✓ Trend: +5.2% vs last quarter</div>
+                                <div class="demo-success">✓ Industry Benchmark: 82.1</div>
+                                <div class="demo-success">✓ Status: ABOVE AVERAGE</div>
+                                <br>
+                                <div class="demo-highlight">📈 Score Breakdown:</div>
+                                <div>• Policy Compliance: 92%</div>
+                                <div>• Training Completion: 89%</div>
+                                <div>• Incident Response: 85%</div>
+                                <div>• Documentation: 83%</div>
+                                <br>
+                                <div class="demo-metric">Grade: B+</div>
+                            </div>
+                        `;
+                        break;
+                    case 'remediation-plan':
+                        result = `
+                            <div class="demo-result">
+                                <div class="demo-highlight">🔧 REMEDIATION PLAN GENERATED</div>
+                                <br>
+                                <div class="demo-success">✓ Plan ID: REM-2024-015</div>
+                                <div class="demo-success">✓ Priority: HIGH</div>
+                                <div class="demo-success">✓ Timeline: 30 days</div>
+                                <div class="demo-success">✓ Resources: 3 team members</div>
+                                <br>
+                                <div class="demo-highlight">📋 Action Items:</div>
+                                <div>1. Update access controls (Week 1)</div>
+                                <div>2. Deploy security patches (Week 2)</div>
+                                <div>3. Conduct staff training (Week 3)</div>
+                                <div>4. Implement monitoring (Week 4)</div>
+                                <br>
+                                <div class="demo-metric">Estimated Cost: $15,000</div>
+                            </div>
+                        `;
+                        break;
+                }
+                output.innerHTML = result;
+            }, 2000);
+        }
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards and workflow cards
+        document.querySelectorAll('.feature-card, .workflow-item').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

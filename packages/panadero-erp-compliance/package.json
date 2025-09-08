@@ -1,0 +1,32 @@
+{
+  "name": "panadero-erp-compliance",
+  "version": "1.0.0",
+  "description": "ERP Compliance Module - Complete compliance management with regulatory oversight, audit trails, risk management, and AI-powered root cause analysis",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.3.0",
+    "pinia": "^2.1.0",
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.0",
+    "vite": "^4.3.0"
+  },
+  "keywords": [
+    "erp",
+    "compliance",
+    "regulatory",
+    "audit",
+    "risk-management",
+    "rca",
+    "ai"
+  ],
+  "author": "Panadero ERP",
+  "license": "MIT"
+}

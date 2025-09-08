@@ -61,10 +61,11 @@ export default defineConfig({
             'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/client/src/index.js'),
             'panadero-erp-finance': resolve(__dirname, 'packages/panadero-erp-finance'),
             'panadero-erp-inventory': resolve(__dirname, 'packages/panadero-erp-inventory'),
+            'panadero-erp-compliance': resolve(__dirname, 'packages/panadero-erp-compliance'),
         }
     },
     optimizeDeps: {
-        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers']
+        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers', 'panadero-erp-compliance']
     },
     define: {
         'import.meta.env.VITE_PUSHER_APP_KEY': JSON.stringify(process.env.PUSHER_APP_KEY),

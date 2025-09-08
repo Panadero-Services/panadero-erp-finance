@@ -1,0 +1,86 @@
+{
+  "name": "panadero-erp-compliance",
+  "version": "1.0.0",
+  "description": "ERP Compliance Module - Complete compliance management with regulatory oversight, audit trails, risk management, and AI-powered root cause analysis",
+  "type": "erp-module",
+  "category": "compliance",
+  "color": "teal",
+  "icon": "ShieldCheckIcon",
+  "tabs": [
+    {
+      "name": "Dashboard",
+      "url": "/home/dashboard",
+      "route": "home.dashboard"
+    },
+    {
+      "name": "Regulatory Compliance",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "regulatory"
+    },
+    {
+      "name": "Audit Trails",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "audit"
+    },
+    {
+      "name": "Risk Management",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "risk"
+    },
+    {
+      "name": "Policy Management",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "policies"
+    },
+    {
+      "name": "Compliance Reports",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "reports"
+    },
+    {
+      "name": "Root Cause Analysis",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "rca"
+    },
+    {
+      "name": "Agent Portal",
+      "url": "/erp/compliance",
+      "route": "erp.compliance",
+      "tab": "agent-portal"
+    }
+  ],
+  "features": [
+    "Regulatory Compliance",
+    "Audit Trails",
+    "Risk Management",
+    "Policy Management",
+    "Compliance Reports",
+    "Root Cause Analysis",
+    "AI-Powered Analysis",
+    "Agent Portal",
+    "Workflow Integration",
+    "Dynamic Font Sizing",
+    "Action Buttons"
+  ],
+  "dependencies": [
+    "vue",
+    "pinia",
+    "axios"
+  ],
+  "workflow": {
+    "enabled": true,
+    "templates": [
+      "compliance-approval",
+      "audit-workflow",
+      "risk-assessment",
+      "policy-review",
+      "rca-investigation"
+    ]
+  }
+}

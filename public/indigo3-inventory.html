@@ -224,6 +224,10 @@
         .alerts-list { space-y: 0.75rem; }
         .alert-item {
             display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.5rem;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .alert-item:hover {
+            background: rgba(255, 255, 255, 0.08); transform: translateX(4px);
         }
         .alert-item.critical { background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; }
         .alert-item.warning { background: rgba(234, 179, 8, 0.1); border-left: 4px solid #eab308; }
@@ -409,6 +413,7 @@
                 <a href="indigo3-hr.html" class="nav-link">Indigo3 HR</a>
                 <a href="indigo3-inventory.html" class="nav-link active">Inventory</a>
                 <a href="indigo3-finance.html" class="nav-link">Finance</a>
+                <a href="indigo3-compliance.html" class="nav-link">Compliance</a>
                 <a href="erp-hr-vacature.html" class="nav-link">AI Vacature</a>
                 <a href="/erp/inventory" class="nav-link" style="background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
             </div>
@@ -769,7 +774,7 @@
                 
                 <!-- Recent Shipments -->
                 <div class="dashboard-card">
-                    <h3 class="dashboard-title">Recent Shipments</h3>
+                    <h3 class="dashboard-title">Recent Shipments <span style="font-size: 0.75rem; color: #9ca3af; font-weight: normal;">(Max 8, click to remove)</span></h3>
                     <div class="shipments-list">
                         <div class="shipment-item">
                             <div class="shipment-info">
@@ -811,7 +816,7 @@
                 
                 <!-- Low Stock Alerts -->
                 <div class="dashboard-card">
-                    <h3 class="dashboard-title">Low Stock Alerts</h3>
+                    <h3 class="dashboard-title">Low Stock Alerts <span style="font-size: 0.75rem; color: #9ca3af; font-weight: normal;">(Max 8, click to remove)</span></h3>
                     <div class="alerts-list">
                         <div class="alert-item critical">
                             <div class="alert-icon">⚠️</div>
@@ -1309,14 +1314,12 @@
                 const alertItems = document.querySelectorAll('.alert-item');
                 alertItems.forEach(item => {
                     item.addEventListener('click', () => {
-                        // Simulate resolving alert
-                        if (item.classList.contains('critical')) {
-                            item.style.opacity = '0.5';
-                            item.style.transform = 'translateX(-20px)';
-                            setTimeout(() => {
-                                item.style.display = 'none';
-                            }, 300);
-                        }
+                        // Simulate resolving alert - works for all alert types
+                        item.style.opacity = '0.5';
+                        item.style.transform = 'translateX(-20px)';
+                        setTimeout(() => {
+                            item.remove();
+                        }, 300);
                     });
                 });
             }
@@ -1386,6 +1389,19 @@
             updateShipments() {
                 // Simulate new shipment
                 const shipmentsList = document.querySelector('.shipments-list');
+                const existingShipments = shipmentsList.querySelectorAll('.shipment-item');
+                
+                // Remove oldest shipment if we have 8 or more
+                if (existingShipments.length >= 8) {
+                    const oldestShipment = existingShipments[existingShipments.length - 1];
+                    oldestShipment.style.transition = 'all 0.3s ease';
+                    oldestShipment.style.opacity = '0';
+                    oldestShipment.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        oldestShipment.remove();
+                    }, 300);
+                }
+                
                 const newShipment = document.createElement('div');
                 newShipment.className = 'shipment-item';
                 newShipment.innerHTML = `
@@ -1412,6 +1428,19 @@
             updateAlerts() {
                 // Simulate new low stock alert
                 const alertsList = document.querySelector('.alerts-list');
+                const existingAlerts = alertsList.querySelectorAll('.alert-item');
+                
+                // Remove oldest alert if we have 8 or more
+                if (existingAlerts.length >= 8) {
+                    const oldestAlert = existingAlerts[existingAlerts.length - 1];
+                    oldestAlert.style.transition = 'all 0.3s ease';
+                    oldestAlert.style.opacity = '0';
+                    oldestAlert.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        oldestAlert.remove();
+                    }, 300);
+                }
+                
                 const products = ['iPhone 15 Pro', 'MacBook Air M2', 'Samsung Galaxy S24', 'iPad Pro 12.9"', 'Dell XPS 13', 'Surface Pro 9'];
                 const randomProduct = products[Math.floor(Math.random() * products.length)];
                 const randomStock = Math.floor(Math.random() * 15) + 1;

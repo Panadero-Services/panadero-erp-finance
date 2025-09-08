@@ -475,10 +475,10 @@ class BusinessServiceSeeder extends Seeder
         'path' => '/erp/'
     ],
     [
-        'item' => 'Complianc',
+        'item' => 'Compliance',
         'title' => 'ERP Compliance',
-        'description' => 'Regulatory compliance, audit trails, and governance management',
-        'color' => 'gray',
+        'description' => 'Regulatory compliance, audit trails, and governance management with AI-powered analysis',
+                'color' => 'teal',
         'version' => 'v1.0.00',
         'icon' => 'ShieldCheckIcon',
         'options' => [
@@ -487,14 +487,16 @@ class BusinessServiceSeeder extends Seeder
             ['name' => 'Audit Trails', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'audit'],
             ['name' => 'Risk Management', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'risk'],
             ['name' => 'Policy Management', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'policies'],
-            ['name' => 'Compliance Reports', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'reports']
+            ['name' => 'Compliance Reports', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'reports'],
+            ['name' => 'Root Cause Analysis', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'rca'],
+            ['name' => 'Agent Portal', 'url' => '/erp/compliance', 'route' => 'erp.compliance', 'tab' => 'agent-portal']
         ],
         'status' => 'ready',
-        'progress' => 5,
+        'progress' => 100,
         'path' => '/erp/'
     ]
 
-        ];
+    ];
 
         foreach ($services as $service) {
             BusinessService::updateOrCreate(

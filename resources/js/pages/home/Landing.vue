@@ -257,19 +257,27 @@ const aiFeatures = [
 const enterpriseModules = [
   {
     title: 'Smart Finance',
-    features: ['Real-time liquidity analysis', 'AI auditing', 'Blockchain reconciliations']
+    features: ['Real-time liquidity analysis', 'AI auditing', 'Blockchain reconciliations'],
+    link: '/indigo3/finance',
+    color: 'from-blue-500 to-blue-600'
   },
   {
     title: 'Smart HR',
-    features: ['AI-driven talent matching', 'Dynamic org charts', 'Sentiment analysis']
+    features: ['AI-driven talent matching', 'Dynamic org charts', 'Sentiment analysis'],
+    link: '/indigo3/hr',
+    color: 'from-green-500 to-green-600'
   },
   {
-    title: 'Smart Manufacturing',
-    features: ['AI scheduling', 'Predictive maintenance', 'IIoT integration']
+    title: 'Smart Inventory',
+    features: ['AI forecasting', 'Automated reordering', 'Real-time tracking'],
+    link: '/indigo3/inventory',
+    color: 'from-purple-500 to-purple-600'
   },
   {
-    title: 'Smart Sales & CRM',
-    features: ['AI-driven lead scoring', 'Dynamic pricing models', 'Predictive analytics']
+    title: 'Smart Compliance',
+    features: ['AI-powered RCA', 'Automated audits', 'Risk management'],
+    link: '/indigo3/compliance',
+    color: 'from-teal-500 to-teal-600'
   }
 ];
 
@@ -806,18 +814,23 @@ const sendMessage = async () => {
 
         <div class="mt-10">
           <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div v-for="module in enterpriseModules" :key="module.title" 
-                 class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
-              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">{{ module.title }}</h3>
+            <a v-for="module in enterpriseModules" :key="module.title" :href="module.link"
+               class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transform transition-all duration-500 hover:scale-105 cursor-pointer block group">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r" :class="`group-hover:${module.color}`">{{ module.title }}</h3>
+                <svg class="h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
               <ul class="space-y-3">
                 <li v-for="feature in module.features" :key="feature" class="flex items-start">
-                  <svg class="h-5 w-5 text-blue-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <svg class="h-5 w-5 mr-2 flex-shrink-0" :class="`text-${module.color.split('-')[1]}-500`" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                   </svg>
                   <span class="text-sm text-gray-600 dark:text-gray-400">{{ feature }}</span>
                 </li>
               </ul>
-            </div>
+            </a>
           </div>
         </div>
       </div>

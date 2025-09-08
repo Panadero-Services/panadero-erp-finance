@@ -8,3 +8,7 @@ Route::get('indigo3/inventory', function () {
         'title' => 'Indigo3 Inventory Management - Next-Generation ERP'
     ]);
 })->name('indigo3.inventory.landing');
+
+Route::get('indigo3/compliance', function () {
+    return response()->file(public_path('indigo3-compliance.html'));
+})->name('indigo3.compliance.landing');

@@ -417,8 +417,16 @@ Route::middleware([
         ]);
     })->name('erp.hr');
 
-
-
+    // ========================================
+    // ERP COMPLIANCE ROUTES
+    // ========================================
+    Route::get('erp/compliance', function () {
+        return Inertia::render('erp/Compliance', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get(),
+            'title' => 'ERP Compliance Management'
+        ]);
+    })->name('erp.compliance');
 
     Route::get('features/workflow', function () {
         return Inertia::render('features/Workflow', [

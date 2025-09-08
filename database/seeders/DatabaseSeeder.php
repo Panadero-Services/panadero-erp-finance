@@ -140,14 +140,29 @@ class DatabaseSeeder extends Seeder
             \Panadero\Erp\Hr\Database\Seeders\HrDatabaseSeeder::class,  // Complete HR system
         ]);
 
-        // ===== STEP 13: VENDOR MANAGEMENT =====
+        // ===== STEP 13: COMPLIANCE MANAGEMENT SYSTEM =====
+        $this->command->info('🛡️  Seeding compliance management system...');
+        
+        // Load compliance seeders directly
+        require_once base_path('packages/panadero-erp-compliance/database/seeders/ComplianceDatabaseSeeder.php');
+        require_once base_path('packages/panadero-erp-compliance/database/seeders/CompliancePolicySeeder.php');
+        require_once base_path('packages/panadero-erp-compliance/database/seeders/ComplianceAuditSeeder.php');
+        require_once base_path('packages/panadero-erp-compliance/database/seeders/ComplianceRiskSeeder.php');
+        require_once base_path('packages/panadero-erp-compliance/database/seeders/ComplianceReportSeeder.php');
+        require_once base_path('packages/panadero-erp-compliance/database/seeders/ComplianceRCASeeder.php');
+        
+        $this->call([
+            \Panadero\ErpCompliance\Database\Seeders\ComplianceDatabaseSeeder::class,  // Complete compliance system
+        ]);
+
+        // ===== STEP 14: VENDOR MANAGEMENT =====
         $this->command->info('🏢 Seeding vendor management...');
         $this->call([
             VendorSeeder::class,             // Core vendor entities (shared)
             FinanceVendorSeeder::class,      // Finance-specific vendor extensions
         ]);
 
-        // ===== STEP 14: USER ROLE ASSIGNMENTS =====
+        // ===== STEP 15: USER ROLE ASSIGNMENTS =====
         $this->command->info('👥 Assigning user roles...');
         
         // Get all users and roles
@@ -173,7 +188,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // ===== STEP 15: TEAM MANAGEMENT =====
+        // ===== STEP 16: TEAM MANAGEMENT =====
         $this->command->info('🏆 Setting up team management...');
         
         // Create demo team
@@ -190,7 +205,7 @@ class DatabaseSeeder extends Seeder
             $user->update(['current_team_id' => 1]);
         }
 
-        // ===== STEP 16: FINALIZATION =====
+        // ===== STEP 17: FINALIZATION =====
         $this->command->info('✨ Creating demo comments...');
         Comment::factory()->count(50)->create();
 
@@ -222,6 +237,11 @@ class DatabaseSeeder extends Seeder
             'HR Employees' => \DB::table('hr_employees')->count(),
             'HR Vacancies' => \DB::table('hr_vacancies')->count(),
             'HR Applications' => \DB::table('hr_applications')->count(),
+            'Compliance Policies' => \DB::table('compliance_policies')->count(),
+            'Compliance Audits' => \DB::table('compliance_audits')->count(),
+            'Compliance Risks' => \DB::table('compliance_risks')->count(),
+            'Compliance Reports' => \DB::table('compliance_reports')->count(),
+            'Compliance RCA' => \DB::table('compliance_rca')->count(),
         ];
 
         $this->command->info('📊 SEEDING STATISTICS:');
