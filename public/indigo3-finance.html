@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indigo3 Finance Management - Next-Generation ERP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #7c2d12 30%, #020617 100%);
+            color: white; min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; padding-top: 4rem;
+        }
+        .hero-bg {
+            position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(124, 45, 18, 0.1) 0%, rgba(154, 52, 18, 0.1) 100%);
+        }
+        .hero-animation {
+            position: absolute; top: 25%; left: 25%; width: 24rem; height: 24rem;
+            background: rgba(124, 45, 18, 0.05); border-radius: 50%; filter: blur(3rem);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .hero-animation:nth-child(2) { top: 75%; left: 75%; background: rgba(154, 52, 18, 0.05); animation-delay: 1s; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .hero-content { position: relative; z-index: 10; text-align: center; max-width: 72rem; }
+        .badge {
+            display: inline-flex; align-items: center; padding: 0.5rem 1rem;
+            background: rgba(124, 45, 18, 0.15); border-radius: 9999px;
+            border: 1px solid rgba(124, 45, 18, 0.25); margin-bottom: 1.5rem;
+        }
+        .badge-text { color: #d97706; font-size: 0.875rem; font-weight: 500; }
+        .hero-title {
+            font-size: 3.75rem; font-weight: 700; margin-bottom: 1.5rem;
+            background: linear-gradient(90deg, #e5e7eb 0%, #d97706 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        @media (min-width: 768px) { .hero-title { font-size: 5rem; } }
+        .hero-subtitle {
+            font-size: 1.25rem; color: #9ca3af; margin-bottom: 2rem;
+            max-width: 48rem; margin-left: auto; margin-right: auto;
+        }
+        @media (min-width: 768px) { .hero-subtitle { font-size: 1.5rem; } }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .btn-primary {
+            padding: 1rem 2rem; background: #c2410c; color: white; border-radius: 0.5rem;
+            font-weight: 600; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer;
+        }
+        .btn-primary:hover { background: #9a3412; transform: scale(1.05); }
+        .btn-secondary {
+            padding: 1rem 2rem; border: 1px solid #d97706; color: white; background: transparent;
+            border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: all 0.3s; cursor: pointer;
+        }
+        .btn-secondary:hover { background: rgba(124, 45, 18, 0.15); }
+        .section { padding: 5rem 1.5rem; }
+        .section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; }
+        @media (min-width: 768px) { .section-title { font-size: 3rem; } }
+        .section-subtitle {
+            font-size: 1.25rem; color: #9ca3af; text-align: center; max-width: 48rem;
+            margin: 0 auto 4rem;
+        }
+        .features-grid { display: grid; gap: 2rem; grid-template-columns: 1fr; }
+        @media (min-width: 768px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1024px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.3s;
+        }
+        .feature-card:hover { border-color: rgba(124, 45, 18, 0.4); transform: scale(1.05); }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .feature-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .feature-description { color: #9ca3af; }
+
+        /* Financial Dashboard Styles */
+        .kpi-grid {
+            display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            margin-bottom: 3rem;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.06); display: flex; align-items: center; gap: 1rem;
+        }
+        .kpi-icon { font-size: 2.5rem; }
+        .kpi-content { flex: 1; }
+        .kpi-value { font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .kpi-label { color: #9ca3af; font-size: 0.875rem; margin-bottom: 0.5rem; }
+        .kpi-change { font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.5rem; border-radius: 0.25rem; }
+        .kpi-change.positive { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .kpi-change.negative { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        
+        .dashboard-grid {
+            display: grid; gap: 2rem; grid-template-columns: 1fr;
+        }
+        @media (min-width: 1024px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .dashboard-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #d97706; }
+        
+        .chart-container { height: 200px; display: flex; align-items: end; gap: 1rem; padding: 1rem 0; }
+        .chart-bars { display: flex; align-items: end; gap: 1rem; height: 100%; width: 100%; }
+        .chart-bar {
+            background: linear-gradient(to top, #c2410c, #d97706); border-radius: 0.25rem;
+            min-width: 2rem; position: relative; transition: all 0.3s; cursor: pointer;
+        }
+        .chart-bar:hover { transform: scale(1.1); }
+        .bar-label { 
+            position: absolute; bottom: -1.5rem; left: 50%; transform: translateX(-50%);
+            font-size: 0.75rem; color: #9ca3af;
+        }
+        .bar-value {
+            position: absolute; top: -1.5rem; left: 50%; transform: translateX(-50%);
+            font-size: 0.75rem; color: #d97706; font-weight: 600;
+        }
+
+        .transaction-list { max-height: 300px; overflow-y: auto; }
+        .transaction-item {
+            display: flex; justify-content: between; align-items: center; padding: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s;
+        }
+        .transaction-item:hover { background: rgba(255, 255, 255, 0.02); }
+        .transaction-info { flex: 1; }
+        .transaction-description { font-weight: 600; margin-bottom: 0.25rem; }
+        .transaction-date { font-size: 0.75rem; color: #9ca3af; }
+        .transaction-amount { font-weight: 700; }
+        .transaction-amount.positive { color: #86efac; }
+        .transaction-amount.negative { color: #fca5a5; }
+
+        /* AI Financial Assistant */
+        .ai-portal { background: rgba(0, 0, 0, 0.2); }
+        .ai-grid { display: grid; gap: 3rem; grid-template-columns: 1fr; }
+        @media (min-width: 1024px) { .ai-grid { grid-template-columns: repeat(2, 1fr); } }
+        .ai-card {
+            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(8px); border-radius: 0.75rem;
+            padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .ai-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: #d97706; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; }
+        .form-input, .form-select {
+            width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; color: white;
+        }
+        .form-input::placeholder { color: #6b7280; }
+        .chat-container {
+            height: 20rem; overflow-y: auto; margin-bottom: 1rem; padding: 1rem;
+            background: rgba(0, 0, 0, 0.4); border-radius: 0.5rem;
+        }
+        .chat-message { margin-bottom: 1rem; }
+        .chat-message.user { text-align: right; }
+        .chat-message.ai { text-align: left; }
+        .chat-bubble {
+            display: inline-block; max-width: 80%; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.875rem;
+        }
+        .chat-bubble.user { background: #c2410c; color: white; }
+        .chat-bubble.ai { background: rgba(255, 255, 255, 0.05); color: #d1d5db; }
+        .chat-input-group { display: flex; gap: 0.5rem; }
+        .chat-input {
+            flex: 1; padding: 0.75rem; background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; color: white;
+        }
+        .chat-input:focus { outline: none; border-color: #c2410c; }
+        .chat-input::placeholder { color: #6b7280; }
+        .chat-send {
+            padding: 0.75rem 1.5rem; background: #c2410c; color: white; border: none;
+            border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background 0.3s;
+        }
+        .chat-send:hover { background: #9a3412; }
+
+        /* Interactive Effects */
+        .kpi-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); }
+        .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); }
+        .chart-bar:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(124, 45, 18, 0.3); }
+
+        .cta-section { background: rgba(0, 0, 0, 0.4); }
+        .cta-content { max-width: 64rem; margin: 0 auto; text-align: center; }
+        .cta-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .cta-title { font-size: 3rem; } }
+        .cta-subtitle { font-size: 1.25rem; color: #9ca3af; margin-bottom: 2rem; }
+        .cta-buttons { display: flex; flex-direction: column; gap: 1rem; justify-content: center; margin-bottom: 3rem; }
+        @media (min-width: 640px) { .cta-buttons { flex-direction: row; } }
+        .innovation-text { color: #6b7280; margin-bottom: 1rem; }
+        .innovation-brands {
+            display: flex; justify-content: center; align-items: center; gap: 2rem;
+            font-size: 1.5rem; font-weight: 700;
+        }
+        .brand-indigo2 { color: #d97706; }
+        .brand-arrow { color: #4b5563; }
+        .brand-indigo3 { color: #c2410c; }
+        .fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+        
+        /* Loading states */
+        .loading { opacity: 0.6; pointer-events: none; }
+        .loading::after { content: ''; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border: 2px solid #d97706; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Navigation Header Styles */
+        .nav-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.75rem 0; transition: all 0.3s ease;
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-size: 1rem; font-weight: 700; color: white;
+            background: linear-gradient(90deg, #c2410c 0%, #9a3412 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-links {
+            display: flex; gap: 1.5rem; align-items: center;
+        }
+        .nav-link {
+            color: #9ca3af; text-decoration: none; font-size: 0.875rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+        .nav-link:hover {
+            color: white; background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-link.active {
+            color: #d97706; background: rgba(124, 45, 18, 0.15);
+        }
+        @media (max-width: 768px) {
+            .nav-links { gap: 0.75rem; }
+            .nav-link { font-size: 0.75rem; padding: 0.375rem 0.5rem; }
+        }
+        
+        /* Contact Section Styles */
+        .contact-section { padding: 4rem 0; background: rgba(0, 0, 0, 0.5); }
+        .contact-content { max-width: 48rem; margin: 0 auto; text-align: center; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; text-align: left; }
+        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-info, .contact-cta { 
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 1rem; padding: 2rem;
+        }
+        .contact-item { display: flex; align-items: flex-start; margin-bottom: 1.5rem; color: #9ca3af; }
+        .contact-icon { margin-right: 1rem; font-size: 1.25rem; width: 2rem; }
+        
+        /* Workflow Styles */
+        .workflow-category {
+            background: rgba(255, 255, 255, 0.02); border-radius: 1rem; padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .workflow-items { display: flex; flex-direction: column; gap: 1rem; }
+        .workflow-item {
+            background: rgba(255, 255, 255, 0.04); border-radius: 0.75rem; padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.06); cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .workflow-item:hover {
+            border-color: rgba(124, 45, 18, 0.4); transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(124, 45, 18, 0.15);
+        }
+        .workflow-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .workflow-name { font-weight: 600; color: white; }
+        .workflow-badge {
+            padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;
+            font-weight: 600; text-transform: uppercase;
+        }
+        .workflow-badge.low { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .workflow-badge.medium { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .workflow-badge.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .workflow-meta {
+            color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;
+        }
+        .workflow-description { color: #9ca3af; font-size: 0.875rem; line-height: 1.4; }
+        
+        /* Footer Styles */
+        .footer {
+            padding: 3rem 0; background: rgba(0, 0, 0, 0.8); border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center; color: #6b7280;
+        }
+        .footer p { margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">Indigo3 Finance</div>
+            <div class="nav-links">
+                <a href="indigo3-hr.html" class="nav-link">Indigo3 HR</a>
+                <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="indigo3-finance.html" class="nav-link active">Finance</a>
+                <a href="erp-hr-vacature.html" class="nav-link">AI Vacature</a>
+                <a href="/erp/finance" class="nav-link" style="background: linear-gradient(90deg, #c2410c 0%, #9a3412 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-animation"></div>
+        <div class="hero-animation"></div>
+        
+        <div class="hero-content">
+            <div class="badge">
+                <span class="badge-text">💰 Next-Generation Financial Management</span>
+            </div>
+            <h1 class="hero-title">Indigo3 Finance</h1>
+            <p class="hero-subtitle">
+                Transform your financial operations with AI-powered insights, automated workflows, and real-time analytics. 
+                From accounting to forecasting, streamline every aspect of your financial management.
+            </p>
+            <div class="cta-buttons">
+                <button class="btn-primary">Request Demo</button>
+                <button class="btn-secondary">Learn More</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="section fade-in">
+        <div class="container">
+            <h2 class="section-title">Comprehensive Financial Management</h2>
+            <p class="section-subtitle">
+                Complete financial ecosystem with integrated modules for accounting, budgeting, forecasting, and compliance
+            </p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">General Ledger</h3>
+                    <p class="feature-description">Complete chart of accounts with automated journal entries, multi-currency support, and real-time financial reporting</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3 class="feature-title">Accounts Payable</h3>
+                    <p class="feature-description">Vendor management, invoice processing, payment automation, and cash flow optimization</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3 class="feature-title">Accounts Receivable</h3>
+                    <p class="feature-description">Customer invoicing, payment tracking, credit management, and collections automation</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Financial Reporting</h3>
+                    <p class="feature-description">Real-time dashboards, customizable reports, P&L statements, balance sheets, and cash flow analysis</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Budget & Forecasting</h3>
+                    <p class="feature-description">AI-powered budget planning, scenario modeling, variance analysis, and predictive forecasting</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3 class="feature-title">Compliance & Audit</h3>
+                    <p class="feature-description">Automated compliance reporting, audit trails, tax preparation, and regulatory adherence</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Workflow Templates -->
+    <section class="section fade-in" style="background: rgba(0, 0, 0, 0.1);">
+        <div class="container">
+            <h2 class="section-title">Advanced Financial Workflows</h2>
+            <p class="section-subtitle">
+                Template-based action steps for complete financial process automation. Click on workflows to see detailed steps.
+            </p>
+            
+            <div class="workflow-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem;">
+                
+                <!-- General Ledger Workflows -->
+                <div class="workflow-category">
+                    <h3 style="color: #fdba74; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📊 General Ledger
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('journal-entry')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Simple Journal Entry</span>
+                                <span class="workflow-badge low">Low</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>2 steps • 30 minutes</span>
+                            </div>
+                            <div class="workflow-description">Basic journal entry with standard debit/credit validation</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('period-close')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Period Close Process</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>8 steps • 2-3 days</span>
+                            </div>
+                            <div class="workflow-description">Complete month-end closing with automated reconciliations</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accounts Payable Workflows -->
+                <div class="workflow-category">
+                    <h3 style="color: #fdba74; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        💳 Accounts Payable
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('vendor-invoice')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Vendor Invoice Approval</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>3 steps • 3-5 days</span>
+                            </div>
+                            <div class="workflow-description">Multi-level approval process for vendor invoices</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('vendor-onboarding')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Vendor Setup & Onboarding</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 3-5 days</span>
+                            </div>
+                            <div class="workflow-description">Complete vendor registration and validation process</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accounts Receivable Workflows -->
+                <div class="workflow-category">
+                    <h3 style="color: #fdba74; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        💰 Accounts Receivable
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('customer-invoice')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Customer Invoice Creation</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 1-2 days</span>
+                            </div>
+                            <div class="workflow-description">Invoice creation and customer approval workflow</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('credit-memo')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Credit Memo Processing</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>3 steps • 1-2 days</span>
+                            </div>
+                            <div class="workflow-description">Customer credit and refund processing</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget & Forecasting -->
+                <div class="workflow-category">
+                    <h3 style="color: #fdba74; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        🎯 Budget & Forecasting
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('budget-approval')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Department Budget Approval</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 1-2 weeks</span>
+                            </div>
+                            <div class="workflow-description">Multi-level budget review and approval process</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('cash-forecast')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Cash Flow Forecast</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 2-3 days</span>
+                            </div>
+                            <div class="workflow-description">Monthly cash flow forecasting and approval</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance & Audit -->
+                <div class="workflow-category">
+                    <h3 style="color: #fdba74; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        ⚖️ Compliance & Audit
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('tax-filing')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Quarterly Tax Filing</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>7 steps • 1-2 weeks</span>
+                            </div>
+                            <div class="workflow-description">Complete tax preparation and filing process</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('reconciliation')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Monthly Reconciliation</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>5 steps • 3-5 days</span>
+                            </div>
+                            <div class="workflow-description">Bank and account reconciliation process</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Reporting -->
+                <div class="workflow-category">
+                    <h3 style="color: #fdba74; font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        📈 Financial Reporting
+                    </h3>
+                    <div class="workflow-items">
+                        <div class="workflow-item" onclick="showWorkflowSteps('financial-statements')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Financial Statements</span>
+                                <span class="workflow-badge high">High</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>6 steps • 1 week</span>
+                            </div>
+                            <div class="workflow-description">Monthly financial statements preparation and review</div>
+                        </div>
+                        
+                        <div class="workflow-item" onclick="showWorkflowSteps('management-reporting')">
+                            <div class="workflow-header">
+                                <span class="workflow-name">Management Reporting</span>
+                                <span class="workflow-badge medium">Medium</span>
+                            </div>
+                            <div class="workflow-meta">
+                                <span>4 steps • 2-3 days</span>
+                            </div>
+                            <div class="workflow-description">Executive dashboard and management reports</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow Details Modal -->
+            <div id="workflow-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; padding: 2rem;">
+                <div style="max-width: 800px; margin: 0 auto; background: rgba(15, 23, 42, 0.95); border-radius: 1rem; padding: 2rem; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3 id="modal-title" style="color: #fdba74; font-size: 1.5rem; font-weight: 700;"></h3>
+                        <button onclick="closeWorkflowModal()" style="background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer;">×</button>
+                    </div>
+                    <div id="modal-content"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Financial Dashboard Demo -->
+    <section class="section fade-in" style="background: rgba(0, 0, 0, 0.2);">
+        <div class="container">
+            <h2 class="section-title">Live Financial Dashboard</h2>
+            <p class="section-subtitle">
+                Real-time financial metrics and interactive analytics. Click on elements to see live updates.
+            </p>
+            
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card" id="revenue-kpi">
+                    <div class="kpi-icon">💰</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="revenue-value">€2.4M</div>
+                        <div class="kpi-label">Total Revenue</div>
+                        <div class="kpi-change positive" id="revenue-change">+12.5%</div>
+                    </div>
+                </div>
+                <div class="kpi-card" id="profit-kpi">
+                    <div class="kpi-icon">📈</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="profit-value">€485K</div>
+                        <div class="kpi-label">Net Profit</div>
+                        <div class="kpi-change positive" id="profit-change">+8.3%</div>
+                    </div>
+                </div>
+                <div class="kpi-card" id="expenses-kpi">
+                    <div class="kpi-icon">📉</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="expenses-value">€1.9M</div>
+                        <div class="kpi-label">Total Expenses</div>
+                        <div class="kpi-change negative" id="expenses-change">+5.2%</div>
+                    </div>
+                </div>
+                <div class="kpi-card" id="cashflow-kpi">
+                    <div class="kpi-icon">💧</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="cashflow-value">€750K</div>
+                        <div class="kpi-label">Cash Flow</div>
+                        <div class="kpi-change positive" id="cashflow-change">+15.7%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Monthly Revenue Trend</h3>
+                    <div class="chart-container">
+                        <div class="chart-bars" id="revenue-chart">
+                            <div class="chart-bar" style="height: 60%;">
+                                <div class="bar-label">Jan</div>
+                                <div class="bar-value">€180K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 75%;">
+                                <div class="bar-label">Feb</div>
+                                <div class="bar-value">€225K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 80%;">
+                                <div class="bar-label">Mar</div>
+                                <div class="bar-value">€240K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 90%;">
+                                <div class="bar-label">Apr</div>
+                                <div class="bar-value">€270K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 100%;">
+                                <div class="bar-label">May</div>
+                                <div class="bar-value">€300K</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Recent Transactions</h3>
+                    <div class="transaction-list" id="transaction-list">
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-description">Invoice Payment - Acme Corp</div>
+                                <div class="transaction-date">Today, 2:30 PM</div>
+                            </div>
+                            <div class="transaction-amount positive">+€15,250</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-description">Office Supplies - Staples</div>
+                                <div class="transaction-date">Yesterday, 4:15 PM</div>
+                            </div>
+                            <div class="transaction-amount negative">-€485</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-description">Salary Payment - Marketing Team</div>
+                                <div class="transaction-date">Dec 1, 9:00 AM</div>
+                            </div>
+                            <div class="transaction-amount negative">-€28,500</div>
+                        </div>
+                        <div class="transaction-item">
+                            <div class="transaction-info">
+                                <div class="transaction-description">Service Revenue - TechCorp</div>
+                                <div class="transaction-date">Nov 28, 11:45 AM</div>
+                            </div>
+                            <div class="transaction-amount positive">+€42,800</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Expense Categories</h3>
+                    <div class="chart-container">
+                        <div class="chart-bars" id="expense-chart">
+                            <div class="chart-bar" style="height: 85%;">
+                                <div class="bar-label">Payroll</div>
+                                <div class="bar-value">€850K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 45%;">
+                                <div class="bar-label">Marketing</div>
+                                <div class="bar-value">€450K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 35%;">
+                                <div class="bar-label">Operations</div>
+                                <div class="bar-value">€350K</div>
+                            </div>
+                            <div class="chart-bar" style="height: 25%;">
+                                <div class="bar-label">Admin</div>
+                                <div class="bar-value">€250K</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3 class="dashboard-title">Budget vs Actual</h3>
+                    <div class="chart-container">
+                        <div class="chart-bars" id="budget-chart">
+                            <div class="chart-bar" style="height: 70%; background: linear-gradient(to top, #16a34a, #86efac);">
+                                <div class="bar-label">Budget</div>
+                                <div class="bar-value">€2.1M</div>
+                            </div>
+                            <div class="chart-bar" style="height: 80%; background: linear-gradient(to top, #0891b2, #67e8f9);">
+                                <div class="bar-label">Actual</div>
+                                <div class="bar-value">€2.4M</div>
+                            </div>
+                            <div class="chart-bar" style="height: 90%; background: linear-gradient(to top, #7c3aed, #c4b5fd);">
+                                <div class="bar-label">Forecast</div>
+                                <div class="bar-value">€2.7M</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Financial Assistant Portal -->
+    <section class="section ai-portal fade-in">
+        <div class="container">
+            <h2 class="section-title">AI Financial Assistant</h2>
+            <p class="section-subtitle">
+                Intelligent financial analysis and reporting powered by advanced AI. Ask questions and get instant insights.
+            </p>
+            
+            <div class="ai-grid">
+                <div class="ai-card">
+                    <h3 class="ai-title">📊 Financial Analysis</h3>
+                    <div class="form-group">
+                        <label class="form-label">Analysis Type</label>
+                        <select class="form-select" id="analysis-type">
+                            <option>Profitability Analysis</option>
+                            <option>Cash Flow Forecast</option>
+                            <option>Budget Variance</option>
+                            <option>Cost Center Analysis</option>
+                            <option>Trend Analysis</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Time Period</label>
+                        <select class="form-select" id="time-period">
+                            <option>Last 12 Months</option>
+                            <option>Current Quarter</option>
+                            <option>Year to Date</option>
+                            <option>Custom Range</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="generateFinancialReport()" style="width: 100%;">
+                        Generate Report
+                    </button>
+                    <div id="analysis-result" style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem; display: none;">
+                        <h4 style="color: #86efac; margin-bottom: 0.5rem;">Analysis Results</h4>
+                        <div id="analysis-content"></div>
+                    </div>
+                </div>
+
+                <div class="ai-card">
+                    <h3 class="ai-title">💬 Financial Q&A</h3>
+                    <div class="chat-container" id="financial-chat">
+                        <div class="chat-message ai">
+                            <div class="chat-bubble ai">
+                                Hello! I'm your AI Financial Assistant. Ask me anything about your finances, budgets, or financial reports.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" class="chat-input" id="financial-question" 
+                               placeholder="Ask about revenue, expenses, forecasts...">
+                        <button class="chat-send" onclick="askFinancialQuestion()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta-section fade-in">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Transform Your Financial Management?</h2>
+                <p class="cta-subtitle">
+                    Join hundreds of companies already using Indigo3 Finance to streamline their financial operations and gain deeper insights.
+                </p>
+                <div class="cta-buttons">
+                    <button class="btn-primary">Start Free Trial</button>
+                    <button class="btn-secondary" onclick="scrollToContact()">Schedule Demo</button>
+                </div>
+                
+                <div class="innovation-text">Built on 10 years of financial innovation</div>
+                <div class="innovation-brands">
+                    <span class="brand-indigo2">Indigo2</span>
+                    <span class="brand-arrow">→</span>
+                    <span class="brand-indigo3">Indigo3</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title">Contact Information</h2>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3 style="color: white; margin-bottom: 1.5rem; font-size: 1.25rem;">Panadero Services</h3>
+                        <div class="contact-item">
+                            <span class="contact-icon">👤</span>
+                            <span>Luis Panadero</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <span>Stationsstraat 10<br>4571LB Axel, Netherlands</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <a href="tel:+31655328495" style="color: #d97706; text-decoration: none;">+31 655 328 495</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">💼</span>
+                            <span>ERP Software Solutions</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">💼</span>
+                            <a href="https://www.linkedin.com/in/lieuwe-b-172065168/" target="_blank" style="color: #d97706; text-decoration: none;">LinkedIn Profile</a>
+                        </div>
+                    </div>
+                    <div class="contact-cta">
+                        <h3 style="color: white; margin-bottom: 1rem;">Get In Touch</h3>
+                        <p style="color: #9ca3af; margin-bottom: 2rem;">
+                            Interested in our financial management solutions? 
+                            Contact us for a free consultation and demo.
+                        </p>
+                        <button class="btn-primary" onclick="window.location.href='tel:+31655328495'">
+                            <span>📞 Call Now</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Indigo3 Finance Management - Advanced ERP Solutions</p>
+            <p style="color: #9ca3af; font-size: 0.75rem; margin-top: 0.5rem;">
+                Panadero Services | Luis Panadero | Stationsstraat 10, 4571LB Axel, Netherlands | +31 655 328 495
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Intersection Observer for animations
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(section => observer.observe(section));
+
+        // Contact scroll function
+        function scrollToContact() {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Financial Dashboard Interactive Features
+        class FinancialDashboardManager {
+            constructor() {
+                this.kpiValues = {
+                    revenue: { value: 2400000, change: 12.5, trend: 'up' },
+                    profit: { value: 485000, change: 8.3, trend: 'up' },
+                    expenses: { value: 1900000, change: 5.2, trend: 'up' },
+                    cashflow: { value: 750000, change: 15.7, trend: 'up' }
+                };
+                this.initializeDashboard();
+            }
+
+            initializeDashboard() {
+                this.addKPIClickHandlers();
+                this.addChartInteractivity();
+                this.startRealTimeUpdates();
+            }
+
+            addKPIClickHandlers() {
+                document.querySelectorAll('.kpi-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        this.animateKPI(card);
+                        this.updateKPIValue(card);
+                    });
+                });
+            }
+
+            animateKPI(card) {
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.style.transform = 'scale(1)';
+                }, 150);
+            }
+
+            updateKPIValue(card) {
+                const valueElement = card.querySelector('.kpi-value');
+                const changeElement = card.querySelector('.kpi-change');
+                const currentValue = parseFloat(valueElement.textContent.replace(/[€KM,]/g, ''));
+                
+                // Simulate value update
+                const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+                const newValue = currentValue * (1 + variation);
+                
+                if (card.id === 'revenue-kpi') {
+                    valueElement.textContent = `€${(newValue / 1000).toFixed(1)}M`;
+                } else if (card.id === 'profit-kpi' || card.id === 'cashflow-kpi') {
+                    valueElement.textContent = `€${Math.round(newValue)}K`;
+                } else {
+                    valueElement.textContent = `€${(newValue / 1000).toFixed(1)}M`;
+                }
+
+                // Update change percentage
+                const changeValue = (variation * 100).toFixed(1);
+                changeElement.textContent = `${changeValue > 0 ? '+' : ''}${changeValue}%`;
+                changeElement.className = `kpi-change ${changeValue > 0 ? 'positive' : 'negative'}`;
+            }
+
+            addChartInteractivity() {
+                document.querySelectorAll('.chart-bar').forEach(bar => {
+                    bar.addEventListener('mouseenter', () => {
+                        bar.style.transform = 'scale(1.1)';
+                        bar.style.zIndex = '10';
+                        
+                        // Add tooltip
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'chart-tooltip';
+                        tooltip.textContent = `${bar.querySelector('.bar-value').textContent} - Click for details`;
+                        tooltip.style.cssText = `
+                            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+                            background: rgba(0, 0, 0, 0.8); color: white; padding: 6px 12px;
+                            border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 1000;
+                        `;
+                        bar.style.position = 'relative';
+                        bar.appendChild(tooltip);
+                    });
+
+                    bar.addEventListener('mouseleave', () => {
+                        bar.style.transform = 'scale(1)';
+                        bar.style.zIndex = '1';
+                        const tooltip = bar.querySelector('.chart-tooltip');
+                        if (tooltip) tooltip.remove();
+                    });
+
+                    bar.addEventListener('click', () => {
+                        this.showChartDetails(bar);
+                    });
+                });
+            }
+
+            showChartDetails(bar) {
+                const value = bar.querySelector('.bar-value').textContent;
+                const label = bar.querySelector('.bar-label').textContent;
+                alert(`📊 ${label} Details:\nValue: ${value}\n\nIn a real implementation, this would show detailed breakdowns, comparisons, and drill-down analytics.`);
+            }
+
+            startRealTimeUpdates() {
+                setInterval(() => {
+                    this.updateRandomTransaction();
+                }, 10000); // Update every 10 seconds
+            }
+
+            updateRandomTransaction() {
+                const transactionList = document.getElementById('transaction-list');
+                const transactions = [
+                    { desc: 'Online Payment - TechStart', amount: 8950, type: 'positive' },
+                    { desc: 'Software License - Adobe', amount: -299, type: 'negative' },
+                    { desc: 'Consulting Revenue - DataCorp', amount: 12500, type: 'positive' },
+                    { desc: 'Office Rent Payment', amount: -4500, type: 'negative' },
+                    { desc: 'Equipment Purchase', amount: -1850, type: 'negative' }
+                ];
+
+                const randomTransaction = transactions[Math.floor(Math.random() * transactions.length)];
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                const newTransaction = document.createElement('div');
+                newTransaction.className = 'transaction-item';
+                newTransaction.style.background = 'rgba(34, 197, 94, 0.1)';
+                newTransaction.innerHTML = `
+                    <div class="transaction-info">
+                        <div class="transaction-description">${randomTransaction.desc}</div>
+                        <div class="transaction-date">Just now, ${timeString}</div>
+                    </div>
+                    <div class="transaction-amount ${randomTransaction.type}">
+                        ${randomTransaction.type === 'positive' ? '+' : ''}€${Math.abs(randomTransaction.amount).toLocaleString()}
+                    </div>
+                `;
+
+                transactionList.insertBefore(newTransaction, transactionList.firstChild);
+                
+                // Remove oldest transaction if more than 6
+                if (transactionList.children.length > 6) {
+                    transactionList.removeChild(transactionList.lastChild);
+                }
+
+                // Fade out highlight after 3 seconds
+                setTimeout(() => {
+                    newTransaction.style.background = 'transparent';
+                }, 3000);
+            }
+        }
+
+        // AI Financial Assistant Functions
+        function generateFinancialReport() {
+            const analysisType = document.getElementById('analysis-type').value;
+            const timePeriod = document.getElementById('time-period').value;
+            const resultDiv = document.getElementById('analysis-result');
+            const contentDiv = document.getElementById('analysis-content');
+
+            // Show loading state
+            contentDiv.innerHTML = '<div style="text-align: center; color: #86efac;">🔄 Generating analysis...</div>';
+            resultDiv.style.display = 'block';
+
+            setTimeout(() => {
+                let analysisContent = '';
+                
+                switch(analysisType) {
+                    case 'Profitability Analysis':
+                        analysisContent = `
+                            <strong>💰 Profitability Analysis (${timePeriod})</strong><br><br>
+                            • Gross Profit Margin: <span style="color: #86efac;">22.5%</span> (+2.1% vs previous period)<br>
+                            • Net Profit Margin: <span style="color: #86efac;">18.3%</span> (+1.8% vs previous period)<br>
+                            • ROI: <span style="color: #86efac;">24.7%</span> (Above industry average)<br>
+                            • Cost of Revenue: <span style="color: #fca5a5;">68.2%</span> (-1.5% optimization achieved)<br><br>
+                            <em>📈 Recommendation: Focus on scaling high-margin services for continued growth.</em>
+                        `;
+                        break;
+                    case 'Cash Flow Forecast':
+                        analysisContent = `
+                            <strong>💧 Cash Flow Forecast (${timePeriod})</strong><br><br>
+                            • Projected Inflows: <span style="color: #86efac;">€2.8M</span><br>
+                            • Projected Outflows: <span style="color: #fca5a5;">€2.1M</span><br>
+                            • Net Cash Flow: <span style="color: #86efac;">€700K</span><br>
+                            • Cash Position End of Period: <span style="color: #86efac;">€1.45M</span><br><br>
+                            <em>🔮 AI Insight: Strong cash position projected. Consider investment opportunities.</em>
+                        `;
+                        break;
+                    case 'Budget Variance':
+                        analysisContent = `
+                            <strong>🎯 Budget Variance Analysis (${timePeriod})</strong><br><br>
+                            • Revenue vs Budget: <span style="color: #86efac;">+14.3%</span> (€300K above target)<br>
+                            • Expenses vs Budget: <span style="color: #fca5a5;">+5.2%</span> (€98K over budget)<br>
+                            • Net Variance: <span style="color: #86efac;">+€202K</span> favorable<br>
+                            • Largest Variance: Marketing spend (-€45K under budget)<br><br>
+                            <em>⚡ Action Item: Reallocate unused marketing budget to high-performing channels.</em>
+                        `;
+                        break;
+                    default:
+                        analysisContent = `
+                            <strong>📊 ${analysisType} (${timePeriod})</strong><br><br>
+                            Analysis complete! Key insights generated based on your financial data.<br><br>
+                            <em>💡 AI-powered recommendations ready for review.</em>
+                        `;
+                }
+                
+                contentDiv.innerHTML = analysisContent;
+            }, 2000);
+        }
+
+        function askFinancialQuestion() {
+            const questionInput = document.getElementById('financial-question');
+            const question = questionInput.value.trim();
+            
+            if (!question) return;
+
+            const chatContainer = document.getElementById('financial-chat');
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'chat-message user';
+            userMessage.innerHTML = `<div class="chat-bubble user">${question}</div>`;
+            chatContainer.appendChild(userMessage);
+
+            // Clear input
+            questionInput.value = '';
+
+            // Simulate AI typing
+            const typingMessage = document.createElement('div');
+            typingMessage.className = 'chat-message ai';
+            typingMessage.innerHTML = `<div class="chat-bubble ai">🤔 Analyzing your question...</div>`;
+            chatContainer.appendChild(typingMessage);
+
+            setTimeout(() => {
+                typingMessage.remove();
+                
+                // Generate AI response based on question content
+                let response = '';
+                const lowerQuestion = question.toLowerCase();
+                
+                if (lowerQuestion.includes('revenue') || lowerQuestion.includes('income')) {
+                    response = `Based on your current data, revenue is performing excellently at €2.4M this period, representing a 12.5% growth. The main drivers are increased service sales (+18%) and new customer acquisitions (+23%). Would you like a detailed breakdown by product line?`;
+                } else if (lowerQuestion.includes('expense') || lowerQuestion.includes('cost')) {
+                    response = `Your expenses are well-controlled at €1.9M, with payroll being the largest component (45%). Recent optimization in operational costs saved €85K. I recommend reviewing marketing spend allocation for better ROI.`;
+                } else if (lowerQuestion.includes('profit') || lowerQuestion.includes('margin')) {
+                    response = `Profit margins are healthy at 18.3% net margin. This is above industry average of 15.2%. Your gross margin of 22.5% shows good pricing power. Consider expanding high-margin service offerings.`;
+                } else if (lowerQuestion.includes('cash') || lowerQuestion.includes('flow')) {
+                    response = `Cash flow is strong with €750K positive flow this period. Your cash conversion cycle is 32 days, which is excellent. Current liquidity ratio is 2.4:1, indicating good financial health.`;
+                } else if (lowerQuestion.includes('budget') || lowerQuestion.includes('forecast')) {
+                    response = `You're 14.3% ahead of budget on revenue (€300K above target). Expenses are 5.2% over budget but still within acceptable variance. Q1 forecast shows continued growth trajectory.`;
+                } else {
+                    response = `I understand you're asking about financial metrics. Based on your data, overall financial health is excellent with strong revenue growth, controlled expenses, and positive cash flow. What specific aspect would you like me to analyze deeper?`;
+                }
+
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'chat-message ai';
+                aiMessage.innerHTML = `<div class="chat-bubble ai">${response}</div>`;
+                chatContainer.appendChild(aiMessage);
+
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1500);
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Handle Enter key in chat input
+        document.getElementById('financial-question').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                askFinancialQuestion();
+            }
+        });
+
+        // Workflow Templates Data
+        const workflowTemplates = {
+            'journal-entry': {
+                title: 'Simple Journal Entry',
+                complexity: 'Low',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Entry Creation', description: 'Create journal entry with debit/credit accounts', estimated: '15 min' },
+                    { id: 2, type: 'validation', name: 'Balance Validation', description: 'Automated validation of debit/credit balance', estimated: '15 min' }
+                ]
+            },
+            'period-close': {
+                title: 'Period Close Process',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'validation', name: 'Pre-Close Validation', description: 'Validate all transactions are posted', estimated: '2 hours' },
+                    { id: 2, type: 'automation', name: 'Automated Reconciliations', description: 'Run bank and account reconciliations', estimated: '4 hours' },
+                    { id: 3, type: 'form_submission', name: 'Adjusting Entries', description: 'Post required adjusting journal entries', estimated: '3 hours' },
+                    { id: 4, type: 'approval', name: 'Manager Review', description: 'Department manager approval', estimated: '1 day' },
+                    { id: 5, type: 'automation', name: 'Depreciation Calculation', description: 'Calculate asset depreciation', estimated: '1 hour' },
+                    { id: 6, type: 'financial_reporting', name: 'Trial Balance', description: 'Generate trial balance report', estimated: '30 min' },
+                    { id: 7, type: 'approval', name: 'CFO Approval', description: 'Final approval from CFO', estimated: '1 day' },
+                    { id: 8, type: 'period_close', name: 'Close Period', description: 'Lock period and generate statements', estimated: '1 hour' }
+                ]
+            },
+            'vendor-invoice': {
+                title: 'Vendor Invoice Approval',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Invoice Entry', description: 'Enter vendor invoice details', estimated: '30 min' },
+                    { id: 2, type: 'approval', name: 'Department Approval', description: 'Department manager approval', estimated: '2 days' },
+                    { id: 3, type: 'financial_validation', name: 'Payment Processing', description: 'Schedule payment and update AP', estimated: '1 day' }
+                ]
+            },
+            'vendor-onboarding': {
+                title: 'Vendor Setup & Onboarding',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Vendor Information', description: 'Collect vendor contact and tax information', estimated: '1 hour' },
+                    { id: 2, type: 'document_upload', name: 'Documentation', description: 'Upload certificates and compliance docs', estimated: '30 min' },
+                    { id: 3, type: 'validation', name: 'Credit Check', description: 'Run credit and reference verification', estimated: '2 days' },
+                    { id: 4, type: 'approval', name: 'Approval Process', description: 'Multi-level vendor approval', estimated: '3 days' },
+                    { id: 5, type: 'integration', name: 'System Setup', description: 'Create vendor master and payment terms', estimated: '1 hour' }
+                ]
+            },
+            'customer-invoice': {
+                title: 'Customer Invoice Creation',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Invoice Creation', description: 'Create customer invoice with line items', estimated: '45 min' },
+                    { id: 2, type: 'validation', name: 'Pricing Validation', description: 'Validate pricing and terms', estimated: '15 min' },
+                    { id: 3, type: 'approval', name: 'Sales Manager Approval', description: 'Sales manager review and approval', estimated: '1 day' },
+                    { id: 4, type: 'automation', name: 'Invoice Distribution', description: 'Email invoice and update AR', estimated: '30 min' }
+                ]
+            },
+            'credit-memo': {
+                title: 'Credit Memo Processing',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Credit Request', description: 'Enter credit memo details and reason', estimated: '30 min' },
+                    { id: 2, type: 'approval', name: 'Manager Approval', description: 'Department manager approval', estimated: '1 day' },
+                    { id: 3, type: 'financial_validation', name: 'Credit Processing', description: 'Process credit and update customer account', estimated: '1 day' }
+                ]
+            },
+            'budget-approval': {
+                title: 'Department Budget Approval',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'form_submission', name: 'Budget Preparation', description: 'Prepare department budget proposal', estimated: '1 week' },
+                    { id: 2, type: 'validation', name: 'Historical Analysis', description: 'Compare with historical data', estimated: '2 days' },
+                    { id: 3, type: 'approval', name: 'Department Head', description: 'Department head review', estimated: '2 days' },
+                    { id: 4, type: 'approval', name: 'Finance Review', description: 'Finance team review and consolidation', estimated: '3 days' },
+                    { id: 5, type: 'approval', name: 'Executive Review', description: 'Executive team approval', estimated: '1 week' },
+                    { id: 6, type: 'integration', name: 'Budget Loading', description: 'Load approved budget into system', estimated: '1 day' }
+                ]
+            },
+            'cash-forecast': {
+                title: 'Cash Flow Forecast',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'cash_flow_analysis', name: 'Data Collection', description: 'Gather AR, AP, and operational data', estimated: '1 day' },
+                    { id: 2, type: 'automation', name: 'Forecast Generation', description: 'Generate 13-week cash forecast', estimated: '2 hours' },
+                    { id: 3, type: 'review', name: 'Treasury Review', description: 'Treasury team review and adjustments', estimated: '4 hours' },
+                    { id: 4, type: 'approval', name: 'CFO Approval', description: 'CFO review and approval', estimated: '1 day' }
+                ]
+            },
+            'tax-filing': {
+                title: 'Quarterly Tax Filing',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'financial_reporting', name: 'Tax Data Preparation', description: 'Prepare quarterly tax data', estimated: '3 days' },
+                    { id: 2, type: 'tax_calculation', name: 'Tax Calculations', description: 'Calculate tax liability', estimated: '2 days' },
+                    { id: 3, type: 'review', name: 'CPA Review', description: 'External CPA review', estimated: '3 days' },
+                    { id: 4, type: 'approval', name: 'Executive Approval', description: 'Final executive approval', estimated: '2 days' },
+                    { id: 5, type: 'compliance_check', name: 'Compliance Validation', description: 'Validate regulatory compliance', estimated: '1 day' },
+                    { id: 6, type: 'automation', name: 'Electronic Filing', description: 'Submit returns electronically', estimated: '2 hours' },
+                    { id: 7, type: 'notification', name: 'Confirmation', description: 'Confirm receipt and archive', estimated: '1 hour' }
+                ]
+            },
+            'reconciliation': {
+                title: 'Monthly Reconciliation',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'automation', name: 'Bank Import', description: 'Import bank statements', estimated: '30 min' },
+                    { id: 2, type: 'account_reconciliation', name: 'Auto Matching', description: 'Automated transaction matching', estimated: '2 hours' },
+                    { id: 3, type: 'review', name: 'Manual Review', description: 'Review unmatched items', estimated: '4 hours' },
+                    { id: 4, type: 'form_submission', name: 'Adjustments', description: 'Post reconciling entries', estimated: '2 hours' },
+                    { id: 5, type: 'approval', name: 'Supervisor Approval', description: 'Supervisor review and approval', estimated: '1 day' }
+                ]
+            },
+            'financial-statements': {
+                title: 'Financial Statements',
+                complexity: 'High',
+                steps: [
+                    { id: 1, type: 'validation', name: 'Pre-Statement Checks', description: 'Validate all reconciliations complete', estimated: '1 day' },
+                    { id: 2, type: 'financial_reporting', name: 'Statement Generation', description: 'Generate P&L, Balance Sheet, Cash Flow', estimated: '4 hours' },
+                    { id: 3, type: 'review', name: 'Accounting Review', description: 'Accounting team detailed review', estimated: '2 days' },
+                    { id: 4, type: 'approval', name: 'Controller Approval', description: 'Controller review and approval', estimated: '1 day' },
+                    { id: 5, type: 'approval', name: 'CFO Approval', description: 'CFO final approval', estimated: '1 day' },
+                    { id: 6, type: 'automation', name: 'Distribution', description: 'Distribute to stakeholders', estimated: '1 hour' }
+                ]
+            },
+            'management-reporting': {
+                title: 'Management Reporting',
+                complexity: 'Medium',
+                steps: [
+                    { id: 1, type: 'automation', name: 'Data Aggregation', description: 'Aggregate operational and financial data', estimated: '2 hours' },
+                    { id: 2, type: 'financial_reporting', name: 'Dashboard Creation', description: 'Create executive dashboards', estimated: '4 hours' },
+                    { id: 3, type: 'review', name: 'Analysis Review', description: 'Review variances and trends', estimated: '1 day' },
+                    { id: 4, type: 'approval', name: 'Final Review', description: 'Management team review', estimated: '1 day' }
+                ]
+            }
+        };
+
+        // Workflow Modal Functions
+        function showWorkflowSteps(workflowId) {
+            const workflow = workflowTemplates[workflowId];
+            if (!workflow) return;
+
+            document.getElementById('modal-title').textContent = workflow.title;
+            
+            const stepsHtml = workflow.steps.map((step, index) => {
+                const stepTypeColors = {
+                    'form_submission': '#fdba74',
+                    'approval': '#fbbf24', 
+                    'validation': '#86efac',
+                    'automation': '#a78bfa',
+                    'integration': '#67e8f9',
+                    'review': '#f9a8d4',
+                    'financial_validation': '#fdba74',
+                    'account_reconciliation': '#86efac',
+                    'tax_calculation': '#fbbf24',
+                    'budget_approval': '#a78bfa',
+                    'compliance_check': '#f87171',
+                    'audit_review': '#f9a8d4',
+                    'period_close': '#67e8f9',
+                    'asset_depreciation': '#86efac',
+                    'cash_flow_analysis': '#fdba74',
+                    'financial_reporting': '#a78bfa',
+                    'document_upload': '#f9a8d4',
+                    'notification': '#86efac'
+                };
+                
+                const stepColor = stepTypeColors[step.type] || '#d1d5db';
+                
+                return `
+                    <div style="display: flex; align-items: center; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem; margin-bottom: 1rem;">
+                        <div style="width: 2rem; height: 2rem; background: ${stepColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 1rem; color: #0f172a; font-weight: 700;">
+                            ${step.id}
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: white; margin-bottom: 0.25rem;">${step.name}</div>
+                            <div style="color: #d1d5db; font-size: 0.875rem; margin-bottom: 0.25rem;">${step.description}</div>
+                            <div style="color: ${stepColor}; font-size: 0.75rem; font-weight: 600;">
+                                ${step.type.replace(/_/g, ' ').toUpperCase()} • ${step.estimated}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('modal-content').innerHTML = `
+                <div style="margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <span style="background: rgba(234,88,12,0.2); color: #fdba74; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600;">
+                            ${workflow.complexity} Complexity
+                        </span>
+                        <span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem;">
+                            ${workflow.steps.length} Steps
+                        </span>
+                    </div>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: #fdba74; margin-bottom: 1rem; font-size: 1.125rem;">Workflow Steps</h4>
+                    ${stepsHtml}
+                </div>
+                <div style="text-align: center; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                    <button onclick="startWorkflowDemo('${workflowId}')" style="background: linear-gradient(90deg, #ea580c 0%, #c2410c 100%); color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; margin-right: 1rem;">
+                        Start Demo Workflow
+                    </button>
+                    <button onclick="closeWorkflowModal()" style="background: rgba(255,255,255,0.1); color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">
+                        Close
+                    </button>
+                </div>
+            `;
+
+            document.getElementById('workflow-modal').style.display = 'block';
+        }
+
+        function closeWorkflowModal() {
+            document.getElementById('workflow-modal').style.display = 'none';
+        }
+
+        function startWorkflowDemo(workflowId) {
+            alert(`🚀 Starting ${workflowTemplates[workflowId].title} workflow demo!\n\nIn a real implementation, this would:\n• Create a new workflow instance\n• Load the first step\n• Initialize form data\n• Set up approval routing\n• Begin step execution\n\nWorkflow ID: ${workflowId}`);
+            closeWorkflowModal();
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new FinancialDashboardManager();
+        });
+    </script>
+</body>
+</html>

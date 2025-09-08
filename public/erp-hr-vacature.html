@@ -138,6 +138,19 @@
         .demo-metric { font-size: 2rem; font-weight: 700; color: #0d9488; }
         .cta-section { padding: 6rem 0; background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(13, 148, 136, 0.2) 100%); }
         .cta-content { text-align: center; max-width: 48rem; margin: 0 auto; }
+        
+        /* Contact Section Styles */
+        .contact-section { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
+        .contact-content { max-width: 48rem; margin: 0 auto; text-align: center; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; text-align: left; }
+        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-info, .contact-cta { 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 2rem;
+        }
+        .contact-item { display: flex; align-items: flex-start; margin-bottom: 1.5rem; color: #d1d5db; }
+        .contact-icon { margin-right: 1rem; font-size: 1.25rem; width: 2rem; }
+        
         .footer { padding: 3rem 0; background: rgba(0, 0, 0, 0.5); text-align: center; }
         .footer-text { color: #9ca3af; font-size: 0.875rem; }
         
@@ -235,6 +248,7 @@
             <div class="nav-links">
                 <a href="indigo3-hr.html" class="nav-link">Indigo3 HR</a>
                 <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="indigo3-finance.html" class="nav-link">Finance</a>
                 <a href="erp-hr-vacature.html" class="nav-link active">AI Vacature</a>
                 <a href="#agent-demo" class="nav-link" onclick="scrollToAgent()">Try Demo</a>
                 <a href="/erp/hr" class="nav-link" style="background: linear-gradient(90deg, #9333ea 0%, #0d9488 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
@@ -531,9 +545,49 @@
                     <button class="btn-primary" onclick="window.location.href='/erp/hr/vacature/demo'">
                         <span>Vraag Gratis Demo Aan</span>
                     </button>
-                    <button class="btn-secondary" onclick="window.location.href='/contact'">
+                    <button class="btn-secondary" onclick="scrollToContact()">
                         <span>Neem Contact Op</span>
                     </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Sectie -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title">Contact Informatie</h2>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3 style="color: white; margin-bottom: 1.5rem; font-size: 1.25rem;">Panadero Services</h3>
+                        <div class="contact-item">
+                            <span class="contact-icon">👤</span>
+                            <span>Luis Panadero</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <span>Stationsstraat 10<br>4571LB Axel, Nederland</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <a href="tel:+31655328495" style="color: #5eead4; text-decoration: none;">+31 655 328 495</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">💼</span>
+                            <span>ERP Software Solutions</span>
+                        </div>
+                    </div>
+                    <div class="contact-cta">
+                        <h3 style="color: white; margin-bottom: 1rem;">Neem Contact Op</h3>
+                        <p style="color: #d1d5db; margin-bottom: 2rem;">
+                            Interesse in onze AI-gedreven recruitment oplossingen? 
+                            Neem contact op voor een vrijblijvende demonstratie.
+                        </p>
+                        <button class="btn-primary" onclick="window.location.href='tel:+31655328495'">
+                            <span>📞 Bel Direct</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -543,7 +597,8 @@
     <footer class="footer">
         <div class="container">
             <p class="footer-text">
-                © 2025 ERP.HR.Vacature - Onderdeel van het Panadero ERP Platform
+                © 2025 ERP.HR.Vacature - Onderdeel van het Panadero ERP Platform<br>
+                <small style="color: #9ca3af;">Panadero Services | Luis Panadero | Stationsstraat 10, 4571LB Axel, Nederland</small>
             </p>
         </div>
     </footer>
@@ -555,6 +610,10 @@
 
         function scrollToAgent() {
             document.getElementById('agent-demo').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToContact() {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
         }
 
         // Sample data voor realistische simulaties

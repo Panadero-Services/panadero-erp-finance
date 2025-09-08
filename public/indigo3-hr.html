@@ -118,6 +118,18 @@
         }
         .cta-section h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; color: white; }
         .cta-section p { font-size: 1.125rem; color: #d1d5db; margin-bottom: 2rem; max-width: 48rem; margin-left: auto; margin-right: auto; }
+        /* Contact Section Styles */
+        .contact-section { padding: 4rem 0; background: rgba(0, 0, 0, 0.3); }
+        .contact-content { max-width: 48rem; margin: 0 auto; text-align: center; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem; text-align: left; }
+        @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-info, .contact-cta { 
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem; padding: 2rem;
+        }
+        .contact-item { display: flex; align-items: flex-start; margin-bottom: 1.5rem; color: #d1d5db; }
+        .contact-icon { margin-right: 1rem; font-size: 1.25rem; width: 2rem; }
+        
         .footer {
             padding: 3rem 0; background: rgba(0, 0, 0, 0.6); border-top: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center; color: #9ca3af;
@@ -282,6 +294,7 @@
             <div class="nav-links">
                 <a href="indigo3-hr.html" class="nav-link active">Indigo3 HR</a>
                 <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="indigo3-finance.html" class="nav-link">Finance</a>
                 <a href="erp-hr-vacature.html" class="nav-link">AI Vacature</a>
                 <a href="/erp/hr" class="nav-link" style="background: linear-gradient(90deg, #10b981 0%, #22c55e 100%); color: white; padding: 0.5rem 1rem;">Live App</a>
             </div>
@@ -723,9 +736,49 @@
                 <button class="btn-primary" onclick="window.location.href='/erp/hr'">
                     <span>Get Started Now</span>
                 </button>
-                <button class="btn-secondary" onclick="window.location.href='/contact'">
+                <button class="btn-secondary" onclick="scrollToContact()">
                     <span>Contact Sales</span>
                 </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="section-title">Contact Information</h2>
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h3 style="color: white; margin-bottom: 1.5rem; font-size: 1.25rem;">Panadero Services</h3>
+                        <div class="contact-item">
+                            <span class="contact-icon">👤</span>
+                            <span>Luis Panadero</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📍</span>
+                            <span>Stationsstraat 10<br>4571LB Axel, Netherlands</span>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">📞</span>
+                            <a href="tel:+31655328495" style="color: #6ee7b7; text-decoration: none;">+31 655 328 495</a>
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">💼</span>
+                            <span>ERP Software Solutions</span>
+                        </div>
+                    </div>
+                    <div class="contact-cta">
+                        <h3 style="color: white; margin-bottom: 1rem;">Get In Touch</h3>
+                        <p style="color: #d1d5db; margin-bottom: 2rem;">
+                            Interested in our HR management solutions? 
+                            Contact us for a free consultation and demo.
+                        </p>
+                        <button class="btn-primary" onclick="window.location.href='tel:+31655328495'">
+                            <span>📞 Call Now</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -733,6 +786,9 @@
     <footer class="footer">
         <div class="container">
             <p>&copy; 2025 Indigo3 ERP Systems. All rights reserved.</p>
+            <p style="color: #9ca3af; font-size: 0.75rem; margin-top: 0.5rem;">
+                Panadero Services | Luis Panadero | Stationsstraat 10, 4571LB Axel, Netherlands | +31 655 328 495
+            </p>
             <p>
                 <a href="/privacy">Privacy Policy</a> | 
                 <a href="/terms">Terms of Service</a> | 
@@ -744,6 +800,10 @@
     <script>
         function scrollToFeatures() {
             document.querySelector('.features').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToContact() {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
         }
         
         // Add some interactive effects
