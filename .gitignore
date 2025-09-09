@@ -28,3 +28,6 @@ composer.lock
 composer-lock.json
 !/vendor/panadero/panadero-solarsysinvaders/
 !gitignore
+node_modules/
+vendor/
+*.wav
