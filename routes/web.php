@@ -203,6 +203,26 @@ Route::get('/', function () {
     return redirect()->route('home/welkom');
 });
 
+// AI Integration Test Route
+Route::get('/ai-test', function () {
+    return view('ai-test');
+});
+
+Route::get('/ai-training-dashboard', function () {
+    $stats = [
+        'total' => \App\Models\AITrainingData::count(),
+        'helpful_percentage' => round(\App\Models\AITrainingData::where('was_helpful', true)->count() / max(\App\Models\AITrainingData::whereNotNull('was_helpful')->count(), 1) * 100),
+        'sonar_usage' => round(\App\Models\AITrainingData::where('model_used', 'sonar-semantic')->count() / max(\App\Models\AITrainingData::count(), 1) * 100),
+        'avg_confidence' => round(\App\Models\AITrainingData::whereNotNull('confidence_score')->avg('confidence_score') ?? 0)
+    ];
+    
+    return view('ai-training-dashboard', compact('stats'));
+});
+
+Route::get('/ai-optimized-dashboard', function () {
+    return view('ai-optimized-dashboard');
+});
+
 Route::get('home/landing', function () {
     return Inertia::render('home/Landing', [
         'page'=> Page::with('sections')->where('title','Tiers')->first(),

@@ -1,0 +1,62 @@
+{
+  "name": "@panadero-ai-engine",
+  "version": "1.0.0",
+  "description": "Panadero AI Engine - Advanced Neural Network Framework for Predictive Analytics and Mathematical Modeling",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npm run clean && npm run build:docs",
+    "build:docs": "jsdoc src -d docs -c jsdoc.conf.json",
+    "dev": "node --watch src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "clean": "rm -rf dist docs",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "example:basic": "node examples/basic-usage.js",
+    "example:advanced": "node examples/advanced-usage.js",
+    "start": "node examples/basic-usage.js"
+  },
+  "keywords": [
+    "ai",
+    "neural-network",
+    "transformer",
+    "machine-learning",
+    "predictive-analytics",
+    "mathematical-modeling",
+    "panadero",
+    "indigo"
+  ],
+  "author": "Panadero Services <luis@panadero.services>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/panadero/ai-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/panadero/ai-engine/issues"
+  },
+  "homepage": "https://github.com/panadero/ai-engine#readme",
+  "files": [
+    "dist/**/*",
+    "docs/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "jsdoc": "^4.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

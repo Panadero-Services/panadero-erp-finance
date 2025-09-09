@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Indigo3 Inventory Management - Next-Generation ERP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -2013,9 +2014,36 @@
             // Add user message
             await erpAI.addMessage(message, true);
             
-            // Generate and add AI response
-            const response = await erpAI.generateResponse(message);
-            await erpAI.addMessage(response, false);
+            try {
+                // Call real OpenAI API through backend
+                const response = await fetch('/api/ai/chat/inventory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: {
+                            module: 'inventory',
+                            page: 'landing',
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                await erpAI.addMessage(data.response || data.message || 'I apologize, but I encountered an error processing your request. Please try again.', false);
+            } catch (error) {
+                console.error('Chat error:', error);
+                // Fallback to local response generation
+                const fallbackResponse = await erpAI.generateResponse(message);
+                await erpAI.addMessage(fallbackResponse, false);
+            }
         }
 
         async function sendQuickQuestion(question) {

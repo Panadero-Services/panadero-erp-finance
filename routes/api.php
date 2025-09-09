@@ -92,6 +92,449 @@ Route::prefix('bots')->group(function () {
 // ============================================================================
 // AI CHAT ROUTES
 // ============================================================================
+
+// ERP Module-specific AI Chat Routes with Intelligent Model Routing
+Route::post('/ai/chat/finance', function (Request $request) {
+    try {
+        $message = $request->input('message');
+        $context = $request->input('context', []);
+        $startTime = microtime(true);
+        
+        // Use AI Model Router to determine which model to use
+        $router = new \App\Services\AIModelRouter();
+        $modelDecision = $router->determineModel($message, 'finance');
+        $systemPrompt = $router->getSystemPrompt($modelDecision['model'], 'finance');
+        
+        // Use concise system prompt for better performance
+        $enhancedPrompt = $systemPrompt;
+        
+        // Call AI service with intelligent model selection
+        $response = app()->call('App\Http\Controllers\AIServiceController@callAI', [
+            'request' => new Request([
+                'provider' => 'ollama',
+                'prompt' => $message,
+                'context' => array_merge($context, ['module' => 'finance']),
+                'config' => [
+                    'model' => $modelDecision['ollama_model'],
+                    'baseUrl' => 'http://localhost:11434',
+                    'maxTokens' => 500,
+                    'temperature' => 0.7,
+                    'systemPrompt' => $enhancedPrompt
+                ]
+            ])
+        ]);
+        
+        // Store training data
+        $responseTime = (microtime(true) - $startTime) * 1000;
+        $responseData = $response->getData(true);
+        
+        \App\Models\AITrainingData::create([
+            'user_query' => $message,
+            'ai_response' => $responseData['response'] ?? 'Error: No response',
+            'model_used' => $modelDecision['model'],
+            'module' => 'finance',
+            'confidence_score' => $modelDecision['confidence'],
+            'session_id' => session()->getId(),
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'response_time_ms' => round($responseTime),
+            'query_classification' => $modelDecision['model'],
+            'training_approved' => false
+        ]);
+        
+        // Add model decision info to response
+        $responseArray = $response->getData(true);
+        $responseArray['model_info'] = [
+            'model_used' => $modelDecision['model'],
+            'ollama_model' => $modelDecision['ollama_model'],
+            'confidence' => $modelDecision['confidence'],
+            'reason' => $modelDecision['reason']
+        ];
+        
+        return response()->json($responseArray);
+    } catch (\Exception $e) {
+        \Log::error('Finance AI Chat Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to generate AI response'], 500);
+    }
+});
+
+Route::post('/ai/chat/hr', function (Request $request) {
+    try {
+        $message = $request->input('message');
+        $context = $request->input('context', []);
+        
+        $workflowDocs = [
+            'recruitment' => 'Recruitment Workflow: Complete recruitment process from job requisition to offer acceptance. Steps: Job Requisition, Posting, Application Review, Interview Process, Background Check, Offer. Time: 2-4 weeks.',
+            'onboarding' => 'Employee Onboarding: Comprehensive employee onboarding from first day to full integration. Steps: Welcome Package, Documentation, System Access, Training Schedule, Orientation, Integration. Time: 1-2 weeks.',
+            'performance_review' => 'Performance Review: Annual performance review cycle with continuous feedback. Steps: Goal Setting, Mid-year Check, Self Assessment, Manager Review, Calibration, Final Review. Time: 3 months.',
+            'learning_development' => 'Learning & Development: Employee learning and development journey tracking. Steps: Skills Assessment, Training Plan, Course Enrollment, Progress Tracking, Certification, Career Planning. Time: 3-6 months.',
+            'time_attendance' => 'Time & Attendance: Time and attendance management with automated approvals. Steps: Schedule Setup, Time Entry, Approval Process, Payroll Integration. Time: Daily.',
+            'employee_relations' => 'Employee Relations: Employee relations case management and resolution. Steps: Issue Report, Investigation, Documentation, Resolution, Follow-up. Time: 1-4 weeks.'
+        ];
+        
+        $systemPrompt = "You are an expert ERP HR AI Assistant with comprehensive knowledge of human resources processes and workflows. You help users with:
+
+HR MODULES:
+• Recruitment & Hiring - Job posting, applicant tracking, interview management
+• Employee Management - Complete employee lifecycle from onboarding to offboarding
+• Performance Management - Goal setting, reviews, development planning
+• Learning & Development - Training programs, skill tracking, career paths
+• Time & Attendance - Schedule management, time tracking, leave management
+• Payroll & Benefits - Compensation management and benefits administration
+• Employee Relations - Conflict resolution, disciplinary actions, engagement
+
+WORKFLOW EXPERTISE:
+{$workflowDocs['recruitment']}
+{$workflowDocs['onboarding']}
+{$workflowDocs['performance_review']}
+{$workflowDocs['learning_development']}
+
+CAPABILITIES:
+- Guide through hiring and recruitment processes
+- Explain performance management workflows
+- Assist with employee onboarding procedures
+- Provide HR policy and compliance guidance
+- Help with workforce planning and analytics
+
+Be helpful, professional, and provide specific guidance based on HR best practices and your workflow knowledge.";
+
+        return app()->call('App\Http\Controllers\AIServiceController@callAI', [
+            'request' => new Request([
+                'provider' => 'ollama',
+                'prompt' => $message,
+                'context' => array_merge($context, ['module' => 'hr']),
+                'config' => [
+                    'model' => 'llama3.2:3b',
+                    'baseUrl' => 'http://localhost:11434',
+                    'maxTokens' => 500,
+                    'temperature' => 0.7,
+                    'systemPrompt' => $systemPrompt
+                ]
+            ])
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('HR AI Chat Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to generate AI response'], 500);
+    }
+});
+
+Route::post('/ai/chat/inventory', function (Request $request) {
+    try {
+        $message = $request->input('message');
+        $context = $request->input('context', []);
+        
+        $workflowDocs = [
+            'purchase_order' => 'Purchase Order Workflow: Complete purchase order workflow with supplier approval. Steps: PR Creation, Manager Approval, Supplier Selection, PO Generation. Time: 2-3 days.',
+            'goods_receipt' => 'Goods Receipt: Complete receiving workflow with quality inspection. Steps: Delivery Notification, Physical Inspection, PO Matching, Receipt Recording, Inventory Update. Time: 1-2 days.',
+            'supplier_onboarding' => 'Supplier Onboarding: New supplier registration and validation process. Steps: Supplier Registration, Document Verification, Credit Check, Quality Assessment, Procurement Approval, System Setup. Time: 1-2 weeks.',
+            'pick_pack_ship' => 'Pick Pack Ship: Complete order fulfillment from picking to shipping. Steps: Pick List Generation, Order Picking, Pick Verification, Order Packing, Shipment Creation. Time: 4-6 hours.',
+            'cycle_counting' => 'Cycle Counting: Systematic inventory counting and variance resolution. Steps: Count Schedule, Physical Count, Variance Analysis, Inventory Adjustment. Time: 1 day.',
+            'inventory_valuation' => 'Inventory Valuation: Complete inventory valuation for financial reporting. Steps: Data Gathering, Valuation Calculation, Variance Analysis, Finance Review, Controller Approval. Time: 1-2 days.'
+        ];
+        
+        $systemPrompt = "You are an expert ERP Inventory AI Assistant with deep knowledge of inventory management and supply chain processes. You help users with:
+
+INVENTORY MODULES:
+• Procurement - Purchase orders, supplier management, receiving
+• Warehouse Management - Location tracking, putaway, picking optimization
+• Order Fulfillment - Pick, pack, ship with carrier integration
+• Inventory Control - Cycle counting, adjustments, ABC analysis
+• Quality Control - Inspection workflows and quality assurance
+• Reporting & Analytics - Real-time dashboards and inventory insights
+
+WORKFLOW EXPERTISE:
+{$workflowDocs['purchase_order']}
+{$workflowDocs['goods_receipt']}
+{$workflowDocs['supplier_onboarding']}
+{$workflowDocs['pick_pack_ship']}
+
+CAPABILITIES:
+- Guide through procurement and purchasing processes
+- Explain warehouse management workflows
+- Assist with inventory optimization strategies
+- Provide supplier management guidance
+- Help with stock level planning and forecasting
+
+Be specific, actionable, and provide detailed guidance based on inventory management best practices.";
+
+        return app()->call('App\Http\Controllers\AIServiceController@callAI', [
+            'request' => new Request([
+                'provider' => 'ollama',
+                'prompt' => $message,
+                'context' => array_merge($context, ['module' => 'inventory']),
+                'config' => [
+                    'model' => 'llama3.2:3b',
+                    'baseUrl' => 'http://localhost:11434',
+                    'maxTokens' => 500,
+                    'temperature' => 0.7,
+                    'systemPrompt' => $systemPrompt
+                ]
+            ])
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Inventory AI Chat Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to generate AI response'], 500);
+    }
+});
+
+Route::post('/ai/chat/compliance', function (Request $request) {
+    try {
+        $message = $request->input('message');
+        $context = $request->input('context', []);
+        
+        $workflowDocs = [
+            'policy_approval' => 'Policy Approval: Automated policy review and approval workflow with stakeholder notifications. Steps: Policy Draft, Legal Review, Stakeholder Approval, Final Approval, Employee Notification. Time: 1-2 weeks.',
+            'audit_scheduling' => 'Audit Scheduling: Intelligent audit scheduling based on risk levels and compliance requirements. Steps: Risk Assessment, Auditor Assignment, Timeline Creation, Stakeholder Notification, Audit Execution. Time: 2-3 weeks.',
+            'risk_assessment' => 'Risk Assessment: Automated risk assessment workflows with escalation and mitigation tracking. Steps: Risk Identification, AI-powered Scoring, Risk Owner Assignment, Mitigation Strategy, Implementation Tracking. Time: 1-2 weeks.',
+            'report_generation' => 'Report Generation: Automated compliance report generation and distribution to stakeholders. Steps: Data Collection, AI Analysis, Template Selection, Report Generation, Stakeholder Distribution. Time: 1-2 days.',
+            'alert_management' => 'Alert Management: Smart alerting system with customizable thresholds and notification channels. Steps: Threshold Monitoring, Severity Assessment, Recipient Identification, Alert Delivery, Escalation Monitoring. Time: Real-time.',
+            'remediation_tracking' => 'Remediation Tracking: Automated tracking of remediation efforts with progress monitoring and reporting. Steps: Issue Identification, Resource Allocation, Progress Monitoring, Quality Assurance, Closure Documentation. Time: 2-8 weeks.'
+        ];
+        
+        $systemPrompt = "You are an expert ERP Compliance AI Assistant with comprehensive knowledge of regulatory compliance, risk management, and audit processes. You help users with:
+
+COMPLIANCE MODULES:
+• Regulatory Compliance - SOX, GDPR, HIPAA, ISO standards monitoring
+• Audit Trails - Tamper-proof logging, real-time monitoring, compliance reporting
+• Risk Management - Automated risk scoring, mitigation strategies, continuous monitoring
+• Policy Management - Centralized policy control with approval workflows
+• Compliance Reporting - Automated reporting with regulatory submission capabilities
+• AI-Powered Analysis - Root cause analysis and predictive compliance analytics
+
+WORKFLOW EXPERTISE:
+{$workflowDocs['policy_approval']}
+{$workflowDocs['audit_scheduling']}
+{$workflowDocs['risk_assessment']}
+{$workflowDocs['report_generation']}
+
+RCA AGENT CAPABILITIES:
+• Automated Issue Detection - Identifies compliance violations automatically
+• Pattern Recognition - Analyzes historical data for trends
+• Predictive Analytics - Forecasts potential compliance issues
+• Actionable Recommendations - Provides specific remediation steps
+• Risk Scoring - Quantifies impact and priority levels
+• Compliance Forecasting - Predicts future compliance posture
+
+Be authoritative, detail-oriented, and provide specific guidance for regulatory compliance and risk management.";
+
+        return app()->call('App\Http\Controllers\AIServiceController@callAI', [
+            'request' => new Request([
+                'provider' => 'ollama',
+                'prompt' => $message,
+                'context' => array_merge($context, ['module' => 'compliance']),
+                'config' => [
+                    'model' => 'llama3.2:3b',
+                    'baseUrl' => 'http://localhost:11434',
+                    'maxTokens' => 500,
+                    'temperature' => 0.7,
+                    'systemPrompt' => $systemPrompt
+                ]
+            ])
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Compliance AI Chat Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to generate AI response'], 500);
+    }
+});
+
+// AI Feedback Route
+Route::post('/ai/feedback', function (Request $request) {
+    try {
+        $wasHelpful = $request->input('was_helpful');
+        $module = $request->input('module');
+        $feedback = $request->input('feedback');
+        $improvementSuggestion = $request->input('improvement_suggestion');
+        
+        // Find the most recent AI interaction for this session
+        $recentInteraction = \App\Models\AITrainingData::where('session_id', session()->getId())
+            ->where('module', $module)
+            ->orderBy('created_at', 'desc')
+            ->first();
+            
+        if ($recentInteraction) {
+            $recentInteraction->update([
+                'was_helpful' => $wasHelpful,
+                'user_feedback' => $feedback,
+                'suggested_improvement' => $improvementSuggestion
+            ]);
+            
+            return response()->json(['message' => 'Feedback recorded successfully']);
+        }
+        
+        return response()->json(['message' => 'No recent interaction found'], 404);
+    } catch (\Exception $e) {
+        \Log::error('AI Feedback Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to record feedback'], 500);
+    }
+});
+
+// Training Data Export Route (for admins)
+Route::get('/ai/export-training/{module?}', function ($module = null) {
+    try {
+        $data = \App\Models\AITrainingData::exportForTraining($module);
+        
+        $filename = $module ? "training-data-{$module}.jsonl" : "training-data-all.jsonl";
+        
+        $jsonl = $data->map(function ($item) {
+            return json_encode($item);
+        })->implode("\n");
+        
+        return response($jsonl)
+            ->header('Content-Type', 'application/jsonl')
+            ->header('Content-Disposition', "attachment; filename={$filename}");
+    } catch (\Exception $e) {
+        \Log::error('Training Data Export Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to export training data'], 500);
+    }
+});
+
+// AI Training Data API Routes
+Route::get('/ai/training-data', function (Request $request) {
+    try {
+        $query = \App\Models\AITrainingData::query();
+        
+        // Apply filters
+        if ($request->has('module') && $request->module) {
+            $query->where('module', $request->module);
+        }
+        if ($request->has('model') && $request->model) {
+            $query->where('model_used', $request->model);
+        }
+        if ($request->has('helpful') && $request->helpful !== '') {
+            if ($request->helpful === 'null') {
+                $query->whereNull('was_helpful');
+            } else {
+                $query->where('was_helpful', (bool)$request->helpful);
+            }
+        }
+        if ($request->has('approved') && $request->approved !== '') {
+            $query->where('training_approved', (bool)$request->approved);
+        }
+        
+        // Pagination
+        $perPage = $request->get('per_page', 20);
+        $page = $request->get('page', 1);
+        $total = $query->count();
+        $totalPages = ceil($total / $perPage);
+        
+        $data = $query->orderBy('created_at', 'desc')
+            ->skip(($page - 1) * $perPage)
+            ->take($perPage)
+            ->get();
+        
+        // Calculate statistics
+        $stats = [
+            'total' => \App\Models\AITrainingData::count(),
+            'helpful_percentage' => round(\App\Models\AITrainingData::where('was_helpful', true)->count() / max(\App\Models\AITrainingData::whereNotNull('was_helpful')->count(), 1) * 100),
+            'sonar_usage' => round(\App\Models\AITrainingData::where('model_used', 'sonar-semantic')->count() / max(\App\Models\AITrainingData::count(), 1) * 100),
+            'avg_confidence' => round(\App\Models\AITrainingData::whereNotNull('confidence_score')->avg('confidence_score') ?? 0)
+        ];
+        
+        return response()->json([
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'per_page' => $perPage,
+                'total_items' => $total
+            ],
+            'stats' => $stats
+        ]);
+    } catch (\Exception $e) {
+        \Log::error('Training Data API Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to fetch training data'], 500);
+    }
+});
+
+Route::post('/ai/approve-training', function (Request $request) {
+    try {
+        $ids = $request->input('ids', []);
+        
+        \App\Models\AITrainingData::whereIn('id', $ids)
+            ->update(['training_approved' => true]);
+        
+        return response()->json(['message' => 'Training data approved successfully']);
+    } catch (\Exception $e) {
+        \Log::error('Training Approval Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to approve training data'], 500);
+    }
+});
+
+// AI Dashboard Metrics API
+Route::get('/ai/dashboard-metrics', function (Request $request) {
+    try {
+        $now = now();
+        $last24h = $now->copy()->subHours(24);
+        $lastHour = $now->copy()->subHour();
+        
+        // System Status
+        $status = [
+            'ollama' => \App\Helpers\AIDashboardHelper::checkOllamaStatus(),
+            'api' => true, // If we can reach this endpoint, API is working
+            'database' => true, // If we can query, DB is working
+            'model_performance' => 'Optimized'
+        ];
+        
+        // Basic Metrics
+        $totalRequests = \App\Models\AITrainingData::where('created_at', '>=', $last24h)->count();
+        $successfulRequests = \App\Models\AISuccessLog::where('created_at', '>=', $last24h)->count();
+        $errorRequests = \App\Models\AIErrorLog::where('created_at', '>=', $last24h)->count();
+        $timeoutErrors = \App\Models\AIErrorLog::where('created_at', '>=', $last24h)
+            ->where('is_timeout', true)->count();
+        
+        $successRate = $totalRequests > 0 ? round(($successfulRequests / $totalRequests) * 100, 1) : 0;
+        $timeoutRate = $totalRequests > 0 ? round(($timeoutErrors / $totalRequests) * 100, 1) : 0;
+        
+        // Response Time Metrics
+        $avgResponseTime = \App\Models\AISuccessLog::where('created_at', '>=', $last24h)
+            ->avg('response_time_ms') ?? 0;
+        
+        // Model Usage
+        $codellamaUsage = \App\Models\AISuccessLog::where('created_at', '>=', $last24h)
+            ->where('model', 'codellama:7b')->count();
+        $llamaUsage = \App\Models\AISuccessLog::where('created_at', '>=', $last24h)
+            ->where('model', 'llama3.2:3b')->count();
+        $totalModelUsage = $codellamaUsage + $llamaUsage;
+        
+        $codellamaUsagePercent = $totalModelUsage > 0 ? round(($codellamaUsage / $totalModelUsage) * 100, 1) : 0;
+        $llamaUsagePercent = $totalModelUsage > 0 ? round(($llamaUsage / $totalModelUsage) * 100, 1) : 0;
+        
+        // Charts Data
+        $responseTimeData = \App\Helpers\AIDashboardHelper::getResponseTimeChartData($last24h);
+        $errorTypesData = \App\Helpers\AIDashboardHelper::getErrorTypesChartData($last24h);
+        
+        // Error Details
+        $errorDetails = \App\Helpers\AIDashboardHelper::getErrorDetails($last24h);
+        
+        return response()->json([
+            'status' => $status,
+            'metrics' => [
+                'total_requests' => $totalRequests,
+                'success_rate' => $successRate,
+                'avg_response_time' => round($avgResponseTime),
+                'timeout_rate' => $timeoutRate,
+                'codellama_usage' => $codellamaUsagePercent,
+                'llama_usage' => $llamaUsagePercent,
+                'requests_change' => 0, // TODO: Calculate change from previous period
+                'success_change' => 0,
+                'response_change' => 0,
+                'timeout_change' => 0
+            ],
+            'charts' => [
+                'response_time' => $responseTimeData,
+                'error_types' => $errorTypesData
+            ],
+            'errors' => $errorDetails
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Dashboard Metrics Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to fetch dashboard metrics'], 500);
+    }
+});
+
+
+// Original general AI chat route
 Route::post('/ai/chat', function (Request $request) {
     try {
         // Get the user's message

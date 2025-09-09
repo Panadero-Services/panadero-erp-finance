@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -710,49 +711,15 @@
         </div>
     </div>
 
-    <!-- Contact Section -->
-    <section class="contact-section" id="contact">
-        <div class="container">
-            <div class="contact-content">
-                <h2 class="section-title">Contact Information</h2>
-                <div class="contact-grid">
-                    <div class="contact-info">
-                        <h3 style="color: white; margin-bottom: 1.5rem; font-size: 1.25rem;">Panadero Services</h3>
-                        <div class="contact-item">
-                            <span class="contact-icon">👤</span>
-                            <span>Luis Panadero</span>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">📍</span>
-                            <span>Stationsstraat 10<br>4571LB Axel, Netherlands</span>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">📞</span>
-                            <a href="tel:+31655328495" style="color: #5eead4; text-decoration: none;">+31 655 328 495</a>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">💼</span>
-                            <span>ERP Software Solutions</span>
-                        </div>
-                        <div class="contact-item">
-                            <span class="contact-icon">🔗</span>
-                            <a href="https://www.linkedin.com/in/lieuwe-b-172065168/" target="_blank" style="color: #5eead4; text-decoration: none;">LinkedIn Profile</a>
-                        </div>
-                    </div>
-                    <div class="contact-cta">
-                        <h3 style="color: white; margin-bottom: 1rem;">Get In Touch</h3>
-                        <p style="color: #d1d5db; margin-bottom: 2rem;">
-                            Interested in our compliance management solutions? 
-                            Contact us for a free consultation and demo.
-                        </p>
-                        <button class="btn-primary" onclick="window.location.href='tel:+31655328495'">
-                            <span>📞 Call Now</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+
+
+
+
+
+
+
+
+
 
     <!-- AI Chat Assistant -->
     <div id="ai-chat-widget" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 1001;">
@@ -858,19 +825,36 @@
         </div>
     </div>
 
-    <div class="footer">
-        <div class="container">
-            <p class="footer-text">© 2025 Indigo3 Compliance Management. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="/erp/compliance" class="footer-link">Compliance Module</a>
-                <a href="/erp/finance" class="footer-link">Finance Module</a>
-                <a href="/erp/hr" class="footer-link">HR Module</a>
-                <a href="/erp/inventory" class="footer-link">Inventory Module</a>
-            </div>
-        </div>
-    </div>
+
+        <!-- Contact Section - Will be loaded via component -->
+        <div id="contact-info-container"></div>
+
+        <!-- Compliance Footer Container - Will be loaded via component -->
+        <div id="compliance-footer-container"></div>
+
+        <!-- Load Components -->
+        <script src="components/compliance-footer.js"></script>
+        <script src="components/contact-info.js"></script>
 
     <script>
+
+        // Initialize Components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Contact Info
+            if (window.ContactInfo) {
+                const contactInfo = new ContactInfo();
+                contactInfo.render('contact-info-container');
+            }
+            
+            // Initialize Compliance Footer
+            if (window.ComplianceFooter) {
+                const footer = new ComplianceFooter();
+                footer.render('compliance-footer-container');
+            }
+        });
+
+
+
         // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

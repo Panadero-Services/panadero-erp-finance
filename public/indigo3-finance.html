@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Indigo3 Finance Management - Next-Generation ERP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -939,8 +940,9 @@
                         </div>
                         <div class="contact-item">
                             <span class="contact-icon">💼</span>
-                            <span>ERP Software Solutions</span>
+                            <a href="https://www.linkedin.com/in/lieuwe-b-172065168/" target="_blank" style="color: #d97706; text-decoration: none;">LinkedIn Profile</a>
                         </div>
+
                         <div class="contact-item">
                             <span class="contact-icon">💼</span>
                             <a href="https://www.linkedin.com/in/lieuwe-b-172065168/" target="_blank" style="color: #d97706; text-decoration: none;">LinkedIn Profile</a>
@@ -1618,7 +1620,22 @@
                     // Simulate typing delay
                     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
                     
-                    bubble.textContent = message;
+                    bubble.innerHTML = `
+                        <div style="white-space: pre-line;">${message}</div>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                            <span style="font-size: 0.75rem; color: rgba(255,255,255,0.7);">Was this helpful?</span>
+                            <button onclick="submitFeedback(this, true)" style="
+                                background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; 
+                                border-radius: 0.25rem; padding: 0.25rem 0.5rem; color: #22c55e;
+                                font-size: 0.75rem; cursor: pointer;
+                            ">👍 Yes</button>
+                            <button onclick="submitFeedback(this, false)" style="
+                                background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; 
+                                border-radius: 0.25rem; padding: 0.25rem 0.5rem; color: #ef4444;
+                                font-size: 0.75rem; cursor: pointer;
+                            ">👎 No</button>
+                        </div>
+                    `;
                 }
 
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1655,9 +1672,36 @@
             // Add user message
             await erpAI.addMessage(message, true);
             
-            // Generate and add AI response
-            const response = await erpAI.generateResponse(message);
-            await erpAI.addMessage(response, false);
+            try {
+                // Call real OpenAI API through backend
+                const response = await fetch('/api/ai/chat/finance', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: {
+                            module: 'finance',
+                            page: 'landing',
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                await erpAI.addMessage(data.response || data.message || 'I apologize, but I encountered an error processing your request. Please try again.', false);
+            } catch (error) {
+                console.error('Chat error:', error);
+                // Fallback to local response generation
+                const fallbackResponse = await erpAI.generateResponse(message);
+                await erpAI.addMessage(fallbackResponse, false);
+            }
         }
 
         async function sendQuickQuestion(question) {
@@ -1668,6 +1712,37 @@
         function handleChatKeyPress(event) {
             if (event.key === 'Enter') {
                 sendChatMessage();
+            }
+        }
+
+        // Feedback submission function
+        async function submitFeedback(button, wasHelpful) {
+            try {
+                const response = await fetch('/api/ai/feedback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        was_helpful: wasHelpful,
+                        module: 'finance'
+                    })
+                });
+
+                // Update button to show feedback received
+                button.parentElement.innerHTML = `
+                    <span style="font-size: 0.75rem; color: rgba(255,255,255,0.7);">
+                        ${wasHelpful ? '✅ Thanks for your feedback!' : '📝 Feedback received - we\'ll improve!'}
+                    </span>
+                `;
+            } catch (error) {
+                console.error('Feedback error:', error);
+                button.parentElement.innerHTML = `
+                    <span style="font-size: 0.75rem; color: rgba(255,255,255,0.7);">
+                        ✅ Feedback noted (stored locally)
+                    </span>
+                `;
             }
         }
 

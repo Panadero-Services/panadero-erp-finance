@@ -1,0 +1,191 @@
+%PDF-1.4
+1 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+
+2 0 obj
+<<
+/Type /Pages
+/Kids [3 0 R]
+/Count 1
+>>
+endobj
+
+3 0 obj
+<<
+/Type /Page
+/Parent 2 0 R
+/MediaBox [0 0 612 792]
+/Contents 4 0 R
+/Resources <<
+/Font <<
+/F1 5 0 R
+>>
+>>
+>>
+endobj
+
+4 0 obj
+<<
+/Length 2000
+>>
+stream
+BT
+/F1 24 Tf
+100 700 Td
+(Panadero AI Engine Development Plan) Tj
+0 -30 Td
+/F1 16 Tf
+(Q4 2025 Internal Roadmap) Tj
+0 -50 Td
+/F1 14 Tf
+(Executive Summary) Tj
+0 -20 Td
+/F1 12 Tf
+(Panadero Services is embarking on the development of a proprietary AI engine) Tj
+0 -15 Td
+(to power our next-generation applications. This comprehensive 12-week) Tj
+0 -15 Td
+(development plan outlines the complete roadmap from foundational tensor) Tj
+0 -15 Td
+(operations to production-ready AI inference capabilities.) Tj
+0 -30 Td
+/F1 14 Tf
+(Phase 1: Foundation - Weeks 1-2) Tj
+0 -20 Td
+/F1 12 Tf
+(- Custom JavaScript tensor operations library) Tj
+0 -15 Td
+(- Memory-efficient data structures) Tj
+0 -15 Td
+(- Matrix and vector operations) Tj
+0 -15 Td
+(- Comprehensive testing framework) Tj
+0 -15 Td
+(- Build and development pipeline) Tj
+0 -30 Td
+/F1 14 Tf
+(Phase 2: Neural Core - Weeks 3-4) Tj
+0 -20 Td
+/F1 12 Tf
+(- Linear transformation layers) Tj
+0 -15 Td
+(- Layer normalization (RMSNorm)) Tj
+0 -15 Td
+(- Multi-head attention mechanism) Tj
+0 -15 Td
+(- Group Query Attention (GQA)) Tj
+0 -15 Td
+(- RoPE positional encoding) Tj
+0 -30 Td
+/F1 14 Tf
+(Phase 3: Architecture - Weeks 5-6) Tj
+0 -20 Td
+/F1 12 Tf
+(- Stacked transformer blocks) Tj
+0 -15 Td
+(- Language modeling head) Tj
+0 -15 Td
+(- Memory optimization techniques) Tj
+0 -15 Td
+(- Model compression strategies) Tj
+0 -30 Td
+/F1 14 Tf
+(Phase 4: Training - Weeks 7-8) Tj
+0 -20 Td
+/F1 12 Tf
+(- Cross-entropy loss implementation) Tj
+0 -15 Td
+(- AdamW optimizer with weight decay) Tj
+0 -15 Td
+(- Learning rate scheduling) Tj
+0 -15 Td
+(- Data loading and preprocessing) Tj
+0 -15 Td
+(- Model checkpointing and recovery) Tj
+0 -30 Td
+/F1 14 Tf
+(Phase 5: Inference - Weeks 9-10) Tj
+0 -20 Td
+/F1 12 Tf
+(- Autoregressive text generation) Tj
+0 -15 Td
+(- Beam search and sampling strategies) Tj
+0 -15 Td
+(- RESTful API for text generation) Tj
+0 -15 Td
+(- Real-time streaming output) Tj
+0 -30 Td
+/F1 14 Tf
+(Phase 6: Production - Weeks 11-12) Tj
+0 -20 Td
+/F1 12 Tf
+(- INT8/INT4 weight quantization) Tj
+0 -15 Td
+(- Model pruning techniques) Tj
+0 -15 Td
+(- HTTP/WebSocket API serving) Tj
+0 -15 Td
+(- Load balancing and scaling) Tj
+0 -15 Td
+(- Monitoring and documentation) Tj
+0 -30 Td
+/F1 14 Tf
+(Performance Targets) Tj
+0 -20 Td
+/F1 12 Tf
+(- Inference Speed: >100 tokens/second) Tj
+0 -15 Td
+(- Memory Usage: <4GB during inference) Tj
+0 -15 Td
+(- Model Size: 7B+ parameters supported) Tj
+0 -15 Td
+(- API Response: <100ms latency) Tj
+0 -15 Td
+(- Concurrent Users: 1000+ simultaneous) Tj
+0 -30 Td
+/F1 14 Tf
+(Resource Requirements) Tj
+0 -20 Td
+/F1 12 Tf
+(- Development Team: 4-6 developers) Tj
+0 -15 Td
+(- Total Investment: 460 hours) Tj
+0 -15 Td
+(- Budget: $210,000) Tj
+0 -15 Td
+(- Timeline: 12 weeks) Tj
+0 -30 Td
+/F1 12 Tf
+(This document is confidential and intended for internal use only by Panadero Services.) Tj
+ET
+endstream
+endobj
+
+5 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+>>
+endobj
+
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000250 00000 n 
+0000002300 00000 n 
+trailer
+<<
+/Size 6
+/Root 1 0 R
+>>
+startxref
+2450
+%%EOF

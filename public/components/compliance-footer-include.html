@@ -1,0 +1,81 @@
+<!-- Compliance Footer Include Component -->
+<!-- Include this file using: <div id="compliance-footer-placeholder"></div> -->
+
+<script>
+// Compliance Footer Include Script
+(function() {
+    const footerHTML = `
+        <div class="compliance-footer">
+            <div class="container">
+                <p class="footer-text">© 2025 Indigo3 Compliance Management. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="/erp/compliance" class="footer-link">Compliance Module</a>
+                    <a href="/erp/finance" class="footer-link">Finance Module</a>
+                    <a href="/erp/hr" class="footer-link">HR Module</a>
+                    <a href="/erp/inventory" class="footer-link">Inventory Module</a>
+                </div>
+            </div>
+        </div>
+    `;
+
+    const footerCSS = `
+        <style>
+        .compliance-footer {
+            background: rgba(15, 23, 42, 0.95); 
+            padding: 3rem 0; 
+            text-align: center;
+            border-top: 1px solid rgba(13, 148, 136, 0.2);
+        }
+        .compliance-footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+        .footer-text {
+            color: #94a3b8; 
+            margin-bottom: 1rem;
+        }
+        .footer-links {
+            display: flex; 
+            justify-content: center; 
+            gap: 2rem; 
+            margin-top: 1rem;
+        }
+        .footer-link {
+            color: #5eead4; 
+            text-decoration: none; 
+            transition: color 0.3s ease;
+        }
+        .footer-link:hover { 
+            color: #14b8a6; 
+        }
+        @media (max-width: 768px) {
+            .footer-links { 
+                flex-direction: column; 
+                gap: 1rem; 
+            }
+        }
+        </style>
+    `;
+
+    // Function to load the footer
+    function loadComplianceFooter() {
+        const placeholder = document.getElementById('compliance-footer-placeholder');
+        if (placeholder) {
+            // Inject CSS if not already present
+            if (!document.getElementById('compliance-footer-styles')) {
+                document.head.insertAdjacentHTML('beforeend', footerCSS);
+            }
+            // Inject HTML
+            placeholder.innerHTML = footerHTML;
+        }
+    }
+
+    // Load when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadComplianceFooter);
+    } else {
+        loadComplianceFooter();
+    }
+})();
+</script>

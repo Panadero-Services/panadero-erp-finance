@@ -1,0 +1,212 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Panadero AI Engine - AWS Deployment Stack'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: 'production'
+    AllowedValues: ['development', 'staging', 'production']
+  
+  DomainName:
+    Type: String
+    Default: 'ai-engine.panadero.services'
+  
+  AdminDomainName:
+    Type: String
+    Default: 'admin.ai-engine.panadero.services'
+
+Resources:
+  # S3 Bucket for static assets
+  StaticAssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'panadero-ai-engine-${Environment}-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+      WebsiteConfiguration:
+        IndexDocument: 'index.html'
+        ErrorDocument: 'error.html'
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: [GET, POST, PUT, DELETE, HEAD]
+            AllowedOrigins: ['*']
+            MaxAge: 3600
+
+  # CloudFront Distribution
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Origins:
+          - DomainName: !GetAtt StaticAssetsBucket.RegionalDomainName
+            Id: S3Origin
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        Enabled: true
+        DefaultRootObject: 'index.html'
+        Aliases:
+          - !Ref DomainName
+          - !Ref AdminDomainName
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+          CachedMethods: [GET, HEAD, OPTIONS]
+          Compress: true
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: all
+        PriceClass: PriceClass_100
+
+  # Lambda Function for API
+  AIEngineLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'panadero-ai-engine-${Environment}'
+      Runtime: nodejs18.x
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          const { AIEngine } = require('./src/index.js');
+          
+          exports.handler = async (event) => {
+            const engine = new AIEngine();
+            await engine.initialize();
+            
+            return {
+              statusCode: 200,
+              headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+              },
+              body: JSON.stringify({
+                message: 'Panadero AI Engine API',
+                timestamp: new Date().toISOString(),
+                version: '1.0.0'
+              })
+            };
+          };
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 30
+      MemorySize: 1024
+      Environment:
+        Variables:
+          NODE_ENV: !Ref Environment
+          BUCKET_NAME: !Ref StaticAssetsBucket
+
+  # Lambda Execution Role
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource: !Sub '${StaticAssetsBucket}/*'
+
+  # API Gateway
+  AIEngineAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub 'panadero-ai-engine-${Environment}'
+      Description: 'Panadero AI Engine API'
+      EndpointConfiguration:
+        Types: [REGIONAL]
+
+  # API Gateway Deployment
+  API Deployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: [AIEngineMethod]
+    Properties:
+      RestApiId: !Ref AIEngineAPI
+      StageName: !Ref Environment
+
+  # API Gateway Method
+  AIEngineMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref AIEngineAPI
+      ResourceId: !GetAtt AIEngineAPI.RootResourceId
+      HttpMethod: ANY
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AIEngineLambda.Arn}/invocations'
+
+  # Lambda Permission for API Gateway
+  LambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref AIEngineLambda
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${AIEngineAPI}/*/*'
+
+  # DynamoDB Table for metrics
+  MetricsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub 'panadero-ai-engine-metrics-${Environment}'
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+        - AttributeName: timestamp
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+        - AttributeName: timestamp
+          KeyType: RANGE
+      TimeToLiveSpecification:
+        AttributeName: ttl
+        Enabled: true
+
+  # CloudWatch Log Group
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/lambda/panadero-ai-engine-${Environment}'
+      RetentionInDays: 30
+
+Outputs:
+  APIEndpoint:
+    Description: 'API Gateway endpoint URL'
+    Value: !Sub 'https://${AIEngineAPI}.execute-api.${AWS::Region}.amazonaws.com/${Environment}'
+    Export:
+      Name: !Sub '${AWS::StackName}-APIEndpoint'
+  
+  CloudFrontURL:
+    Description: 'CloudFront distribution URL'
+    Value: !GetAtt CloudFrontDistribution.DomainName
+    Export:
+      Name: !Sub '${AWS::StackName}-CloudFrontURL'
+  
+  S3BucketName:
+    Description: 'S3 bucket name for static assets'
+    Value: !Ref StaticAssetsBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-S3BucketName'

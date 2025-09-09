@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Indigo3 HR Management - Next-Generation ERP</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1109,6 +1110,11 @@
                             <span class="contact-icon">💼</span>
                             <span>ERP Software Solutions</span>
                         </div>
+                        <div class="contact-item">
+                            <span class="contact-icon">🔗</span>
+                            <a href="https://www.linkedin.com/in/lieuwe-b-172065168/" target="_blank" style="color: #5eead4; text-decoration: none;">LinkedIn Profile</a>
+                        </div>
+                        
                     </div>
                     <div class="contact-cta">
                         <h3 style="color: white; margin-bottom: 1rem;">Get In Touch</h3>
@@ -1130,11 +1136,6 @@
             <p>&copy; 2025 Indigo3 ERP Systems. All rights reserved.</p>
             <p style="color: #9ca3af; font-size: 0.75rem; margin-top: 0.5rem;">
                 Panadero Services | Luis Panadero | Stationsstraat 10, 4571LB Axel, Netherlands | +31 655 328 495
-            </p>
-            <p>
-                <a href="/privacy">Privacy Policy</a> | 
-                <a href="/terms">Terms of Service</a> | 
-                <a href="/support">Support</a>
             </p>
         </div>
     </footer>
@@ -1363,9 +1364,36 @@
             // Add user message
             await erpAI.addMessage(message, true);
             
-            // Generate and add AI response
-            const response = await erpAI.generateResponse(message);
-            await erpAI.addMessage(response, false);
+            try {
+                // Call real OpenAI API through backend
+                const response = await fetch('/api/ai/chat/hr', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        context: {
+                            module: 'hr',
+                            page: 'landing',
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                await erpAI.addMessage(data.response || data.message || 'I apologize, but I encountered an error processing your request. Please try again.', false);
+            } catch (error) {
+                console.error('Chat error:', error);
+                // Fallback to local response generation
+                const fallbackResponse = await erpAI.generateResponse(message);
+                await erpAI.addMessage(fallbackResponse, false);
+            }
         }
 
         async function sendQuickQuestion(question) {

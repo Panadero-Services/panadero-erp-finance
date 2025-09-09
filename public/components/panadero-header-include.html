@@ -1,0 +1,268 @@
+<!-- Panadero Header Include Component -->
+<!-- Include this file using: <div id="panadero-header-placeholder"></div> -->
+
+<script>
+// Panadero Header Include Script
+(function() {
+    const headerHTML = `
+        <header class="panadero-header">
+            <div class="container">
+                <a href="/" class="panadero-logo">
+                    <div class="panadero-logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="32" height="32" viewBox="0 0 64 64" xml:space="preserve">
+                            <g transform="matrix(0.18 0 0 2.13 7.5 32)" id="TOG9SNeY5-WvXTq12Yxya">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.18 0 0 1.78 17.5 37)" id="-f0qLJzUzfvObgEwQFDsr">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.18 0 0 1.07 27.5 47)" id="d48iDAmQTaEx0D_qEr_kd">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.18 0 0 0.53 37.5 54.5)" id="cK16CjMrdrdtcVQa_m1ZB">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(1.96 0 0 0.18 32.5 4.5)" id="Z2cDaiLZFwruV7hFZdQmT">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(1.25 0 0 0.18 32.5 14.5)" id="-YiaghUVcr-23NEGsyFHa">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.89 0 0 0.18 37.5 34.5)" id="XPQL0O9h_vplRGCfaq3rW">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.18 0 0 0.89 47.5 24.5)" id="EG_h2u-b8o61GSH8UVb0X">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.18 0 0 1.6 57.5 24.5)" id="ZkNy4BfQHIwW-ivxx82vI">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.89 0 0 0.18 47.5 44.5)" id="V_xKI58taT96CcOm2IL4Q">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                            <g transform="matrix(0.53 0 0 0.18 32.5 24.5)" id="pmL6lVVqUq6DfLqyOEgJr">
+                                <path fill="rgb(42,143,118)" style="stroke: rgb(42,143,118); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" transform=" translate(0, 0)" d="M -14.05152 -14.05152 L 14.05152 -14.05152 L 14.05152 14.05152 L -14.05152 14.05152 z" stroke-linecap="round" />
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="panadero-logo-text">Panadero Services</div>
+                </a>
+                
+                <nav class="panadero-nav">
+                    <a href="/indigo3-compliance.html">Compliance</a>
+                    <a href="/indigo3-hr.html">HR Management</a>
+                    <a href="/indigo3-finance.html">Finance</a>
+                    <a href="/indigo3-inventory.html">Inventory</a>
+                    <a href="/ai-engine-landing.html" class="active">AI Engine</a>
+                    <a href="/packages/panadero-workflow/">Workflow</a>
+                </nav>
+                
+                <div class="panadero-status">
+                    <div class="status-indicator"></div>
+                    <span class="status-text">All Systems Online</span>
+                </div>
+                
+                <div class="panadero-mobile-menu" onclick="toggleMobileMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </header>
+    `;
+
+    const headerCSS = `
+        <style>
+        .panadero-header {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.85); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.75rem 0; 
+            transition: all 0.3s ease;
+        }
+        .panadero-header .container {
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 1.5rem;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .panadero-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        .panadero-logo:hover {
+            transform: scale(1.05);
+        }
+        .panadero-logo-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .panadero-logo-text {
+            font-size: 1rem; 
+            font-weight: 700; 
+            color: white;
+            background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            background-clip: text;
+        }
+        .panadero-nav {
+            display: flex; 
+            gap: 1.5rem; 
+            align-items: center;
+        }
+        .panadero-nav a {
+            color: #d1d5db; 
+            text-decoration: none; 
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem; 
+            border-radius: 0.375rem;
+            transition: all 0.3s ease; 
+            font-weight: 500;
+        }
+        .panadero-nav a:hover {
+            color: white; 
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .panadero-nav a.active {
+            color: #a5b4fc; 
+            background: rgba(99, 102, 241, 0.2);
+        }
+        .panadero-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse 2s infinite;
+        }
+        .status-text {
+            font-size: 0.875rem;
+            color: #a5b4fc;
+        }
+        .panadero-mobile-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+        .panadero-mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        @media (max-width: 768px) {
+            .panadero-nav { 
+                gap: 0.75rem; 
+            }
+            .panadero-nav a { 
+                font-size: 0.75rem; 
+                padding: 0.375rem 0.5rem; 
+            }
+            .panadero-mobile-menu {
+                display: flex;
+            }
+            .panadero-status {
+                display: none;
+            }
+        }
+        </style>
+    `;
+
+    // Function to load the header
+    function loadPanaderoHeader() {
+        const placeholder = document.getElementById('panadero-header-placeholder');
+        if (placeholder) {
+            // Inject CSS if not already present
+            if (!document.getElementById('panadero-header-styles')) {
+                document.head.insertAdjacentHTML('beforeend', headerCSS);
+            }
+            // Inject HTML
+            placeholder.innerHTML = headerHTML;
+            
+            // Initialize header functionality
+            initializeHeader();
+        }
+    }
+
+    // Function to initialize header functionality
+    function initializeHeader() {
+        // Add mobile menu toggle function
+        window.toggleMobileMenu = function() {
+            const nav = document.querySelector('.panadero-nav');
+            nav.classList.toggle('active');
+        };
+
+        // Add active class to current page navigation link
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.panadero-nav a');
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPath) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Make logo dynamic with random colors
+        makeLogoDynamic();
+    }
+
+    // Function to make logo dynamic
+    function makeLogoDynamic() {
+        const logoPaths = document.querySelectorAll('.panadero-logo-icon path');
+        const green = 190;
+        
+        function random_rgba() {
+            const o = Math.round;
+            const r = Math.random;
+            const s = 255;
+            return 'rgb(' + o(r()*s) + ',' + green + ',' + o(r()*s) + ')';
+        }
+        
+        logoPaths.forEach(path => {
+            path.setAttribute('fill', random_rgba());
+        });
+        
+        // Update colors every 3 seconds
+        setInterval(() => {
+            logoPaths.forEach(path => {
+                path.setAttribute('fill', random_rgba());
+            });
+        }, 3000);
+    }
+
+    // Load when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadPanaderoHeader);
+    } else {
+        loadPanaderoHeader();
+    }
+})();
+</script>
