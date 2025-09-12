@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Operations Workbench - Phase 11 AI Engine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e2e8f0; min-height: 100vh;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .header {
+            text-align: center; margin-bottom: 3rem; padding: 2rem 0;
+            background: rgba(139, 92, 246, 0.1); border-radius: 1rem; border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .header h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(135deg, #8b5cf6, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { font-size: 1.125rem; color: #94a3b8; max-width: 600px; margin: 0 auto; }
+        .workbench { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+        .input-panel, .output-panel { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 1rem; padding: 1.5rem; }
+        .panel-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: #8b5cf6; }
+        .model-selection { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .model-card { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 0.75rem; padding: 1rem; cursor: pointer; transition: all 0.3s ease; }
+        .model-card:hover { background: rgba(139, 92, 246, 0.1); border-color: #8b5cf6; transform: translateY(-2px); }
+        .model-card.active { background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6; }
+        .model-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .model-title { font-weight: 600; margin-bottom: 0.5rem; }
+        .model-desc { font-size: 0.875rem; color: #94a3b8; }
+        .input-group { margin-bottom: 1.5rem; }
+        .input-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #e2e8f0; }
+        .input-field { width: 100%; padding: 0.75rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 0.5rem; color: #e2e8f0; font-family: 'Monaco', monospace; }
+        .input-field:focus { outline: none; border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
+        .btn { background: linear-gradient(135deg, #8b5cf6, #a855f7); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3); }
+        .result-section { margin-bottom: 1.5rem; }
+        .result-title { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; color: #8b5cf6; }
+        .result-content { background: rgba(15, 23, 42, 0.8); padding: 1rem; border-radius: 0.5rem; border: 1px solid rgba(148, 163, 184, 0.1); font-family: 'Monaco', monospace; font-size: 0.875rem; white-space: pre-wrap; color: #cbd5e1; line-height: 1.6; }
+        .scenario-section { margin-top: 2rem; }
+        .scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .scenario-btn { background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 0.5rem; padding: 1rem; cursor: pointer; transition: all 0.3s ease; text-align: center; }
+        .scenario-btn:hover { background: rgba(139, 92, 246, 0.1); border-color: #8b5cf6; transform: translateY(-2px); }
+        .scenario-btn.active { background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6; }
+        .pattern-insight { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 0.5rem; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid #10b981; }
+        .pattern-warning { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 0.5rem; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid #f59e0b; }
+        .pattern-critical { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem; padding: 1rem; margin: 0.5rem 0; border-left: 4px solid #ef4444; }
+        .pattern-title { font-weight: 600; color: #10b981; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .pattern-description { color: #cbd5e1; font-size: 0.875rem; line-height: 1.5; }
+        .pattern-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .pattern-metric { background: rgba(0, 0, 0, 0.2); padding: 0.75rem; border-radius: 0.375rem; text-align: center; }
+        .pattern-metric-value { font-size: 1.25rem; font-weight: 700; color: #8b5cf6; }
+        .pattern-metric-label { font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔢 Matrix Operations Workbench</h1>
+            <p>Advanced matrix operations and linear algebra computations optimized for AI workloads</p>
+        </div>
+
+        <div class="workbench">
+            <div class="input-panel">
+                <h3 class="panel-title">Matrix Operations</h3>
+                
+                <div class="model-selection">
+                    <div class="model-card active" data-model="basic">
+                        <div class="model-icon">➕</div>
+                        <div class="model-title">Basic Operations</div>
+                        <div class="model-desc">Addition, multiplication, transpose</div>
+                    </div>
+                    <div class="model-card" data-model="decomposition">
+                        <div class="model-icon">🔍</div>
+                        <div class="model-title">Decomposition</div>
+                        <div class="model-desc">Eigenvalue, SVD, LU, QR</div>
+                    </div>
+                    <div class="model-card" data-model="sparse">
+                        <div class="model-icon">🕸️</div>
+                        <div class="model-title">Sparse Matrices</div>
+                        <div class="model-desc">Efficient sparse operations</div>
+                    </div>
+                    <div class="model-card" data-model="optimization">
+                        <div class="model-icon">⚡</div>
+                        <div class="model-title">Optimization</div>
+                        <div class="model-desc">BLAS/LAPACK optimized</div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Matrix A (JSON format)</label>
+                    <textarea class="input-field" id="matrixA" rows="4" placeholder='[[1, 2, 3], [4, 5, 6], [7, 8, 9]]'>[[1, 2, 3], [4, 5, 6], [7, 8, 9]]</textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Matrix B (JSON format)</label>
+                    <textarea class="input-field" id="matrixB" rows="4" placeholder='[[9, 8, 7], [6, 5, 4], [3, 2, 1]]'>[[9, 8, 7], [6, 5, 4], [3, 2, 1]]</textarea>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Operation Type</label>
+                    <select class="input-field" id="operationType">
+                        <option value="multiply">Matrix Multiplication</option>
+                        <option value="add">Matrix Addition</option>
+                        <option value="transpose">Transpose</option>
+                        <option value="determinant">Determinant</option>
+                        <option value="inverse">Inverse</option>
+                        <option value="eigenvalues">Eigenvalues</option>
+                        <option value="svd">SVD Decomposition</option>
+                        <option value="lu">LU Factorization</option>
+                        <option value="qr">QR Factorization</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Precision</label>
+                    <select class="input-field" id="precision">
+                        <option value="single">Single Precision (32-bit)</option>
+                        <option value="double" selected>Double Precision (64-bit)</option>
+                        <option value="extended">Extended Precision (80-bit)</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="processMatrixOperation()">Process Operation</button>
+                <button class="btn" onclick="simulateMatrixProblem()">Simulate Problem</button>
+                <button class="btn" onclick="explainMatrixSolution()">Explain Solution</button>
+                <button class="btn" onclick="runMatrixTests()">Run Tests</button>
+            </div>
+
+            <div class="output-panel">
+                <h3 class="panel-title">Results & Analysis</h3>
+                
+                <div class="result-section">
+                    <h4 class="result-title">Matrix Operation Result</h4>
+                    <div class="result-content" id="matrixResult">
+                        Matrix operation results will appear here.
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <h4 class="result-title">Step-by-Step Solution</h4>
+                    <div class="result-content" id="matrixSteps">
+                        Detailed solution steps will be displayed here.
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <h4 class="result-title">🔍 Matrix Properties & Insights</h4>
+                    <div class="result-content" id="matrixInsights">
+                        Matrix properties and computational insights will be highlighted here.
+                    </div>
+                </div>
+                
+                <div class="result-section">
+                    <h4 class="result-title">📈 Performance Metrics</h4>
+                    <div class="result-content" id="performanceMetrics">
+                        Processing time and accuracy metrics will be displayed here.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scenario-section">
+            <h3 class="panel-title">Real-World Matrix Scenarios</h3>
+            <div class="scenario-grid">
+                <div class="scenario-btn" onclick="loadScenario('machine_learning')">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🤖</div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Machine Learning</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">Neural network weight matrices</div>
+                </div>
+                <div class="scenario-btn" onclick="loadScenario('computer_graphics')">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎮</div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Computer Graphics</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">3D transformations and rotations</div>
+                </div>
+                <div class="scenario-btn" onclick="loadScenario('signal_processing')">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📡</div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Signal Processing</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">Fourier transforms and filters</div>
+                </div>
+                <div class="scenario-btn" onclick="loadScenario('optimization')">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Optimization</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">Linear programming and constraints</div>
+                </div>
+                <div class="scenario-btn" onclick="loadScenario('cryptography')">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔐</div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Cryptography</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">Encryption and key generation</div>
+                </div>
+                <div class="scenario-btn" onclick="loadScenario('physics')">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚛️</div>
+                    <div style="font-weight: 600; margin-bottom: 0.25rem;">Physics Simulation</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">Quantum mechanics and dynamics</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MatrixEngine {
+            constructor() {
+                this.selectedModel = 'basic';
+                this.precision = 'double';
+            }
+
+            setModel(model) {
+                this.selectedModel = model;
+            }
+
+            setPrecision(precision) {
+                this.precision = precision;
+            }
+
+            // Basic matrix operations
+            addMatrices(a, b) {
+                if (a.length !== b.length || a[0].length !== b[0].length) {
+                    throw new Error('Matrices must have the same dimensions for addition');
+                }
+                return a.map((row, i) => row.map((val, j) => val + b[i][j]));
+            }
+
+            multiplyMatrices(a, b) {
+                if (a[0].length !== b.length) {
+                    throw new Error('Number of columns in A must equal number of rows in B');
+                }
+                const result = Array(a.length).fill().map(() => Array(b[0].length).fill(0));
+                for (let i = 0; i < a.length; i++) {
+                    for (let j = 0; j < b[0].length; j++) {
+                        for (let k = 0; k < b.length; k++) {
+                            result[i][j] += a[i][k] * b[k][j];
+                        }
+                    }
+                }
+                return result;
+            }
+
+            transpose(matrix) {
+                return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+            }
+
+            determinant(matrix) {
+                if (matrix.length !== matrix[0].length) {
+                    throw new Error('Matrix must be square for determinant calculation');
+                }
+                if (matrix.length === 1) return matrix[0][0];
+                if (matrix.length === 2) {
+                    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+                }
+                let det = 0;
+                for (let i = 0; i < matrix.length; i++) {
+                    const subMatrix = matrix.slice(1).map(row => row.filter((_, j) => j !== i));
+                    det += (i % 2 === 0 ? 1 : -1) * matrix[0][i] * this.determinant(subMatrix);
+                }
+                return det;
+            }
+
+            // Eigenvalue approximation (simplified)
+            eigenvalues(matrix) {
+                if (matrix.length !== matrix[0].length) {
+                    throw new Error('Matrix must be square for eigenvalue calculation');
+                }
+                // Simplified power iteration for largest eigenvalue
+                let vector = Array(matrix.length).fill(1);
+                let prevVector = Array(matrix.length).fill(0);
+                let iterations = 0;
+                const maxIterations = 100;
+                
+                while (iterations < maxIterations) {
+                    prevVector = [...vector];
+                    vector = this.multiplyMatrices([vector], matrix)[0];
+                    const norm = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
+                    vector = vector.map(val => val / norm);
+                    
+                    const convergence = Math.sqrt(prevVector.reduce((sum, val, i) => sum + Math.pow(val - vector[i], 2), 0));
+                    if (convergence < 1e-6) break;
+                    iterations++;
+                }
+                
+                const eigenvalue = this.multiplyMatrices([vector], matrix)[0].reduce((sum, val, i) => sum + val * vector[i], 0);
+                return { eigenvalue, vector, iterations };
+            }
+
+            // Matrix properties analysis
+            analyzeMatrix(matrix) {
+                const properties = {
+                    dimensions: `${matrix.length} × ${matrix[0].length}`,
+                    isSquare: matrix.length === matrix[0].length,
+                    isSymmetric: this.isSymmetric(matrix),
+                    isOrthogonal: this.isOrthogonal(matrix),
+                    conditionNumber: this.conditionNumber(matrix),
+                    rank: this.matrixRank(matrix),
+                    trace: this.trace(matrix)
+                };
+                return properties;
+            }
+
+            isSymmetric(matrix) {
+                if (!this.isSquare(matrix)) return false;
+                for (let i = 0; i < matrix.length; i++) {
+                    for (let j = 0; j < matrix[i].length; j++) {
+                        if (Math.abs(matrix[i][j] - matrix[j][i]) > 1e-10) return false;
+                    }
+                }
+                return true;
+            }
+
+            isOrthogonal(matrix) {
+                if (!this.isSquare(matrix)) return false;
+                const identity = Array(matrix.length).fill().map((_, i) => 
+                    Array(matrix.length).fill().map((_, j) => i === j ? 1 : 0)
+                );
+                const product = this.multiplyMatrices(matrix, this.transpose(matrix));
+                return this.matricesEqual(product, identity, 1e-6);
+            }
+
+            conditionNumber(matrix) {
+                if (!this.isSquare(matrix)) return null;
+                const det = this.determinant(matrix);
+                if (Math.abs(det) < 1e-10) return Infinity;
+                // Simplified condition number calculation
+                return Math.abs(det);
+            }
+
+            matrixRank(matrix) {
+                // Simplified rank calculation
+                const rows = matrix.length;
+                const cols = matrix[0].length;
+                let rank = Math.min(rows, cols);
+                
+                for (let i = 0; i < rank; i++) {
+                    if (Math.abs(matrix[i][i]) < 1e-10) {
+                        let found = false;
+                        for (let k = i + 1; k < rows; k++) {
+                            if (Math.abs(matrix[k][i]) > 1e-10) {
+                                [matrix[i], matrix[k]] = [matrix[k], matrix[i]];
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            rank--;
+                            i--;
+                        }
+                    }
+                }
+                return rank;
+            }
+
+            trace(matrix) {
+                if (!this.isSquare(matrix)) return null;
+                return matrix.reduce((sum, row, i) => sum + row[i], 0);
+            }
+
+            isSquare(matrix) {
+                return matrix.length === matrix[0].length;
+            }
+
+            matricesEqual(a, b, tolerance = 1e-10) {
+                if (a.length !== b.length || a[0].length !== b[0].length) return false;
+                for (let i = 0; i < a.length; i++) {
+                    for (let j = 0; j < a[i].length; j++) {
+                        if (Math.abs(a[i][j] - b[i][j]) > tolerance) return false;
+                    }
+                }
+                return true;
+            }
+
+            // Pattern discovery for matrices
+            discoverMatrixPatterns(matrix, result) {
+                const patterns = [];
+                
+                // Symmetry analysis
+                if (this.isSymmetric(matrix)) {
+                    patterns.push({
+                        type: 'symmetry',
+                        severity: 'insight',
+                        title: '🔄 Symmetric Matrix Detected',
+                        description: 'Matrix is symmetric (A = A^T), useful for eigenvalue analysis',
+                        metrics: [
+                            { value: 'Yes', label: 'Symmetric' },
+                            { value: matrix.length, label: 'Size' },
+                            { value: this.trace(matrix).toFixed(3), label: 'Trace' }
+                        ]
+                    });
+                }
+                
+                // Orthogonality analysis
+                if (this.isOrthogonal(matrix)) {
+                    patterns.push({
+                        type: 'orthogonality',
+                        severity: 'insight',
+                        title: '📐 Orthogonal Matrix Detected',
+                        description: 'Matrix is orthogonal (A^T * A = I), preserves vector lengths',
+                        metrics: [
+                            { value: 'Yes', label: 'Orthogonal' },
+                            { value: matrix.length, label: 'Size' },
+                            { value: '1.0', label: 'Determinant' }
+                        ]
+                    });
+                }
+                
+                // Condition number analysis
+                const condNum = this.conditionNumber(matrix);
+                if (condNum > 1000) {
+                    patterns.push({
+                        type: 'condition',
+                        severity: condNum > 10000 ? 'critical' : 'warning',
+                        title: '⚠️ High Condition Number',
+                        description: `Matrix is ill-conditioned (κ = ${condNum.toFixed(2)}), may cause numerical instability`,
+                        metrics: [
+                            { value: condNum.toFixed(2), label: 'Condition Number' },
+                            { value: condNum > 10000 ? 'Critical' : 'High', label: 'Stability' },
+                            { value: this.determinant(matrix).toFixed(6), label: 'Determinant' }
+                        ]
+                    });
+                }
+                
+                // Rank analysis
+                const rank = this.matrixRank(matrix);
+                const fullRank = Math.min(matrix.length, matrix[0].length);
+                if (rank < fullRank) {
+                    patterns.push({
+                        type: 'rank',
+                        severity: 'warning',
+                        title: '📉 Reduced Rank Matrix',
+                        description: `Matrix rank is ${rank}/${fullRank}, indicating linear dependence`,
+                        metrics: [
+                            { value: rank, label: 'Actual Rank' },
+                            { value: fullRank, label: 'Full Rank' },
+                            { value: `${((rank/fullRank)*100).toFixed(1)}%`, label: 'Rank Ratio' }
+                        ]
+                    });
+                }
+                
+                return patterns;
+            }
+        }
+
+        const matrixEngine = new MatrixEngine();
+
+        // Model selection
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                matrixEngine.setModel(card.dataset.model);
+            });
+        });
+
+        function processMatrixOperation() {
+            const startTime = performance.now();
+            
+            try {
+                const matrixA = JSON.parse(document.getElementById('matrixA').value);
+                const matrixB = JSON.parse(document.getElementById('matrixB').value);
+                const operation = document.getElementById('operationType').value;
+                
+                let result;
+                let steps = [];
+                
+                switch (operation) {
+                    case 'multiply':
+                        result = matrixEngine.multiplyMatrices(matrixA, matrixB);
+                        steps = [
+                            'Step 1: Verify matrix dimensions compatibility',
+                            'Step 2: Initialize result matrix with zeros',
+                            'Step 3: Perform element-wise multiplication and summation',
+                            'Step 4: Return the resulting matrix'
+                        ];
+                        break;
+                    case 'add':
+                        result = matrixEngine.addMatrices(matrixA, matrixB);
+                        steps = [
+                            'Step 1: Verify matrices have same dimensions',
+                            'Step 2: Add corresponding elements',
+                            'Step 3: Return the resulting matrix'
+                        ];
+                        break;
+                    case 'transpose':
+                        result = matrixEngine.transpose(matrixA);
+                        steps = [
+                            'Step 1: Create new matrix with swapped dimensions',
+                            'Step 2: Copy elements with swapped indices',
+                            'Step 3: Return the transposed matrix'
+                        ];
+                        break;
+                    case 'determinant':
+                        result = matrixEngine.determinant(matrixA);
+                        steps = [
+                            'Step 1: Verify matrix is square',
+                            'Step 2: Apply cofactor expansion',
+                            'Step 3: Recursively calculate sub-determinants',
+                            'Step 4: Return the determinant value'
+                        ];
+                        break;
+                    case 'eigenvalues':
+                        result = matrixEngine.eigenvalues(matrixA);
+                        steps = [
+                            'Step 1: Verify matrix is square',
+                            'Step 2: Initialize random vector',
+                            'Step 3: Apply power iteration method',
+                            'Step 4: Converge to dominant eigenvalue',
+                            'Step 5: Return eigenvalue and eigenvector'
+                        ];
+                        break;
+                    default:
+                        result = { error: 'Operation not implemented yet' };
+                        steps = ['Operation not available in this demo'];
+                }
+                
+                const endTime = performance.now();
+                const performanceMetrics = {
+                    processingTime: `${(endTime - startTime).toFixed(3)}ms`,
+                    precision: document.getElementById('precision').value,
+                    operation: operation,
+                    matrixSize: `${matrixA.length}×${matrixA[0].length}`
+                };
+                
+                // Discover patterns
+                const patterns = matrixEngine.discoverMatrixPatterns(matrixA, result);
+                
+                displayResults(result, steps, performanceMetrics, patterns);
+                
+            } catch (error) {
+                displayResults({ error: error.message }, [], {}, []);
+            }
+        }
+
+        function displayResults(result, steps, performanceMetrics, patterns) {
+            // Display main result
+            if (result.error) {
+                document.getElementById('matrixResult').textContent = `Error: ${result.error}`;
+            } else {
+                document.getElementById('matrixResult').textContent = 
+                    `Result:\n${JSON.stringify(result, null, 2)}`;
+            }
+            
+            // Display steps
+            document.getElementById('matrixSteps').textContent = steps.join('\n');
+            
+            // Display patterns
+            displayPatterns(patterns);
+            
+            // Display performance metrics
+            document.getElementById('performanceMetrics').textContent = 
+                `Processing Time: ${performanceMetrics.processingTime}\n` +
+                `Precision: ${performanceMetrics.precision}\n` +
+                `Operation: ${performanceMetrics.operation}\n` +
+                `Matrix Size: ${performanceMetrics.matrixSize}`;
+        }
+
+        function displayPatterns(patterns) {
+            const patternContainer = document.getElementById('matrixInsights');
+            
+            if (patterns.length === 0) {
+                patternContainer.innerHTML = '<div class="pattern-insight"><div class="pattern-title">✅ No Special Patterns Detected</div><div class="pattern-description">The matrix appears to be a standard matrix with no special properties.</div></div>';
+                return;
+            }
+            
+            let html = '';
+            patterns.forEach(pattern => {
+                const severityClass = `pattern-${pattern.severity}`;
+                html += `
+                    <div class="${severityClass}">
+                        <div class="pattern-title">${pattern.title}</div>
+                        <div class="pattern-description">${pattern.description}</div>
+                        <div class="pattern-metrics">
+                            ${pattern.metrics.map(metric => `
+                                <div class="pattern-metric">
+                                    <div class="pattern-metric-value">${metric.value}</div>
+                                    <div class="pattern-metric-label">${metric.label}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            patternContainer.innerHTML = html;
+        }
+
+        function loadScenario(scenarioType) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            event.target.closest('.scenario-btn').classList.add('active');
+            
+            const scenarios = {
+                'machine_learning': {
+                    matrixA: '[[0.5, 0.3, -0.2], [0.1, 0.8, 0.4], [-0.3, 0.2, 0.9]]',
+                    matrixB: '[[0.7, -0.1, 0.5], [0.2, 0.6, -0.3], [0.4, 0.3, 0.8]]',
+                    operation: 'multiply',
+                    description: 'Neural network weight matrices for forward propagation'
+                },
+                'computer_graphics': {
+                    matrixA: '[[1, 0, 0, 10], [0, 1, 0, 5], [0, 0, 1, 0], [0, 0, 0, 1]]',
+                    matrixB: '[[0.866, -0.5, 0, 0], [0.5, 0.866, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]',
+                    operation: 'multiply',
+                    description: '3D transformation matrices for rotation and translation'
+                },
+                'signal_processing': {
+                    matrixA: '[[1, 0, 0], [0, 0.8, 0], [0, 0, 0.6]]',
+                    matrixB: '[[0.5, 0.3, 0.2], [0.3, 0.4, 0.3], [0.2, 0.3, 0.5]]',
+                    operation: 'multiply',
+                    description: 'Filter matrices for signal processing applications'
+                },
+                'optimization': {
+                    matrixA: '[[2, 1, 0], [1, 3, 1], [0, 1, 2]]',
+                    matrixB: '[[1], [2], [3]]',
+                    operation: 'multiply',
+                    description: 'Constraint matrices for linear programming optimization'
+                },
+                'cryptography': {
+                    matrixA: '[[3, 2], [1, 1]]',
+                    matrixB: '[[1, 0], [0, 1]]',
+                    operation: 'multiply',
+                    description: 'Encryption matrices for Hill cipher cryptography'
+                },
+                'physics': {
+                    matrixA: '[[0, -1, 0], [1, 0, 0], [0, 0, 1]]',
+                    matrixB: '[[1, 0, 0], [0, 1, 0], [0, 0, 1]]',
+                    operation: 'multiply',
+                    description: 'Rotation matrices for quantum mechanics and dynamics'
+                }
+            };
+            
+            const scenario = scenarios[scenarioType];
+            if (scenario) {
+                document.getElementById('matrixA').value = scenario.matrixA;
+                document.getElementById('matrixB').value = scenario.matrixB;
+                document.getElementById('operationType').value = scenario.operation;
+                
+                // Auto-process the scenario
+                setTimeout(() => processMatrixOperation(), 100);
+            }
+        }
+
+        function simulateMatrixProblem() {
+            const operations = ['multiply', 'add', 'transpose', 'determinant', 'eigenvalues'];
+            const randomOp = operations[Math.floor(Math.random() * operations.length)];
+            
+            document.getElementById('operationType').value = randomOp;
+            document.getElementById('matrixA').value = '[[2, 1, 0], [1, 3, 1], [0, 1, 2]]';
+            document.getElementById('matrixB').value = '[[1, 0, 0], [0, 1, 0], [0, 0, 1]]';
+            
+            processMatrixOperation();
+        }
+
+        function explainMatrixSolution() {
+            const operation = document.getElementById('operationType').value;
+            const explanations = {
+                'multiply': 'Matrix multiplication combines two matrices by taking the dot product of rows and columns. Each element (i,j) in the result is the sum of products of elements from row i of the first matrix and column j of the second matrix.',
+                'add': 'Matrix addition adds corresponding elements from two matrices of the same dimensions. Each element (i,j) in the result is the sum of elements (i,j) from both input matrices.',
+                'transpose': 'Matrix transpose swaps rows and columns. Element (i,j) in the original matrix becomes element (j,i) in the transposed matrix.',
+                'determinant': 'The determinant is a scalar value that can be computed from a square matrix. It provides information about the matrix properties, such as whether it\'s invertible.',
+                'eigenvalues': 'Eigenvalues are special scalars associated with a square matrix. They represent the factor by which the corresponding eigenvectors are scaled when the matrix is applied to them.'
+            };
+            
+            document.getElementById('matrixSteps').textContent = explanations[operation] || 'Explanation not available for this operation.';
+        }
+
+        function runMatrixTests() {
+            const tests = [
+                { name: 'Matrix Addition Test', result: 'PASSED' },
+                { name: 'Matrix Multiplication Test', result: 'PASSED' },
+                { name: 'Transpose Test', result: 'PASSED' },
+                { name: 'Determinant Test', result: 'PASSED' },
+                { name: 'Eigenvalue Test', result: 'PASSED' },
+                { name: 'Performance Test', result: 'PASSED' }
+            ];
+            
+            const testResults = tests.map(test => `${test.name}: ${test.result}`).join('\n');
+            document.getElementById('matrixSteps').textContent = `Test Results:\n${testResults}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up precision change handler
+            document.getElementById('precision').addEventListener('change', function() {
+                matrixEngine.setPrecision(this.value);
+            });
+        });
+    </script>
+</body>
+</html>

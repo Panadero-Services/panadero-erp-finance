@@ -278,6 +278,12 @@ const enterpriseModules = [
     features: ['AI-powered RCA', 'Automated audits', 'Risk management'],
     link: '/indigo3/compliance',
     color: 'from-teal-500 to-teal-600'
+  },
+  {
+    title: 'Private Dashboard',
+    features: ['Personalized ERP framework', 'AI agents ecosystem', 'Automated workflows'],
+    link: '/indigo3/dashboard',
+    color: 'from-cyan-500 to-cyan-600'
   }
 ];
 

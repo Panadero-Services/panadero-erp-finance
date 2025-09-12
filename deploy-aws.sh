@@ -30,7 +30,7 @@ if [ ! -f "$KEY_FILE" ]; then
 fi
 
 # Check if server is reachable
-echo -e "${YELLOW}�� Checking server connectivity...${NC}"
+echo -e "${YELLOW}🔍 Checking server connectivity...${NC}"
 if ! ssh -i "$KEY_FILE" -o ConnectTimeout=10 "$SERVER_USER@$SERVER_IP" "echo 'Server is reachable'" > /dev/null 2>&1; then
     echo -e "${RED}❌ Cannot connect to server $SERVER_IP${NC}"
     exit 1
@@ -78,23 +78,23 @@ ssh -i "$KEY_FILE" "$SERVER_USER@$SERVER_IP" "cd $APP_DIR && php artisan db:seed
 
 # Configure Nginx
 echo -e "${YELLOW}🌐 Configuring Nginx...${NC}"
-cat > nginx.conf << 'NGINX_EOF'
+cat > nginx.conf << EOF
 server {
     listen 80;
-    server_name i3v2-bots.panadero.services;
-    root /opt/i3v2-bots/public;
+    server_name $DOMAIN_NAME;
+    root $APP_DIR/public;
     index index.php index.html;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
 
     location / {
-        try_files $uri $uri/ /index.php?$query_string;
+        try_files \$uri \$uri/ /index.php?\$query_string;
     }
 
     location ~ \.php$ {
         fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param SCRIPT_FILENAME \$realpath_root\$fastcgi_script_name;
         include fastcgi_params;
     }
 
@@ -102,7 +102,7 @@ server {
         deny all;
     }
 }
-NGINX_EOF
+EOF
 
 # Copy Nginx configuration to server
 scp -i "$KEY_FILE" nginx.conf "$SERVER_USER@$SERVER_IP:/tmp/nginx.conf"
@@ -125,13 +125,13 @@ ssh -i "$KEY_FILE" "$SERVER_USER@$SERVER_IP" "sudo npm install -g pm2"
 
 # Create PM2 ecosystem file
 echo -e "${YELLOW}⚙️ Creating PM2 configuration...${NC}"
-cat > ecosystem.config.js << 'PM2_EOF'
+cat > ecosystem.config.js << EOF
 module.exports = {
   apps: [{
     name: 'i3v2-bots',
     script: 'artisan',
     args: 'serve --host=0.0.0.0 --port=8000',
-    cwd: '/opt/i3v2-bots',
+    cwd: '$APP_DIR',
     instances: 1,
     autorestart: true,
     watch: false,
@@ -142,7 +142,7 @@ module.exports = {
     }
   }]
 };
-PM2_EOF
+EOF
 
 # Copy PM2 configuration to server
 scp -i "$KEY_FILE" ecosystem.config.js "$SERVER_USER@$SERVER_IP:$APP_DIR/"

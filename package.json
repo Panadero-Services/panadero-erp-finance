@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-            "ssh": "ssh -i i3v2.pem ubuntu@15.188.78.249",
+        "ssh": "ssh -i bastion.pem ubuntu@15.188.147.145",
         "socket-server": "node vendor/panadero/panadero-solarsysinvaders/server/socket-server.js",
         "game-server": "cd vendor/panadero/panadero-solarsysinvaders/server && node socket-server.js"
     },
@@ -22,7 +22,6 @@
         "vite": "^6.3.5",
         "vue": "^3.3.13"
     },
-    
     "dependencies": {
         "@dhx/diagram_6": "file:vendor/dhx_diagram_6",
         "@dhx/kanban": "file:vendor/dhx_kanban",

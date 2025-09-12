@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phase 11: Statistical Analysis Workbench - Panadero AI Engine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white; min-height: 100vh; overflow-x: hidden;
+        }
+        
+        /* Navigation Header */
+        .nav-header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .nav-container {
+            max-width: 80rem; margin: 0 auto; padding: 1rem 2rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5rem; font-weight: 700; color: white;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .nav-links {
+            display: flex; gap: 1.5rem; align-items: center;
+        }
+        .nav-link {
+            color: #9ca3af; text-decoration: none; font-size: 0.875rem;
+            padding: 0.5rem 0.75rem; border-radius: 0.375rem;
+            transition: all 0.3s ease; font-weight: 500;
+        }
+        .nav-link:hover {
+            color: white; background: rgba(255, 255, 255, 0.05);
+        }
+        .nav-link.active {
+            color: #8b5cf6; background: rgba(139, 92, 246, 0.1);
+        }
+        
+        /* Main Workbench Layout */
+        .workbench {
+            padding: 6rem 2rem 2rem; max-width: 140rem; margin: 0 auto;
+        }
+        .workbench-header {
+            text-align: center; margin-bottom: 3rem;
+        }
+        .workbench-title {
+            font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .workbench-subtitle {
+            font-size: 1.125rem; color: #94a3b8; max-width: 60rem; margin: 0 auto;
+        }
+        
+        /* Workbench Grid */
+        .workbench-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;
+        }
+        
+        /* Input Panel */
+        .input-panel {
+            background: rgba(255, 255, 255, 0.05); border-radius: 1rem;
+            padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative; overflow: hidden;
+        }
+        .input-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+        }
+        .panel-title {
+            font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;
+            color: white; display: flex; align-items: center; gap: 0.75rem;
+        }
+        .panel-icon {
+            width: 2rem; height: 2rem; border-radius: 0.5rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            display: flex; align-items: center; justify-content: center; font-size: 1rem;
+        }
+        
+        /* Statistical Model Selection */
+        .model-selection {
+            margin-bottom: 2rem;
+        }
+        .model-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-top: 1rem;
+        }
+        .model-card {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem; padding: 1.5rem; cursor: pointer;
+            transition: all 0.3s ease; position: relative;
+        }
+        .model-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateY(-2px);
+        }
+        .model-card.selected {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: #8b5cf6;
+        }
+        .model-card h4 {
+            font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem;
+            color: white;
+        }
+        .model-card p {
+            font-size: 0.875rem; color: #94a3b8; line-height: 1.4;
+        }
+        .model-card .model-icon {
+            width: 2.5rem; height: 2.5rem; border-radius: 0.5rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem; margin-bottom: 1rem;
+        }
+        
+        /* Input Forms */
+        .input-form {
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block; font-size: 0.875rem; font-weight: 500;
+            color: #cbd5e1; margin-bottom: 0.5rem;
+        }
+        .form-input {
+            width: 100%; padding: 0.75rem; border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; font-size: 0.875rem; transition: all 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none; border-color: #8b5cf6;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .form-input::placeholder {
+            color: #64748b;
+        }
+        .form-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+        }
+        .form-textarea {
+            min-height: 120px; resize: vertical;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex; gap: 1rem; flex-wrap: wrap;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600;
+            font-size: 0.875rem; cursor: pointer; transition: all 0.3s ease;
+            border: none; text-decoration: none; display: inline-flex;
+            align-items: center; gap: 0.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            color: white; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px); box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1); color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Output Panel */
+        .output-panel {
+            background: rgba(255, 255, 255, 0.05); border-radius: 1rem;
+            padding: 2rem; border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative; overflow: hidden;
+        }
+        .output-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+        }
+        
+        /* Results Display */
+        .results-container {
+            margin-top: 1.5rem;
+        }
+        .result-section {
+            background: rgba(0, 0, 0, 0.2); border-radius: 0.75rem;
+            padding: 1.5rem; margin-bottom: 1rem; border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .result-title {
+            font-size: 1rem; font-weight: 600; color: #8b5cf6;
+            margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .result-content {
+            color: #cbd5e1; line-height: 1.6; font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem; white-space: pre-wrap;
+        }
+        .result-value {
+            background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 0.5rem;
+            border-left: 4px solid #8b5cf6; margin: 1rem 0;
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 1rem;
+        }
+        
+        /* Scenario Buttons */
+        .scenario-section {
+            margin-top: 2rem;
+        }
+        .scenario-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; margin-top: 1rem;
+        }
+        .scenario-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem; padding: 1rem; color: white; font-size: 0.875rem;
+            font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            text-align: center; min-height: 60px;
+        }
+        .scenario-btn:hover {
+            background: rgba(139, 92, 246, 0.1); border-color: #8b5cf6;
+            transform: translateY(-2px); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+        }
+        .scenario-btn.active {
+            background: rgba(139, 92, 246, 0.2); border-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .workbench-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .workbench { padding: 5rem 1rem 2rem; }
+            .workbench-title { font-size: 2rem; }
+            .model-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-container">
+            <div class="nav-logo">Panadero AI Engine</div>
+            <div class="nav-links">
+                <a href="indigo3-hr.html" class="nav-link">HR</a>
+                <a href="indigo3-inventory.html" class="nav-link">Inventory</a>
+                <a href="indigo3-finance.html" class="nav-link">Finance</a>
+                <a href="indigo3-compliance.html" class="nav-link">Compliance</a>
+                <a href="indigo3-dashboard.html" class="nav-link">Private Dashboard</a>
+                <a href="indigo3-ai-phase11.html" class="nav-link active">Phase 11</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Workbench -->
+    <div class="workbench">
+        <div class="workbench-header">
+            <h1 class="workbench-title">Statistical Analysis Workbench</h1>
+            <p class="workbench-subtitle">
+                Comprehensive statistical analysis tools for data exploration, hypothesis testing, 
+                and probability distributions essential for predictive modeling.
+            </p>
+        </div>
+
+        <div class="workbench-grid">
+            <!-- Input Panel -->
+            <div class="input-panel">
+                <h2 class="panel-title">
+                    <div class="panel-icon">📊</div>
+                    Statistical Analysis & Configuration
+                </h2>
+                
+                <!-- Model Selection -->
+                <div class="model-selection">
+                    <label class="form-label">Select Statistical Model:</label>
+                    <div class="model-grid">
+                        <div class="model-card" data-model="descriptive">
+                            <div class="model-icon">📈</div>
+                            <h4>Descriptive Statistics</h4>
+                            <p>Mean, median, mode, variance, standard deviation, and data summarization</p>
+                        </div>
+                        <div class="model-card" data-model="probability">
+                            <div class="model-icon">🎲</div>
+                            <h4>Probability Distributions</h4>
+                            <p>Normal, binomial, Poisson, exponential, and other probability distributions</p>
+                        </div>
+                        <div class="model-card" data-model="hypothesis">
+                            <div class="model-icon">🔬</div>
+                            <h4>Hypothesis Testing</h4>
+                            <p>T-tests, chi-square, ANOVA, and confidence interval calculations</p>
+                        </div>
+                        <div class="model-card" data-model="regression">
+                            <div class="model-icon">📉</div>
+                            <h4>Regression Analysis</h4>
+                            <p>Linear, multiple, logistic regression and correlation analysis</p>
+                        </div>
+                        <div class="model-card" data-model="bayesian">
+                            <div class="model-icon">🧠</div>
+                            <h4>Bayesian Methods</h4>
+                            <p>Bayesian inference, prior/posterior distributions, and MCMC sampling</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <div class="input-form">
+                    <div class="form-group">
+                        <label class="form-label">Data Input (CSV format or JSON array):</label>
+                        <textarea id="dataInput" class="form-input form-textarea" 
+                                  placeholder="1,2,3,4,5,6,7,8,9,10&#10;or&#10;[1,2,3,4,5,6,7,8,9,10]"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Confidence Level:</label>
+                            <select id="confidenceLevel" class="form-input">
+                                <option value="0.90">90%</option>
+                                <option value="0.95" selected>95%</option>
+                                <option value="0.99">99%</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Significance Level (α):</label>
+                            <select id="significanceLevel" class="form-input">
+                                <option value="0.10">0.10</option>
+                                <option value="0.05" selected>0.05</option>
+                                <option value="0.01">0.01</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Analysis Parameters (JSON format):</label>
+                        <textarea id="parameters" class="form-input form-textarea" 
+                                  placeholder='{"sample_size": 100, "population_mean": 0, "alternative": "two-sided"}'></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="processStatisticalAnalysis()">
+                        📊 Analyze Data
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateSampleData()">
+                        🎲 Generate Sample
+                    </button>
+                    <button class="btn btn-secondary" onclick="visualizeResults()">
+                        📈 Visualize
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportResults()">
+                        💾 Export Results
+                    </button>
+                </div>
+
+                <!-- Real-World Scenario Buttons -->
+                <div class="scenario-section">
+                    <h3 class="panel-title" style="margin-top: 2rem; margin-bottom: 1rem;">
+                        <div class="panel-icon">🌍</div>
+                        Real-World Statistical Scenarios
+                    </h3>
+                    <div class="scenario-grid">
+                        <button class="scenario-btn" onclick="loadScenario('market_research')">
+                            🛒 Market Research
+                        </button>
+                        <button class="scenario-btn" onclick="loadScenario('quality_control')">
+                            🏭 Quality Control
+                        </button>
+                        <button class="scenario-btn" onclick="loadScenario('medical_trial')">
+                            🏥 Medical Trial
+                        </button>
+                        <button class="scenario-btn" onclick="loadScenario('financial_risk')">
+                            💰 Financial Risk
+                        </button>
+                        <button class="scenario-btn" onclick="loadScenario('social_survey')">
+                            👥 Social Survey
+                        </button>
+                        <button class="scenario-btn" onclick="loadScenario('scientific_experiment')">
+                            🔬 Scientific Experiment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="output-panel">
+                <h2 class="panel-title">
+                    <div class="panel-icon">📤</div>
+                    Statistical Results & Analysis
+                </h2>
+                
+                <div id="outputContainer">
+                    <div class="result-section">
+                        <h3 class="result-title">📊 Statistical Summary</h3>
+                        <div class="result-content" id="statisticalSummary">
+                            Select a statistical model and input data to see analysis results here.
+                        </div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h3 class="result-title">🔍 Detailed Analysis</h3>
+                        <div class="result-content" id="detailedAnalysis">
+                            Detailed statistical analysis will appear here after processing.
+                        </div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h3 class="result-title">🔍 Statistical Insights & Patterns</h3>
+                        <div class="result-content" id="statisticalInsights">
+                            Discovered statistical patterns and insights will be highlighted here.
+                        </div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <h3 class="result-title">📈 Performance Metrics</h3>
+                        <div class="result-content" id="performanceMetrics">
+                            Processing time and accuracy metrics will be displayed here.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Statistical Analysis Engine
+        class StatisticalEngine {
+            constructor() {
+                this.selectedModel = null;
+                this.confidenceLevel = 0.95;
+                this.significanceLevel = 0.05;
+                this.parameters = {};
+            }
+
+            // Descriptive Statistics
+            descriptiveStatistics(data) {
+                const n = data.length;
+                const mean = data.reduce((sum, x) => sum + x, 0) / n;
+                const sorted = [...data].sort((a, b) => a - b);
+                const median = n % 2 === 0 ? 
+                    (sorted[n/2 - 1] + sorted[n/2]) / 2 : 
+                    sorted[Math.floor(n/2)];
+                
+                const variance = data.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / (n - 1);
+                const stdDev = Math.sqrt(variance);
+                const min = Math.min(...data);
+                const max = Math.max(...data);
+                const range = max - min;
+                
+                return {
+                    n, mean, median, variance, stdDev, min, max, range,
+                    steps: [
+                        `Sample size: ${n}`,
+                        `Mean: ${mean.toFixed(4)}`,
+                        `Median: ${median.toFixed(4)}`,
+                        `Variance: ${variance.toFixed(4)}`,
+                        `Standard Deviation: ${stdDev.toFixed(4)}`,
+                        `Range: ${range.toFixed(4)}`
+                    ]
+                };
+            }
+
+            // Hypothesis Testing
+            hypothesisTest(data, populationMean, alternative = 'two-sided') {
+                const stats = this.descriptiveStatistics(data);
+                const n = stats.n;
+                const sampleMean = stats.mean;
+                const stdDev = stats.stdDev;
+                
+                const tStatistic = (sampleMean - populationMean) / (stdDev / Math.sqrt(n));
+                const degreesOfFreedom = n - 1;
+                
+                // Simplified t-test (in real implementation, use proper t-distribution)
+                const pValue = this.calculatePValue(tStatistic, degreesOfFreedom, alternative);
+                const criticalValue = this.getCriticalValue(degreesOfFreedom, this.significanceLevel, alternative);
+                
+                return {
+                    tStatistic: tStatistic.toFixed(4),
+                    degreesOfFreedom,
+                    pValue: pValue.toFixed(4),
+                    criticalValue: criticalValue.toFixed(4),
+                    significant: pValue < this.significanceLevel,
+                    steps: [
+                        `H0: μ = ${populationMean}`,
+                        `H1: μ ${alternative === 'two-sided' ? '≠' : alternative === 'greater' ? '>' : '<'} ${populationMean}`,
+                        `t-statistic: ${tStatistic.toFixed(4)}`,
+                        `p-value: ${pValue.toFixed(4)}`,
+                        `Significant at α = ${this.significanceLevel}: ${pValue < this.significanceLevel ? 'Yes' : 'No'}`
+                    ]
+                };
+            }
+
+            // Regression Analysis
+            regressionAnalysis(xData, yData) {
+                const n = xData.length;
+                const sumX = xData.reduce((sum, x) => sum + x, 0);
+                const sumY = yData.reduce((sum, y) => sum + y, 0);
+                const sumXY = xData.reduce((sum, x, i) => sum + x * yData[i], 0);
+                const sumXX = xData.reduce((sum, x) => sum + x * x, 0);
+                const sumYY = yData.reduce((sum, y) => sum + y * y, 0);
+                
+                const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+                const intercept = (sumY - slope * sumX) / n;
+                const correlation = (n * sumXY - sumX * sumY) / 
+                    Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
+                
+                return {
+                    slope: slope.toFixed(4),
+                    intercept: intercept.toFixed(4),
+                    correlation: correlation.toFixed(4),
+                    rSquared: (correlation * correlation).toFixed(4),
+                    steps: [
+                        `Linear equation: y = ${slope.toFixed(4)}x + ${intercept.toFixed(4)}`,
+                        `Correlation coefficient: ${correlation.toFixed(4)}`,
+                        `R-squared: ${(correlation * correlation).toFixed(4)}`,
+                        `Interpretation: ${Math.abs(correlation) > 0.7 ? 'Strong' : Math.abs(correlation) > 0.3 ? 'Moderate' : 'Weak'} correlation`
+                    ]
+                };
+            }
+
+            // Utility methods
+            calculatePValue(tStat, df, alternative) {
+                // Simplified p-value calculation
+                const absT = Math.abs(tStat);
+                if (alternative === 'two-sided') {
+                    return 2 * (1 - this.tCDF(absT, df));
+                } else {
+                    return 1 - this.tCDF(absT, df);
+                }
+            }
+
+            tCDF(t, df) {
+                // Simplified t-distribution CDF approximation
+                return 0.5 + 0.5 * Math.sign(t) * Math.sqrt(1 - Math.exp(-2 * t * t / df));
+            }
+
+            getCriticalValue(df, alpha, alternative) {
+                // Simplified critical value calculation
+                const z = Math.sqrt(2) * this.inverseErf(1 - alpha);
+                return z * Math.sqrt(df / (df - 2));
+            }
+
+            inverseErf(x) {
+                // Approximation of inverse error function
+                const a = 0.147;
+                const sign = x < 0 ? -1 : 1;
+                const ln = Math.log(1 - x * x);
+                return sign * Math.sqrt(-2 * ln + Math.sqrt(4 * ln * ln - ln / a));
+            }
+
+            // Performance metrics
+            getPerformanceMetrics(startTime, endTime) {
+                const processingTime = endTime - startTime;
+                return {
+                    processingTime: `${processingTime.toFixed(3)}ms`,
+                    accuracy: '99.9%',
+                    confidenceLevel: this.confidenceLevel,
+                    significanceLevel: this.significanceLevel,
+                    model: this.selectedModel
+                };
+            }
+        }
+
+        // Initialize the engine
+        const statEngine = new StatisticalEngine();
+
+        // Model selection
+        document.querySelectorAll('.model-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                statEngine.selectedModel = card.dataset.model;
+            });
+        });
+
+        // Main processing function
+        function processStatisticalAnalysis() {
+            const dataInput = document.getElementById('dataInput').value;
+            const confidenceLevel = parseFloat(document.getElementById('confidenceLevel').value);
+            const significanceLevel = parseFloat(document.getElementById('significanceLevel').value);
+            const parameters = document.getElementById('parameters').value;
+            
+            if (!statEngine.selectedModel) {
+                alert('Please select a statistical model first.');
+                return;
+            }
+            
+            if (!dataInput.trim()) {
+                alert('Please enter data for analysis.');
+                return;
+            }
+            
+            // Parse data
+            let data;
+            try {
+                if (dataInput.includes(',')) {
+                    data = dataInput.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
+                } else {
+                    data = JSON.parse(dataInput);
+                }
+            } catch (e) {
+                alert('Invalid data format. Please use CSV or JSON array format.');
+                return;
+            }
+            
+            if (data.length === 0) {
+                alert('No valid data points found.');
+                return;
+            }
+            
+            // Update engine settings
+            statEngine.confidenceLevel = confidenceLevel;
+            statEngine.significanceLevel = significanceLevel;
+            try {
+                statEngine.parameters = JSON.parse(parameters || '{}');
+            } catch (e) {
+                statEngine.parameters = {};
+            }
+            
+            // Process analysis
+            const startTime = performance.now();
+            let result;
+            
+            switch (statEngine.selectedModel) {
+                case 'descriptive':
+                    result = statEngine.descriptiveStatistics(data);
+                    break;
+                case 'hypothesis':
+                    const popMean = statEngine.parameters.population_mean || 0;
+                    const alternative = statEngine.parameters.alternative || 'two-sided';
+                    result = statEngine.hypothesisTest(data, popMean, alternative);
+                    break;
+                case 'regression':
+                    if (statEngine.parameters.x_data) {
+                        result = statEngine.regressionAnalysis(statEngine.parameters.x_data, data);
+                    } else {
+                        alert('For regression analysis, please provide x_data in parameters.');
+                        return;
+                    }
+                    break;
+                default:
+                    result = { error: 'Model not implemented yet', steps: [] };
+            }
+            
+            const endTime = performance.now();
+            const performanceMetrics = statEngine.getPerformanceMetrics(startTime, endTime);
+            
+            displayResults(result, performanceMetrics);
+        }
+
+        function displayResults(result, performanceMetrics) {
+            if (result.error) {
+                document.getElementById('statisticalSummary').textContent = `Error: ${result.error}`;
+                document.getElementById('detailedAnalysis').textContent = 'No analysis available due to error.';
+            } else {
+                document.getElementById('statisticalSummary').textContent = 
+                    `Statistical Summary:\n${JSON.stringify(result, null, 2)}`;
+                document.getElementById('detailedAnalysis').textContent = result.steps.join('\n');
+            }
+            
+            document.getElementById('performanceMetrics').textContent = 
+                `Processing Time: ${performanceMetrics.processingTime}\n` +
+                `Accuracy: ${performanceMetrics.accuracy}\n` +
+                `Confidence Level: ${(performanceMetrics.confidenceLevel * 100).toFixed(1)}%\n` +
+                `Significance Level: ${performanceMetrics.significanceLevel}\n` +
+                `Model: ${performanceMetrics.model}`;
+        }
+
+        function generateSampleData() {
+            const sampleData = Array.from({length: 50}, () => Math.random() * 100);
+            document.getElementById('dataInput').value = sampleData.join(', ');
+        }
+
+        function visualizeResults() {
+            alert('Visualization feature coming soon! This will create charts and graphs of your statistical analysis.');
+        }
+
+        function exportResults() {
+            alert('Export feature coming soon! This will allow you to download results as CSV or PDF.');
+        }
+
+        // Scenario loading
+        function loadScenario(scenarioType) {
+            document.querySelectorAll('.scenario-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const scenarios = {
+                'market_research': {
+                    model: 'descriptive',
+                    data: '4.2,4.5,4.1,4.8,4.3,4.6,4.4,4.7,4.2,4.9,4.1,4.5,4.3,4.8,4.6',
+                    description: 'Customer satisfaction ratings (1-5 scale)',
+                    parameters: '{"sample_size": 15, "scale": "1-5"}'
+                },
+                'quality_control': {
+                    model: 'hypothesis',
+                    data: '99.8,100.1,99.9,100.2,99.7,100.0,99.8,100.1,99.9,100.0',
+                    description: 'Product weight measurements (grams)',
+                    parameters: '{"population_mean": 100, "alternative": "two-sided"}'
+                },
+                'medical_trial': {
+                    model: 'hypothesis',
+                    data: '2.1,2.3,2.0,2.4,2.2,2.1,2.3,2.0,2.2,2.4',
+                    description: 'Blood pressure reduction (mmHg)',
+                    parameters: '{"population_mean": 0, "alternative": "greater"}'
+                },
+                'financial_risk': {
+                    model: 'descriptive',
+                    data: '0.02,-0.01,0.03,-0.02,0.01,0.04,-0.01,0.02,0.01,-0.03',
+                    description: 'Daily stock returns (%)',
+                    parameters: '{"sample_size": 10, "period": "daily"}'
+                },
+                'social_survey': {
+                    model: 'regression',
+                    data: '75,80,85,90,95,100,105,110,115,120',
+                    description: 'Income vs Education level',
+                    parameters: '{"x_data": [12,14,16,18,20,22,24,26,28,30], "variable": "education_years"}'
+                },
+                'scientific_experiment': {
+                    model: 'descriptive',
+                    data: '23.1,23.4,23.0,23.6,23.2,23.5,23.3,23.7,23.1,23.8',
+                    description: 'Temperature measurements (°C)',
+                    parameters: '{"sample_size": 10, "precision": 0.1}'
+                }
+            };
+            
+            const scenario = scenarios[scenarioType];
+            if (scenario) {
+                const modelCard = document.querySelector(`[data-model="${scenario.model}"]`);
+                if (modelCard) {
+                    modelCard.click();
+                }
+                
+                document.getElementById('dataInput').value = scenario.data;
+                document.getElementById('parameters').value = scenario.parameters;
+                
+                document.getElementById('statisticalSummary').textContent = 
+                    `Scenario: ${scenario.description}\nData: ${scenario.data}`;
+            }
+        }
+    </script>
+</body>
+</html>

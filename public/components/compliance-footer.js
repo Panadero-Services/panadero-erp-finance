@@ -49,6 +49,7 @@ class ComplianceFooter {
                         <a href="/indigo3-hr.html" class="footer-link">HR </a>
                         <a href="/indigo3-inventory.html" class="footer-link">Inventory </a>
                         <a href="/ai-training-dashboard" class="footer-link">Training</a>
+                        <a href="/indigo3-dashboard.html" class="footer-link">MyDashboard</a>
                     </div>
                 </div>
             </div>

@@ -29,11 +29,11 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
+            // Public routes without any middleware - load BEFORE web routes
+            Route::group([], base_path('routes/public.php'));
+
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
-                
-            // Public routes without any middleware
-            Route::group([], base_path('routes/public.php'));
         });
     }
 } 

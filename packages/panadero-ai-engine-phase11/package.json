@@ -1,0 +1,68 @@
+{
+  "name": "@panadero/ai-engine-phase11",
+  "version": "1.1.0",
+  "description": "Phase 11: Math & Predictive Foundation - Enhanced mathematical and statistical capabilities for Panadero AI Engine",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "npm run clean && npm run build:docs",
+    "build:docs": "jsdoc src -d docs -c jsdoc.conf.json",
+    "dev": "node --watch src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "clean": "rm -rf dist docs",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "example:math-utils": "node examples/math-utils-example.js",
+    "example:tensor-stats": "node examples/tensor-stats-example.js",
+    "example:time-series": "node examples/time-series-example.js",
+    "example:matrix-ops": "node examples/matrix-ops-example.js",
+    "example:math-modeling": "node examples/math-modeling-example.js",
+    "start": "node examples/math-utils-example.js"
+  },
+  "keywords": [
+    "ai",
+    "mathematical-foundation",
+    "statistical-analysis",
+    "time-series",
+    "matrix-operations",
+    "mathematical-modeling",
+    "panadero",
+    "phase11",
+    "javascript",
+    "nodejs"
+  ],
+  "author": "Panadero Services <luis@panadero.services>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/panadero/ai-engine.git",
+    "directory": "packages/panadero-ai-engine-phase11"
+  },
+  "bugs": {
+    "url": "https://github.com/panadero/ai-engine/issues"
+  },
+  "homepage": "https://github.com/panadero/ai-engine#readme",
+  "files": [
+    "src/**/*",
+    "docs/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@panadero/ai-engine": "^1.0.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "jsdoc": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "peerDependencies": {
+    "@panadero/ai-engine": "^1.0.0"
+  }
+}

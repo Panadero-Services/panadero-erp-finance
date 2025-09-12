@@ -60,7 +60,7 @@ ssh -i "$KEY_FILE" "$SERVER_USER@$SERVER_IP" "cd $APP_DIR && composer install --
 
 # Create a simple package.json without private dependencies
 echo -e "${YELLOW}📦 Creating simplified package.json...${NC}"
-cat > simple-package.json << 'PACKAGE_EOF'
+cat > simple-package.json << 'EOF'
 {
   "private": true,
   "type": "module",
@@ -100,7 +100,7 @@ cat > simple-package.json << 'PACKAGE_EOF'
     "socket.io-client": "^4.8.1"
   }
 }
-PACKAGE_EOF
+EOF
 
 # Copy simplified package.json to server
 scp -i "$KEY_FILE" simple-package.json "$SERVER_USER@$SERVER_IP:$APP_DIR/package.json"
