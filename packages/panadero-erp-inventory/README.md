@@ -1,6 +1,6 @@
 # Panadero ERP Inventory Module
 
-**Version:** 1.0.0  
+**Version:** 1.0.1  
 **Release Date:** 31 August 2025  
 **Status:** Production Ready
 

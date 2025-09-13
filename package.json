@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite",
         "build": "vite build",
-        "ssh": "ssh -i bastion.pem ubuntu@15.188.147.145",
+        "ssh": "ssh -i i3v2.pem ubuntu@15.188.78.249",
         "socket-server": "node vendor/panadero/panadero-solarsysinvaders/server/socket-server.js",
         "game-server": "cd vendor/panadero/panadero-solarsysinvaders/server && node socket-server.js"
     },

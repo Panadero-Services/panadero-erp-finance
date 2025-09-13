@@ -8,7 +8,7 @@ const { fontSizes, scalingStyles } = useScaling()
 
 const moduleInfo = ref({
   name: 'ERP Inventory',
-  version: '1.0.0',
+  version: '1.0.1',
   description: 'Complete inventory management system with stock tracking, warehousing, and supply chain management',
   features: [
     'Real-time stock tracking',
