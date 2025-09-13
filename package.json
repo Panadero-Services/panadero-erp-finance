@@ -43,7 +43,7 @@
         "node-fetch": "^3.3.2",
         "panadero-contract-api": "github:lieuwebakker/panadero-contract-api",
         "panadero-erp-finance": "github:Panadero-Services/panadero-erp-finance",
-        "panadero-erp-inventory": "file:packages/panadero-erp-inventory",
+        "panadero-erp-inventory": "git+https://github.com/Panadero-Services/panadero-erp-inventory.git",
         "panadero-erp-compliance": "file:packages/panadero-erp-compliance",
         "panadero-erp-hr": "file:packages/panadero-erp-hr",
         "panadero-grid": "github:Panadero-Services/panadero-grid",
