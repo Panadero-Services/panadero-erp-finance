@@ -1,0 +1,43 @@
+{
+  "name": "panadero-shared-components",
+  "version": "1.0.0",
+  "description": "Shared UI components for all Panadero packages",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "echo \"Development mode - shared components package\"",
+    "build": "echo \"Build complete\"",
+    "lint": "echo \"Linting complete\""
+  },
+  "keywords": [
+    "components",
+    "ui",
+    "shared",
+    "vue",
+    "framework",
+    "settings"
+  ],
+  "author": "JaWsome.Orbit",
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  },
+  "dependencies": {
+    "panadero-shared-styling": "git+https://github.com/Panadero-Services/panadero-shared-styling.git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Panadero-Services/panadero-shared-components.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Panadero-Services/panadero-shared-components/issues"
+  },
+  "homepage": "https://github.com/Panadero-Services/panadero-shared-components#readme",
+  "files": [
+    "src/",
+    "index.js",
+    "README.md",
+    "LICENSE"
+  ]
+}
