@@ -65,10 +65,12 @@ export default defineConfig({
             'panadero-erp-finance': resolve(__dirname, 'packages/panadero-erp-finance'),
             'panadero-erp-inventory': resolve(__dirname, 'packages/panadero-erp-inventory'),
             'panadero-erp-compliance': resolve(__dirname, 'packages/panadero-erp-compliance'),
+            'panadero-shared-components': resolve(__dirname, 'packages/panadero-shared-components'),
+            'panadero-shared-styling': resolve(__dirname, 'packages/panadero-shared-styling'),
         }
     },
     optimizeDeps: {
-        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers', 'panadero-erp-compliance']
+        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers', 'panadero-erp-compliance', 'panadero-shared-components', 'panadero-shared-styling']
     },
     define: {
         'import.meta.env.VITE_PUSHER_APP_KEY': JSON.stringify(process.env.PUSHER_APP_KEY),
