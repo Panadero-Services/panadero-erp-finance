@@ -21,7 +21,7 @@ const {
 
 const inventoryConfig = {
   name: 'Inventory',
-  title: 'ERP Inventory ModuleByyGeneric22',
+  title: 'ERP Inventory ModuleByyGeneric',
   description: 'Comprehensive inventory management system',
   icon: 'fas fa-boxes',
   color: 'blue'
