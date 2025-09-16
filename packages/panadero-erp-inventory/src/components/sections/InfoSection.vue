@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useInventoryStore } from '../../stores/inventoryStore.js'
-import { useScaling } from '../../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 import { useInventoryInfoBoxes } from '../../composables/useInventoryInfoBoxes.js'
 
 const store = useInventoryStore()
@@ -19,10 +19,10 @@ const currentInfoBox = computed(() => {
   <div class="info-section">
     <!-- Header -->
     <div class="mb-8">
-      <h2 :style="{ fontSize: `${fontSizes.large}px` }" class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         ERP Inventory Module
       </h2>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Comprehensive inventory management with stock tracking, warehousing, and supply chain management
       </p>
     </div>
@@ -42,10 +42,10 @@ const currentInfoBox = computed(() => {
           ]"
         >
           <div class="flex items-center mb-2">
-            <i :class="[box.icon, `text-${box.color}-500`]" class="text-xl mr-3"></i>
-            <h3 class="font-semibold text-gray-900 dark:text-white">{{ box.title }}</h3>
+            <i :class="[box.icon, `text-${box.color}-500`]" :style="scalingStyles.iconSize" class="mr-3"></i>
+            <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white">{{ box.title }}</h3>
           </div>
-          <p class="text-sm text-gray-600 dark:text-gray-400">{{ box.description }}</p>
+          <p :style="scalingStyles.smallFontSize" class="text-gray-600 dark:text-gray-400">{{ box.description }}</p>
         </button>
       </div>
     </div>
@@ -53,19 +53,19 @@ const currentInfoBox = computed(() => {
     <!-- Selected Info Box Content -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
       <div class="flex items-center mb-4">
-        <i :class="[currentInfoBox.icon, `text-${currentInfoBox.color}-500`]" class="text-2xl mr-3"></i>
-        <h3 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white">
+        <i :class="[currentInfoBox.icon, `text-${currentInfoBox.color}-500`]" :style="scalingStyles.iconSize" class="mr-3"></i>
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white">
           {{ currentInfoBox.title }}
         </h3>
       </div>
       
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400 mb-6">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400 mb-6">
         {{ currentInfoBox.description }}
       </p>
 
       <!-- Stats -->
       <div v-if="currentInfoBox.stats" class="mb-6">
-        <h4 :style="{ fontSize: `${fontSizes.small}px` }" class="font-medium text-gray-900 dark:text-white mb-3">
+        <h4 :style="scalingStyles.subtitleFontSize" class="font-medium text-gray-900 dark:text-white mb-3">
           Current Statistics
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -74,22 +74,23 @@ const currentInfoBox = computed(() => {
             :key="stat.label"
             class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3"
           >
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ stat.label }}</p>
-            <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ stat.value }}</p>
+            <p :style="scalingStyles.smallFontSize" class="text-gray-600 dark:text-gray-400">{{ stat.label }}</p>
+            <p :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white">{{ stat.value }}</p>
           </div>
         </div>
       </div>
 
       <!-- Features -->
       <div v-if="currentInfoBox.features">
-        <h4 :style="{ fontSize: `${fontSizes.small}px` }" class="font-medium text-gray-900 dark:text-white mb-3">
+        <h4 :style="scalingStyles.subtitleFontSize" class="font-medium text-gray-900 dark:text-white mb-3">
           Key Features
         </h4>
         <ul class="grid grid-cols-1 md:grid-cols-2 gap-2">
           <li
             v-for="feature in currentInfoBox.features"
             :key="feature"
-            class="flex items-center text-sm text-gray-600 dark:text-gray-400"
+            :style="scalingStyles.smallFontSize"
+            class="flex items-center text-gray-600 dark:text-gray-400"
           >
             <i class="fas fa-check text-green-500 mr-2"></i>
             {{ feature }}

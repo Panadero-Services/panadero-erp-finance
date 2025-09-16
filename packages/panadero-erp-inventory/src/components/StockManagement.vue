@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -130,10 +130,10 @@ onMounted(() => {
   <div class="stock-management">
     <!-- Header -->
     <div class="mb-8">
-      <h1 :style="{ fontSize: `${fontSizes.large}px` }" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         Stock Management
       </h1>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Manage your inventory items and stock levels
       </p>
     </div>
@@ -170,41 +170,41 @@ onMounted(() => {
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 SKU
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Name
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Category
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Current Stock
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Unit Cost
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Status
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             <tr v-for="item in filteredItems" :key="item.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
                 {{ item.sku }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
                 {{ item.name }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                 {{ item.category }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
                 <div class="flex items-center">
                   <span class="font-medium">{{ item.currentStock }}</span>
                   <span v-if="item.currentStock <= item.minStock" class="ml-2 text-red-500">
@@ -212,7 +212,7 @@ onMounted(() => {
                   </span>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
                 ${{ item.unitCost.toFixed(2) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -221,7 +221,7 @@ onMounted(() => {
                   :text="item.status === 'active' ? 'Active' : 'Inactive'"
                 />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <td class="px-6 py-4 whitespace-nowrap font-medium">
                 <div class="flex space-x-2">
                   <InventoryButton
                     @click="handleEditItem(item)"
@@ -249,7 +249,7 @@ onMounted(() => {
     <!-- Add/Edit Modal -->
     <div v-if="showAddForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           {{ editingItem ? 'Edit Item' : 'Add New Item' }}
         </h2>
         

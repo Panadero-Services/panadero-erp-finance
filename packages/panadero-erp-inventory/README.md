@@ -1,12 +1,29 @@
 # Panadero ERP Inventory Module
 
-**Version:** 1.0.1  
-**Release Date:** 31 August 2025  
+**Version:** 1.0.12
+**Release Date:** 16 September 2025  
 **Status:** Production Ready
 
 ## 🚀 Overview
 
 The ERP Inventory Module is a comprehensive inventory management system designed to handle stock tracking, warehousing, supply chain management, and AI-powered optimization. Built with Vue 3, Pinia, and Tailwind CSS, it provides a modern, scalable solution for inventory management needs.
+
+## 🆕 What's New in v1.0.12
+
+### Enhanced Package Integration
+- **Updated Dependencies** - Now uses panadero-shared-components v1.0.3 and panadero-shared-styling v1.0.3
+- **Improved Reactivity** - Fixed scaling issues with GenericInfoSection component for perfect dynamic font scaling
+- **Better Error Handling** - Enhanced error handling and fallback mechanisms for shared package integration
+
+### Version Control & Documentation
+- **GitHub Integration** - Proper version control and release management
+- **Enhanced Documentation** - Updated README and comprehensive version documentation
+- **Production Readiness** - Enhanced stability and reliability for production use
+
+### Performance & Quality
+- **Performance Optimization** - Improved component rendering and state management
+- **Code Quality** - Enhanced code structure and maintainability
+- **Dependency Updates** - Latest shared packages with enhanced functionality and bug fixes
 
 ## ✨ Features
 
@@ -20,11 +37,13 @@ The ERP Inventory Module is a comprehensive inventory management system designed
 
 ### Technical Features
 - **Dynamic Font Sizing** - Responsive typography that scales with user preferences
+- **Side Slider Settings** - Framework settings panel that slides in from the right
 - **Action Buttons** - Interactive UI elements with consistent styling
 - **Workflow Integration** - Seamless integration with the panadero-workflow system
 - **AI Integration** - Agent portal with custom prompts and AI-powered analysis
 - **Dark Mode Support** - Full dark mode compatibility
 - **Responsive Design** - Mobile-first responsive design
+- **Shared Dependencies** - Uses panadero-shared-styling and panadero-shared-components
 
 ## 📦 Package Structure
 
@@ -102,15 +121,25 @@ packages/panadero-erp-inventory/
 
 1. **Install Dependencies**
    ```bash
-   npm install
+   npm install panadero-erp-inventory
    ```
 
-2. **Run Migrations**
+   The package will automatically install its dependencies:
+   - `panadero-shared-styling` - For dynamic font scaling and styling
+   - `panadero-shared-components` - For shared UI components
+
+2. **Peer Dependencies**
+   Make sure you have these installed in your project:
+   ```bash
+   npm install vue@^3.0.0 pinia@^2.0.0 axios@^1.0.0 decimal.js@^10.0.0
+   ```
+
+3. **Run Migrations** (if using Laravel)
    ```bash
    php artisan migrate --path=packages/panadero-erp-inventory/database/migrations
    ```
 
-3. **Seed Database**
+4. **Seed Database** (if using Laravel)
    ```bash
    php artisan db:seed --class=Panadero\\ERPInventory\\Database\\Seeders\\InventoryDatabaseSeeder
    ```
@@ -192,7 +221,7 @@ The Agent Portal provides AI-powered insights and optimization:
 ```json
 {
   "name": "panadero-erp-inventory",
-  "version": "1.0.0",
+  "version": "1.0.9",
   "tabs": [
     {
       "name": "Dashboard",
@@ -264,6 +293,48 @@ For support and questions:
 - Check the documentation
 
 ## 🔄 Changelog
+
+### v1.0.11 (2025-09-14)
+- **GenericInfoSection Integration** - Complete replacement of hardcoded InfoSection2 with shared GenericInfoSection component
+- **Dynamic Styling Implementation** - All text elements now use scalingStyles from panadero-shared-styling for perfect font scaling
+- **Version Control System** - Comprehensive version history with detailed feature tracking and changelog
+- **Package Tables Integration** - Dynamic data from inventory store with real-time record counts and last updated timestamps
+- **Shared Entities Navigation** - Framework entities with proper routing and navigation integration
+- **Responsive Layout Matching** - Exact layout match with panadero-erp-finance InfoSection2 component
+- **Dependencies Management** - Complete dependency tracking and management system
+- **What's New Section** - Dynamic version updates display with feature highlights and release notes
+- **What's in Package Section** - Comprehensive package contents with component counts and feature descriptions
+- **Professional UI Enhancement** - Consistent styling and behavior across all information sections
+
+### v1.0.10 (2025-08-31)
+- **Complete Font Scaling Implementation** - All hardcoded Tailwind text size classes replaced with dynamic scalingStyles
+- **Universal Component Updates** - 23+ Vue components updated to use useScaling composable for consistent responsive behavior
+- **Dynamic Font Sizing** - Every text element now responds to framework font size changes with perfect scaling
+- **UI Component Standardization** - All buttons, inputs, dropdowns, tables, cards, and modals use dynamic font sizing
+- **Dashboard Enhancement** - Recent Stock Movements, Quick Stats, and Low Stock Alerts with dynamic scaling
+- **Warehouse Management** - Manager, Capacity, and Zones information with responsive font sizing
+- **Supplier Management** - Contact details, ratings, and payment terms with dynamic scaling
+- **AI Agent Portal** - All AI responses, prompts, and configuration forms with responsive text sizing
+- **Navigation Updates** - Tab labels and navigation elements with dynamic font scaling
+- **ScaledIcon Component** - Updated to use scalingStyles instead of old fontSizes system
+
+### v1.0.6 (2025-09-13)
+- **Fixed FrameworkSettingsPanel** - Now properly slides in from the right as a side slider
+- **Added Settings Button** - Header button to open framework settings
+- **Improved UX** - Click outside or X button to close settings panel
+- **Updated Dependencies** - Now uses panadero-shared-styling and panadero-shared-components
+
+### v1.0.5 (2025-09-13)
+- **Fixed Dependencies** - Updated to use git+https format for GitHub repositories
+- **Improved Installation** - Package now installs correctly from GitHub
+
+### v1.0.4 (2025-09-13)
+- **Fixed Dependencies** - Updated to use GitHub repositories instead of local file paths
+- **Fixed Imports** - All components now use proper package imports
+
+### v1.0.3 (2025-09-13)
+- **Fixed Exports** - Removed duplicate exports and fixed version consistency
+- **Added Dependencies** - Added panadero-shared-styling and panadero-shared-components
 
 ### v1.0.0 (2025-08-31)
 - Initial release

@@ -23,7 +23,7 @@ export default defineConfig({
         host: 'localhost', // Use localhost instead of 127.0.0.1
         port: parseInt(process.env.VITE_SERVER_PORT),
         cors: {
-            origin: ['http://localhost:8000', 'http://127.0.0.1:8000'],
+            origin: true, // Allow all origins for development
             credentials: true
         },
         hmr: {
@@ -65,8 +65,6 @@ export default defineConfig({
             'panadero-erp-finance': resolve(__dirname, 'packages/panadero-erp-finance'),
             'panadero-erp-inventory': resolve(__dirname, 'packages/panadero-erp-inventory'),
             'panadero-erp-compliance': resolve(__dirname, 'packages/panadero-erp-compliance'),
-            'panadero-shared-components': resolve(__dirname, 'packages/panadero-shared-components'),
-            'panadero-shared-styling': resolve(__dirname, 'packages/panadero-shared-styling'),
         }
     },
     optimizeDeps: {

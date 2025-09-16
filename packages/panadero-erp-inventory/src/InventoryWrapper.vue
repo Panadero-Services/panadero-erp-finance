@@ -1,12 +1,14 @@
 <!--
   Inventory Wrapper Component
-  @version 1.0.0
-  @date 31-Aug-2025
+  @version 1.0.12
+  @date 16-Sep-2025
   @description Wrapper component for ERP.inventory management
+  @test-workflow Testing branch workflow system
 -->
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useInventoryStore } from './stores/inventoryStore';
+import { useScaling } from 'panadero-shared-styling';
 import InventoryLayout from './components/layout/InventoryLayout.vue';
 import InfoBoard from './components/InfoBoard.vue';
 import InventoryDashboard from './components/dashboard/InventoryDashboard.vue';
@@ -17,10 +19,11 @@ import SupplierManagement from './components/SupplierManagement.vue';
 import InventoryReporting from './components/InventoryReporting.vue';
 import AgentPortal from './components/AgentPortal.vue';
 
-// Import the Framework Settings Panel from shared location
-import FrameworkSettingsPanel from '../../shared/components/FrameworkSettingsPanel.vue';
+// Import the Framework Settings Panel from shared components package
+import { FrameworkSettingsPanel } from 'panadero-shared-components';
 
 const store = useInventoryStore();
+const { scalingStyles } = useScaling();
 
 const tabs = [
   { id: 'infoboard', label: 'ERP Inventory', icon: 'fas fa-info-circle', color: 'text-blue-500', component: InfoBoard },
@@ -66,10 +69,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <InventoryLayout :active-tab="activeTab" :tabs="tabs" @tab-change="activeTab = $event">
+  <InventoryLayout 
+    :active-tab="activeTab" 
+    :tabs="tabs" 
+    @tab-change="activeTab = $event"
+  >
     <component :is="activeComponent" @tab-change="activeTab = $event" />
   </InventoryLayout>
-  
-  <!-- Framework Settings Panel (no circular reference) -->
+
+  <!-- Framework Settings Panel - manages its own visibility -->
   <FrameworkSettingsPanel @settingsChanged="handleSettingsChanged" />
 </template>

@@ -1,4 +1,5 @@
 <script setup>
+//v1.02 16-sep-25
 import { ref, watch, nextTick } from 'vue';
 import { useFrameworkSettings } from 'panadero-shared-styling';
 

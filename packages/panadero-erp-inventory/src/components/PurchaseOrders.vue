@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -136,10 +136,10 @@ const getStatusColor = (status) => {
   <div class="purchase-orders">
     <!-- Header -->
     <div class="mb-8">
-      <h1 :style="{ fontSize: `${fontSizes.large}px` }" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         Purchase Orders
       </h1>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Manage your purchase orders and supplier relationships
       </p>
     </div>
@@ -176,44 +176,44 @@ const getStatusColor = (status) => {
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 PO Number
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Supplier
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Order Date
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Expected Delivery
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Total Amount
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Status
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+              <th :style="scalingStyles.smallFontSize" class="px-6 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             <tr v-for="po in filteredPOs" :key="po.id">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap font-medium text-gray-900 dark:text-white">
                 {{ po.poNumber }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
                 {{ po.supplierName }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                 {{ new Date(po.orderDate).toLocaleDateString() }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
                 {{ new Date(po.expectedDelivery).toLocaleDateString() }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
                 ${{ po.totalAmount.toLocaleString() }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -222,7 +222,7 @@ const getStatusColor = (status) => {
                   :text="po.status.charAt(0).toUpperCase() + po.status.slice(1)"
                 />
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <td :style="scalingStyles.smallFontSize" class="px-6 py-4 whitespace-nowrap font-medium">
                 <div class="flex space-x-2">
                   <InventoryButton
                     @click="handleEditPO(po)"
@@ -259,7 +259,7 @@ const getStatusColor = (status) => {
     <!-- Add/Edit Modal -->
     <div v-if="showAddForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           {{ editingPO ? 'Edit Purchase Order' : 'Create Purchase Order' }}
         </h2>
         

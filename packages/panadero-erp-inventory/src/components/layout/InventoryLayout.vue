@@ -1,16 +1,23 @@
 <script setup>
 import InventoryNavigation from '../navigation/InventoryNavigation.vue';
+import { useScaling } from 'panadero-shared-styling';
 
 const props = defineProps({
   activeTab: { type: String, required: true },
   tabs: { type: Array, required: true }
 });
 
-const emit = defineEmits(['tab-change']);
+const emit = defineEmits(['tab-change', 'open-settings']);
+const { scalingStyles } = useScaling();
 </script>
 
 <template>
   <div class="layout-page dark:bg-gray-900">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white">Inventory Management</h1>
+    </div>
+
     <!-- Navigation Component -->
     <InventoryNavigation 
       :active-tab="activeTab" 

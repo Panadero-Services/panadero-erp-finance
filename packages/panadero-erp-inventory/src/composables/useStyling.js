@@ -44,7 +44,7 @@ export function useStyling() {
     button: 'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200',
     input: 'w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
     table: 'min-w-full divide-y divide-gray-200 dark:divide-gray-700',
-    badge: 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium'
+    badge: 'inline-flex items-center px-2.5 py-0.5 rounded-full font-medium'
   })
 
   // Dynamic styles based on settings
@@ -94,11 +94,11 @@ export function useStyling() {
   // Get size classes
   const getSizeClasses = (size) => {
     const sizeMap = {
-      xs: 'px-2 py-1 text-xs',
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-sm',
-      lg: 'px-6 py-3 text-base',
-      xl: 'px-8 py-4 text-lg'
+      xs: 'px-2 py-1',
+      sm: 'px-3 py-1.5',
+      md: 'px-4 py-2',
+      lg: 'px-6 py-3',
+      xl: 'px-8 py-4'
     }
     
     return sizeMap[size] || sizeMap.md

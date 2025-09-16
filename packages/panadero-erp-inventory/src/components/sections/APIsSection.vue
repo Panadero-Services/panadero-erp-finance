@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useScaling } from '../../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 const props = defineProps({
   hasAccess: {
@@ -83,10 +83,10 @@ const getMethodColor = (method) => {
   <div class="apis-section">
     <!-- Header -->
     <div class="mb-8">
-      <h2 :style="{ fontSize: `${fontSizes.large}px` }" class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         API Documentation
       </h2>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         RESTful API endpoints for inventory management
       </p>
     </div>
@@ -97,7 +97,7 @@ const getMethodColor = (method) => {
         <i class="fas fa-lock text-yellow-600 dark:text-yellow-400 mr-2"></i>
         <span class="text-yellow-800 dark:text-yellow-200 font-medium">API Access Restricted</span>
       </div>
-      <p class="text-yellow-700 dark:text-yellow-300 mt-1 text-sm">
+      <p :style="scalingStyles.smallFontSize" class="text-yellow-700 dark:text-yellow-300 mt-1 ">
         This feature requires additional permissions to access API documentation.
       </p>
     </div>
@@ -114,56 +114,56 @@ const getMethodColor = (method) => {
             <div class="flex items-center space-x-4">
               <span
                 :class="getMethodColor(endpoint.method)"
-                class="px-2 py-1 rounded text-sm font-medium"
+                class="px-2 py-1 rounded  font-medium"
               >
                 {{ endpoint.method }}
               </span>
-              <code class="text-sm font-mono text-gray-900 dark:text-white">
+              <code class=" font-mono text-gray-900 dark:text-white">
                 {{ endpoint.endpoint }}
               </code>
             </div>
           </div>
-          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p class="mt-2  text-gray-600 dark:text-gray-400">
             {{ endpoint.description }}
           </p>
         </div>
         
         <div v-if="endpoint.parameters.length > 0" class="px-6 py-4">
-          <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">Parameters</h4>
+          <h4 class=" font-medium text-gray-900 dark:text-white mb-3">Parameters</h4>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Name
                   </th>
-                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Type
                   </th>
-                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Required
                   </th>
-                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Description
                   </th>
                 </tr>
               </thead>
               <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <tr v-for="param in endpoint.parameters" :key="param.name">
-                  <td class="px-4 py-2 text-sm font-mono text-gray-900 dark:text-white">
+                  <td class="px-4 py-2  font-mono text-gray-900 dark:text-white">
                     {{ param.name }}
                   </td>
-                  <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                  <td class="px-4 py-2  text-gray-600 dark:text-gray-400">
                     {{ param.type }}
                   </td>
-                  <td class="px-4 py-2 text-sm">
+                  <td class="px-4 py-2 ">
                     <span
                       :class="param.required ? 'text-red-600 dark:text-red-400' : 'text-gray-500 dark:text-gray-400'"
                     >
                       {{ param.required ? 'Yes' : 'No' }}
                     </span>
                   </td>
-                  <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                  <td class="px-4 py-2  text-gray-600 dark:text-gray-400">
                     {{ param.description }}
                   </td>
                 </tr>
@@ -176,8 +176,8 @@ const getMethodColor = (method) => {
 
     <!-- No Access State -->
     <div v-else class="text-center py-12">
-      <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
-      <p class="text-gray-600 dark:text-gray-400">API documentation is not available</p>
+      <i :style="scalingStyles.iconSizeLarge" class="fas fa-lock text-gray-400 mb-4"></i>
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">API documentation is not available</p>
     </div>
   </div>
 </template>

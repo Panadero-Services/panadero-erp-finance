@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../../stores/inventoryStore.js'
-import { useScaling } from '../../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 import { useInventoryInfoBoxes } from '../../composables/useInventoryInfoBoxes.js'
 
 // UI Components
@@ -63,10 +63,10 @@ onMounted(() => {
   <div class="inventory-dashboard">
     <!-- Header -->
     <div class="mb-8">
-      <h1 :style="{ fontSize: `${fontSizes.large}px` }" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         Inventory Dashboard
       </h1>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Overview of your inventory management system
       </p>
     </div>
@@ -158,13 +158,13 @@ onMounted(() => {
 
     <!-- Alerts Section -->
     <div v-if="lowStockAlerts.length > 0" class="mb-8">
-      <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+      <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Low Stock Alerts
       </h2>
       <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
         <div class="flex items-center mb-3">
-          <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-          <span class="font-medium text-red-800 dark:text-red-200">Attention Required</span>
+          <i :style="scalingStyles.iconSize" class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+          <span :style="scalingStyles.textFontSize" class="font-medium text-red-800 dark:text-red-200">Attention Required</span>
         </div>
         <div class="space-y-2">
           <div
@@ -173,11 +173,11 @@ onMounted(() => {
             class="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border"
           >
             <div>
-              <span class="font-medium">{{ alert.name }}</span>
-              <span class="text-gray-500 ml-2">({{ alert.sku }})</span>
+              <span :style="scalingStyles.textFontSize" class="font-medium">{{ alert.name }}</span>
+              <span :style="scalingStyles.smallFontSize" class="text-gray-500 ml-2">({{ alert.sku }})</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-sm text-gray-600">
+              <span :style="scalingStyles.smallFontSize" class="text-gray-600">
                 {{ alert.currentStock }} / {{ alert.minStock }}
               </span>
               <StatusBadge
@@ -194,7 +194,7 @@ onMounted(() => {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Recent Stock Movements -->
       <div>
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           Recent Stock Movements
         </h2>
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -202,35 +202,35 @@ onMounted(() => {
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th :style="scalingStyles.smallFontSize" class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     SKU
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th :style="scalingStyles.smallFontSize" class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Type
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th :style="scalingStyles.smallFontSize" class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Quantity
                   </th>
-                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <th :style="scalingStyles.smallFontSize" class="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                     Time
                   </th>
                 </tr>
               </thead>
               <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 <tr v-for="movement in recentMovements" :key="movement.id">
-                  <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                  <td :style="scalingStyles.textFontSize" class="px-4 py-3 text-gray-900 dark:text-white">
                     {{ movement.sku }}
                   </td>
-                  <td class="px-4 py-3">
+                  <td :style="scalingStyles.textFontSize" class="px-4 py-3">
                     <StatusBadge
                       :status="movement.movementType === 'in' ? 'success' : 'warning'"
                       :text="movement.movementType === 'in' ? 'In' : 'Out'"
                     />
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+                  <td :style="scalingStyles.textFontSize" class="px-4 py-3 text-gray-900 dark:text-white">
                     {{ movement.quantity }}
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+                  <td :style="scalingStyles.textFontSize" class="px-4 py-3 text-gray-500 dark:text-gray-400">
                     {{ new Date(movement.timestamp).toLocaleString() }}
                   </td>
                 </tr>
@@ -242,31 +242,31 @@ onMounted(() => {
 
       <!-- Quick Stats -->
       <div>
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           Quick Stats
         </h2>
         <div class="space-y-4">
           <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Average Stock Level</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                <p :style="scalingStyles.textFontSize" class="font-medium text-gray-600 dark:text-gray-400">Average Stock Level</p>
+                <p :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white">
                   {{ Math.round(store.stockItems.reduce((sum, item) => sum + item.currentStock, 0) / store.stockItems.length) }}
                 </p>
               </div>
-              <i class="fas fa-chart-line text-blue-500 text-2xl"></i>
+              <i :style="scalingStyles.iconSize" class="fas fa-chart-line text-blue-500"></i>
             </div>
           </div>
           
           <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <div class="flex items-center justify-between">
               <div>
-                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Categories</p>
-                <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                <p :style="scalingStyles.textFontSize" class="font-medium text-gray-600 dark:text-gray-400">Total Categories</p>
+                <p :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white">
                   {{ new Set(store.stockItems.map(item => item.category)).size }}
                 </p>
               </div>
-              <i class="fas fa-tags text-green-500 text-2xl"></i>
+              <i :style="scalingStyles.iconSize" class="fas fa-tags text-green-500"></i>
             </div>
           </div>
         </div>

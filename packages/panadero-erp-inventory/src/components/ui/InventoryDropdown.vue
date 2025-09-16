@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { useScaling } from 'panadero-shared-styling'
 
 const props = defineProps({
   modelValue: {
@@ -29,6 +30,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+const { scalingStyles } = useScaling()
 
 const isOpen = ref(false)
 const dropdownRef = ref(null)
@@ -76,7 +78,7 @@ onUnmounted(() => {
 
 <template>
   <div class="space-y-1">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label v-if="label" :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300">
       {{ label }}
       <span v-if="required" class="text-red-500 ml-1">*</span>
     </label>
@@ -89,16 +91,17 @@ onUnmounted(() => {
         @click="toggleDropdown"
       >
         <div class="flex items-center justify-between px-3 py-2">
-          <span class="block truncate">
+          <span :style="scalingStyles.textFontSize" class="block truncate">
             {{ selectedOption ? selectedOption.label : placeholder }}
           </span>
-          <i class="fas fa-chevron-down text-gray-400 transform transition-transform duration-200" :class="{ 'rotate-180': isOpen }"></i>
+          <i :style="scalingStyles.iconSizeSmall" class="fas fa-chevron-down text-gray-400 transform transition-transform duration-200" :class="{ 'rotate-180': isOpen }"></i>
         </div>
       </button>
       
       <div
         v-if="isOpen"
-        class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
+        :style="scalingStyles.textFontSize"
+        class="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 shadow-lg max-h-60 rounded-md py-1  ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none"
       >
         <div
           v-for="option in options"
@@ -107,11 +110,11 @@ onUnmounted(() => {
           :class="{ 'bg-blue-50 dark:bg-blue-900': option.value === modelValue }"
           @click="handleSelect(option)"
         >
-          <span class="block truncate font-normal" :class="{ 'text-blue-600 dark:text-blue-400': option.value === modelValue }">
+          <span :style="scalingStyles.textFontSize" class="block truncate font-normal" :class="{ 'text-blue-600 dark:text-blue-400': option.value === modelValue }">
             {{ option.label }}
           </span>
           <span v-if="option.value === modelValue" class="absolute inset-y-0 right-0 flex items-center pr-4">
-            <i class="fas fa-check text-blue-600 dark:text-blue-400"></i>
+            <i :style="scalingStyles.iconSizeSmall" class="fas fa-check text-blue-600 dark:text-blue-400"></i>
           </span>
         </div>
       </div>

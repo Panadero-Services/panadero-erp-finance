@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -351,10 +351,10 @@ onMounted(() => {
     <div class="mb-8">
       <div class="flex items-center justify-between">
         <div>
-          <h1 :style="{ fontSize: `${fontSizes.heading}` }" class="font-bold text-gray-900 dark:text-white mb-2">
+          <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
             AI Agent Portal
           </h1>
-          <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+          <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
             Leverage AI to analyze and optimize your inventory management
           </p>
         </div>
@@ -410,7 +410,7 @@ onMounted(() => {
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- AI Prompts -->
       <div>
-        <h2 :style="{ fontSize: `${fontSizes.h2}` }" class="font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           Available AI Prompts
         </h2>
         
@@ -421,15 +421,15 @@ onMounted(() => {
             class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4"
           >
             <div class="flex items-start justify-between mb-2">
-              <h3 :style="{ fontSize: `${fontSizes.subtitle}` }"  class="text-gray-900 dark:text-white">{{ prompt.title }}</h3>
+              <h3 :style="scalingStyles.subtitleFontSize"  class="text-gray-900 dark:text-white">{{ prompt.title }}</h3>
               <StatusBadge
                 :status="prompt.active ? 'success' : 'inactive'"
                 :text="prompt.active ? 'Active' : 'Inactive'"
               />
             </div>
-            <p :style="{ fontSize: `${fontSizes.xs}` }" class=" text-gray-600 dark:text-gray-400 mb-3">{{ prompt.prompt }}</p>
+            <p :style="scalingStyles.textFontSize" class=" text-gray-600 dark:text-gray-400 mb-3">{{ prompt.prompt }}</p>
             <div class="flex items-center justify-between">
-              <span :style="{ fontSize: `${fontSizes.xxs}` }" class="text-gray-500 dark:text-gray-400 capitalize">{{ prompt.category }}</span>
+              <span :style="scalingStyles.smallFontSize" class="text-gray-500 dark:text-gray-400 capitalize">{{ prompt.category }}</span>
               <InventoryButton
                 @click="handleExecutePrompt(prompt.id)"
                 variant="primary"
@@ -445,7 +445,7 @@ onMounted(() => {
 
         <!-- Custom Prompt -->
         <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-          <h3 :style="{ fontSize: `${fontSizes.h3}` }" class="font-medium text-gray-900 dark:text-white mb-3">Custom AI Prompt</h3>
+          <h3 :style="scalingStyles.subtitleFontSize" class="font-medium text-gray-900 dark:text-white mb-3">Custom AI Prompt</h3>
           <div class="space-y-3">
             <InventoryInput
               v-model="customPrompt"
@@ -469,25 +469,25 @@ onMounted(() => {
 
       <!-- AI Response -->
       <div>
-        <h2 :style="{ fontSize: `${fontSizes.h2}` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           AI Response
         </h2>
         
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 min-h-[400px]">
-          <div v-if="aiResponse" class="whitespace-pre-wrap text-gray-900 dark:text-white">
+          <div v-if="aiResponse" :style="scalingStyles.textFontSize" class="whitespace-pre-wrap text-gray-900 dark:text-white">
             {{ aiResponse }}
           </div>
           <div v-else class="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
             <div class="text-center">
-              <i class="fas fa-robot mb-2" :style="{ fontSize: `${fontSizes.title}` }"></i>
-              <p>Execute a prompt to see AI responses here</p>
+              <i class="fas fa-robot mb-2" :style="scalingStyles.iconSize"></i>
+              <p :style="scalingStyles.textFontSize">Execute a prompt to see AI responses here</p>
             </div>
           </div>
         </div>
 
         <!-- Prompt History -->
         <div v-if="promptHistory.length > 0" class="mt-6">
-          <h3 :style="{ fontSize: `${fontSizes.small}px` }" class="font-medium text-gray-900 dark:text-white mb-3">
+          <h3 :style="scalingStyles.subtitleFontSize" class="font-medium text-gray-900 dark:text-white mb-3">
             Recent Prompts
           </h3>
           <div class="space-y-2 max-h-48 overflow-y-auto">
@@ -495,12 +495,11 @@ onMounted(() => {
               v-for="history in promptHistory.slice(0, 5)"
               :key="history.id"
               class="bg-gray-50 dark:bg-gray-700 rounded p-3"
-              :style="{ fontSize: `${fontSizes.table}` }"
             >
-              <div class="font-medium text-gray-900 dark:text-white mb-1">
+              <div :style="scalingStyles.textFontSize" class="font-medium text-gray-900 dark:text-white mb-1">
                 {{ history.prompt }}
               </div>
-              <div :style="{ fontSize: `${fontSizes.xxxs}` }" class="text-gray-600 dark:text-gray-400">
+              <div :style="scalingStyles.smallFontSize" class="text-gray-600 dark:text-gray-400">
                 {{ new Date(history.timestamp).toLocaleString() }}
               </div>
             </div>
@@ -512,7 +511,7 @@ onMounted(() => {
     <!-- Add Prompt Modal -->
     <div v-if="showPromptModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           Add Custom Prompt
         </h2>
         
@@ -562,14 +561,14 @@ onMounted(() => {
     <!-- AI Configuration Modal -->
     <div v-if="showConfigModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           AI Service Configuration
         </h2>
         
         <form @submit.prevent="saveAIConfig" class="space-y-6">
           <!-- Provider Selection -->
           <div>
-            <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
               AI Provider
             </label>
             <InventoryDropdown
@@ -581,7 +580,7 @@ onMounted(() => {
 
           <!-- Model Selection -->
           <div v-if="availableModels.length > 0">
-            <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
               Model
             </label>
             <InventoryDropdown
@@ -593,7 +592,7 @@ onMounted(() => {
 
           <!-- API Key (for OpenAI, Claude) -->
           <div v-if="['openai', 'claude'].includes(aiServiceConfig.provider)">
-            <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
               API Key
             </label>
             <InventoryInput
@@ -605,7 +604,7 @@ onMounted(() => {
 
           <!-- Base URL (for Ollama, Custom) -->
           <div v-if="['ollama', 'custom'].includes(aiServiceConfig.provider)">
-            <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
               Base URL
             </label>
             <InventoryInput
@@ -617,7 +616,7 @@ onMounted(() => {
           <!-- Advanced Settings -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Temperature (0.0 - 1.0)
               </label>
               <InventoryInput
@@ -629,7 +628,7 @@ onMounted(() => {
               />
             </div>
             <div>
-              <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Max Tokens
               </label>
               <InventoryInput
@@ -643,7 +642,7 @@ onMounted(() => {
 
           <!-- Custom Headers (for advanced users) -->
           <div>
-            <label :style="{ fontSize: `${fontSizes.label}` }" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300 mb-2">
               Custom Headers (JSON format)
             </label>
             <InventoryInput

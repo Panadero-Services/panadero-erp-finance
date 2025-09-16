@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -110,10 +110,10 @@ const getRatingStars = (rating) => {
   <div class="supplier-management">
     <!-- Header -->
     <div class="mb-8">
-      <h1 :style="{ fontSize: `${fontSizes.large}px` }" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         Supplier Management
       </h1>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Manage your supplier relationships and contact information
       </p>
     </div>
@@ -146,8 +146,8 @@ const getRatingStars = (rating) => {
       >
         <div class="flex items-start justify-between mb-4">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ supplier.name }}</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ supplier.contactPerson }}</p>
+            <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white">{{ supplier.name }}</h3>
+            <p :style="scalingStyles.smallFontSize" class="text-gray-600 dark:text-gray-400">{{ supplier.contactPerson }}</p>
           </div>
           <StatusBadge
             :status="supplier.status"
@@ -156,37 +156,37 @@ const getRatingStars = (rating) => {
         </div>
 
         <div class="space-y-2 mb-4">
-          <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <i class="fas fa-envelope w-4 mr-2"></i>
+          <div :style="scalingStyles.textFontSize" class="flex items-center text-gray-600 dark:text-gray-400">
+            <i :style="scalingStyles.iconSizeSmall" class="fas fa-envelope w-4 mr-2"></i>
             {{ supplier.email }}
           </div>
-          <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <i class="fas fa-phone w-4 mr-2"></i>
+          <div :style="scalingStyles.textFontSize" class="flex items-center text-gray-600 dark:text-gray-400">
+            <i :style="scalingStyles.iconSizeSmall" class="fas fa-phone w-4 mr-2"></i>
             {{ supplier.phone }}
           </div>
-          <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <i class="fas fa-map-marker-alt w-4 mr-2"></i>
+          <div :style="scalingStyles.textFontSize" class="flex items-center text-gray-600 dark:text-gray-400">
+            <i :style="scalingStyles.iconSizeSmall" class="fas fa-map-marker-alt w-4 mr-2"></i>
             {{ supplier.address }}
           </div>
-          <div class="flex items-center text-sm text-gray-600 dark:text-gray-400">
-            <i class="fas fa-credit-card w-4 mr-2"></i>
+          <div :style="scalingStyles.textFontSize" class="flex items-center text-gray-600 dark:text-gray-400">
+            <i :style="scalingStyles.iconSizeSmall" class="fas fa-credit-card w-4 mr-2"></i>
             {{ supplier.paymentTerms }}
           </div>
         </div>
 
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center">
-            <span class="text-sm text-gray-600 dark:text-gray-400 mr-2">Rating:</span>
+            <span :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400 mr-2">Rating:</span>
             <div class="flex">
               <i
                 v-for="(star, index) in getRatingStars(supplier.rating)"
                 :key="index"
                 :class="star"
-                class="text-sm"
+                :style="scalingStyles.iconSizeSmall"
               ></i>
             </div>
           </div>
-          <span class="text-sm font-medium text-gray-900 dark:text-white">
+          <span :style="scalingStyles.textFontSize" class="font-medium text-gray-900 dark:text-white">
             {{ supplier.rating }}/5
           </span>
         </div>
@@ -214,7 +214,7 @@ const getRatingStars = (rating) => {
     <!-- Add/Edit Modal -->
     <div v-if="showAddForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           {{ editingSupplier ? 'Edit Supplier' : 'Add New Supplier' }}
         </h2>
         

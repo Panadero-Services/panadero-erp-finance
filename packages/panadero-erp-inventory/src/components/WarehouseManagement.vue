@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -90,10 +90,10 @@ const getCapacityPercentage = (warehouse) => {
   <div class="warehouse-management">
     <!-- Header -->
     <div class="mb-8">
-      <h1 :style="{ fontSize: `${fontSizes.large}px` }" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         Warehouse Management
       </h1>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Manage your warehouse locations and capacity
       </p>
     </div>
@@ -119,8 +119,8 @@ const getCapacityPercentage = (warehouse) => {
       >
         <div class="flex items-start justify-between mb-4">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ warehouse.name }}</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">{{ warehouse.location }}</p>
+            <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white">{{ warehouse.name }}</h3>
+            <p :style="scalingStyles.smallFontSize" class="text-gray-600 dark:text-gray-400">{{ warehouse.location }}</p>
           </div>
           <StatusBadge
             :status="warehouse.status"
@@ -130,7 +130,7 @@ const getCapacityPercentage = (warehouse) => {
 
         <div class="space-y-3">
           <div>
-            <div class="flex justify-between text-sm mb-1">
+            <div :style="scalingStyles.smallFontSize" class="flex justify-between mb-1">
               <span class="text-gray-600 dark:text-gray-400">Capacity Usage</span>
               <span class="text-gray-900 dark:text-white">{{ getCapacityPercentage(warehouse) }}%</span>
             </div>
@@ -142,10 +142,10 @@ const getCapacityPercentage = (warehouse) => {
             </div>
           </div>
 
-          <div class="text-sm text-gray-600 dark:text-gray-400">
-            <p><strong>Manager:</strong> {{ warehouse.manager }}</p>
-            <p><strong>Capacity:</strong> {{ warehouse.currentCapacity.toLocaleString() }} / {{ warehouse.capacity.toLocaleString() }}</p>
-            <p><strong>Zones:</strong> {{ warehouse.zones.join(', ') }}</p>
+          <div class="text-gray-600 dark:text-gray-400">
+            <p :style="scalingStyles.textFontSize"><strong>Manager:</strong> {{ warehouse.manager }}</p>
+            <p :style="scalingStyles.textFontSize"><strong>Capacity:</strong> {{ warehouse.currentCapacity.toLocaleString() }} / {{ warehouse.capacity.toLocaleString() }}</p>
+            <p :style="scalingStyles.textFontSize"><strong>Zones:</strong> {{ warehouse.zones.join(', ') }}</p>
           </div>
         </div>
 
@@ -172,7 +172,7 @@ const getCapacityPercentage = (warehouse) => {
     <!-- Add/Edit Modal -->
     <div v-if="showAddForm" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
           {{ editingWarehouse ? 'Edit Warehouse' : 'Add New Warehouse' }}
         </h2>
         

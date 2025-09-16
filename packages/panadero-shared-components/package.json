@@ -1,6 +1,6 @@
 {
   "name": "panadero-shared-components",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Shared UI components for all Panadero packages",
   "main": "index.js",
   "type": "module",

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useScaling } from 'panadero-shared-styling'
 
 const props = defineProps({
   status: {
@@ -11,6 +12,8 @@ const props = defineProps({
     default: ''
   }
 })
+
+const { scalingStyles } = useScaling()
 
 const badgeClasses = computed(() => {
   const statusMap = {
@@ -37,7 +40,7 @@ const displayText = computed(() => {
 </script>
 
 <template>
-  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="badgeClasses">
+  <span :style="scalingStyles.smallFontSize" class="inline-flex items-center px-2.5 py-0.5 rounded-full font-medium" :class="badgeClasses">
     {{ displayText }}
   </span>
 </template>

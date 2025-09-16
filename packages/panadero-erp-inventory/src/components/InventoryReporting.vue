@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -142,17 +142,17 @@ onMounted(() => {
   <div class="inventory-reporting">
     <!-- Header -->
     <div class="mb-8">
-      <h1 :style="{ fontSize: `${fontSizes.large}px` }" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+      <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         Inventory Reports
       </h1>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Generate and analyze inventory reports
       </p>
     </div>
 
     <!-- Report Generator -->
     <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
-      <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Generate Report
       </h2>
       
@@ -218,7 +218,7 @@ onMounted(() => {
 
     <!-- Generated Reports -->
     <div v-if="generatedReports.length > 0">
-      <h2 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h2 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Generated Reports
       </h2>
       
@@ -230,8 +230,8 @@ onMounted(() => {
         >
           <div class="flex items-start justify-between mb-4">
             <div>
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ report.title }}</h3>
-              <p class="text-sm text-gray-600 dark:text-gray-400">
+              <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white">{{ report.title }}</h3>
+              <p :style="scalingStyles.smallFontSize" class="text-gray-600 dark:text-gray-400">
                 Generated: {{ new Date(report.generatedAt).toLocaleString() }}
               </p>
             </div>
@@ -269,7 +269,8 @@ onMounted(() => {
                   <th
                     v-for="(value, key) in report.data[0] || {}"
                     :key="key"
-                    class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                    :style="scalingStyles.smallFontSize"
+                    class="px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   >
                     {{ key }}
                   </th>
@@ -280,7 +281,8 @@ onMounted(() => {
                   <td
                     v-for="(value, key) in item"
                     :key="key"
-                    class="px-4 py-2 text-sm text-gray-900 dark:text-white"
+                    :style="scalingStyles.smallFontSize"
+                    class="px-4 py-2 text-gray-900 dark:text-white"
                   >
                     {{ value }}
                   </td>
@@ -298,8 +300,8 @@ onMounted(() => {
 
     <!-- No Reports State -->
     <div v-else class="text-center py-12">
-      <i class="fas fa-chart-bar text-4xl text-gray-400 mb-4"></i>
-      <p class="text-gray-600 dark:text-gray-400">No reports generated yet. Create your first report above.</p>
+      <i :style="scalingStyles.iconSizeLarge" class="fas fa-chart-bar text-gray-400 mb-4"></i>
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">No reports generated yet. Create your first report above.</p>
     </div>
   </div>
 </template>

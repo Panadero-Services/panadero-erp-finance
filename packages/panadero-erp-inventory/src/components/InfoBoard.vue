@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
-import { useScaling } from '../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 import InfoSection from './sections/InfoSection.vue'
 import InfoSection2 from './sections/InfoSection2.vue'
@@ -55,7 +55,7 @@ const switchTab = (tabId) => {
             :key="tab.id"
             @click="switchTab(tab.id)"
             :class="[
-              'whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors',
+              'whitespace-nowrap py-2 px-1 border-b-2 font-medium transition-colors',
               activeTab === tab.id
                 ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600'

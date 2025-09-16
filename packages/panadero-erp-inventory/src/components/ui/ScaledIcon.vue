@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useScaling } from '../../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 const props = defineProps({
   icon: {
@@ -18,17 +18,17 @@ const props = defineProps({
   }
 })
 
-const { fontSizes } = useScaling()
+const { scalingStyles } = useScaling()
 
 const iconSize = computed(() => {
   const sizes = {
-    xs: fontSizes.xs,
-    sm: fontSizes.sm,
-    base: fontSizes.base,
-    lg: fontSizes.lg,
-    xl: fontSizes.xl
+    xs: scalingStyles.iconSizeSmall,
+    sm: scalingStyles.iconSizeSmall,
+    base: scalingStyles.iconSize,
+    lg: scalingStyles.iconSize,
+    xl: scalingStyles.iconSizeLarge
   }
-  return `${sizes[props.size]}px`
+  return sizes[props.size] || scalingStyles.iconSize
 })
 
 const iconClasses = computed(() => {
@@ -49,6 +49,6 @@ const iconClasses = computed(() => {
 <template>
   <i 
     :class="[props.icon, iconClasses]" 
-    :style="{ fontSize: iconSize }"
+    :style="iconSize"
   ></i>
 </template>

@@ -1,6 +1,6 @@
 <script setup>
 import { useInventoryStore } from '../../stores/inventoryStore';
-import { useScaling } from '../../../../shared/composables/useScaling.js';
+import { useScaling } from 'panadero-shared-styling';
 import { onMounted } from 'vue';
 
 const props = defineProps({
@@ -61,7 +61,7 @@ onMounted(() => {
         
         <!-- Label with enhanced typography -->
         <span 
-          :style="{ fontSize: `${fontSizes.base}px` }" 
+          :style="scalingStyles.textFontSize" 
           class="truncate font-medium"
           :class="activeTab === tab.id ? 'text-white' : 'text-gray-700 dark:text-gray-300'"
         >

@@ -5,7 +5,7 @@
   @description ERP framework page component for ERP.Finance
 -->
 <script setup>
-import { GenericInfoSection } from 'panadero-shared-components';
+import GenericInfoSection from '../../../../shared/components/GenericInfoSection.vue';
 import { useFinanceStore } from '../../stores/financeStore';
 import { useInfoBoxes } from '../../composables/useInfoBoxes';
 

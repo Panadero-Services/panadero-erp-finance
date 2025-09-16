@@ -81,7 +81,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   // Simple form styles
   const forms = {
     input: 'w-full border rounded p-2',
-    label: 'block text-sm font-medium mb-2',
+    label: 'block font-medium mb-2',
     select: 'w-full border rounded p-2',
     textarea: 'w-full border rounded p-2 h-20'
   };

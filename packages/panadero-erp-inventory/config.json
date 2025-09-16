@@ -1,6 +1,6 @@
 {
   "name": "panadero-erp-inventory",
-  "version": "1.0.0",
+  "version": "1.0.12",
   "description": "ERP Inventory Module - Complete inventory management with stock tracking, warehousing, and supply chain",
   "type": "erp-module",
   "category": "inventory",

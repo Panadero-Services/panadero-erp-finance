@@ -1,4 +1,6 @@
 <script setup>
+//v1.02 16-sep-25
+  
 import { computed } from 'vue';
 import { useScaling } from 'panadero-shared-styling';
 
@@ -236,7 +238,7 @@ const handleNavigateToEntity = (entityName) => {
                       v-for="table in packageTables"
                       :key="table.name"
                       @click="handleNavigateToEntity(table.name)"
-                      :style="scalingStyles.textFontSize"
+                      :style="scalingStyles.button"
                       :class="getEntityColorClasses(packageConfig.color)"
                       class="w-full text-left rounded transition-colors cursor-pointer border dark:border-gray-500"
                     >
@@ -262,7 +264,7 @@ const handleNavigateToEntity = (entityName) => {
                       v-for="entity in sharedEntities"
                       :key="entity.id"
                       @click="handleNavigateToEntity(entity.id)"
-                      :style="scalingStyles.textFontSize"
+                      :style="scalingStyles.button"
                       :class="getEntityColorClasses(entity.color)"
                       class="w-full text-left rounded transition-colors cursor-pointer border dark:border-gray-500"
                     >

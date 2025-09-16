@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { useScaling } from '../../../../shared/composables/useScaling.js'
+import { useScaling } from 'panadero-shared-styling'
 
 // UI Components
 import InventoryButton from '../ui/InventoryButton.vue'
@@ -31,17 +31,17 @@ const handleButtonClick = (variant) => {
   <div class="ui-elements-section">
     <!-- Header -->
     <div class="mb-8">
-      <h2 :style="{ fontSize: `${fontSizes.large}px` }" class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <h2 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white mb-2">
         UI Elements Demo
       </h2>
-      <p :style="{ fontSize: `${fontSizes.base}px` }" class="text-gray-600 dark:text-gray-400">
+      <p :style="scalingStyles.textFontSize" class="text-gray-600 dark:text-gray-400">
         Interactive demonstration of inventory module UI components
       </p>
     </div>
 
     <!-- Buttons -->
     <div class="mb-8">
-      <h3 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Buttons
       </h3>
       
@@ -116,7 +116,7 @@ const handleButtonClick = (variant) => {
 
     <!-- Form Elements -->
     <div class="mb-8">
-      <h3 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Form Elements
       </h3>
       
@@ -168,7 +168,7 @@ const handleButtonClick = (variant) => {
 
     <!-- Value Cards -->
     <div class="mb-8">
-      <h3 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Value Cards
       </h3>
       
@@ -209,7 +209,7 @@ const handleButtonClick = (variant) => {
 
     <!-- Status Badges -->
     <div class="mb-8">
-      <h3 :style="{ fontSize: `${fontSizes.medium}px` }" class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 :style="scalingStyles.subtitleFontSize" class="font-semibold text-gray-900 dark:text-white mb-4">
         Status Badges
       </h3>
       

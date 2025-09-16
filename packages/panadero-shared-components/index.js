@@ -8,7 +8,7 @@ export { default as GenericInfoSection } from './src/components/GenericInfoSecti
 // Package information
 export const packageInfo = {
   name: 'panadero-shared-components',
-  version: '1.0.0',
+  version: '1.0.3',
   description: 'Shared UI components for all Panadero packages',
   author: 'JaWsome.Orbit',
   components: [

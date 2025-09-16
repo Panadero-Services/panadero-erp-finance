@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useScaling } from 'panadero-shared-styling'
 
 const props = defineProps({
   modelValue: {
@@ -37,6 +38,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+const { scalingStyles } = useScaling()
 
 const inputClasses = computed(() => {
   const baseClasses = 'w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white'
@@ -62,9 +64,9 @@ const handleInput = (event) => {
 
 <template>
   <div class="space-y-1">
-    <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label v-if="label" :style="scalingStyles.smallFontSize" class="block font-medium text-gray-700 dark:text-gray-300">
       {{ label }}
-      <span v-if="required" class="text-red-500 ml-1">*</span>
+      <span v-if="required" :style="scalingStyles.smallFontSize" class="text-red-500 ml-1">*</span>
     </label>
     
     <div class="relative">
@@ -78,6 +80,7 @@ const handleInput = (event) => {
         :required="required"
         :disabled="disabled"
         :class="[inputClasses, icon ? 'pl-10' : '']"
+        :style="scalingStyles.textFontSize"
         @input="handleInput"
       />
       
@@ -89,6 +92,7 @@ const handleInput = (event) => {
         :disabled="disabled"
         :rows="rows"
         :class="[inputClasses, icon ? 'pl-10' : '']"
+        :style="scalingStyles.textFontSize"
         @input="handleInput"
       ></textarea>
     </div>
