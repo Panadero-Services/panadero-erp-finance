@@ -1,6 +1,6 @@
 # Panadero ERP Inventory Module
 
-**Version:** 1.0.12
+**Version:** 1.0.13
 **Release Date:** 16 September 2025  
 **Status:** Production Ready
 
@@ -8,12 +8,23 @@
 
 The ERP Inventory Module is a comprehensive inventory management system designed to handle stock tracking, warehousing, supply chain management, and AI-powered optimization. Built with Vue 3, Pinia, and Tailwind CSS, it provides a modern, scalable solution for inventory management needs.
 
-## 🆕 What's New in v1.0.12
+## 🆕 What's New in v1.0.13
 
-### Enhanced Package Integration
-- **Updated Dependencies** - Now uses panadero-shared-components v1.0.3 and panadero-shared-styling v1.0.3
-- **Improved Reactivity** - Fixed scaling issues with GenericInfoSection component for perfect dynamic font scaling
-- **Better Error Handling** - Enhanced error handling and fallback mechanisms for shared package integration
+### Complete Database Schema Implementation
+- **Normalized Database Structure** - Full implementation of inventory_stock_types, inventory_stock_items, inventory_stock_movements, and inventory_stock_projections tables
+- **Multi-Type Stock Support** - Comprehensive support for Items, Bulk materials, and Liquids with type-specific properties
+- **Advanced Movement Tracking** - Complete audit trail with batch numbers, serial numbers, expiry dates, and warehouse zones
+- **Cost Management** - Full unit cost, total cost, and pricing information tracking
+
+### Enhanced Data Management
+- **Comprehensive Seeders** - Complete sample data with proper relationships and realistic inventory scenarios
+- **Foreign Key Integrity** - All database relationships properly established with referential integrity
+- **Flexible Metadata** - JSON fields for type-specific properties and additional flexible data storage
+
+### Improved Code Organization
+- **useCommonSnippets Composable** - Centralized common functionality to eliminate code duplication
+- **Consistent Styling** - Unified dark mode and dynamic scaling across all components
+- **Better Error Handling** - Enhanced error handling and fallback mechanisms
 
 ### Version Control & Documentation
 - **GitHub Integration** - Proper version control and release management

@@ -12,6 +12,12 @@ class InventoryItemSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if data already exists
+        if (DB::table('inventory_items')->count() > 0) {
+            $this->command->info('Inventory items already exist, skipping...');
+            return;
+        }
+
         $items = [
             // Electronics Category
             [

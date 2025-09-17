@@ -5,7 +5,7 @@
   @description Framework page component for ERP.Inventory
 -->
 <script setup>
-import { computed, onMounted, onUnmounted, ref, provide } from 'vue';
+import { computed, onMounted, onUnmounted, ref, provide, inject } from 'vue';
 
 // layout
 import AppToolbarLayout from '@/layouts/AppToolbarLayout.vue';
@@ -29,6 +29,23 @@ const _db = useDbStore();
 import { RadioGroup, RadioGroupOption } from '@headlessui/vue'
 import { CheckIcon } from '@heroicons/vue/20/solid'
 import Pulse from '@/panadero/shared/tools/Pulse.vue';
+
+
+
+// Get settings store from parent - this IS the SSOT
+const settingsStore = inject('settingsStore');
+
+const darkModeClasses = computed(() => {
+  const isDark = settingsStore.dark === true
+  return {
+    container: isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900',
+    card: isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200',
+    // ... rest of classes
+  }
+})
+
+
+
 
 const props = defineProps({
     page: Object,
@@ -56,7 +73,7 @@ const _shadow = "shadow-lg shadow-gray-300 dark:shadow-slate-600";
       <template #default>
          <div class="w-screen"></div>
         <div class="wrapper ... min-h-[640px] mr-4">
-          <InventoryWrapper />
+          <InventoryWrapper :settings="_set" />
         </div>
       </template>
 

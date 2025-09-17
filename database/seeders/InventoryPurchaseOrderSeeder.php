@@ -12,6 +12,12 @@ class InventoryPurchaseOrderSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if data already exists
+        if (DB::table('inventory_purchase_orders')->count() > 0) {
+            $this->command->info('Inventory purchase orders already exist, skipping...');
+            return;
+        }
+
         $purchaseOrders = [
             // Recent Orders - Pending
             [

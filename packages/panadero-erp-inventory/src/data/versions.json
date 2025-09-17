@@ -1,10 +1,27 @@
 {
-  "current": "1.0.12",
+  "current": "1.0.13",
   "releases": [
+    {
+      "version": "v1.0.13",
+      "date": "16 Sep 2025",
+      "status": "current",
+      "features": [
+        "Complete Database Schema Implementation - Full normalized database structure with inventory_stock_types, inventory_stock_items, inventory_stock_movements, and inventory_stock_projections tables",
+        "Multi-Type Stock Support - Comprehensive support for Items, Bulk materials, and Liquids with type-specific properties and flexible metadata storage",
+        "Advanced Movement Tracking - Complete audit trail with batch numbers, serial numbers, expiry dates, warehouse zones, and comprehensive cost management",
+        "Enhanced Data Management - Comprehensive seeders with realistic sample data, proper relationships, and foreign key integrity",
+        "useCommonSnippets Composable - Centralized common functionality to eliminate code duplication across all inventory components",
+        "Consistent Styling - Unified dark mode and dynamic scaling across all components with improved error handling",
+        "Database Migrations - Complete Laravel migration system with proper table relationships and constraints",
+        "Sample Data - Realistic inventory data with proper stock movements, cost tracking, and warehouse management",
+        "Code Organization - Improved component structure and maintainability with better separation of concerns",
+        "Production Readiness - Enhanced stability and reliability with comprehensive testing and validation"
+      ]
+    },
     {
       "version": "v1.0.12",
       "date": "16 Sep 2025",
-      "status": "current",
+      "status": "maintenance",
       "features": [
         "Enhanced Package Integration - Updated to use panadero-shared-components v1.0.3 and panadero-shared-styling v1.0.3",
         "Improved Reactivity - Fixed scaling issues with GenericInfoSection component for perfect dynamic font scaling",

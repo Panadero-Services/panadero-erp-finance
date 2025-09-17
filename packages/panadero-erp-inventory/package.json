@@ -1,6 +1,6 @@
 {
   "name": "panadero-erp-inventory",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "ERP Inventory Module - Comprehensive inventory management system with complete workflow management",
   "main": "index.js",
   "type": "module",

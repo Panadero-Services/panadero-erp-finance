@@ -12,6 +12,12 @@ class InventorySupplierSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if data already exists
+        if (DB::table('inventory_suppliers')->count() > 0) {
+            $this->command->info('Inventory suppliers already exist, skipping...');
+            return;
+        }
+
         $suppliers = [
             [
                 'name' => 'ABC Supplies Inc.',

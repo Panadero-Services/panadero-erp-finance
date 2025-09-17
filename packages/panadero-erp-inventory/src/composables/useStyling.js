@@ -38,13 +38,91 @@ export function useStyling() {
     '2xl': 48
   })
 
+  // Dark mode classes
+  const darkModeClasses = computed(() => ({
+    // Container
+    container: store.settings.darkMode 
+      ? 'bg-gray-900 text-white min-h-screen' 
+      : 'bg-gray-50 text-gray-900 min-h-screen',
+    
+    // Cards
+    card: store.settings.darkMode 
+      ? 'bg-gray-800 border-gray-700 text-gray-100' 
+      : 'bg-white border-gray-200 text-gray-900',
+    
+    // Tables
+    tableHeader: store.settings.darkMode 
+      ? 'bg-gray-700 text-gray-300' 
+      : 'bg-gray-50 text-gray-500',
+    tableRow: store.settings.darkMode 
+      ? 'hover:bg-gray-700' 
+      : 'hover:bg-gray-50',
+    table: store.settings.darkMode 
+      ? 'divide-gray-700' 
+      : 'divide-gray-200',
+    
+    // Text
+    text: store.settings.darkMode 
+      ? 'text-gray-100' 
+      : 'text-gray-900',
+    textSecondary: store.settings.darkMode 
+      ? 'text-gray-400' 
+      : 'text-gray-500',
+    textMuted: store.settings.darkMode 
+      ? 'text-gray-500' 
+      : 'text-gray-400',
+    
+    // Borders
+    border: store.settings.darkMode 
+      ? 'border-gray-700' 
+      : 'border-gray-200',
+    borderLight: store.settings.darkMode 
+      ? 'border-gray-600' 
+      : 'border-gray-300',
+    
+    // Inputs
+    input: store.settings.darkMode 
+      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500' 
+      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:ring-blue-500',
+    
+    // Buttons
+    buttonPrimary: store.settings.darkMode 
+      ? 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600' 
+      : 'bg-blue-600 hover:bg-blue-700 text-white border-blue-600',
+    buttonSecondary: store.settings.darkMode 
+      ? 'bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600' 
+      : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300',
+    buttonDanger: store.settings.darkMode 
+      ? 'bg-red-600 hover:bg-red-700 text-white border-red-600' 
+      : 'bg-red-600 hover:bg-red-700 text-white border-red-600',
+    
+    // Modals
+    modal: store.settings.darkMode 
+      ? 'bg-gray-800 border-gray-700' 
+      : 'bg-white border-gray-200',
+    
+    // Status indicators
+    statusSuccess: store.settings.darkMode 
+      ? 'bg-green-900/20 text-green-400 border-green-800' 
+      : 'bg-green-50 text-green-700 border-green-200',
+    statusWarning: store.settings.darkMode 
+      ? 'bg-yellow-900/20 text-yellow-400 border-yellow-800' 
+      : 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    statusDanger: store.settings.darkMode 
+      ? 'bg-red-900/20 text-red-400 border-red-800' 
+      : 'bg-red-50 text-red-700 border-red-200',
+    statusInfo: store.settings.darkMode 
+      ? 'bg-blue-900/20 text-blue-400 border-blue-800' 
+      : 'bg-blue-50 text-blue-700 border-blue-200'
+  }))
+
   // Component styles
   const componentStyles = ref({
-    card: 'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm',
-    button: 'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200',
-    input: 'w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500',
-    table: 'min-w-full divide-y divide-gray-200 dark:divide-gray-700',
-    badge: 'inline-flex items-center px-2.5 py-0.5 rounded-full font-medium'
+    card: 'rounded-lg border shadow-sm',
+    button: 'inline-flex items-center justify-center font-medium rounded-md transition-all duration-200 border',
+    input: 'w-full rounded-md shadow-sm focus:ring-2 focus:ring-opacity-50',
+    table: 'min-w-full divide-y',
+    badge: 'inline-flex items-center px-2.5 py-0.5 rounded-full font-medium text-xs border'
   })
 
   // Dynamic styles based on settings

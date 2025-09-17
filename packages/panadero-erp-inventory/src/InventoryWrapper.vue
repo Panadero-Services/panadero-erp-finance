@@ -6,21 +6,34 @@
   @test-workflow Testing branch workflow system
 -->
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, provide } from 'vue';
 import { useInventoryStore } from './stores/inventoryStore';
 import { useScaling } from 'panadero-shared-styling';
 import InventoryLayout from './components/layout/InventoryLayout.vue';
 import InfoBoard from './components/InfoBoard.vue';
 import InventoryDashboard from './components/dashboard/InventoryDashboard.vue';
-import StockManagement from './components/StockManagement.vue';
-import WarehouseManagement from './components/WarehouseManagement.vue';
-import PurchaseOrders from './components/PurchaseOrders.vue';
-import SupplierManagement from './components/SupplierManagement.vue';
+import Products from './components/Products.vue';
+import StockLevels from './components/StockLevels.vue';
+import Incoming from './components/Incoming.vue';
+import Outgoing from './components/Outgoing.vue';
+import Vendors from './components/Vendors.vue';
+import Closeout from './components/Closeout.vue';
 import InventoryReporting from './components/InventoryReporting.vue';
 import AgentPortal from './components/AgentPortal.vue';
 
 // Import the Framework Settings Panel from shared components package
 import { FrameworkSettingsPanel } from 'panadero-shared-components';
+
+// Props for settings from parent
+const props = defineProps({
+  settings: {
+    type: Object,
+    required: true
+  }
+});
+
+// Provide settings store to all child components - this IS the SSOT
+provide('settingsStore', props.settings);
 
 const store = useInventoryStore();
 const { scalingStyles } = useScaling();
@@ -28,10 +41,12 @@ const { scalingStyles } = useScaling();
 const tabs = [
   { id: 'infoboard', label: 'ERP Inventory', icon: 'fas fa-info-circle', color: 'text-blue-500', component: InfoBoard },
   { id: 'dashboard', label: 'Dashboard', icon: 'fas fa-gauge', color: 'text-indigo-500', component: InventoryDashboard },
-  { id: 'stock-management', label: 'Stock Management', icon: 'fas fa-boxes', color: 'text-emerald-500', component: StockManagement },
-  { id: 'warehouse-management', label: 'Warehouse Management', icon: 'fas fa-warehouse', color: 'text-orange-500', component: WarehouseManagement },
-  { id: 'purchase-orders', label: 'Purchase Orders', icon: 'fas fa-shopping-cart', color: 'text-purple-500', component: PurchaseOrders },
-  { id: 'supplier-management', label: 'Supplier Management', icon: 'fas fa-truck', color: 'text-cyan-500', component: SupplierManagement },
+  { id: 'products', label: 'Products', icon: 'fas fa-box', color: 'text-green-500', component: Products },
+  { id: 'stock-levels', label: 'Stock Levels', icon: 'fas fa-boxes', color: 'text-emerald-500', component: StockLevels },
+  { id: 'incoming', label: 'Incoming', icon: 'fas fa-arrow-down', color: 'text-orange-500', component: Incoming },
+  { id: 'outgoing', label: 'Outgoing', icon: 'fas fa-arrow-up', color: 'text-red-500', component: Outgoing },
+  { id: 'vendors', label: 'Vendors & Partners', icon: 'fas fa-handshake', color: 'text-purple-500', component: Vendors },
+  { id: 'closeout', label: 'Closeout Reports', icon: 'fas fa-chart-line', color: 'text-cyan-500', component: Closeout },
   { id: 'inventory-reports', label: 'Inventory Reports', icon: 'fas fa-chart-bar', color: 'text-pink-500', component: InventoryReporting },
   { id: 'agent-portal', label: 'Agent Portal', icon: 'fas fa-robot', color: 'text-teal-500', component: AgentPortal }
 ];
@@ -77,6 +92,5 @@ onUnmounted(() => {
     <component :is="activeComponent" @tab-change="activeTab = $event" />
   </InventoryLayout>
 
-  <!-- Framework Settings Panel - manages its own visibility -->
-  <FrameworkSettingsPanel @settingsChanged="handleSettingsChanged" />
+  <FrameworkSettingsPanel :settings="settings" />
 </template>

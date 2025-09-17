@@ -12,6 +12,12 @@ class InventoryWarehouseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Check if data already exists
+        if (DB::table('inventory_warehouses')->count() > 0) {
+            $this->command->info('Inventory warehouses already exist, skipping...');
+            return;
+        }
+
         $warehouses = [
             [
                 'name' => 'Main Warehouse',
