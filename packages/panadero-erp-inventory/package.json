@@ -1,6 +1,6 @@
 {
   "name": "panadero-erp-inventory",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "ERP Inventory Module - Comprehensive inventory management system with complete workflow management",
   "main": "index.js",
   "type": "module",
@@ -25,15 +25,14 @@
   ],
   "author": "JaWsome.Orbit",
   "license": "MIT",
-  "dependencies": {
-    "panadero-shared-components": "github:Panadero-Services/panadero-shared-components#main",
-    "panadero-shared-styling": "git+https://github.com/Panadero-Services/panadero-shared-styling.git"
-  },
   "peerDependencies": {
     "axios": "^1.0.0",
     "decimal.js": "^10.0.0",
     "pinia": "^2.0.0",
-    "vue": "^3.0.0"
+    "vue": "^3.0.0",
+    "panadero-shared-components": "*",
+    "panadero-shared-styling": "*",
+    "panadero-filters": "*",
   },
   "repository": {
     "type": "git",

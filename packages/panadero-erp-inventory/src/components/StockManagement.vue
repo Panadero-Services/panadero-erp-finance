@@ -7,6 +7,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useCommonSnippets } from '../composables/useCommonSnippets.js'
+import { useErpData } from '../composables/useErpData.js'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -20,12 +21,34 @@ const {
   darkModeClasses, 
   scalingStyles, 
   store, 
-  statusOptions, 
-  typeOptions,
+  statusOptions: commonStatusOptions, 
+  typeOptions: commonTypeOptions,
   formatCurrency,
   formatDate,
   confirmAction 
 } = useCommonSnippets()
+
+// Get ERP data
+const {
+  products: erpProducts,
+  stocks: erpStocks,
+  storages: erpStorages,
+  sites: erpSites,
+  units: erpUnits,
+  statuses: erpStatuses,
+  isLoading: erpLoading,
+  fetchProducts,
+  fetchStocks,
+  fetchStorages,
+  fetchSites,
+  fetchUnits,
+  fetchStatuses,
+  getProductName,
+  getSiteName,
+  getUnitSymbol,
+  getStatusName,
+  getStatusColor
+} = useErpData()
 
 // Dark mode classes are now provided by useCommonSnippets
 

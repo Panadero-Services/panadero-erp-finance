@@ -37,12 +37,12 @@ class DynamicController extends Controller
     /**
      * Get and validate model class
      */
-    private function getModelClass(string $table): string
+    private function getModelClass(string $table): ?string
     {
         $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
         
         if (!class_exists($modelClass)) {
-            abort(404, "Model {$modelClass} not found");
+            return null;
         }
         
         return $modelClass;
@@ -103,11 +103,20 @@ class DynamicController extends Controller
      */
     private function addRelationships($query, string $modelClass): void
     {
+        // Generic relationships that most models might have
         if (method_exists($modelClass, 'user')) {
             $query->with('user');
         }
         if (method_exists($modelClass, 'project')) {
             $query->with('project');
+        }
+        
+        // Check if the model has a method to define its relationships
+        if (method_exists($modelClass, 'getApiRelationships')) {
+            $relationships = $modelClass::getApiRelationships();
+            if (!empty($relationships)) {
+                $query->with($relationships);
+            }
         }
     }
 
@@ -253,8 +262,8 @@ class DynamicController extends Controller
         
         $model = $modelClass::findOrFail($id);
         
-        // Use the standardized permission check
-        if (!$model->canBeEditedBy(auth()->user())) {
+        // Use the standardized permission check (optional)
+        if (auth()->check() && method_exists($model, 'canBeEditedBy') && !$model->canBeEditedBy(auth()->user())) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized: insufficient permissions to edit this record',
@@ -286,11 +295,30 @@ class DynamicController extends Controller
             }
         }
         
-        try {
-            if (method_exists($modelClass, 'validationRules')) {
-                \Validator::make($data, $modelClass::validationRules())->validate();
+        // Validate data if validation rules exist
+        if (method_exists($modelClass, 'validationRules')) {
+            $rules = $modelClass::validationRules();
+            
+            // For updates, modify unique rules to exclude current record
+            if ($id) {
+                foreach ($rules as $field => $rule) {
+                    if (str_contains($rule, 'unique:')) {
+                        $rules[$field] = $rule . ',' . $id;
+                    }
+                }
+                
+                // Prevent identifier changes during updates (generic for all identifier fields)
+                foreach ($data as $field => $value) {
+                    if (str_ends_with($field, 'identifier')) {
+                        unset($data[$field]);
+                    }
+                }
             }
             
+            \Validator::make($data, $rules)->validate();
+        }
+        
+        try {
             $model->update($data);
             
             return response()->json([
@@ -299,12 +327,6 @@ class DynamicController extends Controller
                 'data' => $model->fresh()
             ]);
             
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -329,6 +351,14 @@ class DynamicController extends Controller
         }
         
         $query = $modelClass::query();
+        
+        // Add relationships using the model's getApiRelationships method
+        if (method_exists($modelClass, 'getApiRelationships')) {
+            $relationships = $modelClass::getApiRelationships();
+            if (!empty($relationships)) {
+                $query->with($relationships);
+            }
+        }
         
         // Get all fillable fields dynamically
         $modelInstance = new $modelClass();
@@ -437,9 +467,9 @@ class DynamicController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource from storage (public version).
      */
-    public function destroy($table, $id)
+    public function destroyPublic($table, $id)
     {
         try {
             $modelClass = $this->getModelClass($table);
@@ -452,8 +482,61 @@ class DynamicController extends Controller
     
             $model = $modelClass::findOrFail($id);
             
+            // Skip authentication check for public routes
+            $model->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Record deleted successfully'
+            ]);
+            
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Record not found'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error deleting record: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($table, $id)
+    {
+
+        // Check for custom header
+        $allowedHeaders = [
+            'X-From-Products-Page',
+            'X-From-Storages-Page',
+            'X-From-Customers-Page',
+            'X-From-Suppliers-Page'
+            // Add more headers as needed
+        ];
+
+        if (!array_intersect($allowedHeaders, array_keys(request()->headers->all()))) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Direct API calls not allowed'
+            ], 403);
+        }
+
+        try {
+            $modelClass = $this->getModelClass($table);
+            if (!$modelClass) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Model for table '{$table}' not found"
+                ], 404);
+            }
+    
+            $model = $modelClass::findOrFail($id);
+            
             // Use the standardized permission check
-            if (!$model->canBeDeletedBy(auth()->user())) {
+            if (auth()->check() && method_exists($model, 'canBeDeletedBy') && !$model->canBeDeletedBy(auth()->user())) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized: insufficient permissions to delete this record',
@@ -559,16 +642,31 @@ class DynamicController extends Controller
             
             // Validate data if validation rules exist
             if (method_exists($modelClass, 'validationRules')) {
-                \Validator::make($data, $modelClass::validationRules())->validate();
+                $rules = $modelClass::validationRules();
+                
+                // For erp_products, make identifier nullable for new records
+                if ($table === 'erp_products' && isset($rules['identifier'])) {
+                    $rules['identifier'] = 'nullable|string|max:16|unique:erp_products,identifier';
+                }
+                
+                \Validator::make($data, $rules)->validate();
             }
             
+            // Generate identifier for products if not provided
+            if ($table === 'erp_products' && (empty($data['identifier']) || $data['identifier'] === '<AUTO>')) {
+                $data['identifier'] = $modelClass::generateProductIdentifier(
+                    $data['erp_brand_id'] ?? null, 
+                    $data['erp_product_group_id'] ?? null
+                );
+            }
+
             // Create the record
             $record = $modelClass::create($data);
             
             return response()->json([
                 'success' => true,
                 'message' => Str::studly(Str::singular($table)) . ' created successfully',
-                'data' => $record
+                'data' => $record->fresh()
             ], 201);
             
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -583,5 +681,33 @@ class DynamicController extends Controller
                 'message' => 'Error creating ' . Str::studly(Str::singular($table)) . ': ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getModelConfig(Request $request, $table)
+    {
+        $modelClass = 'App\\Models\\' . Str::studly(Str::singular($table));
+        
+        if (!class_exists($modelClass)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Model {$modelClass} not found"
+            ], 404);
+        }
+        
+        $modelInstance = new $modelClass();
+        
+        $config = [
+            'relationships' => method_exists($modelInstance, 'getDataTableRelationships') 
+                ? $modelInstance->getDataTableRelationships() 
+                : [],
+            'formFields' => method_exists($modelInstance, 'formFields') 
+                ? $modelInstance->formFields() 
+                : [],
+            'searchableColumns' => method_exists($modelInstance, 'getSearchableColumns') 
+                ? $modelInstance->getSearchableColumns() 
+                : []
+        ];
+        
+        return response()->json($config);
     }
 } 

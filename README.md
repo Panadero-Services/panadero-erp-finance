@@ -1,23 +1,204 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Panadero ERP System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Version:** 1.0.14  
+**Release Date:** 23 September 2025  
+**Status:** Production Ready
 
-## About Laravel
+## 🚀 Overview
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The Panadero ERP System is a comprehensive enterprise resource planning solution built with Laravel and Vue 3. It provides modular, scalable packages for inventory management, finance, HR, compliance, and AI-powered optimization.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📦 Core Packages
+
+### ERP Modules
+- **panadero-erp-inventory** (v1.0.14) - Complete inventory management with product master data
+- **panadero-erp-finance** (v1.0.14) - Financial management and reporting
+- **panadero-erp-hr** (v1.0.14) - Human resources management
+- **panadero-erp-compliance** (v1.0.14) - Compliance and regulatory management
+
+### Shared Packages
+- **panadero-shared-styling** (v1.0.14) - Dynamic font scaling and consistent theming
+- **panadero-shared-components** (v1.0.14) - Reusable UI components
+- **panadero-datatable** (v1.0.14) - Model-driven data tables with external data support
+- **panadero-filters** (v1.0.14) - Generic cascading filter system
+- **panadero-workflow** (v1.0.14) - Workflow management system
+
+### AI & Automation
+- **panadero-ai-engine** (v1.0.14) - AI-powered optimization and insights
+- **panadero-ai-engine-phase11** (v1.0.14) - Advanced AI capabilities
+
+## ✨ What's New in v1.0.14
+
+### Complete Product Management System
+- **Hierarchical Categorization** - Product Types → Product Groups → Products with cascading relationships
+- **Brand Management** - Full brand support with foreign key relationships
+- **Unit Management** - Comprehensive unit system for different measurement types
+- **Advanced Filtering** - Cascading filters with Product Type → Product Group → Brand dependencies
+
+### Database Schema Redesign
+- **Fresh Migration System** - Complete database rebuild with proper relationships
+- **New Tables**: `erp_units`, `erp_product_types`, `erp_product_groups`, `erp_products`, `erp_brands`
+- **Foreign Key Integrity** - All relationships properly established with referential integrity
+- **Comprehensive Seeding** - 25+ product groups, 100+ products with realistic data
+
+### Generic Filter System
+- **panadero-filters Package** - Reusable filter components for any entity
+- **Cascading Dependencies** - Parent filters automatically reset and filter child filters
+- **Configurable Relationships** - Define filter dependencies via configuration
+- **Multi-field Search** - Search across multiple fields with intelligent filtering
+
+### DataTable Integration
+- **Model-Driven Configuration** - Automatic table configuration from Laravel models
+- **External Data Support** - Accept filtered data arrays for integration with filter systems
+- **Enhanced Header** - Beautiful gradient header with centered search and action buttons
+- **Flexible Search** - Optional search bar that can be disabled when using external filters
+- **Auto Page Reset** - Automatic pagination reset when data changes
+
+### Technical Improvements
+- **Scaled Font Integration** - All components use panadero-shared-styling for consistent scaling
+- **Responsive Layout** - 3-column grid layout with XL breakpoint support
+- **API Integration** - Generic API routes with model configuration endpoints
+- **Error Handling** - Enhanced error handling and fallback mechanisms
+- **Documentation** - Comprehensive documentation for all new features
+
+## 🛠️ Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/panadero-erp-system.git
+cd panadero-erp-system
+
+# Install dependencies
+composer install
+npm install
+
+# Environment setup
+cp .env.example .env
+php artisan key:generate
+
+# Database setup
+php artisan migrate:fresh --seed
+
+# Start development servers
+php artisan serve
+npm run dev
+```
+
+## 📖 Usage
+
+### Basic Module Import
+```javascript
+import { InventoryWrapper } from 'panadero-erp-inventory'
+import { FinanceWrapper } from 'panadero-erp-finance'
+```
+
+### DataTable with External Data
+```javascript
+import { DataTable, useModelConfig } from 'panadero-datatable'
+import { useCascadingFilters } from 'panadero-filters'
+
+// Model-driven configuration
+const { dataTableConfig } = useModelConfig('erp_products')
+
+// Cascading filters
+const { filteredData } = useCascadingFilters(products, filterConfigs, dependencies)
+
+// DataTable with external filtered data
+<DataTable 
+  :config="dataTableConfig"
+  :external-data="filteredData"
+  :dark-mode-classes="darkModeClasses"
+  :scaling-styles="scalingStyles"
+/>
+```
+
+## 🎨 Styling System
+
+All packages use the shared styling system for consistency:
+
+```javascript
+import { useCommonSnippets } from 'panadero-shared-styling'
+
+const { 
+  darkModeClasses, 
+  scalingStyles, 
+  colorOptions,
+  formatCurrency 
+} = useCommonSnippets()
+```
+
+## 🔧 Configuration
+
+### Database Configuration
+```php
+// config/database.php
+'connections' => [
+    'mysql' => [
+        'driver' => 'mysql',
+        'host' => env('DB_HOST', '127.0.0.1'),
+        'port' => env('DB_PORT', '3306'),
+        'database' => env('DB_DATABASE', 'panadero_erp'),
+        'username' => env('DB_USERNAME', 'root'),
+        'password' => env('DB_PASSWORD', ''),
+    ],
+],
+```
+
+### Package Configuration
+```json
+{
+  "packages": {
+    "panadero-erp-inventory": "^1.0.14",
+    "panadero-datatable": "^1.0.14",
+    "panadero-filters": "^1.0.14",
+    "panadero-shared-styling": "^1.0.14"
+  }
+}
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific package tests
+php artisan test --filter=InventoryTest
+
+# Run frontend tests
+npm test
+```
+
+## 📝 License
+
+MIT License - see LICENSE file for details
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📞 Support
+
+For support and questions:
+- Create an issue in the repository
+- Contact the development team
+- Check the package documentation
+
+## 🔄 Changelog
+
+### v1.0.14 (23 September 2025)
+- Complete product management system with hierarchical categorization
+- Database schema redesign with fresh migration system
+- Generic filter system with cascading dependencies
+- DataTable integration with external data support
+- Model-driven configuration system
+- Enhanced search and filtering capabilities
+- Responsive layout improvements
+- Comprehensive documentation updates
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 

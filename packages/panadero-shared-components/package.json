@@ -1,6 +1,6 @@
 {
   "name": "panadero-shared-components",
-  "version": "1.0.3",
+  "version": "1.0.6",
   "description": "Shared UI components for all Panadero packages",
   "main": "index.js",
   "type": "module",
@@ -16,7 +16,9 @@
     "shared",
     "vue",
     "framework",
-    "settings"
+    "settings",
+    "kpi",
+    "dashboard"
   ],
   "author": "JaWsome.Orbit",
   "license": "MIT",

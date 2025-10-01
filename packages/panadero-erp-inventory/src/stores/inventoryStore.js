@@ -2,8 +2,12 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import Decimal from 'decimal.js';
 import axios from 'axios';
+import { useErpData } from '../composables/useErpData.js';
 
 export const useInventoryStore = defineStore('inventory', () => {
+  // Get ERP data composable
+  const erpData = useErpData();
+
   // Stock type definitions
   const STOCK_TYPES = {
     ITEMS: 'items',      // Discrete units (laptops, monitors, cables)
@@ -593,6 +597,9 @@ export const useInventoryStore = defineStore('inventory', () => {
     stockMovements,
     inventoryReports,
     agentPrompts,
+    
+    // ERP data integration
+    erpData,
     
     // Stock type getters
     getStockByType,

@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useInventoryStore } from '../stores/inventoryStore.js'
 import { useScaling } from 'panadero-shared-styling'
+import { useErpData } from '../composables/useErpData.js'
 
 // UI Components
 import InventoryButton from './ui/InventoryButton.vue'
@@ -11,6 +12,26 @@ import StatusBadge from './ui/StatusBadge.vue'
 
 const store = useInventoryStore()
 const { fontSizes, scalingStyles } = useScaling()
+
+// Get ERP data
+const {
+  ordersIn: erpOrdersIn,
+  suppliers: erpSuppliers,
+  products: erpProducts,
+  sites: erpSites,
+  statuses: erpStatuses,
+  isLoading: erpLoading,
+  fetchOrdersIn,
+  fetchSuppliers,
+  fetchProducts,
+  fetchSites,
+  fetchStatuses,
+  getSupplierName,
+  getProductName,
+  getSiteName,
+  getStatusName,
+  getStatusColor
+} = useErpData()
 
 // State
 const isLoading = ref(false)

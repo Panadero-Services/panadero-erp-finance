@@ -1,7 +1,7 @@
 # Panadero ERP Inventory Module
 
-**Version:** 1.0.13
-**Release Date:** 16 September 2025  
+**Version:** 1.0.14
+**Release Date:** 23 September 2025  
 **Status:** Production Ready
 
 ## 🚀 Overview
@@ -304,6 +304,20 @@ For support and questions:
 - Check the documentation
 
 ## 🔄 Changelog
+
+### v1.0.14 (2025-09-23)
+- **Complete Product Management System** - Full implementation of product master data with hierarchical categorization
+- **Database Schema Redesign** - New schema with erp_units, erp_product_types, erp_product_groups, erp_products, and erp_brands tables
+- **Cascading Filter System** - Advanced filtering with Product Type → Product Group → Brand dependencies
+- **Generic Filter Package** - Created panadero-filters package for reusable filter components across all modules
+- **DataTable Integration** - Full integration with panadero-datatable package for model-driven table configuration
+- **External Data Support** - DataTable now supports external filtered data with automatic page reset
+- **Model-Driven Configuration** - Automatic table configuration from Laravel models via `/api/model-config/{table}`
+- **Enhanced Search** - Multi-field search across product name, identifier, comment, and related entities
+- **Responsive Layout** - 3-column grid layout (2/3 main content, 1/3 sidebar) with XL breakpoint support
+- **Scaled Font Integration** - All components use panadero-shared-styling for consistent dynamic font scaling
+- **Fresh Migration System** - Complete database rebuild with proper foreign key relationships and seeding
+- **Package Versioning** - All packages updated to v1.0.14 with comprehensive documentation
 
 ### v1.0.11 (2025-09-14)
 - **GenericInfoSection Integration** - Complete replacement of hardcoded InfoSection2 with shared GenericInfoSection component

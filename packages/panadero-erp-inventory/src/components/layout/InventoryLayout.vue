@@ -13,10 +13,10 @@ const { scalingStyles } = useScaling();
 
 <template>
   <div class="layout-page dark:bg-gray-900">
-    <!-- Header -->
+    <!-- Header 
     <div class="mb-6">
       <h1 :style="scalingStyles.titleFontSize" class="font-bold text-gray-900 dark:text-white">Inventory Management</h1>
-    </div>
+    </div>-->
 
     <!-- Navigation Component -->
     <InventoryNavigation 

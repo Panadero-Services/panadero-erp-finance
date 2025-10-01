@@ -1,4 +1,8 @@
-# Panadero ERP Workflow Management Package
+# Panadero ERP Workflow Management Module
+
+**Version:** 1.0.0
+**Release Date:** 24 September 2025  
+**Status:** Production Ready
 
 ## Overview
 A comprehensive workflow management system for Panadero ERP, providing dynamic workflow creation, execution, and monitoring capabilities.

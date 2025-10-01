@@ -1,0 +1,178 @@
+<template>
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead :class="darkModeClasses.tableHeader">
+        <tr>
+          <th 
+            v-if="showCheckboxes" 
+            :style="scalingStyles.tableHeader" 
+            class="px-6 py-4 text-left font-semibold uppercase tracking-wider w-12"
+          >
+            <input 
+              type="checkbox" 
+              @change="$emit('select-all')"
+              :checked="allSelected"
+              :class="[darkModeClasses.input, 'rounded border-2 border-gray-300 focus:border-blue-500']"
+            />
+          </th>
+          <th 
+            v-for="column in tableColumns" 
+            :key="column.key"
+            :style="scalingStyles.tableHeader" 
+            :class="[
+              'px-6 py-4 text-left font-semibold uppercase tracking-wider',
+              column.sortable && showSorting ? 'cursor-pointer transition-colors' : '',
+              darkModeClasses.tableRow
+            ]"
+            @click="column.sortable && showSorting ? $emit('sort', column.key) : null"
+          >
+            <div class="flex items-center gap-1">
+              {{ column.label }}
+              <i v-if="column.sortable && showSorting" :class="[getSortIcon(column.key), darkModeClasses.textSecondary]"></i>
+            </div>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y" :class="[darkModeClasses.table, darkModeClasses.border]">
+        <tr 
+          v-for="product in products" 
+          :key="product.id" 
+          :class="[
+            darkModeClasses.tableRow, 
+            'transition-colors',
+            showCheckboxes && selectedProducts?.includes(product.id) ? 'border-l-4 border-blue-500' : ''
+          ]"
+        >
+          <td v-if="showCheckboxes" :style="scalingStyles.textFontSize" class="px-6 py-4 whitespace-nowrap">
+            <input 
+              type="checkbox" 
+              :checked="selectedProducts?.includes(product.id) || false"
+              @change="$emit('toggle-selection', product.id)"
+              :class="[darkModeClasses.input, 'rounded border-2 border-gray-300 focus:border-blue-500']"
+            />
+          </td>
+          <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-6 py-4 whitespace-nowrap">
+            <span class="font-mono px-2 py-1 rounded text-sm" :class="darkModeClasses.bgSecondary">{{ product.sku }}</span>
+          </td>
+          <td :style="scalingStyles.textFontSize" class="px-6 py-4 whitespace-nowrap">
+            <div :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="font-medium">{{ product.name }}</div>
+            <div :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary">{{ product.description }}</div>
+          </td>
+          <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-6 py-4 whitespace-nowrap">
+            <CleanBadge 
+              :variant="getProductTypeColor(selectedProductType)" 
+              :text="product.category" 
+              size="xs" 
+            />
+          </td>
+          <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-6 py-4 whitespace-nowrap">
+            <span class="px-3 py-1 rounded-full text-xs font-medium" :class="darkModeClasses.bgSecondary">{{ product.subcategory }}</span>
+          </td>
+          <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-6 py-4 whitespace-nowrap">
+            <span class="font-mono px-2 py-1 rounded text-xs font-medium" :class="[darkModeClasses.bgSecondary, darkModeClasses.text]">{{ product.unit }}</span>
+          </td>
+          <td :style="scalingStyles.textFontSize" class="px-6 py-4 whitespace-nowrap">
+            <div class="flex flex-col gap-1">
+              <CleanBadge 
+                :variant="product.status === 'active' ? 'green' : 'gray'" 
+                :text="product.status" 
+                size="xs" 
+              />
+              <div v-if="product.is_locked" :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary" class="flex items-center gap-1">
+                <i class="fas fa-lock"></i> Locked
+              </div>
+            </div>
+          </td>
+          <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-6 py-4 whitespace-nowrap">
+            <div class="flex gap-2">
+              <ActionButton variant="edit" :iconStyle="scalingStyles.iconSize" @click="$emit('edit', product)" />
+              <ActionButton variant="delete" :iconStyle="scalingStyles.iconSize" @click="$emit('delete', product.id)" />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script setup>
+import { computed } from 'vue'
+import { useCommonSnippets } from '../composables/useCommonSnippets.js'
+import { useScaling } from '../composables/useScaling.js'
+import CleanBadge from './ui/CleanBadge.vue'
+import ActionButton from './ui/ActionButton.vue'
+
+// Props
+const props = defineProps({
+  products: {
+    type: Array,
+    required: true
+  },
+  selectedProducts: {
+    type: Array,
+    default: () => []
+  },
+  showCheckboxes: {
+    type: Boolean,
+    default: false
+  },
+  showSorting: {
+    type: Boolean,
+    default: false
+  },
+  selectedProductType: {
+    type: String,
+    default: 'all'
+  },
+  sortField: {
+    type: String,
+    default: ''
+  },
+  sortDirection: {
+    type: String,
+    default: 'asc'
+  }
+})
+
+// Emits
+const emit = defineEmits(['select-all', 'toggle-selection', 'sort', 'edit', 'delete'])
+
+// Composables
+const { darkModeClasses } = useCommonSnippets()
+const { scalingStyles } = useScaling()
+
+// Table columns configuration
+const tableColumns = computed(() => [
+  { key: 'sku', label: 'SKU', sortable: true },
+  { key: 'name', label: 'Name', sortable: true },
+  { key: 'category', label: 'Product Group', sortable: true },
+  { key: 'subcategory', label: 'Type', sortable: true },
+  { key: 'unit', label: 'Unit', sortable: false },
+  { key: 'status', label: 'Status', sortable: true },
+  { key: 'actions', label: 'Actions', sortable: false }
+])
+
+// Computed properties
+const allSelected = computed(() => {
+  if (!props.showCheckboxes || !props.products.length) return false
+  return props.selectedProducts?.length === props.products.length
+})
+
+
+
+// Methods
+const getSortIcon = (field) => {
+  if (props.sortField !== field) return 'fas fa-sort text-gray-400'
+  return props.sortDirection === 'asc' ? 'fas fa-sort-up text-blue-500' : 'fas fa-sort-down text-blue-500'
+}
+
+const getProductTypeColor = (productType) => {
+  const colors = {
+    'bulk': 'blue',
+    'normal': 'green', 
+    'liquid': 'purple',
+    'service': 'orange'
+  }
+  return colors[productType] || 'gray'
+}
+</script>

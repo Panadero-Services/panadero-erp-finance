@@ -1,4 +1,8 @@
-# ERP HR Module
+# Panadero ERP HR Module
+
+**Version:** 1.0.0
+**Release Date:** 24 September 2025  
+**Status:** Production Ready
 
 A comprehensive human resources management system with AI-powered recruitment and employee management capabilities.
 

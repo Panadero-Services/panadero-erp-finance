@@ -27,17 +27,20 @@ export function useCommonSnippets() {
   const darkModeClasses = computed(() => {
     const isDark = settingsStore.dark === true
     return {
-      container: isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900',
-      card: isDark ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200',
+      container: isDark ? 'bg-gray-900 text-white ' : 'bg-gray-50 text-gray-900',
+      card: isDark ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200',
       tableHeader: isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-500',
-      tableRow: isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-50',
+      tableRow: isDark ? 'hover:bg-gray-700 border-gray-700' : 'hover:bg-gray-50',
       modal: isDark ? 'bg-gray-800' : 'bg-white',
       text: isDark ? 'text-gray-100' : 'text-gray-900',
       textSecondary: isDark ? 'text-gray-400' : 'text-gray-500',
+      bgSecondary: isDark ? 'bg-gray-700' : 'bg-gray-100',
       border: isDark ? 'border-gray-700' : 'border-gray-200',
       input: isDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300',
       button: isDark ? 'bg-gray-600 hover:bg-gray-500 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white',
-      buttonSecondary: isDark ? 'bg-gray-500 hover:bg-gray-400 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+      buttonSecondary: isDark ? 'bg-gray-500 hover:bg-gray-400 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-900',
+      iconDanger: isDark ? 'text-red-500' : 'hover:bg-red-300 text-red-600',
+      icon: isDark ? 'text-blue-500' : 'hover:bg-blue-300 text-blue-600'
     }
   })
   
@@ -62,6 +65,27 @@ export function useCommonSnippets() {
   }
   
   const formatDate = (date, options = {}) => {
+    if (!date) return 'N/A'
+    
+    // Handle different date formats
+    let dateObj
+    if (typeof date === 'string') {
+      // Check if it's a valid date string
+      dateObj = new Date(date)
+    } else if (date instanceof Date) {
+      dateObj = date
+    } else if (typeof date === 'number') {
+      // Handle timestamp
+      dateObj = new Date(date)
+    } else {
+      return 'N/A'
+    }
+    
+    // Check if the date is valid and finite
+    if (isNaN(dateObj.getTime()) || !isFinite(dateObj.getTime())) {
+      return 'N/A'
+    }
+    
     const defaultOptions = {
       year: 'numeric',
       month: 'short',
@@ -69,7 +93,13 @@ export function useCommonSnippets() {
       hour: '2-digit',
       minute: '2-digit'
     }
-    return new Intl.DateTimeFormat('en-US', { ...defaultOptions, ...options }).format(new Date(date))
+    
+    try {
+      return new Intl.DateTimeFormat('en-US', { ...defaultOptions, ...options }).format(dateObj)
+    } catch (error) {
+      console.warn('Date formatting error:', error, 'for date:', date)
+      return 'N/A'
+    }
   }
   
   const formatNumber = (number, decimals = 2) => {

@@ -7,6 +7,7 @@ use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -117,7 +118,19 @@ class DatabaseSeeder extends Seeder
             InventoryDatabaseSeeder::class,     // ERP Inventory system
         ]);
 
-        // ===== STEP 11: FINANCE CORE SYSTEM =====
+        // ===== STEP 11: ERP LOOKUP DATA =====
+        $this->command->info('🏭 Seeding ERP lookup data...');
+        $this->call([
+            ErpLookupDataSeeder::class,      // ERP status, units, product types, analyse properties
+        ]);
+
+        // ===== STEP 11.5: ERP COMPLETE DATA =====
+        $this->command->info(' Seeding ALL ERP data...');
+        $this->call([
+            ErpCompleteSeeder::class,        // ALL ERP tables with complete data
+        ]);
+
+        // ===== STEP 12: FINANCE CORE SYSTEM =====
         $this->command->info('💰 Seeding finance core system...');
         $this->call([
             FinanceCoreSeeder::class,        // Finance accounts, chart of accounts
@@ -125,7 +138,7 @@ class DatabaseSeeder extends Seeder
             FinanceDemoSeeder::class,        // Finance demo data
         ]);
 
-        // ===== STEP 12: HR MANAGEMENT SYSTEM =====
+        // ===== STEP 13: HR MANAGEMENT SYSTEM =====
         $this->command->info('👥 Seeding HR management system...');
         
         // Load HR seeders directly
@@ -140,7 +153,7 @@ class DatabaseSeeder extends Seeder
             \Panadero\Erp\Hr\Database\Seeders\HrDatabaseSeeder::class,  // Complete HR system
         ]);
 
-        // ===== STEP 13: COMPLIANCE MANAGEMENT SYSTEM =====
+        // ===== STEP 14: COMPLIANCE MANAGEMENT SYSTEM =====
         $this->command->info('🛡️  Seeding compliance management system...');
         
         // Load compliance seeders directly
@@ -155,14 +168,14 @@ class DatabaseSeeder extends Seeder
             \Panadero\ErpCompliance\Database\Seeders\ComplianceDatabaseSeeder::class,  // Complete compliance system
         ]);
 
-        // ===== STEP 14: VENDOR MANAGEMENT =====
+        // ===== STEP 15: VENDOR MANAGEMENT =====
         $this->command->info('🏢 Seeding vendor management...');
         $this->call([
             VendorSeeder::class,             // Core vendor entities (shared)
             FinanceVendorSeeder::class,      // Finance-specific vendor extensions
         ]);
 
-        // ===== STEP 15: USER ROLE ASSIGNMENTS =====
+        // ===== STEP 16: USER ROLE ASSIGNMENTS =====
         $this->command->info('👥 Assigning user roles...');
         
         // Get all users and roles
@@ -188,7 +201,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        // ===== STEP 16: TEAM MANAGEMENT =====
+        // ===== STEP 17: TEAM MANAGEMENT =====
         $this->command->info('🏆 Setting up team management...');
         
         // Create demo team
@@ -205,7 +218,7 @@ class DatabaseSeeder extends Seeder
             $user->update(['current_team_id' => 1]);
         }
 
-        // ===== STEP 17: FINALIZATION =====
+        // ===== STEP 18: FINALIZATION =====
         $this->command->info('✨ Creating demo comments...');
         Comment::factory()->count(50)->create();
 

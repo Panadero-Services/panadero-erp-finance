@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panadero Web3 Testing Dashboard - Phase 11</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: #0f172a;
+            border-bottom: 2px solid #334155;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .wallet-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chain-selector {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .connect-wallet-btn {
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+        }
+
+        .wallet-address {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            padding: 2rem 0;
+            padding-bottom: 6rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #8b5cf6;
+        }
+
+        .card-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-connected {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-disconnected {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .chain-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .chain-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .chain-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 0.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chain-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .chain-status {
+            font-size: 0.8rem;
+            color: #a1a1aa;
+        }
+
+        .status-online {
+            color: #22c55e;
+        }
+
+        .status-offline {
+            color: #ef4444;
+        }
+
+        /* Compact ERP Functions Section */
+        .erp-functions {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .erp-functions h3 {
+            color: #8b5cf6;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .erp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .erp-function-card {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .erp-function-card:hover {
+            background: #6366f1;
+            border-color: #818cf8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .erp-function-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .erp-function-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+        }
+
+        .erp-function-desc {
+            font-size: 0.75rem;
+            color: #a1a1aa;
+        }
+
+        /* Improved Contract Section */
+        .contract-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .contract-selector {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .contract-address {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .function-section {
+            margin-bottom: 1rem;
+        }
+
+        .function-selector {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #a1a1aa;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        .execute-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            border: none;
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .execute-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .execute-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .result-title {
+            font-size: 0.9rem;
+            color: #a1a1aa;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-content {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #22c55e;
+            word-break: break-all;
+        }
+
+        .error-content {
+            color: #ef4444;
+        }
+
+        .transaction-log {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.8rem;
+        }
+
+        .log-timestamp {
+            color: #a1a1aa;
+            margin-right: 0.5rem;
+        }
+
+        .log-success {
+            color: #22c55e;
+        }
+
+        .log-error {
+            color: #ef4444;
+        }
+
+        .log-info {
+            color: #8b5cf6;
+        }
+
+        /* AI Chat Widget */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1001;
+        }
+
+        .chat-toggle {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            border: none;
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 35px rgba(139, 92, 246, 0.6);
+        }
+
+        .chat-icon {
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .chat-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 1rem;
+            height: 1rem;
+            background: #ef4444;
+            border-radius: 50%;
+            display: none;
+            animation: pulse 2s infinite;
+        }
+
+        .ai-chat-window {
+            position: absolute;
+            bottom: 5rem;
+            right: 0;
+            width: 24rem;
+            height: 32rem;
+            background: #0f172a;
+            border-radius: 12px;
+            border: 2px solid #334155;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .chat-header {
+            padding: 1rem;
+            background: #334155;
+            border-bottom: 1px solid #475569;
+        }
+
+        .chat-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-title {
+            color: white;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .chat-subtitle {
+            color: rgba(255,255,255,0.8);
+            margin: 0;
+            font-size: 0.75rem;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: background 0.3s ease;
+        }
+
+        .chat-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .chat-message {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .chat-message.user {
+            align-items: flex-end;
+        }
+
+        .chat-message.ai {
+            align-items: flex-start;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            word-wrap: break-word;
+        }
+
+        .chat-bubble.user {
+            background: #6366f1;
+            color: white;
+        }
+
+        .chat-bubble.ai {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            border-top: 1px solid #475569;
+            background: #1e293b;
+        }
+
+        .chat-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .chat-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .chat-send {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 100%);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-send:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .quick-question {
+            padding: 0.25rem 0.75rem;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 20px;
+            color: white;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quick-question:hover {
+            background: #6366f1;
+            border-color: #818cf8;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .wallet-section {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .ai-chat-window {
+                width: calc(100vw - 2rem);
+                right: -1rem;
+                left: 1rem;
+            }
+
+            .erp-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-header">
+        <div class="dashboard-container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">🔗</div>
+                    <div class="logo-text">Panadero Web3 Dashboard</div>
+                </div>
+                <div class="wallet-section">
+                    <select class="chain-selector" id="chainSelector">
+                        <option value="ethereum">Ethereum Mainnet</option>
+                        <option value="bsc">BSC Mainnet</option>
+                        <option value="polygon">Polygon</option>
+                        <option value="sonic">Sonic</option>
+                        <option value="arbitrum">Arbitrum</option>
+                        <option value="optimism">Optimism</option>
+                    </select>
+                    <button class="connect-wallet-btn" id="connectWalletBtn">Connect Wallet</button>
+                    <div class="wallet-info" id="walletInfo" style="display: none;">
+                        <div class="status-indicator"></div>
+                        <span class="wallet-address" id="walletAddress"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="dashboard-container">
+            <!-- Chain Status Overview -->
+            <div class="chain-info">
+                <div class="chain-card">
+                    <div class="chain-icon" style="background: #627eea;">Ξ</div>
+                    <div class="chain-name">Ethereum</div>
+                    <div class="chain-status status-online">Online</div>
+                </div>
+                <div class="chain-card">
+                    <div class="chain-icon" style="background: #f3ba2f;">B</div>
+                    <div class="chain-name">BSC</div>
+                    <div class="chain-status status-online">Online</div>
+                </div>
+                <div class="chain-card">
+                    <div class="chain-icon" style="background: #8247e5;">P</div>
+                    <div class="chain-name">Polygon</div>
+                    <div class="chain-status status-online">Online</div>
+                </div>
+                <div class="chain-card">
+                    <div class="chain-icon" style="background: #00d4aa;">S</div>
+                    <div class="chain-name">Sonic</div>
+                    <div class="chain-status status-online">Online</div>
+                </div>
+            </div>
+
+            <!-- Compact ERP Functions Section -->
+            <div class="erp-functions">
+                <h3>🏢 ERP Functions</h3>
+                <div class="erp-grid">
+                    <div class="erp-function-card" onclick="selectERPFunction('payroll')">
+                        <div class="erp-function-icon">��</div>
+                        <div class="erp-function-title">Payroll</div>
+                        <div class="erp-function-desc">Web3 payroll contracts</div>
+                    </div>
+                    <div class="erp-function-card" onclick="selectERPFunction('inventory')">
+                        <div class="erp-function-icon">��</div>
+                        <div class="erp-function-title">Inventory</div>
+                        <div class="erp-function-desc">Smart inventory tracking</div>
+                    </div>
+                    <div class="erp-function-card" onclick="selectERPFunction('finance')">
+                        <div class="erp-function-icon">��</div>
+                        <div class="erp-function-title">Finance</div>
+                        <div class="erp-function-desc">Automated accounting</div>
+                    </div>
+                    <div class="erp-function-card" onclick="selectERPFunction('hr')">
+                        <div class="erp-function-icon">��</div>
+                        <div class="erp-function-title">HR</div>
+                        <div class="erp-function-desc">Employee management</div>
+                    </div>
+                    <div class="erp-function-card" onclick="selectERPFunction('compliance')">
+                        <div class="erp-function-icon">🛡️</div>
+                        <div class="erp-function-title">Compliance</div>
+                        <div class="erp-function-desc">Risk assessment</div>
+                    </div>
+                    <div class="erp-function-card" onclick="selectERPFunction('analytics')">
+                        <div class="erp-function-icon">��</div>
+                        <div class="erp-function-title">Analytics</div>
+                        <div class="erp-function-desc">AI insights</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Contract Interaction Panel -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Contract Interaction</h3>
+                        <span class="card-status status-disconnected" id="contractStatus">Disconnected</span>
+                    </div>
+
+                    <div class="contract-section">
+                        <select class="contract-selector" id="contractSelector">
+                            <option value="paycheck">PayCheck Contract</option>
+                            <option value="staking">Staking Pool</option>
+                            <option value="bridge">SafeBridge</option>
+                            <option value="launchpad">Launchpad</option>
+                            <option value="custom">Custom Contract</option>
+                        </select>
+                        <input type="text" class="contract-address" id="contractAddress" placeholder="Contract Address (0x...)" />
+                    </div>
+
+                    <div class="function-section">
+                        <select class="function-selector" id="functionSelector">
+                            <option value="balance">Get Balance</option>
+                            <option value="totalSupply">Total Supply</option>
+                            <option value="name">Token Name</option>
+                            <option value="symbol">Token Symbol</option>
+                            <option value="decimals">Decimals</option>
+                            <option value="transfer">Transfer</option>
+                            <option value="approve">Approve</option>
+                            <option value="allowance">Allowance</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">To Address (for transfer/approve)</label>
+                        <input type="text" class="input-field" id="toAddress" placeholder="0x..." />
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Amount (for transfer/approve)</label>
+                        <input type="text" class="input-field" id="amount" placeholder="0" />
+                    </div>
+
+                    <button class="execute-btn" id="executeBtn">Execute Function</button>
+
+                    <div class="result-section" id="resultSection" style="display: none;">
+                        <div class="result-title">Result:</div>
+                        <div class="result-content" id="resultContent"></div>
+                    </div>
+                </div>
+
+                <!-- Transaction Log -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3 class="card-title">Transaction Log</h3>
+                        <span class="card-status status-connected">Live</span>
+                    </div>
+                    <div class="transaction-log" id="transactionLog">
+                        <div class="log-entry">
+                            <span class="log-timestamp">[12:34:56]</span>
+                            <span class="log-info">Dashboard initialized</span>
+                        </div>
+                        <div class="log-entry">
+                            <span class="log-timestamp">[12:34:57]</span>
+                            <span class="log-info">Waiting for wallet connection...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <!-- Chat Toggle Button -->
+        <button class="chat-toggle" onclick="toggleAIChat()">
+            <span class="chat-icon" id="chat-icon">🤖</span>
+            <div class="chat-notification" id="chat-notification"></div>
+        </button>
+
+        <!-- Chat Window -->
+        <div class="ai-chat-window" id="ai-chat-window">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-content">
+                    <div>
+                        <h3 class="chat-title">Web3 ERP AI Assistant</h3>
+                        <p class="chat-subtitle">Ask me about Web3 contracts, ERP functions, and blockchain integration</p>
+                    </div>
+                    <button class="chat-close" onclick="toggleAIChat()">×</button>
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div class="chat-messages" id="chat-messages">
+                <div class="chat-message ai">
+                    <div class="chat-bubble ai">
+                        Hello! I'm your Web3 ERP AI assistant. I can help you with:
+                        <br>• Smart contract interactions
+                        <br>• ERP function explanations
+                        <br>• Blockchain integration guidance
+                        <br>• PayCheck contract operations
+                        <br><br>
+                        Try asking: "How do I connect to a contract?" or "Explain payroll functions"
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Questions -->
+            <div class="quick-questions">
+                <div class="quick-question" onclick="sendQuickQuestion('How do I connect my wallet?')">Connect Wallet</div>
+                <div class="quick-question" onclick="sendQuickQuestion('What is the PayCheck contract?')">PayCheck Info</div>
+                <div class="quick-question" onclick="sendQuickQuestion('How do I execute a function?')">Execute Function</div>
+                <div class="quick-question" onclick="sendQuickQuestion('Show me ERP functions')">ERP Functions</div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input-container">
+                <div class="chat-input-group">
+                    <input type="text" placeholder="Ask about Web3, ERP, or contracts..." class="chat-input" id="chat-input" onkeypress="handleChatKeyPress(event)">
+                    <button class="chat-send" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Web3 ERP AI Assistant
+        class Web3ERPAI {
+            constructor() {
+                this.messages = [];
+                this.context = {
+                    module: 'web3-erp',
+                    page: 'dashboard',
+                    timestamp: new Date().toISOString()
+                };
+            }
+
+            async addMessage(content, isUser = false) {
+                const message = {
+                    content,
+                    isUser,
+                    timestamp: new Date().toISOString()
+                };
+                
+                this.messages.push(message);
+                this.displayMessage(message);
+            }
+
+            displayMessage(message) {
+                const messagesContainer = document.getElementById('chat-messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${message.isUser ? 'user' : 'ai'}`;
+                
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = `chat-bubble ${message.isUser ? 'user' : 'ai'}`;
+                bubbleDiv.textContent = message.content;
+                
+                messageDiv.appendChild(bubbleDiv);
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            async generateResponse(userMessage) {
+                const responses = {
+                    'wallet': 'To connect your wallet, click the "Connect Wallet" button in the header. Make sure you have MetaMask installed and unlocked.',
+                    'paycheck': 'The PayCheck contract is a Web3 payroll management system that handles salary distribution, tax calculations, and employee payments on the blockchain.',
+                    'function': 'To execute a function, select a contract, choose the function from the dropdown, fill in any required parameters, and click "Execute Function".',
+                    'erp': 'ERP functions include Payroll Management, Inventory Tracking, Financial Management, HR, Compliance, and AI Analytics. Click on any ERP card to explore specific functions.',
+                    'contract': 'Smart contracts are self-executing programs on the blockchain. They automatically enforce agreements and can handle complex business logic for ERP operations.',
+                    'blockchain': 'Blockchain technology provides transparency, immutability, and decentralization for ERP systems, ensuring data integrity and reducing fraud.',
+                    'default': 'I can help you with Web3 contract interactions, ERP function explanations, blockchain integration, and PayCheck operations. What would you like to know more about?'
+                };
+
+                const lowerMessage = userMessage.toLowerCase();
+                
+                for (const [key, response] of Object.entries(responses)) {
+                    if (key !== 'default' && lowerMessage.includes(key)) {
+                        return response;
+                    }
+                }
+                
+                return responses.default;
+            }
+        }
+
+        // Web3 Dashboard JavaScript
+        class Web3Dashboard {
+            constructor() {
+                this.web3 = null;
+                this.contract = null;
+                this.account = null;
+                this.chainId = null;
+                this.currentERPFunction = null;
+                this.contracts = {
+                    paycheck: {
+                        address: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+                        abi: []
+                    },
+                    staking: {
+                        address: '0x...',
+                        abi: []
+                    },
+                    bridge: {
+                        address: '0x...',
+                        abi: []
+                    },
+                    launchpad: {
+                        address: '0x...',
+                        abi: []
+                    }
+                };
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.checkWalletConnection();
+            }
+
+            setupEventListeners() {
+                document.getElementById('connectWalletBtn').addEventListener('click', () => this.connectWallet());
+                document.getElementById('chainSelector').addEventListener('change', (e) => this.switchChain(e.target.value));
+                document.getElementById('contractSelector').addEventListener('change', (e) => this.loadContract(e.target.value));
+                document.getElementById('executeBtn').addEventListener('click', () => this.executeFunction());
+            }
+
+            async connectWallet() {
+                try {
+                    if (typeof window.ethereum !== 'undefined') {
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        this.account = accounts[0];
+                        this.chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                        
+                        this.updateWalletUI();
+                        this.logTransaction('Wallet connected successfully', 'success');
+                        
+                        // Load default contract
+                        this.loadContract('paycheck');
+                    } else {
+                        this.logTransaction('MetaMask not detected. Please install MetaMask.', 'error');
+                    }
+                } catch (error) {
+                    this.logTransaction(`Connection failed: ${error.message}`, 'error');
+                }
+            }
+
+            updateWalletUI() {
+                const connectBtn = document.getElementById('connectWalletBtn');
+                const walletInfo = document.getElementById('walletInfo');
+                const walletAddress = document.getElementById('walletAddress');
+                const contractStatus = document.getElementById('contractStatus');
+
+                connectBtn.style.display = 'none';
+                walletInfo.style.display = 'flex';
+                walletAddress.textContent = `${this.account.slice(0, 6)}...${this.account.slice(-4)}`;
+                contractStatus.textContent = 'Connected';
+                contractStatus.className = 'card-status status-connected';
+            }
+
+            async switchChain(chainName) {
+                const chainIds = {
+                    ethereum: '0x1',
+                    bsc: '0x38',
+                    polygon: '0x89',
+                    sonic: '0x28',
+                    arbitrum: '0xa4b1',
+                    optimism: '0xa'
+                };
+
+                try {
+                    await window.ethereum.request({
+                        method: 'wallet_switchEthereumChain',
+                        params: [{ chainId: chainIds[chainName] }],
+                    });
+                    this.chainId = chainIds[chainName];
+                    this.logTransaction(`Switched to ${chainName}`, 'info');
+                } catch (error) {
+                    this.logTransaction(`Failed to switch chain: ${error.message}`, 'error');
+                }
+            }
+
+            loadContract(contractType) {
+                if (contractType === 'custom') {
+                    document.getElementById('contractAddress').style.display = 'block';
+                    return;
+                }
+
+                const contract = this.contracts[contractType];
+                if (contract) {
+                    document.getElementById('contractAddress').value = contract.address;
+                    this.logTransaction(`Loaded ${contractType} contract`, 'info');
+                }
+            }
+
+            async executeFunction() {
+                const functionName = document.getElementById('functionSelector').value;
+                const contractAddress = document.getElementById('contractAddress').value;
+                const toAddress = document.getElementById('toAddress').value;
+                const amount = document.getElementById('amount').value;
+
+                try {
+                    this.logTransaction(`Executing ${functionName}...`, 'info');
+                    
+                    // Simulate contract interaction
+                    const result = await this.simulateContractCall(functionName, contractAddress, toAddress, amount);
+                    
+                    this.showResult(result);
+                    this.logTransaction(`${functionName} executed successfully`, 'success');
+                } catch (error) {
+                    this.logTransaction(`Execution failed: ${error.message}`, 'error');
+                    this.showResult(error.message, true);
+                }
+            }
+
+            async simulateContractCall(functionName, contractAddress, toAddress, amount) {
+                // Simulate different function calls
+                switch (functionName) {
+                    case 'balance':
+                        return `Balance: 1,000.00 tokens`;
+                    case 'totalSupply':
+                        return `Total Supply: 10,000,000 tokens`;
+                    case 'name':
+                        return `Token Name: Panadero Token`;
+                    case 'symbol':
+                        return `Symbol: PAN`;
+                    case 'decimals':
+                        return `Decimals: 18`;
+                    case 'transfer':
+                        return `Transfer ${amount} tokens to ${toAddress} - Transaction Hash: 0x1234...5678`;
+                    case 'approve':
+                        return `Approved ${amount} tokens for ${toAddress} - Transaction Hash: 0x1234...5678`;
+                    case 'allowance':
+                        return `Allowance: ${amount} tokens`;
+                    default:
+                        return `Function ${functionName} executed successfully`;
+                }
+            }
+
+            showResult(result, isError = false) {
+                const resultSection = document.getElementById('resultSection');
+                const resultContent = document.getElementById('resultContent');
+                
+                resultSection.style.display = 'block';
+                resultContent.textContent = result;
+                resultContent.className = isError ? 'result-content error-content' : 'result-content';
+            }
+
+            logTransaction(message, type) {
+                const log = document.getElementById('transactionLog');
+                const timestamp = new Date().toLocaleTimeString();
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                
+                const timestampSpan = document.createElement('span');
+                timestampSpan.className = 'log-timestamp';
+                timestampSpan.textContent = `[${timestamp}]`;
+                
+                const messageSpan = document.createElement('span');
+                messageSpan.className = `log-${type}`;
+                messageSpan.textContent = message;
+                
+                logEntry.appendChild(timestampSpan);
+                logEntry.appendChild(messageSpan);
+                log.appendChild(logEntry);
+                
+                // Keep only last 50 entries
+                while (log.children.length > 50) {
+                    log.removeChild(log.firstChild);
+                }
+                
+                // Scroll to bottom
+                log.scrollTop = log.scrollHeight;
+            }
+
+            async checkWalletConnection() {
+                if (typeof window.ethereum !== 'undefined') {
+                    try {
+                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                        if (accounts.length > 0) {
+                            this.account = accounts[0];
+                            this.chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                            this.updateWalletUI();
+                            this.logTransaction('Wallet already connected', 'info');
+                        }
+                    } catch (error) {
+                        this.logTransaction('Error checking wallet connection', 'error');
+                    }
+                }
+            }
+        }
+
+        // Global AI instance
+        const web3ERPAI = new Web3ERPAI();
+
+        // Global functions for ERP and AI integration
+        function selectERPFunction(functionType) {
+            const dashboard = window.web3Dashboard;
+            dashboard.currentERPFunction = functionType;
+            
+            // Update contract selector based on ERP function
+            const contractSelector = document.getElementById('contractSelector');
+            const functionSelector = document.getElementById('functionSelector');
+            
+            // Clear existing options
+            contractSelector.innerHTML = '';
+            functionSelector.innerHTML = '';
+            
+            // Add ERP-specific contracts and functions
+            switch (functionType) {
+                case 'payroll':
+                    contractSelector.innerHTML = `
+                        <option value="paycheck">PayCheck Contract</option>
+                        <option value="salary">Salary Distribution</option>
+                        <option value="tax">Tax Calculation</option>
+                    `;
+                    functionSelector.innerHTML = `
+                        <option value="calculateSalary">Calculate Salary</option>
+                        <option value="distributePayment">Distribute Payment</option>
+                        <option value="calculateTax">Calculate Tax</option>
+                        <option value="getEmployeeData">Get Employee Data</option>
+                    `;
+                    break;
+                case 'inventory':
+                    contractSelector.innerHTML = `
+                        <option value="inventory">Inventory Contract</option>
+                        <option value="supplychain">Supply Chain</option>
+                        <option value="tracking">Asset Tracking</option>
+                    `;
+                    functionSelector.innerHTML = `
+                        <option value="updateStock">Update Stock</option>
+                        <option value="trackMovement">Track Movement</option>
+                        <option value="getInventory">Get Inventory</option>
+                        <option value="validateSupply">Validate Supply</option>
+                    `;
+                    break;
+                case 'finance':
+                    contractSelector.innerHTML = `
+                        <option value="accounting">Accounting Contract</option>
+                        <option value="payments">Payment Processing</option>
+                        <option value="reporting">Financial Reporting</option>
+                    `;
+                    functionSelector.innerHTML = `
+                        <option value="processPayment">Process Payment</option>
+                        <option value="generateReport">Generate Report</option>
+                        <option value="calculateProfit">Calculate Profit</option>
+                        <option value="getBalance">Get Balance</option>
+                    `;
+                    break;
+                case 'hr':
+                    contractSelector.innerHTML = `
+                        <option value="hr">HR Contract</option>
+                        <option value="benefits">Benefits Management</option>
+                        <option value="performance">Performance Tracking</option>
+                    `;
+                    functionSelector.innerHTML = `
+                        <option value="addEmployee">Add Employee</option>
+                        <option value="updateBenefits">Update Benefits</option>
+                        <option value="trackPerformance">Track Performance</option>
+                        <option value="getEmployeeInfo">Get Employee Info</option>
+                    `;
+                    break;
+                case 'compliance':
+                    contractSelector.innerHTML = `
+                        <option value="compliance">Compliance Contract</option>
+                        <option value="audit">Audit Trail</option>
+                        <option value="risk">Risk Assessment</option>
+                    `;
+                    functionSelector.innerHTML = `
+                        <option value="checkCompliance">Check Compliance</option>
+                        <option value="logAudit">Log Audit</option>
+                        <option value="assessRisk">Assess Risk</option>
+                        <option value="getComplianceStatus">Get Compliance Status</option>
+                    `;
+                    break;
+                case 'analytics':
+                    contractSelector.innerHTML = `
+                        <option value="analytics">Analytics Contract</option>
+                        <option value="predictions">Predictive Models</option>
+                        <option value="insights">Business Insights</option>
+                    `;
+                    functionSelector.innerHTML = `
+                        <option value="generateInsights">Generate Insights</option>
+                        <option value="predictTrends">Predict Trends</option>
+                        <option value="analyzeData">Analyze Data</option>
+                        <option value="getRecommendations">Get Recommendations</option>
+                    `;
+                    break;
+            }
+            
+            dashboard.logTransaction(`Selected ERP function: ${functionType}`, 'info');
+        }
+
+        // AI Chat Functions
+        function toggleAIChat() {
+            const chatWindow = document.getElementById('ai-chat-window');
+            const chatIcon = document.getElementById('chat-icon');
+            const notification = document.getElementById('chat-notification');
+            
+            if (chatWindow.style.display === 'none' || !chatWindow.style.display) {
+                chatWindow.style.display = 'flex';
+                chatIcon.textContent = '💬';
+                notification.style.display = 'none';
+            } else {
+                chatWindow.style.display = 'none';
+                chatIcon.textContent = '🤖';
+            }
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            input.value = '';
+            
+            // Add user message
+            await web3ERPAI.addMessage(message, true);
+            
+            try {
+                // Generate AI response
+                const response = await web3ERPAI.generateResponse(message);
+                await web3ERPAI.addMessage(response, false);
+            } catch (error) {
+                console.error('Chat error:', error);
+                await web3ERPAI.addMessage('I apologize, but I encountered an error processing your request. Please try again.', false);
+            }
+        }
+
+        async function sendQuickQuestion(question) {
+            document.getElementById('chat-input').value = question;
+            await sendChatMessage();
+        }
+
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        // Show notification after 10 seconds
+        setTimeout(() => {
+            const notification = document.getElementById('chat-notification');
+            const chatWindow = document.getElementById('ai-chat-window');
+            if (chatWindow.style.display !== 'flex') {
+                notification.style.display = 'block';
+            }
+        }, 10000);
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.web3Dashboard = new Web3Dashboard();
+        });
+    </script>
+</body>
+</html>

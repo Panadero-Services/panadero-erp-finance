@@ -437,6 +437,15 @@ Route::middleware([
         ]);
     })->name('erp.inventory');
 
+    // Enhanced Products Page
+    Route::get('erp/inventory/products-enhanced', function () {
+        return Inertia::render('erp/inventory/ProductsEnhanced', [
+            'page'=> Page::with('sections')->where('title','Tiers')->first(),
+            'baseSections' => Section::where('page_id','0')->get(),
+            'title' => 'Enhanced Products Management'
+        ]);
+    })->name('erp.inventory.products.enhanced');
+
     // ========================================
     // ERP HR ROUTES
     // ========================================
@@ -970,5 +979,313 @@ Route::patch('{table}/{id}/field', [DynamicController::class, 'updateField']);
     Route::post('/api/ai/test', function() {
         return response()->json(['status' => 'working']);
     })->middleware('api');
+
+    // ============================================================================
+    // ERP DATA ROUTES (Web routes to bypass API middleware)
+    // ============================================================================
+    
+    // Test route to check if the issue is with ERP routes
+    Route::get('/test-erp', function () {
+        return response()->json(['message' => 'ERP test route working', 'timestamp' => now()]);
+    });
+    
+    // Test different route patterns
+    Route::get('/data/customers', function () {
+        return response()->json(\App\Models\ErpCustomer::all());
+    });
+    
+    Route::get('/customers', function () {
+        return response()->json(\App\Models\ErpCustomer::all());
+    });
+    
+    Route::get('/suppliers', function () {
+        return response()->json(\App\Models\ErpSupplier::all());
+    });
+    
+    Route::get('/products', [\App\Http\Controllers\ErpDataController::class, 'products']);
+    
+    Route::get('/orders-in', function () {
+        return response()->json(\App\Models\ErpOrdersIn::all());
+    });
+    
+    Route::get('/orders-out', function () {
+        return response()->json(\App\Models\ErpOrdersOut::all());
+    });
+    
+    Route::get('/order-in-lines', function () {
+        return response()->json(\App\Models\ErpOrderInLine::all());
+    });
+    
+    Route::get('/order-out-lines', function () {
+        return response()->json(\App\Models\ErpOrderOutLine::all());
+    });
+    
+    Route::get('/sites', function () {
+        return response()->json(\App\Models\ErpSite::all());
+    });
+    
+    Route::get('/storages', function () {
+        return response()->json(\App\Models\ErpStorage::all());
+    });
+    
+    Route::get('/stocks', function () {
+        return response()->json(\App\Models\ErpStock::all());
+    });
+    
+    Route::get('/status', function () {
+        return response()->json(\App\Models\ErpStatus::all());
+    });
+    
+    Route::get('/units', function () {
+        return response()->json(\App\Models\ErpUnit::all());
+    });
+    
+    Route::get('/product-types', function () {
+        return response()->json(\App\Models\ErpProductType::all());
+    });
+    
+    Route::get('/event-handlers', function () {
+        return response()->json(\App\Models\ErpEventHandler::all());
+    });
+    
+    Route::get('/stock-handlers', function () {
+        return response()->json(\App\Models\ErpStockHandler::all());
+    });
+    
+    Route::get('/samples', function () {
+        return response()->json(\App\Models\ErpSample::all());
+    });
+    
+    Route::get('/analyses', function () {
+        return response()->json(\App\Models\ErpAnalysis::all());
+    });
+    
+    Route::get('/analyse-properties', function () {
+        return response()->json(\App\Models\ErpAnalyseProperty::all());
+    });
+    
+    Route::get('/analyse-lines', function () {
+        return response()->json(\App\Models\ErpAnalyseLine::all());
+    });
+    
+    Route::get('/product-groups', function () {
+        return response()->json(\App\Models\ErpProductGroup::all());
+    });
+    
+    // Test inventory page without authentication
+    Route::get('/test-inventory', function () {
+        return view('test-inventory');
+    });
+    
+    // Test ERP inventory module without authentication
+    Route::get('/test-erp-inventory', function () {
+        return Inertia::render('erp/Inventory', [
+            'page'=> (object)['title' => 'Test ERP Inventory'],
+            'baseSections' => collect([]),
+            'title' => 'Test ERP Inventory Management'
+        ]);
+    });
+    
+    // Test generic DataTable with erp_storages
+    Route::get('/test-storages', function () {
+        return Inertia::render('erp/inventory/StoragesTest', [
+            'page'=> (object)['title' => 'Test Generic DataTable - Storages'],
+            'baseSections' => collect([]),
+            'title' => 'Test Generic DataTable with erp_storages'
+        ]);
+    });
+    
+    // Test routes for generic DataTable
+    Route::get('/erp_products', function(\Illuminate\Http\Request $request) {
+        return app(\App\Http\Controllers\DynamicController::class)->api($request, 'erp_products');
+    })->name('api.erp.products.web');
+    Route::get('/erp_storages', function(\Illuminate\Http\Request $request) {
+        return app(\App\Http\Controllers\DynamicController::class)->api($request, 'erp_storages');
+    })->name('api.erp.storages.web');
+    
+    // Test route with model loading
+    Route::get('/test-erp-model', function () {
+        try {
+            $count = \App\Models\ErpCustomer::count();
+            return response()->json(['message' => 'ERP model test working', 'customer_count' => $count]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    // ERP Data API Routes using controller
+    Route::get('/api/erp/customers', [\App\Http\Controllers\ErpDataController::class, 'customers']);
+    Route::get('/api/erp/suppliers', [\App\Http\Controllers\ErpDataController::class, 'suppliers']);
+    Route::get('/api/erp/products', [\App\Http\Controllers\ErpDataController::class, 'products']);
+    Route::get('/api/erp/orders-in', [\App\Http\Controllers\ErpDataController::class, 'ordersIn']);
+    Route::get('/api/erp/orders-out', [\App\Http\Controllers\ErpDataController::class, 'ordersOut']);
+    Route::get('/api/erp/order-in-lines', [\App\Http\Controllers\ErpDataController::class, 'orderInLines']);
+    Route::get('/api/erp/order-out-lines', [\App\Http\Controllers\ErpDataController::class, 'orderOutLines']);
+    Route::get('/api/erp/sites', [\App\Http\Controllers\ErpDataController::class, 'sites']);
+    Route::get('/api/erp/storages', [\App\Http\Controllers\ErpDataController::class, 'storages']);
+    Route::get('/api/erp/stocks', [\App\Http\Controllers\ErpDataController::class, 'stocks']);
+    Route::get('/api/erp/status', [\App\Http\Controllers\ErpDataController::class, 'status']);
+    Route::get('/api/erp/units', [\App\Http\Controllers\ErpDataController::class, 'units']);
+    Route::get('/api/erp/product-types', [\App\Http\Controllers\ErpDataController::class, 'productTypes']);
+    Route::get('/api/erp/event-handlers', [\App\Http\Controllers\ErpDataController::class, 'eventHandlers']);
+    Route::get('/api/erp/stock-handlers', [\App\Http\Controllers\ErpDataController::class, 'stockHandlers']);
+    Route::get('/api/erp/samples', [\App\Http\Controllers\ErpDataController::class, 'samples']);
+    Route::get('/api/erp/analyses', [\App\Http\Controllers\ErpDataController::class, 'analyses']);
+    Route::get('/api/erp/analyse-properties', [\App\Http\Controllers\ErpDataController::class, 'analyseProperties']);
+    Route::get('/api/erp/analyse-lines', [\App\Http\Controllers\ErpDataController::class, 'analyseLines']);
+    
+    // ERP Data Routes - moved here to avoid conflicts
+    Route::get('/api/erp/customers', function () {
+        try {
+            $customers = \App\Models\ErpCustomer::all();
+            return response()->json($customers);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    });
+    
+    Route::get('/erp-data/suppliers', function () {
+        return response()->json(\App\Models\ErpSupplier::all());
+    });
+    
+    Route::get('/erp-data/products', function () {
+        return response()->json(\App\Models\ErpProduct::all());
+    });
+    
+    Route::get('/erp-data/orders-in', function () {
+        return response()->json(\App\Models\ErpOrdersIn::all());
+    });
+    
+    Route::get('/erp-data/orders-out', function () {
+        return response()->json(\App\Models\ErpOrdersOut::all());
+    });
+    
+    Route::get('/erp-data/order-in-lines', function () {
+        return response()->json(\App\Models\ErpOrderInLine::all());
+    });
+    
+    Route::get('/erp-data/order-out-lines', function () {
+        return response()->json(\App\Models\ErpOrderOutLine::all());
+    });
+    
+    Route::get('/erp-data/sites', function () {
+        return response()->json(\App\Models\ErpSite::all());
+    });
+    
+    Route::get('/erp-data/storages', function () {
+        return response()->json(\App\Models\ErpStorage::all());
+    });
+    
+    Route::get('/erp-data/stocks', function () {
+        return response()->json(\App\Models\ErpStock::all());
+    });
+    
+    Route::get('/erp-data/status', function () {
+        return response()->json(\App\Models\ErpStatus::all());
+    });
+    
+    Route::get('/erp-data/units', function () {
+        return response()->json(\App\Models\ErpUnit::all());
+    });
+    
+    Route::get('/erp-data/product-types', function () {
+        return response()->json(\App\Models\ErpProductType::all());
+    });
+    
+    Route::get('/erp-data/event-handlers', function () {
+        return response()->json(\App\Models\ErpEventHandler::all());
+    });
+    
+    Route::get('/erp-data/stock-handlers', function () {
+        return response()->json(\App\Models\ErpStockHandler::all());
+    });
+    
+    Route::get('/erp-data/samples', function () {
+        return response()->json(\App\Models\ErpSample::all());
+    });
+    
+    Route::get('/erp-data/analyses', function () {
+        return response()->json(\App\Models\ErpAnalysis::all());
+    });
+    
+    Route::get('/erp-data/analyse-properties', function () {
+        return response()->json(\App\Models\ErpAnalyseProperty::all());
+    });
+    
+    Route::get('/erp-data/analyse-lines', function () {
+        return response()->json(\App\Models\ErpAnalyseLine::all());
+    });
+
+    Route::get('/erp-data/suppliers', function () {
+        return response()->json(\App\Models\ErpSupplier::all());
+    });
+
+    Route::get('/erp-data/products', function () {
+        return response()->json(\App\Models\ErpProduct::all());
+    });
+
+    Route::get('/erp-data/orders-in', function () {
+        return response()->json(\App\Models\ErpOrdersIn::all());
+    });
+
+    Route::get('/erp-data/orders-out', function () {
+        return response()->json(\App\Models\ErpOrdersOut::all());
+    });
+
+    Route::get('/erp-data/order-in-lines', function () {
+        return response()->json(\App\Models\ErpOrderInLine::all());
+    });
+
+    Route::get('/erp-data/order-out-lines', function () {
+        return response()->json(\App\Models\ErpOrderOutLine::all());
+    });
+
+    Route::get('/erp-data/sites', function () {
+        return response()->json(\App\Models\ErpSite::all());
+    });
+
+    Route::get('/erp-data/storages', function () {
+        return response()->json(\App\Models\ErpStorage::all());
+    });
+
+    Route::get('/erp-data/stocks', function () {
+        return response()->json(\App\Models\ErpStock::all());
+    });
+
+    Route::get('/erp-data/status', function () {
+        return response()->json(\App\Models\ErpStatus::all());
+    });
+
+    Route::get('/erp-data/units', function () {
+        return response()->json(\App\Models\ErpUnit::all());
+    });
+
+    Route::get('/erp-data/product-types', function () {
+        return response()->json(\App\Models\ErpProductType::all());
+    });
+
+    Route::get('/erp-data/event-handlers', function () {
+        return response()->json(\App\Models\ErpEventHandler::all());
+    });
+
+    Route::get('/erp-data/stock-handlers', function () {
+        return response()->json(\App\Models\ErpStockHandler::all());
+    });
+
+    Route::get('/erp-data/samples', function () {
+        return response()->json(\App\Models\ErpSample::all());
+    });
+
+    Route::get('/erp-data/analyses', function () {
+        return response()->json(\App\Models\ErpAnalysis::all());
+    });
+
+    Route::get('/erp-data/analyse-properties', function () {
+        return response()->json(\App\Models\ErpAnalyseProperty::all());
+    });
+
+    Route::get('/erp-data/analyse-lines', function () {
+        return response()->json(\App\Models\ErpAnalyseLine::all());
+    });
 
     

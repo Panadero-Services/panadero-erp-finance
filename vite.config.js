@@ -21,14 +21,14 @@ export default defineConfig({
     ],
     server: {
         host: 'localhost', // Use localhost instead of 127.0.0.1
-        port: parseInt(process.env.VITE_SERVER_PORT),
+        port: parseInt(process.env.VITE_SERVER_PORT) || 5173,
         cors: {
             origin: true, // Allow all origins for development
             credentials: true
         },
         hmr: {
             host: 'localhost', // Use localhost instead of 127.0.0.1
-            port: parseInt(process.env.VITE_SERVER_PORT),
+            port: parseInt(process.env.VITE_SERVER_PORT) || 5173,
         },
         proxy: {
             '/api/openai': {
@@ -65,10 +65,14 @@ export default defineConfig({
             'panadero-erp-finance': resolve(__dirname, 'packages/panadero-erp-finance'),
             'panadero-erp-inventory': resolve(__dirname, 'packages/panadero-erp-inventory'),
             'panadero-erp-compliance': resolve(__dirname, 'packages/panadero-erp-compliance'),
+            'panadero-filters': resolve(__dirname, 'packages/panadero-filters/src/index.js'),
+            'panadero-shared-components': resolve(__dirname, 'packages/panadero-shared-components/index.js'),
+            'panadero-shared-styling': resolve(__dirname, 'packages/panadero-shared-styling/index.js'),
+            'panadero-datatable': resolve(__dirname, 'packages/panadero-datatable/index.js'),
         }
     },
     optimizeDeps: {
-        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers', 'panadero-erp-compliance', 'panadero-shared-components', 'panadero-shared-styling']
+        include: ['vue', 'pinia', '@metamask/detect-provider', 'ethers', 'panadero-erp-compliance', 'panadero-shared-components', 'panadero-shared-styling', 'panadero-filters', 'panadero-datatable']
     },
     define: {
         'import.meta.env.VITE_PUSHER_APP_KEY': JSON.stringify(process.env.PUSHER_APP_KEY),

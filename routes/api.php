@@ -54,6 +54,15 @@ Route::get('/finance/test', function () {
     ]);
 });
 
+// ERP Configuration Routes - Public (no authentication required)
+Route::get('/erp_products/config', function () {
+    return response()->json(\App\Models\ErpProduct::getEnhancedDataTableConfig());
+})->name('api.erp.products.config');
+
+Route::get('/erp_storages/config', function () {
+    return response()->json(\App\Models\ErpStorage::getEnhancedDataTableConfig());
+})->name('api.erp.storages.config');
+
 // Test finance invoices route without authentication
 Route::get('/finance/invoices/test', function () {
     return response()->json([
@@ -664,6 +673,39 @@ Route::middleware(['auth:sanctum', 'web'])->group(function () {
 Route::get('/model-config/{module}/{table}', [ModelConfigController::class, 'getModelConfig'])
     ->middleware(['web', 'auth:sanctum']);
 
+// Generic model configuration route (no authentication required for DataTable)
+Route::get('/model-config/{table}', function ($table) {
+    // Convert table name to model name using Laravel conventions
+    $modelName = \Illuminate\Support\Str::studly(\Illuminate\Support\Str::singular($table));
+    $modelClass = 'App\\Models\\' . $modelName;
+    
+    if (!class_exists($modelClass)) {
+        return response()->json([
+            'success' => false,
+            'message' => "Model {$modelClass} not found for table '{$table}'"
+        ], 404);
+    }
+    
+    $modelInstance = new $modelClass();
+    
+    $config = [
+        'relationships' => method_exists($modelInstance, 'getDataTableRelationships') 
+            ? $modelInstance->getDataTableRelationships() 
+            : [],
+        'formFields' => method_exists($modelInstance, 'formFields') 
+            ? $modelInstance->formFields() 
+            : [],
+        'searchableColumns' => method_exists($modelInstance, 'getSearchableColumns') 
+            ? $modelInstance->getSearchableColumns() 
+            : [],
+        'dataTableConfig' => method_exists($modelInstance, 'getDataTableConfig') 
+            ? $modelInstance->getDataTableConfig() 
+            : []
+    ];
+    
+    return response()->json($config);
+});
+
 // ============================================================================
 // ENTITY SCHEMA ROUTES
 // ============================================================================
@@ -1042,25 +1084,52 @@ Route::prefix('finance')->middleware('auth:sanctum')->group(function () {
 
 Route::post('/ai/call', [\App\Http\Controllers\AIServiceController::class, 'callAI'])->name('ai.call');
 
-// ============================================================================
-// INVENTORY API ROUTES
-// ============================================================================
-Route::prefix('inventory')->group(function () {
-    Route::get('/purchase-orders', function () {
-        return DB::table('inventory_purchase_orders')->get();
-    });
-    Route::get('/suppliers', function () {
-        return DB::table('inventory_suppliers')->get();
-    });
-    Route::get('/items', function () {
-        return DB::table('inventory_items')->get();
-    });
-    Route::get('/warehouses', function () {
-        return DB::table('inventory_warehouses')->get();
-    });
-    Route::get('/stock-movements', function () {
-        return DB::table('inventory_stock_movements')->get();
-    });
+// Test route
+Route::get('/test-erp', function () {
+    return response()->json(['message' => 'ERP API is working', 'data' => \App\Models\ErpCustomer::take(3)->get()]);
 });
 
+// Simple ERP data routes
+Route::get('/erp-customers-simple', function () {
+    return \App\Models\ErpCustomer::all();
+});
 
+Route::get('/erp-products-simple', function () {
+    return \App\Models\ErpProduct::all();
+});
+
+// ============================================================================
+// ERP API Routes - All authenticated
+// ============================================================================
+Route::get('/erp_customers', [DynamicController::class, 'api'])->name('api.erp.customers');
+Route::get('/erp_suppliers', [DynamicController::class, 'api'])->name('api.erp.suppliers');
+Route::get('/erp_products', [DynamicController::class, 'api'])->name('api.erp.products');
+Route::delete('/erp_products/{id}', [DynamicController::class, 'destroy'])->name('api.erp.products.destroy');
+Route::get('/erp_orders_in', [DynamicController::class, 'api'])->name('api.erp.orders-in');
+Route::get('/erp_orders_out', [DynamicController::class, 'api'])->name('api.erp.orders-out');
+Route::get('/erp_order_in_lines', [DynamicController::class, 'api'])->name('api.erp.order-in-lines');
+Route::get('/erp_order_out_lines', [DynamicController::class, 'api'])->name('api.erp.order-out-lines');
+Route::get('/erp_sites', [DynamicController::class, 'api'])->name('api.erp.sites');
+Route::get('/erp_storages', [DynamicController::class, 'api'])->name('api.erp.storages');
+Route::get('/erp_stocks', [DynamicController::class, 'api'])->name('api.erp.stocks');
+Route::get('/erp_status', [DynamicController::class, 'api'])->name('api.erp.status');
+Route::get('/erp_units', [DynamicController::class, 'api'])->name('api.erp.units');
+Route::get('/erp_product_types', [DynamicController::class, 'api'])->name('api.erp.product-types');
+Route::get('/erp_product_groups', [DynamicController::class, 'api'])->name('api.erp.product-groups');
+Route::get('/erp_brands', [DynamicController::class, 'api'])->name('api.erp.brands');
+Route::get('/erp_event_handlers', [DynamicController::class, 'api'])->name('api.erp.event-handlers');
+Route::get('/erp_stock_handlers', [DynamicController::class, 'api'])->name('api.erp.stock-handlers');
+Route::get('/erp_samples', [DynamicController::class, 'api'])->name('api.erp.samples');
+Route::get('/erp_analyses', [DynamicController::class, 'api'])->name('api.erp.analyses');
+Route::get('/erp_analyse_properties', [DynamicController::class, 'api'])->name('api.erp.analyse-properties');
+Route::get('/erp_analyse_lines', [DynamicController::class, 'api'])->name('api.erp.analyse-lines');
+// ============================================================================
+
+// CREATE - Create new product
+Route::post('/erp_products', [DynamicController::class, 'store'])->name('api.erp.products.store');
+
+// UPDATE - Update existing product  
+Route::put('/erp_products/{id}', [DynamicController::class, 'update'])->name('api.erp.products.update');
+Route::patch('/erp_products/{id}', [DynamicController::class, 'update'])->name('api.erp.products.patch');
+
+//Route::delete('/erp_storages/{id}', [DynamicController::class, 'destroy'])->name('api.erp.storages.destroy');

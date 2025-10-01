@@ -1,12 +1,11 @@
 <!--
   Vendors Component
-  @version 1.0.13
+  @version 1.0.14
   @date 17-Sep-2025
-  @description Manage vendors, customers, and forwarders
+  @description Manage vendors, customers, and forwarders with metrics and general info
 -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useVendors } from '../composables/useVendors.js'
 import { useCommonSnippets } from '../composables/useCommonSnippets.js'
 
 // UI Components
@@ -16,6 +15,7 @@ import InventoryDropdown from './ui/InventoryDropdown.vue'
 import StatusBadge from './ui/StatusBadge.vue'
 import InventoryValueCard from './ui/InventoryValueCard.vue'
 import ActionButton from './ui/ActionButton.vue'
+import CleanBadge from './ui/CleanBadge.vue'
 
 // Get common functionality
 const { 
@@ -28,76 +28,266 @@ const {
   formatDate,
   confirmAction 
 } = useCommonSnippets()
-const { 
-  vendors,
-  customers,
-  forwarders,
-  getAllPartners,
-  getPartnersByType,
-  getActivePartners,
-  getPartnerMetrics,
-  addPartner,
-  updatePartner,
-  deletePartner 
-} = useVendors()
 
 // State
-const activeTab = ref('vendors')
+const selectedPartnerType = ref('suppliers') // Filter: suppliers, customers, forwarders
+const searchTerm = ref('')
+const selectedStatus = ref('all')
 const showPartnerForm = ref(false)
 const editingPartner = ref(null)
-const partnerFormData = ref({})
+const partnerFormData = ref({
+  name: '',
+  type: 'supplier',
+  contact_person: '',
+  email: '',
+  phone: '',
+  address: '',
+  status: 'active',
+  notes: ''
+})
 
-const partnerTabs = [
-  { id: 'vendors', label: 'Vendors', icon: 'fas fa-truck', component: 'Vendors' },
-  { id: 'customers', label: 'Customers', icon: 'fas fa-users', component: 'Customers' },
-  { id: 'forwarders', label: 'Forwarders', icon: 'fas fa-shipping-fast', component: 'Forwarders' }
+// Mock data for partners
+const partners = ref([
+  // Suppliers
+  {
+    id: 1,
+    name: 'Organic Valley',
+    type: 'supplier',
+    contact_person: 'John Smith',
+    email: 'john@organicvalley.com',
+    phone: '+1-555-0123',
+    address: '123 Farm Road, Organic Valley, CA 90210',
+    status: 'active',
+    notes: 'Premium organic flour supplier',
+    total_orders: 45,
+    total_value: 12500.50,
+    last_order: '2025-09-15',
+    rating: 4.8,
+    payment_terms: 'Net 30',
+    created_at: '2025-01-15'
+  },
+  {
+    id: 2,
+    name: 'KitchenPro Equipment',
+    type: 'supplier',
+    contact_person: 'Sarah Johnson',
+    email: 'sarah@kitchenpro.com',
+    phone: '+1-555-0456',
+    address: '456 Industrial Blvd, Equipment City, TX 75001',
+    status: 'active',
+    notes: 'Professional kitchen equipment supplier',
+    total_orders: 23,
+    total_value: 8750.25,
+    last_order: '2025-09-10',
+    rating: 4.6,
+    payment_terms: 'Net 15',
+    created_at: '2025-02-20'
+  },
+  // Customers
+  {
+    id: 3,
+    name: 'Bakery Chain A',
+    type: 'customer',
+    contact_person: 'Mike Wilson',
+    email: 'mike@bakerychain.com',
+    phone: '+1-555-0789',
+    address: '789 Main Street, Bakery City, NY 10001',
+    status: 'active',
+    notes: 'Large bakery chain with 15 locations',
+    total_orders: 67,
+    total_value: 18750.75,
+    last_order: '2025-09-17',
+    rating: 4.9,
+    payment_terms: 'Net 30',
+    created_at: '2025-01-10'
+  },
+  {
+    id: 4,
+    name: 'Restaurant Group B',
+    type: 'customer',
+    contact_person: 'Lisa Brown',
+    email: 'lisa@restaurantgroup.com',
+    phone: '+1-555-0321',
+    address: '321 Restaurant Row, Food City, FL 33101',
+    status: 'active',
+    notes: 'Upscale restaurant group',
+    total_orders: 34,
+    total_value: 9250.00,
+    last_order: '2025-09-12',
+    rating: 4.7,
+    payment_terms: 'Net 15',
+    created_at: '2025-03-05'
+  },
+  // Forwarders
+  {
+    id: 5,
+    name: 'Fast Logistics Inc',
+    type: 'forwarder',
+    contact_person: 'David Lee',
+    email: 'david@fastlogistics.com',
+    phone: '+1-555-0654',
+    address: '654 Logistics Lane, Transport City, IL 60601',
+    status: 'active',
+    notes: 'Reliable shipping and logistics partner',
+    total_orders: 89,
+    total_value: 0,
+    last_order: '2025-09-16',
+    rating: 4.5,
+    payment_terms: 'Net 30',
+    created_at: '2025-01-25'
+  },
+  {
+    id: 6,
+    name: 'Cold Chain Transport',
+    type: 'forwarder',
+    contact_person: 'Maria Garcia',
+    email: 'maria@coldchain.com',
+    phone: '+1-555-0987',
+    address: '987 Refrigerated Road, Cold City, WA 98101',
+    status: 'active',
+    notes: 'Specialized in temperature-controlled shipping',
+    total_orders: 45,
+    total_value: 0,
+    last_order: '2025-09-14',
+    rating: 4.8,
+    payment_terms: 'Net 15',
+    created_at: '2025-02-10'
+  }
+])
+
+const partnerTypeOptions = [
+  { value: 'suppliers', label: 'Suppliers' },
+  { value: 'customers', label: 'Customers' },
+  { value: 'forwarders', label: 'Forwarders' }
+]
+
+const partnerStatusOptions = [
+  { value: 'all', label: 'All Status' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive' },
+  { value: 'suspended', label: 'Suspended' }
 ]
 
 // Computed properties
-const partnerMetrics = computed(() => getPartnerMetrics.value)
+const currentPartners = computed(() => {
+  return partners.value.filter(partner => partner.type === selectedPartnerType.value.slice(0, -1)) // Remove 's' from type
+})
 
-// Dark mode classes are now provided by useCommonSnippets
+const filteredPartners = computed(() => {
+  let filtered = [...currentPartners.value]
+  
+  if (searchTerm.value) {
+    filtered = filtered.filter(partner => 
+      partner.name.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      partner.contact_person.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+      partner.email.toLowerCase().includes(searchTerm.value.toLowerCase())
+    )
+  }
+  
+  if (selectedStatus.value !== 'all') {
+    filtered = filtered.filter(partner => partner.status === selectedStatus.value)
+  }
+  
+  return filtered
+})
+
+const partnersByStatus = computed(() => {
+  const statuses = ['active', 'inactive', 'suspended']
+  return statuses.reduce((acc, status) => {
+    acc[status] = currentPartners.value.filter(partner => partner.status === status).length
+    return acc
+  }, {})
+})
+
+const totalValue = computed(() => {
+  return currentPartners.value.reduce((total, partner) => total + partner.total_value, 0)
+})
+
+const averageRating = computed(() => {
+  const ratings = currentPartners.value.map(partner => partner.rating)
+  return ratings.length > 0 ? (ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1) : 0
+})
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'active': return 'green'
+    case 'inactive': return 'gray'
+    case 'suspended': return 'red'
+    default: return 'gray'
+  }
+}
+
+const getPartnerTypeIcon = (type) => {
+  switch (type) {
+    case 'supplier': return 'fas fa-truck-loading'
+    case 'customer': return 'fas fa-users'
+    case 'forwarder': return 'fas fa-shipping-fast'
+    default: return 'fas fa-building'
+  }
+}
+
+const getPartnerTypeColor = (type) => {
+  switch (type) {
+    case 'supplier': return 'blue'
+    case 'customer': return 'green'
+    case 'forwarder': return 'orange'
+    default: return 'gray'
+  }
+}
 
 // Methods
-const openPartnerForm = (type, partner = null) => {
+const openPartnerForm = (partner = null) => {
   editingPartner.value = partner
   partnerFormData.value = partner ? { ...partner } : {
     name: '',
-    type: type,
-    contactPerson: '',
+    type: selectedPartnerType.value.slice(0, -1), // Remove 's' from type
+    contact_person: '',
     email: '',
     phone: '',
     address: '',
-    paymentTerms: '',
-    creditLimit: 0,
-    rating: 0,
-    status: 'active'
+    status: 'active',
+    notes: ''
   }
   showPartnerForm.value = true
 }
 
 const savePartner = () => {
   if (editingPartner.value) {
-    updatePartner(editingPartner.value.id, partnerFormData.value)
+    // Update existing partner
+    const index = partners.value.findIndex(p => p.id === editingPartner.value.id)
+    if (index !== -1) {
+      partners.value[index] = { ...partnerFormData.value, id: editingPartner.value.id }
+    }
   } else {
-    addPartner(partnerFormData.value)
+    // Add new partner
+    const newPartner = {
+      ...partnerFormData.value,
+      id: Date.now(),
+      total_orders: 0,
+      total_value: 0,
+      last_order: null,
+      rating: 5.0,
+      payment_terms: 'Net 30',
+      created_at: new Date().toISOString().split('T')[0]
+    }
+    partners.value.push(newPartner)
   }
   showPartnerForm.value = false
 }
 
 const handleDeletePartner = (id) => {
-  if (confirm('Are you sure you want to delete this partner?')) {
-    deletePartner(id)
+  if (confirmAction('Are you sure you want to delete this partner?')) {
+    const index = partners.value.findIndex(p => p.id === id)
+    if (index !== -1) {
+      partners.value.splice(index, 1)
+    }
   }
 }
-
-// formatCurrency is now provided by useCommonSnippets
 
 onMounted(() => {
   store.loadSettings()
 })
 </script>
-
 
 <template>
   <div class="vendors" :class="darkModeClasses.container">
@@ -107,233 +297,175 @@ onMounted(() => {
         Vendors & Partners
       </h2>
       <p :style="scalingStyles.subtitleFontSize" :class="darkModeClasses.textSecondary" class="mt-2">
-        Manage vendors, customers, and forwarders
+        Manage suppliers, customers, and forwarders with metrics and general information
       </p>
+    </div>
+
+    <!-- Partner Type Filter -->
+    <div :class="[darkModeClasses.card, 'rounded-lg shadow-sm border mb-6']">
+      <div class="p-4">
+        <div class="flex items-center gap-4">
+          <label :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="font-medium">
+            Partner Type:
+          </label>
+          <InventoryDropdown
+            v-model="selectedPartnerType"
+            :options="partnerTypeOptions"
+            :style="scalingStyles.select"
+            :class="darkModeClasses.input"
+            class="w-48"
+          />
+          <div class="flex items-center gap-2">
+            <i :class="[getPartnerTypeIcon(selectedPartnerType.slice(0, -1)), darkModeClasses.text]" :style="scalingStyles.iconSize"></i>
+            <span :style="scalingStyles.textFontSize" :class="darkModeClasses.text">
+              {{ partnerTypeOptions.find(opt => opt.value === selectedPartnerType)?.label }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Summary Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <InventoryValueCard
-        title="Vendors"
-        :value="partnerMetrics.activeVendors"
-        subtitle="Active Suppliers"
-        icon="fas fa-truck"
+        title="Total Partners"
+        :value="currentPartners.length"
+        subtitle="All Types"
+        icon="fas fa-building"
         color="blue"
         :scaling-styles="scalingStyles"
         :dark-mode="store.settings.darkMode"
       />
       <InventoryValueCard
-        title="Customers"
-        :value="partnerMetrics.activeCustomers"
-        subtitle="Active Buyers"
-        icon="fas fa-users"
+        title="Active"
+        :value="partnersByStatus.active"
+        subtitle="Currently Active"
+        icon="fas fa-check-circle"
         color="green"
         :scaling-styles="scalingStyles"
         :dark-mode="store.settings.darkMode"
       />
       <InventoryValueCard
-        title="Forwarders"
-        :value="partnerMetrics.activeForwarders"
-        subtitle="Logistics Partners"
-        icon="fas fa-shipping-fast"
-        color="orange"
+        title="Total Value"
+        :value="formatCurrency(totalValue)"
+        subtitle="All Transactions"
+        icon="fas fa-dollar-sign"
+        color="purple"
         :scaling-styles="scalingStyles"
         :dark-mode="store.settings.darkMode"
       />
       <InventoryValueCard
-        title="Total Partners"
-        :value="partnerMetrics.activePartners"
-        subtitle="All Active"
-        icon="fas fa-handshake"
-        color="purple"
+        title="Avg Rating"
+        :value="averageRating"
+        subtitle="Partner Rating"
+        icon="fas fa-star"
+        color="orange"
         :scaling-styles="scalingStyles"
         :dark-mode="store.settings.darkMode"
       />
     </div>
 
-    <!-- Partner Type Tabs -->
-    <div :class="[darkModeClasses.card, 'rounded-lg shadow-sm border mb-6']">
-      <div class="border-b" :class="darkModeClasses.border">
-        <nav class="flex space-x-8 px-6">
-          <button
-            v-for="tab in partnerTabs"
-            :key="tab.id"
-            @click="activeTab = tab.id"
-            :class="[
-              activeTab === tab.id
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-              'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
-            ]"
-          >
-            <i :class="tab.icon" class="mr-2"></i>
-            {{ tab.label }}
-          </button>
-        </nav>
+    <!-- Filters -->
+    <div :class="[darkModeClasses.card, 'p-4 rounded-lg shadow-sm border mb-6']">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <InventoryInput
+          v-model="searchTerm"
+          placeholder="Search partners..."
+          :style="scalingStyles.input"
+          :class="darkModeClasses.input"
+        >
+          <template #prefix>
+            <i class="fas fa-search"></i>
+          </template>
+        </InventoryInput>
+
+        <InventoryDropdown
+          v-model="selectedStatus"
+          :options="partnerStatusOptions"
+          :style="scalingStyles.select"
+          :class="darkModeClasses.input"
+        />
+
+        <InventoryButton
+          @click="openPartnerForm()"
+          variant="primary"
+          :style="scalingStyles.button"
+        >
+          <i class="fas fa-plus mr-2"></i>
+          New Partner
+        </InventoryButton>
+
+        <InventoryButton
+          @click="openPartnerForm"
+          variant="secondary"
+          :style="scalingStyles.button"
+        >
+          <i class="fas fa-chart-bar mr-2"></i>
+          View Reports
+        </InventoryButton>
       </div>
+    </div>
 
-      <div class="p-6">
-        <!-- Vendors Tab -->
-        <div v-if="activeTab === 'vendors'">
-          <div class="flex justify-between items-center mb-4">
-            <h3 :style="scalingStyles.subtitleFontSize" :class="darkModeClasses.text" class="text-lg font-semibold">
-              Vendors
-            </h3>
-            <InventoryButton @click="openPartnerForm('vendor')" variant="primary" :style="scalingStyles.button">
-              <i class="fas fa-plus mr-2"></i>
-              Add Vendor
-            </InventoryButton>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead :class="darkModeClasses.tableHeader">
-                <tr>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Contact</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Rating</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Orders</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Value</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody :class="[darkModeClasses.table, 'divide-y', darkModeClasses.border]">
-                <tr v-for="vendor in vendors" :key="vendor.id" :class="[darkModeClasses.tableRow, 'hover:bg-gray-50']">
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    {{ vendor.name }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    <div>{{ vendor.contactPerson }}</div>
-                    <div :style="scalingStyles.textFontSizeSubtext" :class="darkModeClasses.textSecondary" class="text-xs">{{ vendor.email }}</div>
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    <div class="flex items-center">
-                      <span class="mr-1">{{ vendor.rating }}</span>
-                      <i class="fas fa-star text-yellow-400"></i>
-                    </div>
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ vendor.totalOrders }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ formatCurrency(vendor.totalValue) }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex gap-1">
-                      <ActionButton  variant="edit" @click="openPartnerForm('vendor', vendor)" />
-                      <ActionButton  variant="delete" @click="handleDeletePartner(vendor.id)" />
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Customers Tab -->
-        <div v-if="activeTab === 'customers'">
-          <div class="flex justify-between items-center mb-4">
-            <h3 :style="scalingStyles.subtitleFontSize" :class="darkModeClasses.text" class="text-lg font-semibold">
-              Customers
-            </h3>
-            <InventoryButton @click="openPartnerForm('customer')" variant="primary" :style="scalingStyles.button">
-              <i class="fas fa-plus mr-2"></i>
-              Add Customer
-            </InventoryButton>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead :class="darkModeClasses.tableHeader">
-                <tr>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Contact</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Credit Limit</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Orders</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Value</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody :class="[darkModeClasses.table, 'divide-y', darkModeClasses.border]">
-                <tr v-for="customer in customers" :key="customer.id" :class="[darkModeClasses.tableRow, 'hover:bg-gray-50']">
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    {{ customer.name }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    <div>{{ customer.contactPerson }}</div>
-                    <div :style="scalingStyles.textFontSizeSubtext" :class="darkModeClasses.textSecondary" class="text-xs">{{ customer.email }}</div>
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ formatCurrency(customer.creditLimit) }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ customer.totalOrders }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ formatCurrency(customer.totalValue) }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex gap-1">
-                      <ActionButton  variant="edit" @click="openPartnerForm('customer', customer)" />
-                      <ActionButton  variant="delete" @click="handleDeletePartner(customer.id)" />
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Forwarders Tab -->
-        <div v-if="activeTab === 'forwarders'">
-          <div class="flex justify-between items-center mb-4">
-            <h3 :style="scalingStyles.subtitleFontSize" :class="darkModeClasses.text" class="text-lg font-semibold">
-              Forwarders
-            </h3>
-            <InventoryButton @click="openPartnerForm('forwarder')" variant="primary" :style="scalingStyles.button">
-              <i class="fas fa-plus mr-2"></i>
-              Add Forwarder
-            </InventoryButton>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead :class="darkModeClasses.tableHeader">
-                <tr>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Contact</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Services</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">On-Time %</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Shipments</th>
-                  <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody :class="[darkModeClasses.table, 'divide-y', darkModeClasses.border]">
-                <tr v-for="forwarder in forwarders" :key="forwarder.id" :class="[darkModeClasses.tableRow, 'hover:bg-gray-50']">
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    {{ forwarder.name }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    <div>{{ forwarder.contactPerson }}</div>
-                    <div :style="scalingStyles.textFontSizeSubtext" :class="darkModeClasses.textSecondary" class="text-xs">{{ forwarder.email }}</div>
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ forwarder.services.join(', ') }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ forwarder.onTimeDelivery }}%
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
-                    {{ forwarder.totalShipments }}
-                  </td>
-                  <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex gap-1">
-                      <ActionButton  variant="edit" @click="openPartnerForm('forwarder', forwarder)" />
-                      <ActionButton  variant="delete" @click="handleDeletePartner(forwarder.id)" />
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+    <!-- Partners Table -->
+    <div :class="[darkModeClasses.card, 'rounded-lg shadow-sm border overflow-hidden']">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead :class="darkModeClasses.tableHeader">
+            <tr>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Contact</th>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Orders</th>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Total Value</th>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Rating</th>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Status</th>
+              <th :style="scalingStyles.tableHeader" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody :class="[darkModeClasses.table, 'divide-y', darkModeClasses.border]">
+            <tr v-for="partner in filteredPartners" :key="partner.id" :class="[darkModeClasses.tableRow, 'hover:bg-gray-50']">
+              <td :style="scalingStyles.textFontSize" class="px-4 py-4 whitespace-nowrap">
+                <div :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="text-sm font-medium">{{ partner.name }}</div>
+                <div :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary" class="text-sm">{{ partner.address }}</div>
+              </td>
+              <td :style="scalingStyles.textFontSize" class="px-4 py-4 whitespace-nowrap">
+                <div :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="text-sm">{{ partner.contact_person }}</div>
+                <div :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary" class="text-sm">{{ partner.email }}</div>
+                <div :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary" class="text-sm">{{ partner.phone }}</div>
+              </td>
+              <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
+                {{ partner.total_orders }}
+                <div :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary" class="text-xs">
+                  Last: {{ formatDate(partner.last_order) }}
+                </div>
+              </td>
+              <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
+                {{ formatCurrency(partner.total_value) }}
+                <div :style="scalingStyles.smallFontSize" :class="darkModeClasses.textSecondary" class="text-xs">
+                  {{ partner.payment_terms }}
+                </div>
+              </td>
+              <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm">
+                <div class="flex items-center gap-1">
+                  <i class="fas fa-star text-yellow-500"></i>
+                  <span>{{ partner.rating }}</span>
+                </div>
+              </td>
+              <td :style="scalingStyles.textFontSize" class="px-4 py-4 whitespace-nowrap">
+                <CleanBadge 
+                  :variant="getStatusColor(partner.status)" 
+                  :text="partner.status.charAt(0).toUpperCase() + partner.status.slice(1)" 
+                  size="xs" 
+                />
+              </td>
+              <td :style="scalingStyles.textFontSize" :class="darkModeClasses.text" class="px-4 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex gap-1">
+                  <ActionButton variant="edit" :iconStyle="scalingStyles.iconSize" @click="openPartnerForm(partner)" />
+                  <ActionButton variant="delete" :iconStyle="scalingStyles.iconSize" @click="handleDeletePartner(partner.id)" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -342,7 +474,7 @@ onMounted(() => {
       <div :class="[darkModeClasses.modal, 'rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto']">
         <div class="flex justify-between items-center mb-4">
           <h3 :style="scalingStyles.subtitleFontSize" :class="darkModeClasses.text" class="text-lg font-semibold">
-            {{ editingPartner ? 'Edit' : 'Add' }} {{ partnerFormData.type?.charAt(0).toUpperCase() + partnerFormData.type?.slice(1) }}
+            {{ editingPartner ? 'Edit Partner' : 'Add New Partner' }}
           </h3>
           <button @click="showPartnerForm = false" :class="darkModeClasses.textSecondary" class="hover:opacity-75">
             <i class="fas fa-times"></i>
@@ -353,14 +485,15 @@ onMounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InventoryInput
               v-model="partnerFormData.name"
-              label="Name"
+              label="Partner Name"
               required
               :style="scalingStyles.input"
               :class="darkModeClasses.input"
             />
             <InventoryInput
-              v-model="partnerFormData.contactPerson"
+              v-model="partnerFormData.contact_person"
               label="Contact Person"
+              required
               :style="scalingStyles.input"
               :class="darkModeClasses.input"
             />
@@ -371,12 +504,14 @@ onMounted(() => {
               v-model="partnerFormData.email"
               label="Email"
               type="email"
+              required
               :style="scalingStyles.input"
               :class="darkModeClasses.input"
             />
             <InventoryInput
               v-model="partnerFormData.phone"
               label="Phone"
+              required
               :style="scalingStyles.input"
               :class="darkModeClasses.input"
             />
@@ -390,58 +525,18 @@ onMounted(() => {
             :class="darkModeClasses.input"
           />
 
-          <div v-if="partnerFormData.type === 'vendor'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InventoryInput
-              v-model="partnerFormData.paymentTerms"
-              label="Payment Terms"
-              :style="scalingStyles.input"
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InventoryDropdown
+              v-model="partnerFormData.status"
+              label="Status"
+              :options="partnerStatusOptions.filter(opt => opt.value !== 'all')"
+              required
+              :style="scalingStyles.select"
               :class="darkModeClasses.input"
             />
             <InventoryInput
-              v-model.number="partnerFormData.rating"
-              label="Rating"
-              type="number"
-              min="0"
-              max="5"
-              step="0.1"
-              :style="scalingStyles.input"
-              :class="darkModeClasses.input"
-            />
-          </div>
-
-          <div v-if="partnerFormData.type === 'customer'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InventoryInput
-              v-model.number="partnerFormData.creditLimit"
-              label="Credit Limit"
-              type="number"
-              :style="scalingStyles.input"
-              :class="darkModeClasses.input"
-            />
-            <InventoryInput
-              v-model.number="partnerFormData.rating"
-              label="Rating"
-              type="number"
-              min="0"
-              max="5"
-              step="0.1"
-              :style="scalingStyles.input"
-              :class="darkModeClasses.input"
-            />
-          </div>
-
-          <div v-if="partnerFormData.type === 'forwarder'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InventoryInput
-              v-model="partnerFormData.services"
-              label="Services (comma separated)"
-              :style="scalingStyles.input"
-              :class="darkModeClasses.input"
-            />
-            <InventoryInput
-              v-model.number="partnerFormData.onTimeDelivery"
-              label="On-Time Delivery %"
-              type="number"
-              min="0"
-              max="100"
+              v-model="partnerFormData.notes"
+              label="Notes"
               :style="scalingStyles.input"
               :class="darkModeClasses.input"
             />
@@ -460,4 +555,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
