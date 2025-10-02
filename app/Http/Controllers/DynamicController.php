@@ -517,7 +517,15 @@ class DynamicController extends Controller
             // Add more headers as needed
         ];
 
-        if (!array_intersect($allowedHeaders, array_keys(request()->headers->all()))) {
+        $hasValidHeader = false;
+        foreach ($allowedHeaders as $header) {
+            if (request()->header($header)) {
+                $hasValidHeader = true;
+                break;
+            }
+        }
+
+        if (!$hasValidHeader) {
             return response()->json([
                 'success' => false, 
                 'message' => 'Direct API calls not allowed'

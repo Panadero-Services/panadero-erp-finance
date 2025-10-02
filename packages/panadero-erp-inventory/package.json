@@ -32,7 +32,7 @@
     "vue": "^3.0.0",
     "panadero-shared-components": "*",
     "panadero-shared-styling": "*",
-    "panadero-filters": "*",
+    "panadero-filters": "*"
   },
   "repository": {
     "type": "git",

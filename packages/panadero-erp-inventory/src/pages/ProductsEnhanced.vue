@@ -20,69 +20,17 @@ const error = ref(null)
 
 onMounted(async () => {
   try {
-    // Fetch configuration from model via API
     const response = await axios.get('/api/erp_products/config')
     const modelConfig = response.data
     
-    // Build enhanced configuration from model
+    // Override formComponent with actual component
     enhancedConfig.value = {
-      title: modelConfig.title || 'Products',
-      icon: modelConfig.icon || 'fas fa-box',
-      // Search fields from model
-      searchFields: modelConfig.searchFields || ['name', 'identifier', 'comment'],
-      // Filter dependencies from model
-      filterDependencies: [
-        {
-          filterKey: 'product_type',
-          dependsOn: [],
-          resets: ['product_group', 'brand']
-        },
-        {
-          filterKey: 'product_group',
-          dependsOn: ['product_type'],
-          resets: ['brand']
-        },
-        {
-          filterKey: 'brand',
-          dependsOn: ['product_type', 'product_group'],
-          resets: []
-        }
-      ],
-      // Export fields from model columns
-      exportFields: (modelConfig.columns || []).map(col => ({
-        key: col.key,
-        label: col.label,
-        transform: col.key === 'is_active' ? (value) => value ? 'Yes' : 'No' : undefined
-      })),
-      // Use model configuration
-      columns: modelConfig.columns || [],
-      kpis: modelConfig.kpis || [],
-      filters: (modelConfig.filters || []).map(filter => ({
-        key: filter.key,
-        label: filter.label,
-        field: filter.field || `${filter.relationship}.name`
-      })),
-      dropdowns: [
-        { key: 'productTypes', endpoint: '/api/erp_product_types' },
-        { key: 'productGroups', endpoint: '/api/erp_product_groups' },
-        { key: 'brands', endpoint: '/api/erp_brands' },
-        { key: 'units', endpoint: '/api/erp_units' }
-      ],
-      formComponent: ProductForm,
-      formProps: {
-        productTypes: 'productTypes',
-        productGroups: 'productGroups',
-        brands: 'brands',
-        units: 'units'
-      },
-      apiHeaders: {
-        'X-From-Products-Page': 'true'
-      }
+      ...modelConfig,
+      formComponent: ProductForm
     }
   } catch (err) {
     console.error('Failed to load configuration:', err)
     error.value = `Failed to load configuration: ${err.message}`
-    // Don't set enhancedConfig - let the error state show
   } finally {
     loading.value = false
   }

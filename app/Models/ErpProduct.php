@@ -430,6 +430,65 @@ class ErpProduct extends Model
         ];
     }
 
+    public static function getFilterDependencies()
+    {
+        return [
+            [
+                'filterKey' => 'product_type',
+                'dependsOn' => [],
+                'resets' => ['product_group', 'brand']
+            ],
+            [
+                'filterKey' => 'product_group',
+                'dependsOn' => ['product_type'],
+                'resets' => ['brand']
+            ],
+            [
+                'filterKey' => 'brand',
+                'dependsOn' => ['product_type', 'product_group'],
+                'resets' => []
+            ]
+        ];
+    }
+
+    public static function getExportFields()
+    {
+        return array_map(function($col) {
+            return [
+                'key' => $col['key'],
+                'label' => $col['label'],
+                'transform' => $col['key'] === 'is_active' ? function($value) { return $value ? 'Yes' : 'No'; } : null
+            ];
+        }, static::getDataTableConfig()['columns']);
+    }
+
+    public static function getDropdowns()
+    {
+        return [
+            ['key' => 'productTypes', 'endpoint' => '/api/erp_product_types'],
+            ['key' => 'productGroups', 'endpoint' => '/api/erp_product_groups'],
+            ['key' => 'brands', 'endpoint' => '/api/erp_brands'],
+            ['key' => 'units', 'endpoint' => '/api/erp_units']
+        ];
+    }
+
+    public static function getFormProps()
+    {
+        return [
+            'productTypes' => 'productTypes',
+            'productGroups' => 'productGroups',
+            'brands' => 'brands',
+            'units' => 'units'
+        ];
+    }
+
+    public static function getApiHeaders()
+    {
+        return [
+            'X-From-Products-Page' => 'true'
+        ];
+    }
+
     /**
      * Get complete enhanced datatable configuration
      */
@@ -446,7 +505,13 @@ class ErpProduct extends Model
             'form' => static::getFormConfig(),
             'actions' => static::getActionConfig(),
             'columns' => static::getDataTableConfig()['columns'],
-            'relationships' => static::getApiRelationships()
+            'relationships' => static::getApiRelationships(),
+            'filterDependencies' => static::getFilterDependencies(),
+            'exportFields' => static::getExportFields(),
+            'dropdowns' => static::getDropdowns(),
+            'formComponent' => 'ProductForm',
+            'formProps' => static::getFormProps(),
+            'apiHeaders' => static::getApiHeaders()
         ];
     }
 }

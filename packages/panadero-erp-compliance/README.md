@@ -175,3 +175,4 @@ MIT License - see LICENSE file for details.
 ## Support
 
 For support and questions, please contact the development team or create an issue in the repository.
+# panadero-erp-compliance
