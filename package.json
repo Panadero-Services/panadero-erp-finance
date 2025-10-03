@@ -1,4 +1,5 @@
 {
+    "name": "i3v2-bots",
     "private": true,
     "type": "module",
     "scripts": {
