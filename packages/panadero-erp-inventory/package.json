@@ -30,9 +30,9 @@
     "decimal.js": "^10.0.0",
     "pinia": "^2.0.0",
     "vue": "^3.0.0",
-    "panadero-shared-components": "*",
-    "panadero-shared-styling": "*",
-    "panadero-filters": "*"
+    "panadero-shared-components": "git+https://github.com/Panadero-Services/panadero-shared-components.git",
+    "panadero-shared-styling": "git+https://github.com/Panadero-Services/panadero-shared-styling.git",
+    "panadero-filters": "git+https://github.com/Panadero-Services/panadero-filters.git"
   },
   "repository": {
     "type": "git",

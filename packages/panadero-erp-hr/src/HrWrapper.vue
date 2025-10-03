@@ -18,7 +18,7 @@ import HrReporting from './components/HrReporting.vue';
 import AgentPortal from './components/AgentPortal.vue';
 
 // Import the Framework Settings Panel from shared location
-import FrameworkSettingsPanel from '../../shared/components/FrameworkSettingsPanel.vue';
+import { FrameworkSettingsPanel } from 'panadero-shared-components';
 
 const store = useHrStore();
 

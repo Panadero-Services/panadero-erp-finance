@@ -13,7 +13,7 @@ import WorkflowDemo from './WorkflowDemo.vue'
 //import Statistics from './components/Statistics.vue'
 
 // Import the Framework Settings Panel from shared location
-import FrameworkSettingsPanel from '../../shared/components/FrameworkSettingsPanel.vue';
+import { FrameworkSettingsPanel } from 'panadero-shared-components';
 
 import { useWorkflowStore } from './composables/workflowStore';
 const workflowStore = useWorkflowStore();
