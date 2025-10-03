@@ -48,6 +48,7 @@
         "node-fetch": "^3.3.2",
         "panadero-ai-engine-phase12": "file:packages/panadero-ai-engine-phase12",
         "panadero-contract-api": "git+https://github.com/lieuwebakker/panadero-contract-api.git",
+        "panadero-datatable": "git+https://github.com/Panadero-Services/panadero-datatable.git",
         "panadero-erp-analytics": "file:packages/panadero-erp-analytics",
         "panadero-erp-compliance": "git+https://github.com/Panadero-Services/panadero-erp-compliance.git",
         "panadero-erp-finance": "git+https://github.com/Panadero-Services/panadero-erp-finance.git",
