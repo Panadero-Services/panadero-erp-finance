@@ -21,7 +21,7 @@ import BudgetingForecasting from './components/BudgetingForecasting.vue';
 import ComplianceAudit from './components/ComplianceAudit.vue';
 
 // Import the Framework Settings Panel from shared location
-import FrameworkSettingsPanel from '../../shared/components/FrameworkSettingsPanel.vue';
+import { FrameworkSettingsPanel } from 'panadero-shared-components';
 
 const store = useFinanceStore();
 
