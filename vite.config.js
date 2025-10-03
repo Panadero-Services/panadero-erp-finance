@@ -62,13 +62,6 @@ export default defineConfig({
         alias: {
             '@': '/resources/js',
             'panadero-solarsysinvaders': resolve(__dirname, 'vendor/panadero/panadero-solarsysinvaders/client/src/index.js'),
-            'panadero-erp-finance': resolve(__dirname, 'packages/panadero-erp-finance'),
-            'panadero-erp-inventory': resolve(__dirname, 'packages/panadero-erp-inventory'),
-            'panadero-erp-compliance': resolve(__dirname, 'packages/panadero-erp-compliance'),
-            'panadero-filters': resolve(__dirname, 'packages/panadero-filters/src/index.js'),
-            'panadero-shared-components': resolve(__dirname, 'packages/panadero-shared-components/index.js'),
-            'panadero-shared-styling': resolve(__dirname, 'packages/panadero-shared-styling/index.js'),
-            'panadero-datatable': resolve(__dirname, 'packages/panadero-datatable/index.js'),
         }
     },
     optimizeDeps: {
